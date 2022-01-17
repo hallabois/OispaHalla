@@ -17,7 +17,6 @@
     }
     export function show(){
         visible = true;
-        console.log(visible);
     }
     export function hide(){
         visible = false;
@@ -56,7 +55,7 @@
 
     async function selectURL() {
         for (let i in urls) {
-            console.log(urls[i]);
+            console.log("Trying " + urls[i]);
             const status = await connectivityCheck(urls[i])
             if(status) {
                 console.log("Connected to: " + urls[i]);
