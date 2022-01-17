@@ -100,7 +100,7 @@ class GameManager {
   }
 
   isLeaderboardOpen() {
-    return this.popup.style.display == "block";
+    return window.isLeaderboardOpen;
   }
 
   // Set up the game

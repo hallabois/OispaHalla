@@ -6,8 +6,12 @@
     let url = "";
     let connected = false;
 
+    let mounted = false;
     let editing_name = false;
     let visible = false;
+    $: if(window != null && visible != null){
+        window.isLeaderboardOpen = visible;
+    }
     export function toggle(){
         visible = !visible;
     }
@@ -46,6 +50,7 @@
         // };
         await selectURL();
         refresh();
+        mounted = true;
     });
 
 
@@ -146,7 +151,9 @@
             <div class="lb-popup-container" in:fly="{{ y: 200, duration: 200 }}">
                 <div on:click={(e)=>{e.stopPropagation()}} class="leaderboard-popup">
                     <div class="lb-header">
-                        <h2 class="lb-title">Leaderboards</h2>
+                        <h2 class="lb-title"
+                            title={connected ? `Yhdistetty palvelimeen ${url}` : "Etsitään Leaderboard-palvelimia..."}
+                        >Leaderboards</h2>
                         <div class="lb-buttons">
                             <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
                                 <img src="img/svg/refresh.svg" alt="Refresh">

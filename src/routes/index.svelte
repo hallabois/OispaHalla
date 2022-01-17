@@ -8,7 +8,7 @@
         }
     } );
 
-    import Leaderboards from "./components/leaderboards.svelte";
+    import Leaderboards from "./components/leaderboard.svelte";
     let lbInstance;
     // import "./pwa_promoter.js";
 </script>

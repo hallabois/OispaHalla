@@ -68,6 +68,7 @@ var onInitDone = function () {
 var themeCount = 2;
 var defautTheme = 1;
 var currentImageThemeVersion = 5;
+window.isLeaderboardOpen = false;
 
 function preloadImages(path){
   var imageList = [
