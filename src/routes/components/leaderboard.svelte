@@ -14,8 +14,19 @@
     let mounted = false;
     let editing_name = false;
     let visible = false;
+    let input_enabled = true;
     $: if(mounted && window != null && visible != null){
         window.isLeaderboardOpen = visible;
+        if(GameManagerInstance != null){
+            if(visible && input_enabled == true){
+                GameManagerInstance.inputManager.removeKeydownHandler()
+                input_enabled = false;
+            }
+            else if(!visible && input_enabled == false){
+                GameManagerInstance.inputManager.addKeydownHandler();
+                input_enabled = true;
+            }
+        }
     }
     export function toggle(){
         visible = !visible;
@@ -25,6 +36,7 @@
     }
     export function hide(){
         visible = false;
+        editing_name = false;
     }
     
     onMount( async () => {
@@ -161,7 +173,7 @@
 </script>
 <main>
     {#if visible}
-        <div on:click={hide} on:keydown={(e)=>{e.preventDefault();e.stopPropagation();}} class="lb-popup" out:fade>
+        <div on:click={hide} class="lb-popup" out:fade>
             <div class="lb-popup-container" in:fly="{{ y: 200, duration: 200 }}">
                 <div on:click={(e)=>{e.stopPropagation()}} class="leaderboard-popup">
                     <div class="lb-header">

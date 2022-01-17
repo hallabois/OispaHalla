@@ -99,10 +99,6 @@ class GameManager {
     return this.over || (this.won && !this.keepPlaying);
   }
 
-  isLeaderboardOpen() {
-    return window.isLeaderboardOpen;
-  }
-
   // Set up the game
   setup() {
     var previousState = this.storageManager.getGameState();
@@ -218,7 +214,7 @@ class GameManager {
     // 0: up, 1: right, 2: down, 3: left
     var self = this;
 
-    if (this.isGameTerminated() || this.isLeaderboardOpen())
+    if (this.isGameTerminated())
       return; // Don't do anything if the game's over
 
     var cell, tile;

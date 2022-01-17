@@ -5,7 +5,9 @@ var HAC_urls = ["https://localhost:8000", "http://localhost:8000", "https://hac.
 var HAC_alive = "/HAC/alive/";
 var blacklist = [
 	"manifest.json",
-  "sw.js"
+  "sw.js",
+  "@vite/client",
+  "__vite_ping"
 ];
 for(let i in HAC_urls){
   blacklist.push( HAC_urls[i] + HAC_alive );
@@ -16,7 +18,7 @@ self.addEventListener('fetch', (event) => {
     try {
       const response = await fetch(event.request);
       const cache = await caches.open(cacheName);
-      if( !(blacklist.includes(response.url)) ){
+      if( !(blacklist.includes(response.url)) && response.ok ){
         try{
 	        cache.put(event.request, response.clone());
         }
