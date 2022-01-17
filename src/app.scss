@@ -1020,6 +1020,9 @@ $colors: (
 
 @mixin setThemeColors($color-number) {
   html.theme-#{$t} {
+    --background: #{map-get($colors, '#{$color-number}-game-background')};
+    --background-inverted: #{map-get($colors, '#{$color-number}-game-background-inverted')};
+    --color: #{map-get($colors, '#{$color-number}-text-color')};
     background: map-get($colors, '#{$color-number}-game-background');
     @if map.has-key($colors, '#{$color-number}-break-button-background-false') { 
       .parin-kulautus, .kurin-palautus {
