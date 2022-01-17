@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { fly, slide } from "svelte/transition";
+    import { fly, slide, fade } from "svelte/transition";
     let numOfScores = 10;
     let urls = ["https://localhost:5000", "http://localhost:5000", "https://oispahallalb.herokuapp.com", "http://oispahallalb.herokuapp.com"];
     let url = "";
@@ -142,8 +142,8 @@
 </script>
 <main>
     {#if visible}
-        <div on:click={hide} class="lb-popup" transition:fly>
-            <div class="lb-popup-container">
+        <div on:click={hide} class="lb-popup" out:fade>
+            <div class="lb-popup-container" in:fly="{{ y: 200, duration: 200 }}">
                 <div on:click={(e)=>{e.stopPropagation()}} class="leaderboard-popup">
                     <div class="lb-header">
                         <h2 class="lb-title">Leaderboards</h2>
