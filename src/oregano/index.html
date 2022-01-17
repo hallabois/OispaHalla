@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>Oispa Halla</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="style/main.css" type="text/css">
+  <link rel="shortcut icon" href="./favicon.ico?v=2">
+  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="author" content="Hallabois">
+  <meta name="description" content="Oispa Halla: Yhdistä opettajat ja saavuta Halla!">
+  <meta name="keywords" content="Oispahalla, halla, ksyk, 2048, Lauri Halla, hallabois, oispa pelit">
+
+  <meta name="twitter:card" content="Yhdistä opettajat ja saavuta Halla!"></meta>
+  <meta name="theme-color" content="#000000"/>
+  <script>window.sa_event=window.sa_event||function(){var a=[].slice.call(arguments);window.sa_event.q?window.sa_event.q.push(a):window.sa_event.q=[a]};</script>
+</head>
+<body>
+  <noscript>
+    <div class="noscript">
+      <p>
+        <strong>JavaScript ei ole päällä tai selaimesi ei tue sitä.</strong>
+        <br>
+        Sivuston toiminta edellyttää JavaScriptin toimintaa.
+      </p>
+    </div>
+  </noscript>
+  <div class="container">
+    <div class="lb-popup">
+      <div class="lb-popup-container">
+        <div class="leaderboard-popup">
+          <div class="lb-header">
+            <h2 class="lb-title">Leaderboards</h2>
+            <div class="lb-buttons">
+              <a id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
+                <img src="img/svg/refresh.svg" alt="Refresh">
+              </a>
+              <a id="lb-edit" class="color-button" title="Muuta Käyttäjänimeäsi tai Synkronointikoodiasi">
+                <img src="img/svg/edit.svg" alt="Edit">
+              </a>
+              <a id="lb-close" title="Sulje Leaderboardit">&times;</a>
+            </div>
+          </div>
+          <div class="lb-content">
+            <div class="form-container" style="display: block;">
+              <hr>
+              <div class="name-form-container">
+                <h4 class="name-form-title">Muuta Käyttäjänimeäsi:</h4>
+                <form id="lb-name-form" class="name-form">
+                  <div class="name-form-div">
+                    <label for="lb-name">Nimi:</label>
+                    <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required >
+                  </div>
+                  <button id="lb-save">Tallenna</button>
+                </form>
+                <p id="name-error" class="lb-error"></p>
+              </div>
+              <div class="sync-form-container">
+                <div class="form-title-container">
+                  <h4 class="name-form-title">Muuta Synkronointikoodiasi: (24 merkkiä)</h4>
+                  <div class="tooltip">
+                    <span class="tooltiptext">Voit kopioida synkronointikoodisi tästä, ja käyttää sitä eri laitteella synkronoidaksesi "tilisi" ja paikkasi Leaderboardeilla™</span>
+                    <div class="color-button">
+                      <img src="img/svg/help.svg">
+                    </div>
+                  </div>
+                </div>
+                <form id="lb-sync-form" class="name-form">
+                  <div class="name-form-div">
+                    <label for="lb-uid">Koodi: </label>
+                    <input type="password" id="lb-uid" placeholder="Synkronointikoodi" minlength="24" maxlength="24" >
+                  </div>
+                  <button id="lb-save">Tallenna</button>
+                </form>
+                <p id="sync-error" class="lb-error"></p>
+              </div>
+              <hr class="closerhr">
+            </div>
+            <ol class="lb-stats"></ol>
+            <button id="post-score">Post Score</button>
+            <div class="lb-disclaimer">
+              <p><strong>HUOMIO:</strong> Leaderboardien vapaan nimenvalinnan väärinkäyttö johtaa kieltoon niiltä!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="new-above-game">
+      <div class="above-game-left">
+        <a href="https://hallabois.github.io/invite/" target="_blank">
+          <h1 class="title">Oispa Halla</h1>
+        </a>
+        <p class="game-intro">Yhdistä opettajat ja saavuta <strong>Halla!</strong></p>
+      </div>
+      <div class="above-game-right">
+        <div class="HAC-container" title="HAC:n tila" style="display:none;">
+          <div class="HAC-status">...</div>
+        </div>
+        <div class="score-container">0</div>
+        <div class="best-container">0</div>
+        <a class="restart-button">
+          <div class="uusi-jakso">Uusi Jakso</div>
+          <div class="size-selector">
+            <button>&lt;</button>
+            <button class="restart-3x3">3x3</button>
+            <button class="restart-4x4">4x4</button>
+          </div>
+        </a>
+      </div>
+    </div>
+    <!-- <div class="heading">
+      <a href="https://discord.gg/7x25Jxrkvr" target="_blank">
+        <h1 class="title">Oispa Halla</h1>
+      </a>
+      <div class="scores-container">
+      	<div class="HAC-container" title="HAC:n tila" style="display:none;">
+          <div class="HAC-status">...</div>
+        </div>
+        <div class="score-container">0</div>
+        <div class="best-container">0</div>
+      </div>
+    </div>
+
+    <div class="above-game">
+      <p class="game-intro">Yhdistä opettajat ja saavuta <strong>Halla!</strong></p>
+      <a class="restart-button">
+        <div class="uusi-jakso">Uusi Jakso</div>
+        <div class="size-selector">
+          <button>&lt;</button>
+          <button class="restart-3x3">3x3</button>
+          <button class="restart-4x4">4x4</button>
+        </div>
+      </a>
+    </div> -->
+
+    <div class="game-container">
+      <div class="kurin-palautus-viesti"></div>
+      <div class="game-message">
+        <p class="tilanne"></p>
+        <p class="kurinpalautukset"></p>
+        <div class="lower">
+	        <a class="keep-playing-button">Jatka pelaamista</a>
+          <a class="retry-button">Yritä uudelleen</a>
+        </div>
+      </div>
+
+      <div class="grid-container">
+        <!-- Standard 4x4 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <!-- In case we need more -->
+        <!-- 5x5 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <!-- 6x6 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+      </div>
+
+      <div class="tile-container">
+
+      </div>
+    </div>
+    <div class="underbar-container">
+      <div class="kurin-palautus-container">
+        <button class="kurin-palautus kurin-palautus-color">
+          <a class="parin-kulautus" title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta.">KURINPALAUTUS</a>
+        </button>
+      </div>
+      <div class="button-container">
+        <div class="lb-container">
+          <a id="lb-button" class="color-button" title="Leaderboards">
+            <img src="img/svg/leaderboard.svg">
+          </a>
+        </div>
+        <div class="event-container">
+          <a class="event-button" title="Toggle Dark Theme">
+            <!-- <img src="./img/no_snow.svg" id="event-icon"> -->
+            <p id="darkmode-icon">🔆</p>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="pwa-container" style="width: 100%;z-index: 500;display: flex;justify-content: center;margin-top: 30px;margin-bottom: -50px;">
+      <button class="pwa-add-button" style="display: none;border: none;margin: .5em;cursor: pointer;">Asenna sovelluksena</button>
+    </div>
+    <div class="disclaimer">
+      <p>
+        <strong>HUOMIO:</strong> Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.
+      </p>
+      <p>
+        Alkuperäisen projektin <a href="https://github.com/gabrielecirulli/2048" target="_blank">2048</a> on tehnyt <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
+      </p>
+      <p>
+        <a href="https://simpleanalytics.com/oispahalla.com" target="_blank">Simpleanalytics</a>
+      </p>
+    </div>
+    <div class="preload-container"></div>
+  </div>
+  
+  
+  <script src="js/local_storage_manager.js"></script>
+  <script src="js/HAC.js"></script>
+  <script src="js/bind_polyfill.js"></script>
+  <script src="js/classlist_polyfill.js"></script>
+  <script src="js/animframe_polyfill.js"></script>
+  <script src="js/keyboard_input_manager.js"></script>
+  <script src="js/html_actuator.js"></script>
+  <script src="js/grid.js"></script>
+  <script src="js/tile.js"></script>
+  <script src="js/game_manager.js"></script>
+  <script src="js/application.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="pwa_promoter.js"></script>
+  <!-- <script src="/sw.js"></script> -->
+  <script data-collect-dnt="true" async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" collect-dnt=true /></noscript>
+  <script data-collect-dnt="true" async defer src="https://api.oispahalla.com/latest.js"></script>
+  <noscript><img src="https://api.oispahalla.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" collect-dnt=true /></noscript>
+
+</body>
+</html>
