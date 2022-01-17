@@ -85,6 +85,7 @@ window.isLeaderboardOpen = false;
 
 var base_path = "";
 function setImageBasePath(path){
+  base_path = path;
   let style = document.querySelector("style");
   style.innerHTML = style.innerHTML.replaceAll("/img", path);
 }

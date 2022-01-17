@@ -30,6 +30,7 @@
   },
   "type": "module",
   "dependencies": {
+    "marked": "^4.0.10",
     "sass": "^1.48.0"
   }
 }

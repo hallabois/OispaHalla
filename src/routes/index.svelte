@@ -1,17 +1,37 @@
 
 <script lang="ts">
+    import { marked } from 'marked';
     import { onMount } from "svelte";
 
+    import Leaderboards from "./components/leaderboard.svelte";
+
+    let app_name = "";
+    let app_description = "";
+    $: if(mounted && base_path != null && base_path != ""){
+      fetch(base_path + "/manifest.json")
+        .then(response => response.json())
+        .then( data=>{
+          app_name = data.name;
+          app_description = data.subtitle;
+          }
+        ).catch( () =>{
+            app_name = "Oispa Halla";
+            app_description = "Yhdistä opettajat ja saavuta **Halla!**";
+          }
+        )
+    }
+    else{
+      app_name = "Oispa Halla";
+      app_description = "Yhdistä opettajat ja saavuta **Halla!**";
+    }
+
+    let mounted = false;
     onMount( ()=>{
         if(onInitDone != null){
             onInitDone();
         }
+        mounted = true;
     } );
-
-    import Leaderboards from "./components/leaderboard.svelte";
-
-    let app_name = "Oispa Halla";
-    let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
 
     let lbInstance;
     // import "./pwa_promoter.js";
@@ -22,9 +42,9 @@
     <div class="new-above-game">
       <div class="above-game-left">
         <a href="https://hallabois.github.io/invite/" target="_blank">
-          <h1 class="title">Oispa Halla</h1>
+          <h1 class="title">{app_name}</h1>
         </a>
-        <p class="game-intro">Yhdistä opettajat ja saavuta <strong>Halla!</strong></p>
+        <p class="game-intro">{@html marked.parse(app_description)}</p>
       </div>
       <div class="above-game-right">
         <div class="HAC-container" title="HAC:n tila" style="display:none;">
