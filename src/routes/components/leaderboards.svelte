@@ -54,9 +54,9 @@
             console.log(urls[i]);
             const status = await connectivityCheck(urls[i])
             if(status) {
-            console.log("Connected to: " + urls[i]);
-            connected = true;
-            url = urls[i];
+                console.log("Connected to: " + urls[i]);
+                connected = true;
+                url = urls[i];
             }
         }
         connected = false;
@@ -155,12 +155,14 @@
                     <div class="lb-header">
                         <h2 class="lb-title">Leaderboards</h2>
                         <div class="lb-buttons">
-                            <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
-                            <img src="img/svg/refresh.svg" alt="Refresh">
-                            </a>
-                            <a on:click={edit} id="lb-edit" class="color-button" title="Muuta Käyttäjänimeäsi tai Synkronointikoodiasi">
-                            <img src="img/svg/edit.svg" alt="Edit">
-                            </a>
+                            {#if connected}
+                                <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
+                                <img src="img/svg/refresh.svg" alt="Refresh">
+                                </a>
+                                <a on:click={edit} id="lb-edit" class="color-button" title="Muuta Käyttäjänimeäsi tai Synkronointikoodiasi">
+                                <img src="img/svg/edit.svg" alt="Edit">
+                                </a>
+                            {/if}
                             <a on:click={hide} id="lb-close" title="Sulje Leaderboardit">&times;</a>
                         </div>
                     </div>
@@ -201,7 +203,15 @@
                                 <hr class="closerhr">
                             </div>
                         {/if}
-                        <ol class="lb-stats"></ol>
+                        <ol class="lb-stats">
+                            {#await refreshPromise}
+                                Otetaan yhteyttä palvelimeen...
+                            {:then data} 
+                                {JSON.stringify(data)}
+                            {:catch err}
+                                {JSON.stringify(err)}
+                            {/await}
+                        </ol>
                         <button id="post-score">Post Score</button>
                         <div class="lb-disclaimer">
                             <p><strong>HUOMIO:</strong> Leaderboardien vapaan nimenvalinnan väärinkäyttö johtaa kieltoon niiltä!</p>
