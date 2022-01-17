@@ -238,13 +238,19 @@
                                     <br />
                                     {#if data.topBoard}
                                         <div class="topboard-container">
-                                            {#each [{"screenName":"name","score":"score"}].concat(data.topBoard) as item}
-                                                <div class="item">
-                                                    <div class="screenName">{item.screenName}</div>
-                                                    <div class="score">{item.score}</div>
-                                                </div>
-                                                <hr />
-                                            {/each}
+                                            <div class="item head">
+                                                <div class="screenName">name</div>
+                                                <div class="score">score</div>
+                                            </div>
+                                            <div class="items">
+                                                {#each data.topBoard as item}
+                                                    <div class="item">
+                                                        <div class="screenName">{item.screenName}</div>
+                                                        <div class="score">{item.score}</div>
+                                                    </div>
+                                                    <hr />
+                                                {/each}
+                                            </div>
                                         </div>
                                     {:else}
                                         Virheellinen vastaus palvelimelta.
@@ -270,10 +276,14 @@
         margin: 0;
         opacity: .75;
     }
-    .topboard-container .item:nth-child(4n+1){
+    .items {
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+    .items .item:nth-child(4n+3), .item.head{
         background: rgba(255, 255, 255, .1);
     }
-    .topboard-container .item:nth-child(1){
+    .item.head {
         font-weight: bold;
     }
     .item {
