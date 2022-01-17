@@ -7,7 +7,7 @@
     let connected = false;
 
     let editing_name = false;
-    let visible = true;
+    let visible = false;
     export function toggle(){
         visible = !visible;
     }
@@ -19,7 +19,7 @@
         visible = false;
     }
     
-    onMount( () => {
+    onMount( async () => {
 
         // lbNameForm.onsubmit = (event) => {
         //     localStorage.screenName = lbName.value;
@@ -44,8 +44,8 @@
         //     const lol = JSON.parse(localStorage.gameState);
         //     postScore({ history: JSON.parse(localStorage.HAC_history), palautukset: lol.palautukset, score: lol.score, size: lol.size });
         // };
-        selectURL();
-        refreshLeaderboard(localStorage.HAC_size);
+        await selectURL();
+        refresh();
     });
 
 
@@ -80,23 +80,16 @@
         }
     }
     let refreshPromise;
-    function refreshLeaderboard(size) {
-        refreshPromise = fetch(`${url}/scores/${size}/fetchboard/${numOfScores}/${localStorage.id ? localStorage.id : ""}`);
-        // .then(response => response.json())
-        // .then(data => {
-        //     lbStats.innerHTML = "";
-        //     data.topBoard.forEach(record => {
-        //     lbStats.innerHTML += `
-        //     <li class="lb-stat">
-        //         <div class="lb-stat-label">
-        //         ${record.screenName}
-        //         </div>
-        //         <div class="lb-stat-value">
-        //         ${record.score}
-        //         </div>
-        //     </li>`;
-        //     });
-        // });
+    $: console.log("promise: ", refreshPromise);
+    async function refreshLeaderboard(size) {
+        const res = await fetch(`${url}/scores/${size}/fetchboard/${numOfScores}/${localStorage.id ? localStorage.id : ""}`);
+
+        if (res.ok) {
+            const data = await res.json();
+            return data;
+        } else {
+            throw new Error(res.statusText);
+        }
     }
     async function postScore(game) {
         if(localStorage.screenName === undefined) {
@@ -136,7 +129,7 @@
     }
     function refresh(){
         if(GameManagerInstance){
-            refreshLeaderboard(GameManagerInstance.size);
+            refreshPromise = refreshLeaderboard(GameManagerInstance.size);
         }
     }
     function edit(){
@@ -155,12 +148,12 @@
                     <div class="lb-header">
                         <h2 class="lb-title">Leaderboards</h2>
                         <div class="lb-buttons">
-                            {#if connected}
-                                <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
+                            <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
                                 <img src="img/svg/refresh.svg" alt="Refresh">
-                                </a>
+                            </a>
+                            {#if connected}
                                 <a on:click={edit} id="lb-edit" class="color-button" title="Muuta Käyttäjänimeäsi tai Synkronointikoodiasi">
-                                <img src="img/svg/edit.svg" alt="Edit">
+                                    <img src="img/svg/edit.svg" alt="Edit">
                                 </a>
                             {/if}
                             <a on:click={hide} id="lb-close" title="Sulje Leaderboardit">&times;</a>
@@ -204,13 +197,15 @@
                             </div>
                         {/if}
                         <ol class="lb-stats">
-                            {#await refreshPromise}
-                                Otetaan yhteyttä palvelimeen...
-                            {:then data} 
-                                {JSON.stringify(data)}
-                            {:catch err}
-                                {JSON.stringify(err)}
-                            {/await}
+                            {#if refreshPromise}
+                                {#await refreshPromise}
+                                    Otetaan yhteyttä palvelimeen...
+                                {:then} 
+                                    {refreshPromise}
+                                {:catch err}
+                                    Virhe: {err}
+                                {/await}
+                            {/if}
                         </ol>
                         <button id="post-score">Post Score</button>
                         <div class="lb-disclaimer">
