@@ -7,69 +7,13 @@
             onInitDone();
         }
     } );
+
+    import Leaderboards from "./components/leaderboards.svelte";
     // import "./pwa_promoter.js";
 </script>
 <main>
   <div class="container">
-    <div class="lb-popup">
-      <div class="lb-popup-container">
-        <div class="leaderboard-popup">
-          <div class="lb-header">
-            <h2 class="lb-title">Leaderboards</h2>
-            <div class="lb-buttons">
-              <a id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
-                <img src="img/svg/refresh.svg" alt="Refresh">
-              </a>
-              <a id="lb-edit" class="color-button" title="Muuta Käyttäjänimeäsi tai Synkronointikoodiasi">
-                <img src="img/svg/edit.svg" alt="Edit">
-              </a>
-              <a id="lb-close" title="Sulje Leaderboardit">&times;</a>
-            </div>
-          </div>
-          <div class="lb-content">
-            <div class="form-container" style="display: block;">
-              <hr>
-              <div class="name-form-container">
-                <h4 class="name-form-title">Muuta Käyttäjänimeäsi:</h4>
-                <form id="lb-name-form" class="name-form">
-                  <div class="name-form-div">
-                    <label for="lb-name">Nimi:</label>
-                    <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required >
-                  </div>
-                  <button id="lb-save">Tallenna</button>
-                </form>
-                <p id="name-error" class="lb-error"></p>
-              </div>
-              <div class="sync-form-container">
-                <div class="form-title-container">
-                  <h4 class="name-form-title">Muuta Synkronointikoodiasi: (24 merkkiä)</h4>
-                  <div class="tooltip">
-                    <span class="tooltiptext">Voit kopioida synkronointikoodisi tästä, ja käyttää sitä eri laitteella synkronoidaksesi "tilisi" ja paikkasi Leaderboardeilla™</span>
-                    <div class="color-button">
-                      <img src="img/svg/help.svg">
-                    </div>
-                  </div>
-                </div>
-                <form id="lb-sync-form" class="name-form">
-                  <div class="name-form-div">
-                    <label for="lb-uid">Koodi: </label>
-                    <input type="password" id="lb-uid" placeholder="Synkronointikoodi" minlength="24" maxlength="24" >
-                  </div>
-                  <button id="lb-save">Tallenna</button>
-                </form>
-                <p id="sync-error" class="lb-error"></p>
-              </div>
-              <hr class="closerhr">
-            </div>
-            <ol class="lb-stats"></ol>
-            <button id="post-score">Post Score</button>
-            <div class="lb-disclaimer">
-              <p><strong>HUOMIO:</strong> Leaderboardien vapaan nimenvalinnan väärinkäyttö johtaa kieltoon niiltä!</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Leaderboards />
     <div class="new-above-game">
       <div class="above-game-left">
         <a href="https://hallabois.github.io/invite/" target="_blank">
