@@ -20,7 +20,7 @@ self.addEventListener('fetch', (event) => {
         try{
 	        cache.put(event.request, response.clone());
         }
-        catch{} // the response should still be returned, even if it didn't make it to the cache
+        catch{console.log("Couldn't save to cache!")} // the response should still be returned, even if it didn't make it to the cache
       }
       return response;
     } catch (err) {

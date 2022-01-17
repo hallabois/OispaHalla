@@ -56,32 +56,38 @@
     async function selectURL() {
         for (let i in urls) {
             console.log("Trying " + urls[i]);
-            const status = await connectivityCheck(urls[i])
+            const status = await connectivityCheck(urls[i]);
+            console.log(`Status for ${urls[i]}: ${status}`);
             if(status) {
                 console.log("Connected to: " + urls[i]);
                 connected = true;
                 url = urls[i];
+                return;
             }
         }
         connected = false;
     }
 
     async function connectivityCheck(url) {
+        let out = false;
         try {
             await fetch(url + "/alive")
             .then(response => response.json())
             .then(data => {
-            console.log(data);
-            if(data.alive) return true;
+                console.log(data);
+                if(data.alive){
+                    console.log(`${url} is alive!`);
+                    out = true;
+                }
             })
             .catch(err => {
-            console.log(err);
-            return false;
+                console.log(err);
             });
         }
         catch(err) {
             return false;
         }
+        return out;
     }
     let refreshPromise;
     $: console.log("promise: ", refreshPromise);
@@ -151,7 +157,7 @@
                 <div on:click={(e)=>{e.stopPropagation()}} class="leaderboard-popup">
                     <div class="lb-header">
                         <h2 class="lb-title"
-                            title={connected ? `Yhdistetty palvelimeen ${url}` : "Etsitään Leaderboard-palvelimia..."}
+                            title={url ? `Yhdistetty palvelimeen ${url}` : "Ei yhteyttä palvelimeen."}
                         >Leaderboards</h2>
                         <div class="lb-buttons">
                             <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
