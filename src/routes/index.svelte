@@ -9,6 +9,10 @@
     } );
 
     import Leaderboards from "./components/leaderboard.svelte";
+
+    let app_name = "Oispa Halla";
+    let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
+
     let lbInstance;
     // import "./pwa_promoter.js";
 </script>

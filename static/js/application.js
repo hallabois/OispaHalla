@@ -49,6 +49,19 @@ var onInitDone = function () {
     document.write(out);
   }
   else{
+    if(window.location.href.includes("?pack=")){
+      let packname = window.location.href.split("?pack=")[1];
+      console.log("Pack name: ", packname);
+      try{
+        let actual_path = atob(packname);
+        console.log("Parsed path: ", actual_path);
+        setImageBasePath(actual_path);
+      }
+      catch(e){
+        alert("Failed to parse pack!");
+        console.warn("Failed to parse pack!", e);
+      }
+    }
     initGameManager();
   }
   // Load theme from storage
@@ -70,7 +83,13 @@ var defautTheme = 1;
 var currentImageThemeVersion = 5;
 window.isLeaderboardOpen = false;
 
+var base_path = "";
+function setImageBasePath(path){
+  let style = document.querySelector("style");
+  style.innerHTML = style.innerHTML.replaceAll("/img", path);
+}
 function preloadImages(path){
+  // path = base_path + path;
   var imageList = [
     "2.png",
     "4.png",

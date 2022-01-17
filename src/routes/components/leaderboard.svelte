@@ -110,7 +110,6 @@
         return out;
     }
     let refreshPromise;
-    $: console.log("promise: ", refreshPromise);
     async function refreshLeaderboard(size) {
         const res = await fetch(`${url}/scores/${size}/fetchboard/${numOfScores}/${localStorage.id ? localStorage.id : ""}`);
 
