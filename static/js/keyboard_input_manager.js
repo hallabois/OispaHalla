@@ -1,4 +1,5 @@
 class KeyboardInputManager {
+  
   constructor() {
     this.events = {};
 
@@ -13,7 +14,33 @@ class KeyboardInputManager {
       this.eventTouchend = "touchend";
     }
 
+
+    this.map = {
+      38: 0,
+      39: 1,
+      40: 2,
+      37: 3,
+      75: 0,
+      76: 1,
+      74: 2,
+      72: 3,
+      87: 0,
+      68: 1,
+      83: 2,
+      65: 3 // A
+    };
+
+    this.boundKeyDownHandler = this.keydownHandler.bind(this);
+
+    this.addKeydownHandler = ()=>{
+      document.addEventListener("keydown", this.boundKeyDownHandler);
+    }
+    this.removeKeydownHandler = ()=>{
+      document.removeEventListener("keydown", this.boundKeyDownHandler);
+    }
+
     this.listen();
+    
   }
   on(event, callback) {
     if (!this.events[event]) {
@@ -29,42 +56,12 @@ class KeyboardInputManager {
       });
     }
   }
+  
   listen() {
     var self = this;
-
-    var map = {
-      38: 0,
-      39: 1,
-      40: 2,
-      37: 3,
-      75: 0,
-      76: 1,
-      74: 2,
-      72: 3,
-      87: 0,
-      68: 1,
-      83: 2,
-      65: 3 // A
-    };
-
+    
     // Respond to direction keys
-    document.addEventListener("keydown", function (event) {
-      var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
-        event.shiftKey;
-      var mapped = map[event.which];
-
-      if (!modifiers) {
-        if (mapped !== undefined) {
-          event.preventDefault();
-          self.emit("move", mapped);
-        }
-      }
-
-      // R key restarts the game
-      if (!modifiers && event.which === 82) {
-        self.restart.call(self, event);
-      }
-    });
+    this.addKeydownHandler();
 
     // Respond to button presses
     this.bindButtonPress(".retry-button", this.restart);
@@ -126,6 +123,23 @@ class KeyboardInputManager {
         self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
       }
     });
+  }
+  keydownHandler (event) {
+    var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
+      event.shiftKey;
+    var mapped = this.map[event.which];
+
+    if (!modifiers) {
+      if (mapped !== undefined) {
+        event.preventDefault();
+        this.emit("move", mapped);
+      }
+    }
+
+    // R key restarts the game
+    if (!modifiers && event.which === 82) {
+      this.restart.call(this, event);
+    }
   }
   restart(event) {
     event.preventDefault();

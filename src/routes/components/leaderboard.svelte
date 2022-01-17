@@ -5,6 +5,11 @@
     let urls = ["https://localhost:5000", "http://localhost:5000", "https://oispahallalb.herokuapp.com", "http://oispahallalb.herokuapp.com"];
     let url = "";
     let connected = false;
+    
+    let display_name = "";
+    $: if(mounted && display_name != null){
+        localStorage.display_name = display_name;
+    }
 
     let mounted = false;
     let editing_name = false;
@@ -23,6 +28,9 @@
     }
     
     onMount( async () => {
+
+        // Load data from localstorage
+        display_name = localStorage.display_name;
 
         // lbNameForm.onsubmit = (event) => {
         //     localStorage.screenName = lbName.value;
@@ -96,6 +104,7 @@
 
         if (res.ok) {
             const data = await res.json();
+            console.log("Got: ", data);
             return data;
         } else {
             throw new Error(res.statusText);
@@ -152,7 +161,7 @@
 </script>
 <main>
     {#if visible}
-        <div on:click={hide} class="lb-popup" out:fade>
+        <div on:click={hide} on:keydown={(e)=>{e.preventDefault();e.stopPropagation();}} class="lb-popup" out:fade>
             <div class="lb-popup-container" in:fly="{{ y: 200, duration: 200 }}">
                 <div on:click={(e)=>{e.stopPropagation()}} class="leaderboard-popup">
                     <div class="lb-header">
@@ -180,7 +189,7 @@
                                     <form id="lb-name-form" class="name-form">
                                         <div class="name-form-div">
                                         <label for="lb-name">Nimi:</label>
-                                        <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required >
+                                        <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
                                         </div>
                                         <button id="lb-save">Tallenna</button>
                                     </form>
@@ -212,8 +221,8 @@
                             {#if refreshPromise}
                                 {#await refreshPromise}
                                     Otetaan yhteyttä palvelimeen...
-                                {:then} 
-                                    {refreshPromise}
+                                {:then data} 
+                                    {JSON.stringify(data)}
                                 {:catch err}
                                     Virhe: {err}
                                 {/await}
