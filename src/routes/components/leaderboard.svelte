@@ -14,7 +14,7 @@
     let mounted = false;
     let editing_name = false;
     let visible = false;
-    let input_enabled = true;
+    let input_enabled = true; // tän vois siirtää inputManageriin
     $: if(mounted && window != null && visible != null){
         window.isLeaderboardOpen = visible;
         if(GameManagerInstance != null){

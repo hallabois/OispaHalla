@@ -3,6 +3,8 @@ console.log("Service worker registered.");
 var cacheName = "oispahalla-offline";
 var HAC_urls = ["https://localhost:8000", "http://localhost:8000", "https://hac.oispahalla.com:8000", "https://hac.hallacoin.ml:8000", "http://35.225.19.22:8000", "http://localhost:5000", "https://localhost:5000"];
 var HAC_alive = "/HAC/alive/";
+var LB_hosts = ["https://localhost:5000", "http://localhost:5000", "https://oispahallalb.herokuapp.com", "http://oispahallalb.herokuapp.com"];
+var LB_urls = ["/scores/3/", "/scores/4/"];
 var blacklist = [
 	"manifest.json",
   "sw.js",
@@ -11,6 +13,11 @@ var blacklist = [
 ];
 for(let i in HAC_urls){
   blacklist.push( HAC_urls[i] + HAC_alive );
+}
+for(let host in LB_hosts){
+  for(let path in LB_urls){
+    blacklist.push( LB_hosts[host] + LB_urls[path] );
+  }
 }
 
 self.addEventListener('fetch', (event) => {
@@ -26,7 +33,12 @@ self.addEventListener('fetch', (event) => {
       }
       return response;
     } catch (err) {
-      return caches.match(event.request);
+      if( !(blacklist.includes(response.url)) ){
+        return caches.match(event.request);
+      }
+      else{
+        throw err;
+      }
     }
   }());
 });
