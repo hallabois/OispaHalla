@@ -9,7 +9,7 @@
     let mounted = false;
     let editing_name = false;
     let visible = false;
-    $: if(window != null && visible != null){
+    $: if(mounted && window != null && visible != null){
         window.isLeaderboardOpen = visible;
     }
     export function toggle(){
