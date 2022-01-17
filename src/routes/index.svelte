@@ -1,5 +1,12 @@
 
 <script lang="ts">
+    import { onMount } from "svelte";
+
+    onMount( ()=>{
+        if(onInitDone != null){
+            onInitDone();
+        }
+    } );
     // import "./pwa_promoter.js";
 </script>
 <main>

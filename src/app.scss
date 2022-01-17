@@ -63,7 +63,7 @@ html.dark, body.dark{
   color: $text-color-dark;
 
   background: $game-background-dark;
-  background-image: url("../img/OispaHallaTausta2.webp");
+  background-image: url("/img/OispaHallaTausta2.webp");
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-position: top center;
@@ -672,7 +672,7 @@ $i: 2;
 
 @while $i <= 32768 {
   .tile-#{$i} .tile-inner {
-    background-image: url('../img/#{$i}.png');
+    background-image: url('/img/#{$i}.png');
     @if($i >= 128) {
       box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
     }
@@ -709,7 +709,7 @@ $i: 2;
   position: absolute; // Makes transforms relative to the top-left corner
 
   .tile-inner {
-    background-image: url('../img/tile_unknown.png');
+    background-image: url('/img/tile_unknown.png');
     border-radius: $tile-border-radius;
 
     text-align: center;
@@ -1042,7 +1042,7 @@ $colors: (
       }
     }
     & body {
-      background-image: url('../img/theme-#{$color-number}/OispaHallaTausta.webp');
+      background-image: url('/img/theme-#{$color-number}/OispaHallaTausta.webp');
       @if map.has-key($colors, '#{$color-number}-game-background') { 
         // skips the definitions if the game background doesn't exist
         color: map-get($colors, '#{$color-number}-text-color');
@@ -1090,7 +1090,7 @@ $t: 0;
   $i: 2;
   @while $i <= 32768 {
     html.theme-#{$t} .tile-#{$i} .tile-inner {
-      background-image: url('../img/theme-#{$t}/#{$i}.png');
+      background-image: url('/img/theme-#{$t}/#{$i}.png');
       @if($i >= 128) {
         box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
       }

@@ -20,8 +20,8 @@ function initGameManager(size = 4){
   GameManagerInstance = new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager);
 }
 
-// Wait till the browser is ready to render the game (avoids glitches)
-window.requestAnimationFrame(function () {
+// Wait till the browser (and svelte) are ready to render the game (avoids glitches)
+var onInitDone = function () {
   // for debugging with plebs
   if(window.location.href.includes("?debug")){
     console.log("debug time!");
@@ -51,7 +51,19 @@ window.requestAnimationFrame(function () {
   else{
     initGameManager();
   }
-});
+  // Load theme from storage
+  if(localStorage.imageTheme){
+    if(localStorage.imageThemeLastVersion && localStorage.imageThemeLastVersion == currentImageThemeVersion){
+      setImageTheme(localStorage.imageTheme);
+    }
+    else{
+      setImageTheme( defautTheme );
+    }
+	}
+  else{
+    setImageTheme( defautTheme );
+  }
+};
 
 var themeCount = 2;
 var defautTheme = 1;
@@ -93,7 +105,7 @@ var currentTheme = 1;
 function setImageTheme(themeID){
   currentTheme = themeID;
   document.querySelector("html").classList = ["theme-" + themeID];
-  preloadImages("../img/theme-" + themeID + "/");
+  preloadImages("/img/theme-" + themeID + "/");
   localStorage.imageTheme = themeID;
   localStorage.imageThemeLastVersion = currentImageThemeVersion;
   try{
@@ -113,17 +125,3 @@ function applyThemeUIElements(){
     toggle.innerHTML = "🔅";
   }
 }
-
-window.addEventListener("DOMContentLoaded", function() {
-  if(localStorage.imageTheme){
-    if(localStorage.imageThemeLastVersion && localStorage.imageThemeLastVersion == currentImageThemeVersion){
-      setImageTheme(localStorage.imageTheme);
-    }
-    else{
-      setImageTheme( defautTheme );
-    }
-	}
-  else{
-    setImageTheme( defautTheme );
-  }
-}, false);
