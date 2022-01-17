@@ -9,11 +9,12 @@
     } );
 
     import Leaderboards from "./components/leaderboards.svelte";
+    let lbInstance;
     // import "./pwa_promoter.js";
 </script>
 <main>
   <div class="container">
-    <Leaderboards />
+    <Leaderboards bind:this={lbInstance} />
     <div class="new-above-game">
       <div class="above-game-left">
         <a href="https://hallabois.github.io/invite/" target="_blank">
@@ -128,7 +129,7 @@
       </div>
       <div class="button-container">
         <div class="lb-container">
-          <a id="lb-button" class="color-button" title="Leaderboards">
+          <a on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button" title="Leaderboards">
             <img src="img/svg/leaderboard.svg">
           </a>
         </div>
