@@ -234,7 +234,21 @@
                                 {#await refreshPromise}
                                     Otetaan yhteyttä palvelimeen...
                                 {:then data} 
-                                    {JSON.stringify(data)}
+                                    <!-- {JSON.stringify(data)} -->
+                                    <br />
+                                    {#if data.topBoard}
+                                        <div class="topboard-container">
+                                            {#each [{"screenName":"name","score":"score"}].concat(data.topBoard) as item}
+                                                <div class="item">
+                                                    <div class="screenName">{item.screenName}</div>
+                                                    <div class="score">{item.score}</div>
+                                                </div>
+                                                <hr />
+                                            {/each}
+                                        </div>
+                                    {:else}
+                                        Virheellinen vastaus palvelimelta.
+                                    {/if}
                                 {:catch err}
                                     Virhe: {err}
                                 {/await}
@@ -250,3 +264,26 @@
         </div>
     {/if}
 </main>
+
+<style lang="scss">
+    hr{
+        margin: 0;
+        opacity: .75;
+    }
+    .topboard-container .item:nth-child(4n+1){
+        background: rgba(255, 255, 255, .1);
+    }
+    .topboard-container .item:nth-child(1){
+        font-weight: bold;
+    }
+    .item {
+        display: flex;
+        padding: .1em .5em;
+    }
+    .screenName {
+        flex: 1;
+    }
+    .score {
+        flex: 1;
+    }
+</style>
