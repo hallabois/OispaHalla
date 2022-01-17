@@ -1,8 +1,8 @@
 @use "sass:map";
 @use "sass:math";
 
-@import "helpers";
-@import "fonts/clear-sans.css";
+@import "./style/helpers";
+@import "./style/fonts/clear-sans.css";
 
 :root{
   --field-width: 500px;

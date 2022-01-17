@@ -1,41 +1,8 @@
-<!DOCTYPE html>
-<html lang="fi">
-<head>
-  <meta charset="utf-8">
-  <title>Oispa Halla</title>
 
-  <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="style/main.css" type="text/css">
-  <link rel="shortcut icon" href="./favicon.ico?v=2">
-  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <meta name="author" content="Hallabois">
-  <meta name="description" content="Oispa Halla: Yhdistä opettajat ja saavuta Halla!">
-  <meta name="keywords" content="Oispahalla, halla, ksyk, 2048, Lauri Halla, hallabois, oispa pelit">
-
-  <meta name="twitter:card" content="Yhdistä opettajat ja saavuta Halla!" />
-  <meta name="theme-color" content="#000000"/>
-  <script>window.sa_event=window.sa_event||function(){var a=[].slice.call(arguments);window.sa_event.q?window.sa_event.q.push(a):window.sa_event.q=[a]};</script>
-</head>
-<body>
-  <noscript>
-    <div class="noscript">
-      <p>
-        <strong>JavaScript ei ole päällä tai selaimesi ei tue sitä.</strong>
-        <br>
-        Sivuston toiminta edellyttää JavaScriptin toimintaa.
-      </p>
-    </div>
-  </noscript>
+<script lang="ts">
+    // import "./pwa_promoter.js";
+</script>
+<main>
   <div class="container">
     <div class="lb-popup">
       <div class="lb-popup-container">
@@ -238,26 +205,4 @@
     </div>
     <div class="preload-container"></div>
   </div>
-  
-  
-  <script src="oregano/local_storage_manager.js"></script>
-  <script src="oregano/HAC.js"></script>
-  <script src="oregano/bind_polyfill.js"></script>
-  <script src="oregano/classlist_polyfill.js"></script>
-  <script src="oregano/animframe_polyfill.js"></script>
-  <script src="oregano/keyboard_input_manager.js"></script>
-  <script src="oregano/html_actuator.js"></script>
-  <script src="oregano/grid.js"></script>
-  <script src="oregano/tile.js"></script>
-  <script src="oregano/game_manager.js"></script>
-  <script src="oregano/application.js"></script>
-  <script src="oregano/leaderboard.js"></script>
-  <script src="pwa_promoter.js"></script>
-  <!-- <script src="/sw.js"></script> -->
-  <script data-collect-dnt="true" async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" collect-dnt=true /></noscript>
-  <script data-collect-dnt="true" async defer src="https://api.oispahalla.com/latest.js"></script>
-  <noscript><img src="https://api.oispahalla.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" collect-dnt=true /></noscript>
-
-</body>
-</html>
+</main>
