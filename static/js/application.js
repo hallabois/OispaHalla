@@ -85,6 +85,9 @@ window.isLeaderboardOpen = false;
 
 var base_path = "";
 function setImageBasePath(path){
+  if(path != ""){
+    setImageTheme(0);
+  }
   base_path = path;
 }
 function preloadImages(path){
