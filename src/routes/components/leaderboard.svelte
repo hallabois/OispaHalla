@@ -256,8 +256,8 @@
                                                 <div class="score">score</div>
                                             </div>
                                             <div class="items">
-                                                {#each data.topBoard as item}
-                                                    <div class="item">
+                                                {#each data.topBoard as item, index (item.screenName)}
+                                                    <div class="item" in:fade={{delay: index*50}}>
                                                         <div class="screenName">{item.screenName}</div>
                                                         <div class="score">{item.score}</div>
                                                     </div>
