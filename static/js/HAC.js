@@ -2,6 +2,11 @@
 const HAC_status = document.querySelector(".HAC-status");
 const HAC_container = document.querySelector(".HAC-container");
 
+function getHACRequest(){
+    let hac = HallaAntiCheat;
+    return hac.size + "x" + hac.size + "S" + hac.history.join(":");
+}
+
 function showHAC(){
     HAC_container.style["display"] = "";
 }
@@ -180,7 +185,7 @@ class HAC {
         }
         try{
 	        HAC_status.innerHTML = "...";
-        	let response = await fetch(this.url + "/HAC/validate/" + this.size + "x" + this.size + "S" + this.history.join(":"));
+        	let response = await fetch( this.url + "/HAC/validate/" + getHACRequest() );
 	        let data = await response.json();
 	        if(this.debug){
 		        //console.log(response);
