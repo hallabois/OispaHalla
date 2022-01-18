@@ -295,4 +295,12 @@
     .score {
         flex: 1;
     }
+
+    @media (max-width: 600px) {
+        .lb-popup-container{
+            height: 100vh !important;
+            width: 100vw !important;
+            margin: 0 !important;
+        }
+    }
 </style>
