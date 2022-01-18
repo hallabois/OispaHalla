@@ -38,6 +38,15 @@ class HTMLActuator {
           self.message(true, metadata.palautukset); // You win!
         }
       }
+      if(base_path != ""){
+        let images = [...document.querySelectorAll(".tile-inner")];
+        console.log("Images: ", images);
+        for(let i in images){
+          let img = images[i];
+          console.log("img", i, img);
+          img.style.background = window.getComputedStyle(img).background.replaceAll("/img", base_path);
+        }
+      }
 
     });
   }

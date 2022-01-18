@@ -86,11 +86,6 @@ window.isLeaderboardOpen = false;
 var base_path = "";
 function setImageBasePath(path){
   base_path = path;
-  let images = document.querySelectorAll(".tile-inner");
-  for(let i in images){
-    let img = images[i];
-    img.style.background = window.getComputedStyle(img).background.replaceAll("/img", path);
-  }
 }
 function preloadImages(path){
   // path = base_path + path;
