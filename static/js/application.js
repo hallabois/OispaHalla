@@ -88,7 +88,8 @@ function setImageBasePath(path){
   base_path = path;
   let images = document.querySelectorAll(".tile-inner");
   for(let i in images){
-    i.style.background = window.getComputedStyle(i).background.replaceAll("/img", path);
+    let img = images[i];
+    img.style.background = window.getComputedStyle(img).background.replaceAll("/img", path);
   }
 }
 function preloadImages(path){
