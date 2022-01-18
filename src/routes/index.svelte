@@ -36,6 +36,11 @@
     let lbInstance;
     // import "./pwa_promoter.js";
 </script>
+
+<svelte:head>
+  <title>{app_name}</title>
+</svelte:head>
+
 <main>
   <div class="container">
     <Leaderboards bind:this={lbInstance} />
