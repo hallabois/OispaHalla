@@ -176,6 +176,9 @@
         Alkuperäisen projektin <a href="https://github.com/gabrielecirulli/2048" target="_blank">2048</a> on tehnyt <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
       </p>
       <p>
+        Made by <a href="https://hallabois.github.io/invite">Hallabois</a>
+      </p>
+      <p>
         <a href="https://simpleanalytics.com/oispahalla.com" target="_blank">Simpleanalytics</a>
       </p>
     </div>
