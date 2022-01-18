@@ -233,7 +233,7 @@
                                     <form id="lb-sync-form" class="name-form">
                                         <div class="name-form-div">
                                         <label for="lb-uid">Koodi: </label>
-                                        <input type="password" id="lb-uid" placeholder="Synkronointikoodi" minlength="24" maxlength="24" >
+                                        <input type="password" id="lb-uid" placeholder="Synkronointikoodi" minlength="24" maxlength="24" bind:value={id} >
                                         </div>
                                         <button id="lb-save">Tallenna</button>
                                     </form>
