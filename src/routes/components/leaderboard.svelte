@@ -10,10 +10,15 @@
     $: if(mounted && display_name != null){
         localStorage.display_name = display_name;
     }
+    let id = "";
+    $: if(mounted && id != null){
+        localStorage.id = id;
+    }
 
     let mounted = false;
     let editing_name = false;
     let visible = false;
+    let score_submitting = false;
     let input_enabled = true; // tän vois siirtää inputManageriin
     $: if(mounted && window != null && visible != null){
         window.isLeaderboardOpen = visible;
@@ -41,8 +46,9 @@
     
     onMount( async () => {
 
-        // Load data from localstorage
-        display_name = localStorage.display_name;
+        // Load data from localstorage, we don't care if it fails or does not exist.
+        try{display_name = localStorage.display_name}catch{};
+        try{id = localStorage.id}catch{}
 
         // lbNameForm.onsubmit = (event) => {
         //     localStorage.screenName = lbName.value;
@@ -122,8 +128,9 @@
         }
     }
     async function postScore(game) {
-        if(localStorage.screenName === undefined) {
-            lbNameForm.style.display = "block";
+        score_submitting = true;
+        if(display_name === undefined) {
+            editing_name = true;
             return;
         }
         if(!game.history && !game.palautukset == undefined && !game.score) {
@@ -134,27 +141,30 @@
         await fetch(url + "/scores/" + game.size, {
             method: "POST",
             headers: {
-            "Content-Type": "application/json",
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-            id: null || localStorage.id,
-            screenName: localStorage.screenName,
-            score: game.score,
-            breaks: game.palautukset,
-            history: parsedHistory
+                id: null || id,
+                screenName: display_name,
+                score: game.score,
+                breaks: game.palautukset,
+                history: parsedHistory
             })
         })
         .then(response => {
             console.log(response);
             if(response.ok) {
-            return response.json();
+                return response.json();
             }
             console.log("Unexpected status code on POST: " + response.status, response.json());
         })
         .then(data => {
             console.log(data);
-            localStorage.id = data.createdScore._id;
-            refreshLeaderboard(localStorage.HAC_size);
+            id = data.createdScore._id;
+            refresh();
+            score_submitting = false;
+        }).catch( () => {
+            score_submitting = false;
         });
     }
     function refresh(){
@@ -168,6 +178,10 @@
         lbNameForm.value = "" || localStorage.screenName;
             lbSyncForm.value = "" || localStorage.id;
             lbFormContainer.style.display === "block" ? lbFormContainer.style.display = "none" : lbFormContainer.style.display = "block";
+    }
+    function post(){
+        const lol = GameManagerInstance;
+        postScore({ history: JSON.parse(localStorage.HAC_history), palautukset: lol.palautukset, score: lol.score, size: lol.size });
     }
 </script>
 <main>
@@ -259,7 +273,11 @@
                                 {/await}
                             {/if}
                         </ol>
-                        <button id="post-score">Post Score</button>
+                        {#if !score_submitting}
+                            <button on:click={post} id="post-score">Post Score</button>
+                        {:else}
+                            Lähetetään dataa...
+                        {/if}
                         <div class="lb-disclaimer">
                             <p><strong>HUOMIO:</strong> Leaderboardien vapaan nimenvalinnan väärinkäyttö johtaa kieltoon niiltä!</p>
                         </div>
