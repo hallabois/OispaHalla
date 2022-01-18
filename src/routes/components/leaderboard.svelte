@@ -19,6 +19,7 @@
     let editing_name = false;
     let visible = false;
     let score_submitting = false;
+    let id_hidden = true;
     let input_enabled = true; // tän vois siirtää inputManageriin
     $: if(mounted && window != null && visible != null){
         window.isLeaderboardOpen = visible;
@@ -213,10 +214,9 @@
                                     <h4 class="name-form-title">Muuta Käyttäjänimeäsi:</h4>
                                     <form id="lb-name-form" class="name-form">
                                         <div class="name-form-div">
-                                        <label for="lb-name">Nimi:</label>
-                                        <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
+                                            <label for="lb-name">Nimi:</label>
+                                            <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
                                         </div>
-                                        <button id="lb-save">Tallenna</button>
                                     </form>
                                     <p id="name-error" class="lb-error"></p>
                                 </div>
@@ -230,13 +230,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form id="lb-sync-form" class="name-form">
+                                    <div id="lb-sync-form" class="name-form">
                                         <div class="name-form-div">
                                         <label for="lb-uid">Koodi: </label>
-                                        <input type="password" id="lb-uid" placeholder="Synkronointikoodi" minlength="24" maxlength="24" bind:value={id} >
+                                        {#if id_hidden}
+                                            <input type="password" id="lb-uid" placeholder="Synkronointikoodi" minlength="24" maxlength="24" disabled value={id} />
+                                        {:else}
+                                            <input type="text" id="lb-uid" placeholder="Synkronointikoodi" minlength="24" maxlength="24" bind:value={id} />
+                                        {/if}
                                         </div>
+                                        <button on:click={ ()=>{id_hidden = !id_hidden} }>{id_hidden ? "näytä" : "piilota"}</button>
                                         <button id="lb-save">Tallenna</button>
-                                    </form>
+                                    </div>
                                     <p id="sync-error" class="lb-error"></p>
                                 </div>
                                 <hr class="closerhr">
