@@ -16,7 +16,10 @@
     }
 
     let mounted = false;
-    let editing_name = false;
+    export let editing_name = false;
+    export let editing_upload = false;
+    let upload_error = false;
+    let upload_history: string = null;
     let visible = false;
     let score_submitting = false;
     let id_hidden = true;
@@ -40,9 +43,23 @@
     export function show(){
         visible = true;
     }
+    export function show_for_post(){
+        editing_upload = true;
+        show();
+    }
     export function hide(){
         visible = false;
         editing_name = false;
+        editing_upload = false;
+        upload_error = false;
+        score_submitting = false;
+        id_hidden = true;
+        upload_history = null;
+    }
+    export function on_new_highscore(e){
+        console.log(e.detail);
+        editing_upload = true;
+        show();
     }
     
     onMount( async () => {
@@ -50,6 +67,8 @@
         // Load data from localstorage, we don't care if it fails or does not exist.
         try{display_name = localStorage.display_name}catch{};
         try{id = localStorage.id}catch{}
+
+        window.addEventListener("new_highscore_reached", on_new_highscore);
 
         // lbNameForm.onsubmit = (event) => {
         //     localStorage.screenName = lbName.value;
@@ -129,7 +148,9 @@
         }
     }
     async function postScore(game) {
+        upload_history = null;
         score_submitting = true;
+        upload_error = false;
         if(display_name === undefined) {
             editing_name = true;
             return;
@@ -158,19 +179,32 @@
                 return response.json();
             }
             console.log("Unexpected status code on POST: " + response.status, response.json());
+            score_submitting = false;
+            upload_error = true;
+            localStorage.best_score_submitted = false;
         })
         .then(data => {
             console.log(data);
             id = data.createdScore._id;
             refresh();
             score_submitting = false;
+            editing_upload = false;
+            localStorage.best_score_submitted = true;
+            localStorage["last_saved" + game.size] = game.history + "";
         }).catch( () => {
             score_submitting = false;
+            upload_error = true;
+            localStorage.best_score_submitted = false;
         });
     }
     function refresh(){
-        if(GameManagerInstance){
-            refreshPromise = refreshLeaderboard(GameManagerInstance.size);
+        if(connected){
+            if(GameManagerInstance){
+                refreshPromise = refreshLeaderboard(GameManagerInstance.size);
+            }
+        }
+        else{
+            selectURL();
         }
     }
     function edit(){
@@ -182,7 +216,11 @@
     }
     function post(){
         const lol = GameManagerInstance;
-        postScore({ history: JSON.parse(localStorage.HAC_history), palautukset: lol.palautukset, score: lol.score, size: lol.size });
+        const size = localStorage.HAC_size;
+        const history = localStorage["HAC_best_history" + size];
+        const scores = JSON.parse(localStorage.bestScores);
+        const score = scores[size]
+        postScore({ history: JSON.parse(history), palautukset: lol.palautukset, score: score, size: size });
     }
 </script>
 <main>
@@ -247,41 +285,53 @@
                                 <hr class="closerhr">
                             </div>
                         {/if}
-                        <ol class="lb-stats">
-                            {#if refreshPromise}
-                                {#await refreshPromise}
-                                    Otetaan yhteyttä palvelimeen...
-                                {:then data} 
-                                    <!-- {JSON.stringify(data)} -->
-                                    <br />
-                                    {#if data.topBoard}
-                                        <div class="topboard-container">
-                                            <div class="item head">
-                                                <div class="screenName">name</div>
-                                                <div class="score">score</div>
-                                            </div>
-                                            <div class="items">
-                                                {#each data.topBoard as item, index (item.screenName)}
-                                                    <div class="item" in:fade={{delay: index*50}}>
-                                                        <div class="screenName">{item.screenName}</div>
-                                                        <div class="score">{item.score}</div>
-                                                    </div>
-                                                    <hr />
-                                                {/each}
-                                            </div>
-                                        </div>
-                                    {:else}
-                                        Virheellinen vastaus palvelimelta.
-                                    {/if}
-                                {:catch err}
-                                    Virhe: {err}
-                                {/await}
+                        {#if editing_upload}
+                            Lähetä score?
+                            <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
+                            <br />
+                            {#if upload_error}
+                                Virhe lähetettäessä scorea palvelimelle.
                             {/if}
-                        </ol>
-                        {#if !score_submitting}
-                            <button on:click={post} id="post-score">Post Score</button>
+                            <br />
+                            {#if !score_submitting}
+                                {#if display_name != null && display_name != ""}
+                                    <button on:click={post} id="post-score">Post Score</button>
+                                {/if}
+                            {:else}
+                                Lähetetään dataa...
+                            {/if}
                         {:else}
-                            Lähetetään dataa...
+                            <ol class="lb-stats">
+                                {#if refreshPromise}
+                                    {#await refreshPromise}
+                                        Otetaan yhteyttä palvelimeen...
+                                    {:then data} 
+                                        <!-- {JSON.stringify(data)} -->
+                                        <br />
+                                        {#if data.topBoard}
+                                            <div class="topboard-container">
+                                                <div class="item head">
+                                                    <div class="screenName">name</div>
+                                                    <div class="score">score</div>
+                                                </div>
+                                                <div class="items">
+                                                    {#each data.topBoard as item, index (item.screenName)}
+                                                        <div class="item" in:fade={{delay: index*50}}>
+                                                            <div class="screenName">{item.screenName}</div>
+                                                            <div class="score">{item.score}</div>
+                                                        </div>
+                                                        <hr />
+                                                    {/each}
+                                                </div>
+                                            </div>
+                                        {:else}
+                                            Virheellinen vastaus palvelimelta.
+                                        {/if}
+                                    {:catch err}
+                                        Virhe: {err}
+                                    {/await}
+                                {/if}
+                            </ol>
                         {/if}
                         <div class="lb-disclaimer">
                             <p><strong>HUOMIO:</strong> Leaderboardien vapaan nimenvalinnan väärinkäyttö johtaa kieltoon niiltä!</p>
@@ -294,6 +344,9 @@
 </main>
 
 <style lang="scss">
+    h2 {
+        margin-bottom: 0;
+    }
     hr{
         margin: 0;
         opacity: .75;

@@ -32,6 +32,11 @@
         }
         mounted = true;
     } );
+    $: if( mounted && localStorage.HAC_size != null && localStorage["HAC_best_history" + localStorage.HAC_size] != null){
+        if( localStorage["last_saved" + localStorage.HAC_size] == null || localStorage["HAC_best_history" + localStorage.HAC_size] !== localStorage["last_saved" + localStorage.HAC_size] ){
+            lbInstance.show_for_post();
+        }
+    }
 
     let lbInstance;
     // import "./pwa_promoter.js";

@@ -303,7 +303,7 @@ class GameManager {
       HallaAntiCheat.recordState(state);
       HallaAntiCheat.validate();
     }
-    if(this.size == 4){
+    if(this.size == 4 || this.size == 3){
       HallaAntiCheat.recordBest(this.score);
     }
   }
