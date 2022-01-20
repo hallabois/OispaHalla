@@ -1,9 +1,15 @@
-
+<!-- Explain what global variables are to typescript -->
+<script context="module" lang="ts">
+  declare var onInitDone: Function;
+  declare var base_path: string;
+</script>
+<!-- / -->
 <script lang="ts">
     import { marked } from 'marked';
     import { onMount } from "svelte";
 
     import Leaderboards from "./components/leaderboard.svelte";
+
 
     let app_name = "";
     let app_description = "";
@@ -63,14 +69,14 @@
         </div>
         <div class="score-container">0</div>
         <div class="best-container">0</div>
-        <a class="restart-button">
+        <button class="restart-button button">
           <div class="uusi-jakso">Uusi Jakso</div>
           <div class="size-selector">
             <button>&lt;</button>
             <button class="restart-3x3">3x3</button>
             <button class="restart-4x4">4x4</button>
           </div>
-        </a>
+        </button>
       </div>
     </div>
     <!-- <div class="heading">
@@ -104,8 +110,8 @@
         <p class="tilanne"></p>
         <p class="kurinpalautukset"></p>
         <div class="lower">
-	        <a class="keep-playing-button">Jatka pelaamista</a>
-          <a class="retry-button">Yritä uudelleen</a>
+	        <button class="button keep-playing-button">Jatka pelaamista</button>
+          <button class="button retry-button">Yritä uudelleen</button>
         </div>
       </div>
 
@@ -158,17 +164,18 @@
     </div>
     <div class="underbar-container">
       <div class="kurin-palautus-container">
-        <button class="kurin-palautus kurin-palautus-color">
-          <a class="parin-kulautus" title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta.">KURINPALAUTUS</a>
+        <button class="button kurin-palautus kurin-palautus-color">
+          <span class="parin-kulautus" title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta.">KURINPALAUTUS</span>
         </button>
       </div>
       <div class="button-container">
         <div class="lb-container">
           <a on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button" title="Leaderboards">
-            <img src="img/svg/leaderboard.svg">
+            <img src="img/svg/leaderboard.svg" alt="Leaderboard icon">
           </a>
         </div>
         <div class="event-container">
+          <!-- svelte-ignore a11y-missing-attribute --> <!-- TODO: CONVERT TO BUTTON -->
           <a class="event-button" title="Toggle Dark Theme">
             <!-- <img src="./img/no_snow.svg" id="event-icon"> -->
             <p id="darkmode-icon">🔆</p>

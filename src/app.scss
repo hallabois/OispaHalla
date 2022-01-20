@@ -333,9 +333,11 @@ h1.title.dark{
 
 .parin-kulautus {
   padding: 0 1em;
+  margin-bottom: 0;
   text-decoration: none;
   color: #eee;
   font-size: 11px;
+  letter-spacing: 0.055em;
   transition: 1s background, 1s color;
 }
 
@@ -559,6 +561,15 @@ hr {
       }
 
       a {
+        @include button;
+        margin-left: 9px;
+        // margin-top: 59px;
+
+        &.keep-playing-button {
+          display: none;
+        }
+      }
+      .button {
         @include button;
         margin-left: 9px;
         // margin-top: 59px;
@@ -1080,7 +1091,7 @@ $colors: (
         }
 
         .restart-button, .lower > * {
-          background: map-get($colors, '#{$color-number}-button-color');
+          background: map-get($colors, '#{$color-number}-button-color') !important;
         }
       }
     }
@@ -1106,6 +1117,10 @@ $t: 0;
 
 .event-button{
   text-decoration: none !important;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1em;
 }
 
 #darkmode-icon {
@@ -1115,3 +1130,13 @@ $t: 0;
 #darkmode-icon.dark {
   filter: saturate(0);
 }
+
+// Default component styles
+.button {
+  border: none;
+  font-weight: bold;
+  font-size: 1em;
+  font-family: "Clear Sans";
+  cursor: pointer;
+}
+//

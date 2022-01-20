@@ -1,3 +1,9 @@
+<!-- Explain what global variables are to typescript -->
+<script context="module" lang="ts">
+    declare var GameManagerInstance: any;
+    declare var base_path: string;
+  </script>
+  <!-- / -->
 <script lang="ts">
     import { onMount } from "svelte";
     import { fly, slide, fade } from "svelte/transition";
@@ -27,7 +33,7 @@
     let id_hidden = true;
     let input_enabled = true; // tän vois siirtää inputManageriin
     $: if(mounted && window != null && visible != null){
-        window.isLeaderboardOpen = visible;
+        (window as any).isLeaderboardOpen = visible;
         if(GameManagerInstance != null){
             if(visible && input_enabled == true){
                 GameManagerInstance.inputManager.removeKeydownHandler()
@@ -212,10 +218,6 @@
     }
     function edit(){
         editing_name = !editing_name;
-        return;
-        lbNameForm.value = "" || localStorage.screenName;
-            lbSyncForm.value = "" || localStorage.id;
-            lbFormContainer.style.display === "block" ? lbFormContainer.style.display = "none" : lbFormContainer.style.display = "block";
     }
     function post(){
         const lol = GameManagerInstance;
@@ -267,7 +269,7 @@
                                         <div class="tooltip">
                                             <span class="tooltiptext">Voit kopioida synkronointikoodisi tästä, ja käyttää sitä eri laitteella synkronoidaksesi "tilisi" ja paikkasi Leaderboardeilla™</span>
                                             <div class="color-button">
-                                                <img src="img/svg/help.svg">
+                                                <img src="img/svg/help.svg" alt="Question mark symbol">
                                             </div>
                                         </div>
                                     </div>
