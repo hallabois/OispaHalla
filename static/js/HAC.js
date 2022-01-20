@@ -111,7 +111,7 @@ class HAC {
         }
         HAC_status.innerHTML = this.connected ? "✅📶" : "🚫📶";
     }
-    recordBest(score) {
+    recordBest(score, finished = false) {
         let storagem = GameManagerInstance.storageManager;
         if(localStorageWorks){
             let best = localStorage["HAC_best_score" + this.size];
@@ -154,6 +154,7 @@ class HAC {
             if(score >= best){
                 localStorage["HAC_best_history" + this.size] = JSON.stringify(this.history);
                 localStorage["HAC_best_score" + this.size] = score;
+                localStorage["bestGameFinished" + this.size] = finished;
             }
         }
     }

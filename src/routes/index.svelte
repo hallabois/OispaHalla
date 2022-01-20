@@ -31,12 +31,13 @@
             onInitDone();
         }
         mounted = true;
-    } );
-    $: if( mounted && localStorage.HAC_size != null && localStorage["HAC_best_history" + localStorage.HAC_size] != null){
-        if( localStorage["last_saved" + localStorage.HAC_size] == null || localStorage["HAC_best_history" + localStorage.HAC_size] !== localStorage["last_saved" + localStorage.HAC_size] ){
-            lbInstance.show_for_post();
+        const size = localStorage.HAC_size;
+        if(size != null && localStorage["HAC_best_history" + size] != null){
+            if( localStorage["last_saved" + size] == null && localStorage["bestGameFinished" + size] == null || (localStorage["HAC_best_history" + size] !== localStorage["last_saved" + size] && localStorage["bestGameFinished" + size] == "true") ){
+                lbInstance.show_for_post();
+            }
         }
-    }
+    } );
 
     let lbInstance;
     // import "./pwa_promoter.js";

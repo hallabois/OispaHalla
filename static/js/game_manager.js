@@ -39,7 +39,7 @@ class GameManager {
   }
   // Restart the game
   restart() {
-    HallaAntiCheat.recordBest(this.score);
+    HallaAntiCheat.recordBest(this.score, true);
     this.storageManager.clearGameState();
     this.actuator.continueGame(); // Clear the game won/lost message
     //this.size = 4;
@@ -47,7 +47,7 @@ class GameManager {
   }
   // Restart the game
   restartplus(size=3) {
-    HallaAntiCheat.recordBest(this.score);
+    HallaAntiCheat.recordBest(this.score, true);
     this.storageManager.clearGameState();
     this.actuator.continueGame(); // Clear the game won/lost message
     this.size = size;
@@ -279,7 +279,7 @@ class GameManager {
         HallaAntiCheat.recordState(state);
 
         if(this.size == 4 || this.size == 3){
-          HallaAntiCheat.recordBest(this.score);
+          HallaAntiCheat.recordBest(this.score, true);
         }
 
         // Analytics

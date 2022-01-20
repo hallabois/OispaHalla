@@ -5,6 +5,8 @@
     let urls = ["https://localhost:5000", "http://localhost:5000", "https://oispahallalb.herokuapp.com", "http://oispahallalb.herokuapp.com"];
     let url = "";
     let connected = false;
+    let size = 4;
+    $: mounted && GameManagerInstance != null ? GameManagerInstance.size : 4;
     
     let display_name = "";
     $: if(mounted && display_name != null){
@@ -42,6 +44,7 @@
     }
     export function show(){
         visible = true;
+        refresh();
     }
     export function show_for_post(){
         editing_upload = true;
@@ -190,7 +193,7 @@
             score_submitting = false;
             editing_upload = false;
             localStorage.best_score_submitted = true;
-            localStorage["last_saved" + game.size] = game.history + "";
+            localStorage["last_saved" + game.size] = JSON.stringify(game.history);
         }).catch( () => {
             score_submitting = false;
             upload_error = true;
@@ -231,7 +234,7 @@
                     <div class="lb-header">
                         <h2 class="lb-title"
                             title={url ? `Yhdistetty palvelimeen ${url}` : "Ei yhteyttä palvelimeen."}
-                        >Leaderboards</h2>
+                        >Leaderboards {size}</h2>
                         <div class="lb-buttons">
                             <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
                                 <img src="img/svg/refresh.svg" alt="Refresh">
