@@ -442,6 +442,10 @@
         }
         .leaderboard-popup{
             flex-direction: column-reverse;
+            height: 100%;
+        }
+        .lb-header {
+            margin-bottom: .75em;
         }
     }
 
