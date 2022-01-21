@@ -399,7 +399,7 @@
         max-height: 200px;
         overflow-y: scroll;
     }
-    .items .item:nth-child(4n+3), .item.head{
+    .item.head{
         background: rgba(255, 255, 255, .1);
     }
     .item.head {
