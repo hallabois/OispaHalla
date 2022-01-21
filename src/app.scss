@@ -502,6 +502,8 @@ hr {
 @mixin game-field {
   .game-container {
     margin-top: $game-container-margin-top;
+    margin-left: auto;
+    margin-right: auto;
     position: relative;
     padding: var(--grid-gap);
 
