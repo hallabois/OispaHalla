@@ -288,7 +288,7 @@
                                         <div class="tooltip">
                                             <span class="tooltiptext">Voit kopioida synkronointikoodisi tästä, ja käyttää sitä eri laitteella synkronoidaksesi "tilisi" ja paikkasi Leaderboardeilla™</span>
                                             <div class="color-button">
-                                                <img src="img/svg/help.svg" alt="Question mark symbol">
+                                                <img src="img/svg/help.svg" alt="?">
                                             </div>
                                         </div>
                                     </div>
