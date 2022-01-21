@@ -155,6 +155,10 @@ class HAC {
                 localStorage["HAC_best_history" + this.size] = JSON.stringify(this.history);
                 localStorage["HAC_best_score" + this.size] = score;
                 localStorage["bestGameFinished" + this.size] = finished;
+                if(finished){
+                    let event = new Event("game_ended_with_best_score");
+                    window.dispatchEvent(event);
+                }
             }
         }
     }

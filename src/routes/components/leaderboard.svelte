@@ -47,9 +47,14 @@
     export function toggle(){
         visible = !visible;
     }
-    export function show(){
+    export function show(withSize: number = null){
         visible = true;
-        size = (mounted && GameManagerInstance != null) ? GameManagerInstance.size : 4;
+        if(withSize == null){
+            size = (mounted && GameManagerInstance != null) ? GameManagerInstance.size : 4;
+        }
+        else{
+            size = withSize;
+        }
         refresh();
     }
     export function show_for_post(){
@@ -65,10 +70,10 @@
         id_hidden = true;
         upload_history = null;
     }
-    export function on_new_highscore(e){
-        console.log(e.detail);
+    export function game_ended_with_best_score(e){
+        alert(e);
         editing_upload = true;
-        show();
+        show(JSON.parse(localStorage["HAC_size"]));
     }
     
     onMount( async () => {
@@ -77,7 +82,7 @@
         try{display_name = localStorage.display_name}catch{};
         try{id = localStorage.id}catch{}
 
-        window.addEventListener("new_highscore_reached", on_new_highscore);
+        window.addEventListener("game_ended_with_best_score", game_ended_with_best_score);
 
         // lbNameForm.onsubmit = (event) => {
         //     localStorage.screenName = lbName.value;
@@ -340,7 +345,7 @@
                             </ol>
                         {/if}
                         <div class="lb-disclaimer">
-                            <p><strong>HUOMIO:</strong> Leaderboardien vapaan nimenvalinnan väärinkäyttö johtaa kieltoon niiltä!</p>
+                            <p><strong>HUOMIO:</strong> Leaderboardien vapaan nimenvalinnan väärinkäyttö johtaa banniin!</p>
                         </div>
                     </div>
                 </div>
