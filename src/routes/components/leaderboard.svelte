@@ -17,6 +17,8 @@
     $: if(mounted && display_name != null){
         localStorage.display_name = display_name;
     }
+    let correct_name = "";
+    $: correct_name = [...display_name.matchAll(/[\wÅÄÖåäö]{3,20}/g)].join();
     let id = "";
     $: if(mounted && id != null){
         localStorage.id = id;
@@ -278,6 +280,15 @@
                                         <div class="name-form-div">
                                             <label for="lb-name">Nimi:</label>
                                             <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
+                                            {#if display_name != correct_name || display_name.length == 0}
+                                                {#if display_name.length < 3}
+                                                    <p class="err">liian lyhyt nimi!</p>
+                                                {:else if display_name.length > 20}
+                                                    <p class="err">liian pitkä nimi!</p>
+                                                {:else}
+                                                    <p class="warn">muokataan muotoon "{correct_name}"</p>
+                                                {/if}
+                                            {/if}
                                         </div>
                                     </form>
                                     <p id="name-error" class="lb-error"></p>
@@ -312,13 +323,22 @@
                         {#if editing_upload}
                             Lähetä score?
                             <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
+                            {#if display_name != correct_name || display_name.length == 0}
+                                {#if display_name.length < 3}
+                                    <p class="err">liian lyhyt nimi!</p>
+                                {:else if display_name.length > 20}
+                                    <p class="err">liian pitkä nimi!</p>
+                                {:else}
+                                    <p class="warn">muokataan muotoon "{correct_name}"</p>
+                                {/if}
+                            {/if}
                             <br />
                             {#if upload_error}
                                 Virhe lähetettäessä scorea palvelimelle.
+                                <br />
                             {/if}
-                            <br />
                             {#if !score_submitting}
-                                {#if display_name != null && display_name != ""}
+                                {#if correct_name != null && correct_name != ""}
                                     <button on:click={post} id="post-score">Post Score</button>
                                 {/if}
                             {:else}
@@ -394,6 +414,19 @@
     }
     .score {
         flex: 1;
+    }
+    .warn{
+        margin-bottom: 0;
+        color: #ff6c00;
+        font-size: 0.9em;
+    }
+    .err{
+        margin-bottom: 0;
+        color: #ff0000;
+        font-size: 0.9em;
+    }
+    button#post-score{
+        
     }
 
     @media (max-width: 600px) {
