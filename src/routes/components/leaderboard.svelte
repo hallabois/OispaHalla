@@ -71,7 +71,6 @@
         upload_history = null;
     }
     export function game_ended_with_best_score(e){
-        alert(e);
         editing_upload = true;
         show(JSON.parse(localStorage["HAC_size"]));
     }
@@ -151,13 +150,24 @@
     }
     let refreshPromise;
     async function refreshLeaderboard(size) {
-        const res = await fetch(`${url}/scores/${size}/fetchboard/${numOfScores}/${localStorage.id ? localStorage.id : ""}`);
+        const res = await fetch(`${url}/scores/size/${size}/fetchboard/${numOfScores}/${localStorage.id ? localStorage.id : ""}`);
 
         if (res.ok) {
             const data = await res.json();
             console.log("Got: ", data);
             return data;
         } else {
+            if(localStorage.id){
+                const res2 = await fetch(`${url}/scores/size/${size}/fetchboard/${numOfScores}/`); // Get score without our id
+                if(res2.ok){
+                    const data = await res2.json();
+                    console.log("Got (second try): ", data);
+                    return data;
+                }
+                else{
+                    throw new Error(res2.statusText);
+                }
+            }
             throw new Error(res.statusText);
         }
     }
@@ -174,14 +184,17 @@
             return;
         }
         const parsedHistory = game.size + "x" + game.size + "S" + game.history.join(":");
-        await fetch(url + "/scores/" + game.size, {
+        const user = {
+            id: null || id,
+            screenName: display_name
+        };
+        await fetch(url + "/scores/size/" + game.size, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                id: null || id,
-                screenName: display_name,
+                user: user,
                 score: game.score,
                 breaks: game.palautukset,
                 history: parsedHistory
@@ -199,7 +212,7 @@
         })
         .then(data => {
             console.log(data);
-            id = data.createdScore._id;
+            id = data.createdScore.user._id;
             refresh();
             score_submitting = false;
             editing_upload = false;
@@ -242,7 +255,7 @@
                     <div class="lb-header">
                         <h2 class="lb-title"
                             title={url ? `Yhdistetty palvelimeen ${url}` : "Ei yhteyttä palvelimeen."}
-                        >Leaderboards {size}</h2>
+                        >Leaderboards {size}x{size}</h2>
                         <div class="lb-buttons">
                             <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
                                 <img src="img/svg/refresh.svg" alt="Refresh">
@@ -328,7 +341,7 @@
                                                 <div class="items">
                                                     {#each data.topBoard as item, index (item.screenName)}
                                                         <div class="item" in:fade={{delay: index*50}}>
-                                                            <div class="screenName">{item.screenName}</div>
+                                                            <div class="screenName">{item.user.screenName}</div>
                                                             <div class="score">{item.score}</div>
                                                         </div>
                                                         <hr />
