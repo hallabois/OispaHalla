@@ -425,9 +425,6 @@
         color: #ff0000;
         font-size: 0.9em;
     }
-    button#post-score{
-
-    }
 
     .leaderboard-popup {
         display: flex;

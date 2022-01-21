@@ -420,11 +420,11 @@ h1.title.dark{
 }
 
 .score-container:after {
-  content: "Arvosana";
+  content: var(--c, "Arvosana");
 }
 
 .best-container:after {
-  content: "Paras Halla";
+  content: var(--c, "Paras Halla");
 }
 
 p {

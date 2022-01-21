@@ -87,6 +87,9 @@ var base_path = "";
 function setImageBasePath(path){
   if(path != ""){
     setImageTheme(0);
+    let newStyle = document.createElement('style');
+    newStyle.innerHTML = "html, body{background-image: none !important;}";
+    document.querySelector("html").appendChild(newStyle);
   }
   base_path = path;
 }

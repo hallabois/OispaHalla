@@ -13,22 +13,46 @@
 
     let app_name = "";
     let app_description = "";
+    let app_notice = "";
+    let app_name_newgame = "";
+    let app_name_score = "";
+    let app_name_hiscore = "";
+
+    let app_name_default = "Oispa Halla";
+    let app_description_default = "Yhdistä opettajat ja saavuta **Halla!**";
+    let app_notice_default = "**HUOMIO**: Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.";
+    let app_name_newgame_default = "Uusi Jakso";
+    let app_name_score_default = "arvosana";
+    let app_name_hiscore_default = "paras halla";
+    
+    function setDefaultMetaValues(){
+      app_name = app_name_default;
+      app_description = app_description_default;
+      app_notice = app_notice_default;
+      app_name_newgame = app_name_newgame_default;
+      app_name_score = app_name_score_default;
+      app_name_hiscore = app_name_hiscore_default;
+    }
+
     $: if(mounted && base_path != null && base_path != ""){
       fetch(base_path + "/manifest.json")
         .then(response => response.json())
         .then( data=>{
-          app_name = data.name;
-          app_description = data.subtitle;
+            app_name = data.name;
+            app_description = data.subtitle;
+            app_name_score = data.score;
+            app_name_hiscore = data.best_score;
+            app_name_newgame = data.newgame;
           }
-        ).catch( () =>{
-            app_name = "Oispa Halla";
-            app_description = "Yhdistä opettajat ja saavuta **Halla!**";
+        ).catch( () => {
+            setDefaultMetaValues();
           }
-        )
+        ).finally( () => {
+          app_notice = "This is a custom pack and as such is not endorsed in any way by the original team.";
+        } );
     }
     else{
-      app_name = "Oispa Halla";
-      app_description = "Yhdistä opettajat ja saavuta **Halla!**";
+      setDefaultMetaValues();
     }
 
     let mounted = false;
@@ -67,10 +91,10 @@
         <div class="HAC-container" title="HAC:n tila" style="display:none;">
           <div class="HAC-status">...</div>
         </div>
-        <div class="score-container">0</div>
-        <div class="best-container">0</div>
+        <div class="score-container" style="--c:'{app_name_score}'">0</div>
+        <div class="best-container"  style="--c:'{app_name_hiscore}'">0</div>
         <button class="restart-button button">
-          <div class="uusi-jakso">Uusi Jakso</div>
+          <div class="uusi-jakso">{app_name_newgame}</div>
           <div class="size-selector">
             <button>&lt;</button>
             <button class="restart-3x3">3x3</button>
@@ -188,7 +212,7 @@
     </div>
     <div class="disclaimer">
       <p>
-        <strong>HUOMIO:</strong> Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.
+        {@html marked.parse(app_notice)}
       </p>
       <p>
         Alkuperäisen projektin <a href="https://github.com/gabrielecirulli/2048" target="_blank">2048</a> on tehnyt <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
