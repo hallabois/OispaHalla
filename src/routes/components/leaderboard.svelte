@@ -280,8 +280,8 @@
                                         <div class="name-form-div">
                                             <label for="lb-name">Nimi:</label>
                                             <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
-                                            {#if display_name != correct_name || display_name.length == 0}
-                                                {#if display_name.length < 3}
+                                            {#if display_name == null || display_name != correct_name || display_name.length == 0}
+                                                {#if display_name == null || display_name.length < 3}
                                                     <p class="err">liian lyhyt nimi!</p>
                                                 {:else if display_name.length > 20}
                                                     <p class="err">liian pitkä nimi!</p>
