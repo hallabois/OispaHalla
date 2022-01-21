@@ -12,7 +12,6 @@
     let url = "";
     let connected = false;
     let size = 4;
-    $: mounted && GameManagerInstance != null ? GameManagerInstance.size : 4;
     
     let display_name = "";
     $: if(mounted && display_name != null){
@@ -50,6 +49,7 @@
     }
     export function show(){
         visible = true;
+        size = (mounted && GameManagerInstance != null) ? GameManagerInstance.size : 4;
         refresh();
     }
     export function show_for_post(){
@@ -207,13 +207,14 @@
         });
     }
     function refresh(){
-        if(connected){
-            if(GameManagerInstance){
+        if(!connected){
+            refreshPromise = null; // Tän vois jossain vaihees korvata jollain järkevämmällä
+            selectURL().then( ()=>{
                 refreshPromise = refreshLeaderboard(GameManagerInstance.size);
-            }
+            } );
         }
-        else{
-            selectURL();
+        else if(GameManagerInstance){
+            refreshPromise = refreshLeaderboard(GameManagerInstance.size);
         }
     }
     function edit(){
