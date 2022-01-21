@@ -18,7 +18,7 @@
         localStorage.display_name = display_name;
     }
     let correct_name = "";
-    $: correct_name = [...display_name.matchAll(/[\wÅÄÖåäö]{3,20}/g)].join();
+    $: correct_name = display_name ? [...display_name.matchAll(/[\wÅÄÖåäö]{3,20}/g)].join() : "";
     let id = "";
     $: if(mounted && id != null){
         localStorage.id = id;
@@ -426,7 +426,7 @@
         font-size: 0.9em;
     }
     button#post-score{
-        
+
     }
 
     @media (max-width: 600px) {
