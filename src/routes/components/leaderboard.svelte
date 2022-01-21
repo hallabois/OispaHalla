@@ -359,7 +359,7 @@
                                                     <div class="score">score</div>
                                                 </div>
                                                 <div class="items">
-                                                    {#each data.topBoard as item, index (item.screenName)}
+                                                    {#each data.topBoard as item, index (item.user)}
                                                         <div class="item" in:fade={{delay: index*50}}>
                                                             <div class="screenName">{item.user.screenName}</div>
                                                             <div class="score">{item.score}</div>
@@ -429,11 +429,20 @@
 
     }
 
+    .leaderboard-popup {
+        display: flex;
+        flex-direction: column;
+    }
+
     @media (max-width: 600px) {
         .lb-popup-container{
             height: 100vh !important;
             width: 100vw !important;
             margin: 0 !important;
         }
+        .leaderboard-popup{
+            flex-direction: column-reverse;
+        }
     }
+
 </style>

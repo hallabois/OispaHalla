@@ -11,6 +11,9 @@ var blacklist = [
   "@vite/client",
   "__vite_ping"
 ];
+var deathlist = [
+  "oispahallalb.herokuapp.com"
+]
 for(let i in HAC_urls){
   blacklist.push( HAC_urls[i] + HAC_alive );
 }
@@ -20,12 +23,21 @@ for(let host in LB_hosts){
   }
 }
 
+function deathlistAllows(str){
+  deathlist.forEach( (val) => {
+    if(val.includes(str)){
+      return false;
+    }
+  } );
+  return true;
+}
+
 self.addEventListener('fetch', (event) => {
   event.respondWith(async function() {
     try {
       const response = await fetch(event.request);
       const cache = await caches.open(cacheName);
-      if( !(blacklist.includes(response.url)) && response.ok ){
+      if( !(blacklist.includes(response.url)) && deathlistAllows(response.url) && response.ok ){
         try{
 	        cache.put(event.request, response.clone());
         }
@@ -33,7 +45,7 @@ self.addEventListener('fetch', (event) => {
       }
       return response;
     } catch (err) {
-      if( !(blacklist.includes(response.url)) ){
+      if( !(blacklist.includes(response.url)) && deathlistAllows(response.url) ){
         return caches.match(event.request);
       }
       else{
