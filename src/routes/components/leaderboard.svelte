@@ -188,7 +188,7 @@
         const parsedHistory = game.size + "x" + game.size + "S" + game.history.join(":");
         const user = {
             id: null || id,
-            screenName: display_name
+            screenName: correct_name || display_name
         };
         await fetch(url + "/scores/size/" + game.size, {
             method: "POST",
