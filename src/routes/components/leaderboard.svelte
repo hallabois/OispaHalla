@@ -7,6 +7,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fly, slide, fade } from "svelte/transition";
+    import NameInput from "./nameInput.svelte";
     let numOfScores = 10;
     let urls = ["https://localhost:5000", "http://localhost:5000", "https://oispahallalb.herokuapp.com", "http://oispahallalb.herokuapp.com"];
     let url = "";
@@ -18,7 +19,6 @@
         localStorage.display_name = display_name;
     }
     let correct_name = "";
-    $: correct_name = display_name ? [...display_name.matchAll(/[\wÅÄÖåäö]{3,20}/g)].join() : "";
     let id = "";
     $: if(mounted && id != null){
         localStorage.id = id;
@@ -274,25 +274,7 @@
                         {#if editing_name}
                             <div transition:slide class="form-container" style="display: block;">
                                 <hr>
-                                <div class="name-form-container">
-                                    <h4 class="name-form-title">Muuta Käyttäjänimeäsi:</h4>
-                                    <form id="lb-name-form" class="name-form">
-                                        <div class="name-form-div">
-                                            <label for="lb-name">Nimi:</label>
-                                            <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
-                                            {#if display_name == null || display_name != correct_name || display_name.length == 0}
-                                                {#if display_name == null || display_name.length < 3}
-                                                    <p class="err">liian lyhyt nimi!</p>
-                                                {:else if display_name.length > 20}
-                                                    <p class="err">liian pitkä nimi!</p>
-                                                {:else}
-                                                    <p class="warn">muokataan muotoon "{correct_name}"</p>
-                                                {/if}
-                                            {/if}
-                                        </div>
-                                    </form>
-                                    <p id="name-error" class="lb-error"></p>
-                                </div>
+                                <NameInput bind:display_name bind:correct_name />
                                 <div class="sync-form-container">
                                     <div class="form-title-container">
                                         <h4 class="name-form-title">Muuta Synkronointikoodiasi: (24 merkkiä)</h4>
@@ -322,16 +304,7 @@
                         {/if}
                         {#if editing_upload}
                             Lähetä score?
-                            <input type="text" id="lb-name" placeholder="Käyttäjänimi" minlength="3" maxlength="20" required bind:value={display_name}>
-                            {#if display_name == null || display_name != correct_name || display_name.length == 0}
-                                {#if display_name == null || display_name.length < 3}
-                                    <p class="err">liian lyhyt nimi!</p>
-                                {:else if display_name.length > 20}
-                                    <p class="err">liian pitkä nimi!</p>
-                                {:else}
-                                    <p class="warn">muokataan muotoon "{correct_name}"</p>
-                                {/if}
-                            {/if}
+                            <NameInput bind:display_name bind:correct_name />
                             <br />
                             {#if upload_error}
                                 Virhe lähetettäessä scorea palvelimelle.
@@ -414,16 +387,6 @@
     }
     .score {
         flex: 1;
-    }
-    .warn{
-        margin-bottom: 0;
-        color: #ff6c00;
-        font-size: 0.9em;
-    }
-    .err{
-        margin-bottom: 0;
-        color: #ff0000;
-        font-size: 0.9em;
     }
 
     .leaderboard-popup {
