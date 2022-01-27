@@ -33,6 +33,7 @@
   "dependencies": {
     "marked": "^4.0.10",
     "sass": "^1.48.0",
+    "svelte-gestures": "^1.4.1",
     "svelte2tsx": "^0.4.14"
   }
 }

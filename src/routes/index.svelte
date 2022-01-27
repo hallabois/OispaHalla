@@ -188,7 +188,7 @@
       </div>
     </div>
     <div class="underbar-container">
-      <button class="button background-none color-button" on:click={TtInstance.show()}>
+      <button class="button background-none color-button" on:click={TtInstance.show()} title="Ohje">
         <img src="img/svg/help.svg" alt="?">
       </button>
       <div class="kurin-palautus-container">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { swipe } from 'svelte-gestures';
     import { fly, slide, fade } from "svelte/transition";
     import TutorialSlide from "./tutorialSlide.svelte";
     let slides_content = [
@@ -24,6 +24,15 @@
     function prev(){
         active_slide_index--;
     }
+    function swipeHandler(event) {
+        let swipeDirection = event.detail.direction;
+        if(swipeDirection == "left" && active_slide_index != slides_content.length-1){
+            next();
+        }
+        if(swipeDirection == "right" && active_slide_index != 0){
+            prev();
+        }
+    }
 </script>
 
 {#if visible}
@@ -37,7 +46,7 @@
             </div>
             <div class="karuselli">
                 <button class="button background-none" on:click={prev} disabled={active_slide_index == 0}>&lt;</button>
-                <div class="tutorial-page">
+                <div class="tutorial-page" use:swipe={{ timeframe: 300, minSwipeDistance: 100, touchAction: null}} on:swipe={swipeHandler}>
                     {#each slides_content as slide_content, index}
                         <div class="slide-offset" style="--x:{-300*(active_slide_index-index)}px;--y:{0};">
                             <TutorialSlide>
@@ -88,6 +97,8 @@
         opacity: 0.5;
     }
     .tutorial-container {
+        display: flex;
+        flex-direction: column;
         background: var(--background);
         padding: 1em;
         border-radius: .25rem;
@@ -106,5 +117,18 @@
         height: 0;
         transform: translate(var(--x,0), var(--y,0));
         transition: all .333s;
+    }
+
+    @media (max-width: 600px) {
+        .tutorial-container {
+            flex-direction: column-reverse;
+        }
+        .header {
+            margin-bottom: 0;
+            margin-top: 1em;
+        }
+        button {
+            font-size: 1.25em;
+        }
     }
 </style>
