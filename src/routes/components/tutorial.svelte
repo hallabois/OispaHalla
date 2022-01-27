@@ -46,7 +46,7 @@
             </div>
             <div class="karuselli">
                 <button class="button background-none" on:click={prev} disabled={active_slide_index == 0}>&lt;</button>
-                <div class="tutorial-page" use:swipe={{ timeframe: 300, minSwipeDistance: 100, touchAction: null}} on:swipe={swipeHandler}>
+                <div class="tutorial-page" use:swipe={{ timeframe: 300, minSwipeDistance: 55, touchAction: null}} on:swipe={swipeHandler}>
                     {#each slides_content as slide_content, index}
                         <div class="slide-offset" style="--x:{-300*(active_slide_index-index)}px;--y:{0};">
                             <TutorialSlide>
