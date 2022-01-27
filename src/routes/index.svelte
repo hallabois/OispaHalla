@@ -9,6 +9,7 @@
     import { onMount } from "svelte";
 
     import Leaderboards from "./components/leaderboard.svelte";
+    import Tutorial from "./components/tutorial.svelte";
 
 
     let app_name = "";
@@ -68,6 +69,7 @@
     } );
 
     let lbInstance;
+    let TtInstance;
     // import "./pwa_promoter.js";
 </script>
 
@@ -78,6 +80,7 @@
 <main>
   <div class="container">
     <Leaderboards bind:this={lbInstance} />
+    <Tutorial bind:this={TtInstance} />
     <div class="new-above-game">
       <div class="above-game-left">
         <a href="https://hallabois.github.io/invite/" target="_blank">
@@ -185,6 +188,9 @@
       </div>
     </div>
     <div class="underbar-container">
+      <button class="button background-none color-button" on:click={TtInstance.show()}>
+        <img src="img/svg/help.svg" alt="?">
+      </button>
       <div class="kurin-palautus-container">
         <button class="button kurin-palautus kurin-palautus-color">
           <span class="parin-kulautus" title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta.">KURINPALAUTUS</span>
