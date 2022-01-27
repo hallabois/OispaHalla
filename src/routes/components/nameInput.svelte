@@ -3,6 +3,7 @@
     let mounted = false;
 
     export let display_name = "";
+    export let show_title = true;
     $: if(mounted && display_name != null){
         localStorage.display_name = display_name;
     }
@@ -12,7 +13,7 @@
     onMount( ()=>{mounted=true} );
 </script>
 <div class="name-form-container">
-    <h4 class="name-form-title">Muuta Käyttäjänimeäsi:</h4>
+    {#if show_title}<h4 class="name-form-title">Muuta Käyttäjänimeäsi:</h4>{/if}
     <form id="lb-name-form" class="name-form">
         <div class="name-form-div">
             <label for="lb-name">Nimi:</label>

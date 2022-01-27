@@ -61,11 +61,9 @@
             onInitDone();
         }
         mounted = true;
-        const size = localStorage.HAC_size;
-        if(size != null && localStorage["HAC_best_history" + size] != null){
-            if( localStorage["last_saved" + size] == null && localStorage["bestGameFinished" + size] == null || (localStorage["HAC_best_history" + size] !== localStorage["last_saved" + size] && localStorage["bestGameFinished" + size] == "true") ){
-                lbInstance.show_for_post();
-            }
+        let score_size = lbInstance.hasUnsavedScore();
+        if( score_size != null ){
+          lbInstance.show(score_size);
         }
     } );
 

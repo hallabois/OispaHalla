@@ -50,6 +50,9 @@
         visible = !visible;
     }
     export function show(withSize: number = null){
+        if( hasUnsavedScore() != null ){
+            editing_upload = true;
+        }
         visible = true;
         if(withSize == null){
             size = (mounted && GameManagerInstance != null) ? GameManagerInstance.size : 4;
@@ -58,10 +61,6 @@
             size = withSize;
         }
         refresh();
-    }
-    export function show_for_post(){
-        editing_upload = true;
-        show();
     }
     export function hide(){
         visible = false;
@@ -75,6 +74,16 @@
     export function game_ended_with_best_score(e){
         editing_upload = true;
         show(JSON.parse(localStorage["HAC_size"]));
+    }
+
+    export function hasUnsavedScore(){
+        const size = localStorage.HAC_size;
+        if(size != null && localStorage["HAC_best_history" + size] != null){
+            if( localStorage["last_saved" + size] == null && localStorage["bestGameFinished" + size] == null || (localStorage["HAC_best_history" + size] !== localStorage["last_saved" + size] && localStorage["bestGameFinished" + size] == "true") ){
+                return size;
+            }
+        }
+        return null;
     }
     
     onMount( async () => {
@@ -303,8 +312,8 @@
                             </div>
                         {/if}
                         {#if editing_upload}
-                            Lähetä score?
-                            <NameInput bind:display_name bind:correct_name />
+                            <h3>Lähetä aikaisemmin pelattu score {size}</h3>
+                            <NameInput bind:display_name bind:correct_name show_title={false} />
                             <br />
                             {#if upload_error}
                                 Virhe lähetettäessä scorea palvelimelle.
