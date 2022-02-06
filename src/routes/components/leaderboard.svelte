@@ -213,7 +213,7 @@
         })
         .then(response => {
             console.log(response);
-            if(response.ok) {
+            if(response.ok || response.status == 403) {
                 return response.json();
             }
             console.log("Unexpected status code on POST: " + response.status, response.json());
@@ -223,13 +223,16 @@
         })
         .then(data => {
             console.log(data);
-            id = data.createdScore.user._id;
+            if(data.message !== "Score already exists"){ // If the score already works, do nothing becouse:
+                id = data.createdScore.user._id;         // data.createdScore would be null (causing an error)
+            }
             refresh();
             score_submitting = false;
             editing_upload = false;
             localStorage.best_score_submitted = true;
             localStorage["last_saved" + game.size] = JSON.stringify(game.history);
-        }).catch( () => {
+        }).catch( (err) => {
+            console.log(err);
             score_submitting = false;
             upload_error = true;
             localStorage.best_score_submitted = false;
