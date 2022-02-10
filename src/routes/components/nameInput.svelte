@@ -8,7 +8,7 @@
         localStorage.display_name = display_name;
     }
     export let correct_name = "";
-    $: correct_name = display_name ? [...display_name.matchAll(/[\wÅÄÖåäö]{3,20}/g)].join() : "";
+    $: correct_name = display_name ? [...display_name.matchAll(/[\wÅÄÖåäö]{3,20}/g)].join(" ") : "";
 
     onMount( ()=>{mounted=true} );
 </script>

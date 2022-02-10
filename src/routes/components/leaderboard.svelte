@@ -345,8 +345,8 @@
                                                 </div>
                                                 <div class="items">
                                                     {#each data.topBoard as item, index (item.user)}
-                                                        <div class="item" in:fade={{delay: index*50}}>
-                                                            <div class="screenName">{item.user.screenName}</div>
+                                                        <div class="item {item.user.screenName === display_name ? 'item-self' : ''}" in:fade={{delay: index*50}}>
+                                                            <div class="screenName">{item.user.screenName} {item.user.screenName === display_name ? '(sinä)' : ''}</div>
                                                             <div class="score">{item.score}</div>
                                                         </div>
                                                         <hr />
@@ -393,6 +393,9 @@
     .item {
         display: flex;
         padding: .1em .5em;
+    }
+    .item.item-self {
+        font-weight: bold;
     }
     .screenName {
         flex: 1;
