@@ -11,7 +11,7 @@
     let numOfScores = 10;
     let urls = ["https://localhost:5000", "http://localhost:5000"];
     let url = "";
-    let connected = false;
+    export let connected = false;
     let size = 4;
     
     let display_name = "";
@@ -171,6 +171,9 @@
             console.log("Got: ", data);
             return data;
         } else {
+            if( res.status == 404 ){
+                throw new Error("Palvelimeen ei saada yhteyttä.");
+            }
             if(localStorage.id){
                 const res2 = await fetch(`${url}/scores/size/${size}/fetchboard/${numOfScores}/`); // Get score without our id
                 if(res2.ok){
@@ -360,7 +363,7 @@
                                             Virheellinen vastaus palvelimelta.
                                         {/if}
                                     {:catch err}
-                                        Virhe: {err}
+                                        Virhe: {err.message}
                                     {/await}
                                 {/if}
                             </ol>

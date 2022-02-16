@@ -63,7 +63,7 @@
         }
         mounted = true;
         let score_size = lbInstance.hasUnsavedScore();
-        if( score_size != null ){
+        if( score_size != null && lbInstance.connected ){
           lbInstance.show(score_size);
         }
     } );
