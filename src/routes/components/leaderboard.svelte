@@ -9,7 +9,7 @@
     import { fly, slide, fade } from "svelte/transition";
     import NameInput from "./nameInput.svelte";
     let numOfScores = 10;
-    let urls = ["https://localhost:5000", "http://localhost:5000", "https://oispahallalb.herokuapp.com", "http://oispahallalb.herokuapp.com"];
+    let urls = ["https://localhost:5000", "http://localhost:5000"];
     let url = "";
     let connected = false;
     let size = 4;
@@ -90,7 +90,10 @@
 
         // Load data from localstorage, we don't care if it fails or does not exist.
         try{display_name = localStorage.display_name}catch{};
-        try{id = localStorage.id}catch{}
+        try{id = localStorage.id}catch{};
+        if(localStorage.lb_urls != null) {
+            urls = localStorage.lb_urls;
+        }
 
         window.addEventListener("game_ended_with_best_score", game_ended_with_best_score);
 
