@@ -92,7 +92,7 @@
         try{display_name = localStorage.display_name}catch{};
         try{id = localStorage.id}catch{};
         if(localStorage.lb_urls != null) {
-            urls = localStorage.lb_urls;
+            urls = JSON.parse(localStorage.lb_urls);
         }
 
         window.addEventListener("game_ended_with_best_score", game_ended_with_best_score);
