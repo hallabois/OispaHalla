@@ -321,7 +321,7 @@
                             </div>
                         {/if}
                         {#if editing_upload}
-                            <h3>Lähetä aikaisemmin pelattu score {size}</h3>
+                            <h3>Lähetä aikaisemmin pelattu score {JSON.parse(localStorage.bestScores)[size]}</h3>
                             <NameInput bind:display_name bind:correct_name show_title={false} />
                             <br />
                             {#if upload_error}
@@ -330,7 +330,10 @@
                             {/if}
                             {#if !score_submitting}
                                 {#if correct_name != null && correct_name != ""}
-                                    <button on:click={post} id="post-score">Post Score</button>
+                                    <div class="submit-buttons-container">
+                                        <button on:click={post} id="post-score">Post Score</button>
+                                        <button on:click={ ()=>{score_submitting=false;editing_upload=false;} } id="post-score">Skip for now</button>
+                                    </div>
                                 {/if}
                             {:else}
                                 Lähetetään dataa...
@@ -413,6 +416,14 @@
     .leaderboard-popup {
         display: flex;
         flex-direction: column;
+    }
+
+    .submit-buttons-container {
+        display: flex;
+        & button {
+            flex: 1;
+            line-height: 2em;
+        }
     }
 
     @media (max-width: 600px) {
