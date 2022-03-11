@@ -8,8 +8,10 @@
     import { marked } from 'marked';
     import { onMount } from "svelte";
 
-    import Leaderboards from "./components/leaderboard.svelte";
-    import Tutorial from "./components/tutorial.svelte";
+    import Leaderboards from "../components/leaderboard.svelte";
+    import Tutorial from "../components/tutorial.svelte";
+    import Icon from "../components/common/icon/icon.svelte";
+    import { leaderboardIconData } from "../components/common/icon/iconData";
 
 
     let app_name = "";
@@ -198,16 +200,18 @@
       </div>
       <div class="button-container">
         <div class="lb-container">
-          <a on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button" title="Leaderboards">
-            <img src="img/svg/leaderboard.svg" alt="Leaderboard icon">
-          </a>
+          <button on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button button background-none icon-button" title="Leaderboards">
+            <!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
+            <Icon stroke="var(--color)" d={leaderboardIconData} />
+          </button>
         </div>
         <div class="event-container">
           <!-- svelte-ignore a11y-missing-attribute --> <!-- TODO: CONVERT TO BUTTON -->
-          <a class="event-button" title="Toggle Dark Theme">
+          <button class="event-button button background-none icon-button" style="font-size: 1rem;" title="Toggle Dark Theme">
             <!-- <img src="./img/no_snow.svg" id="event-icon"> -->
-            <p id="darkmode-icon">🔆</p>
-          </a>
+            <!-- <p id="darkmode-icon">🔆</p> -->
+            <Icon text_id="darkmode-icon" stroke="var(--color)" text="🔆" />
+          </button>
         </div>
       </div>
     </div>

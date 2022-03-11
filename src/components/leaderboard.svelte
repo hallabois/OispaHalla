@@ -7,7 +7,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fly, slide, fade } from "svelte/transition";
-    import NameInput from "./nameInput.svelte";
+    import NameInput from "./leaderboard/nameInput.svelte";
+    import Icon from "../components/common/icon/icon.svelte";
+    import { refreshIconData } from "../components/common/icon/iconData";
     let numOfScores = 10;
     let urls = ["https://localhost:5000", "http://localhost:5000"];
     let url = "";
@@ -270,7 +272,7 @@
 <main>
     {#if visible}
         <div on:click={hide} class="lb-popup" out:fade>
-            <div class="lb-popup-container" in:fly="{{ y: 200, duration: 200 }}">
+            <div class="lb-popup-container" in:fade="{{ duration: 200 }}">
                 <div on:click={(e)=>{e.stopPropagation()}} class="leaderboard-popup">
                     <div class="lb-header">
                         <h2 class="lb-title"
@@ -278,7 +280,8 @@
                         >Leaderboards {size}x{size}</h2>
                         <div class="lb-buttons">
                             <a on:click={refresh} id="lb-refresh" class="color-button" title="Päivitä Leaderboardit">
-                                <img src="img/svg/refresh.svg" alt="Refresh">
+                                <!-- <img src="img/svg/refresh.svg" alt="Refresh"> -->
+                                <Icon show_stroke={!refreshPromise} stroke="var(--color)" stroke_width={refreshPromise != null ? "0" : "1"} fill_opacity={refreshPromise ? "1.0" : "0"} d={refreshIconData} />
                             </a>
                             {#if connected}
                                 <a on:click={edit} id="lb-edit" class="color-button" title="Muuta Käyttäjänimeäsi tai Synkronointikoodiasi">

@@ -544,7 +544,7 @@ hr {
       p {
         line-height: 60px;
         font-weight: bold;
-        text-shadow: 0 0 1em black;
+        text-shadow: 0 0 1em var(--background);
       }
 
       .tilanne {
@@ -1051,7 +1051,15 @@ $colors: (
   html.theme-#{$t} {
     --background: #{map-get($colors, '#{$color-number}-game-background')};
     --background-inverted: #{map-get($colors, '#{$color-number}-game-background-inverted')};
-    --color: #{map-get($colors, '#{$color-number}-text-color')};
+    --color: #{$text-color};
+    @if map.has-key($colors, '#{$color-number}-text-color') { 
+      --color: #{map-get($colors, '#{$color-number}-text-color')};
+    }
+    --container-background: #{$game-background};
+    @if map.has-key($colors, '#{$color-number}-game-container-background') {
+      --container-background: #{map-get($colors, '#{$color-number}-game-container-background')};
+    }
+
     background: map-get($colors, '#{$color-number}-game-background');
     @if map.has-key($colors, '#{$color-number}-break-button-background-false') { 
       .parin-kulautus, .kurin-palautus {
@@ -1156,6 +1164,10 @@ $t: 0;
   font-size: 1em;
   font-family: "Clear Sans";
   cursor: pointer;
+}
+.icon-button {
+  font-size: 1.25em;
+  height: 100%;
 }
 .background-none {
   background: none;

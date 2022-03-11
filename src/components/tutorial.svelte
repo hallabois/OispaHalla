@@ -99,7 +99,7 @@
     .tutorial-container {
         display: flex;
         flex-direction: column;
-        background: var(--background);
+        background: var(--container-background);
         padding: 1em;
         border-radius: .25rem;
     }
