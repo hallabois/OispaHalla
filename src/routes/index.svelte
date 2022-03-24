@@ -8,10 +8,10 @@
     import { marked } from 'marked';
     import { onMount } from "svelte";
 
-    import Leaderboards from "../components/leaderboard.svelte";
-    import Tutorial from "../components/tutorial.svelte";
-    import Icon from "../components/common/icon/icon.svelte";
-    import { leaderboardIconData } from "../components/common/icon/iconData";
+    import Leaderboards from "$lib/components/leaderboard.svelte";
+    import Tutorial from "$lib/components/tutorial.svelte";
+    import Icon from "$lib/components/common/icon/icon.svelte";
+    import { leaderboardIconData } from "$lib/components/common/icon/iconData";
 
 
     let app_name = "";

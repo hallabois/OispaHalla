@@ -7,9 +7,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fly, slide, fade } from "svelte/transition";
-    import NameInput from "./leaderboard/nameInput.svelte";
-    import Icon from "../components/common/icon/icon.svelte";
-    import { refreshIconData } from "../components/common/icon/iconData";
+    import NameInput from "$lib/components/leaderboard/nameInput.svelte";
+    import Icon from "$lib/components/common/icon/icon.svelte";
+    import { refreshIconData } from "$lib/components/common/icon/iconData";
     let numOfScores = 10;
     let urls = ["https://localhost:5000", "http://localhost:5000"];
     let url = "";
