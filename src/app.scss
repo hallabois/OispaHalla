@@ -92,8 +92,8 @@ h1.title.dark{
 }
 
 @keyframes popdown {
-  from {margin-top: -250px; opacity: 0;}
-  to {margin-top: 250px; opacity: 1;}
+  from {margin-top: -50vh; opacity: 0;}
+  to {margin-top: 0; opacity: 1;}
 }
 
 @keyframes darken {
@@ -111,12 +111,16 @@ h1.title.dark{
   height: 100%;
   animation-name: darken;
   animation-duration: 0.4s;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .lb-popup-container {
   background-color: $game-background;
-  width: 450px;
-  margin: 250px auto;
+  width: min(450px, 100vw);
+  margin: 0;
   animation-name: popdown;
   animation-duration: 0.4s;
   border-radius: 6px;
