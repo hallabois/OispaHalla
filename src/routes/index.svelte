@@ -10,6 +10,7 @@
 
     import Leaderboards from "$lib/components/leaderboard.svelte";
     import Tutorial from "$lib/components/tutorial.svelte";
+    import Tournaments from "$lib/components/tournaments.svelte";
     import Icon from "$lib/components/common/icon/icon.svelte";
     import { leaderboardIconData } from "$lib/components/common/icon/iconData";
 
@@ -82,7 +83,7 @@
 <main>
   <div class="container">
     <Leaderboards bind:this={lbInstance} />
-    <Tutorial bind:this={TtInstance} />
+    <Tournaments bind:this={TtInstance} />
     <div class="new-above-game">
       <div class="above-game-left">
         <a href="https://hallabois.github.io/invite/" target="_blank">
