@@ -1,7 +1,7 @@
 <script lang="ts">
     import { swipe } from 'svelte-gestures';
     import { fly, slide, fade } from "svelte/transition";
-    import TutorialSlide from "$lib/tutorial/tutorialSlide.svelte";
+    import TutorialSlide from "./tutorial/tutorialSlide.svelte";
     let slides_content = [
         "Slide 1",
         "Slide 2",
