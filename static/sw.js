@@ -45,7 +45,7 @@ self.addEventListener('fetch', (event) => {
       }
       return response;
     } catch (err) {
-      if( !(blacklist.includes(response.url)) && deathlistAllows(response.url) ){
+      if( response && response != null && response.url && response.url != null && !(blacklist.includes(response.url)) && deathlistAllows(response.url) ){
         return caches.match(event.request);
       }
       else{

@@ -1003,6 +1003,7 @@ html.theme-14 .color-button img {
 }
 
 $colors: (
+  '0-color-scheme': 'dark', 
   '0-text-color': #eee,
   '0-game-background': #161817,
   '0-game-background-inverted': #E9E7E8, //käytetään kurinpalautusnapin hoverausefektille
@@ -1014,6 +1015,7 @@ $colors: (
   '0-break-button-background-true': #49a636,
   '0-break-button-color-true': #dfdfdf,
 
+  '14-color-scheme': 'dark', 
   '14-text-color': #eee,
   '14-game-background': #161817,
   '14-game-background-inverted': #E9E7E8, //käytetään kurinpalautusnapin hoverausefektille
@@ -1025,12 +1027,14 @@ $colors: (
   '14-break-button-background-true': #49a636,
   '14-break-button-color-true': #dfdfdf,
 
+  '1-color-scheme': 'light', 
   '1-game-background': $game-background,
   '1-break-button-background-false': #cc0000, //kurinpalautus!
   '1-break-button-color-false': #ddd,
   '1-break-button-background-true': #00cc00,
   '1-break-button-color-true': #dfdfdf,
 
+  '2-color-scheme': 'dark', 
   '2-text-color': #eee,
   '2-game-background': #161817,
   '2-game-background-inverted': #E9E7E8, //käytetään kurinpalautusnapin hoverausefektille
@@ -1038,6 +1042,7 @@ $colors: (
   '2-title-color': #e6d2bf,
   '2-button-color': #974F23,
 
+  '3-color-scheme': 'dark', 
   '3-text-color': #dfdfdf,
   '3-cell-color': rgba(204, 63, 63, 0.35),
   '3-game-background': #460811,
@@ -1053,6 +1058,11 @@ $colors: (
 
 @mixin setThemeColors($color-number) {
   html.theme-#{$t} {
+    // Formejen jne väritystä varten
+    @if map.has-key($colors, '#{$color-number}-color-scheme') {
+      --color-scheme: #{map-get($colors, '#{$color-number}-color-scheme')};
+      color-scheme: var(--color-scheme, "light");
+    }
     --background: #{map-get($colors, '#{$color-number}-game-background')};
     --background-inverted: #{map-get($colors, '#{$color-number}-game-background-inverted')};
     --color: #{$text-color};
@@ -1062,6 +1072,10 @@ $colors: (
     --container-background: #{$game-background};
     @if map.has-key($colors, '#{$color-number}-game-container-background') {
       --container-background: #{map-get($colors, '#{$color-number}-game-container-background')};
+    }
+    --button-background: #8f7a66;
+    @if map.has-key($colors, '#{$color-number}-button-color') {
+      --button-background: #{map-get($colors, '#{$color-number}-button-color')};
     }
 
     background: map-get($colors, '#{$color-number}-game-background');
@@ -1164,6 +1178,7 @@ $t: 0;
 // Default component styles
 .button {
   border: none;
+  border-radius: 3px;
   font-weight: bold;
   font-size: 1em;
   font-family: "Clear Sans";
@@ -1175,5 +1190,20 @@ $t: 0;
 }
 .background-none {
   background: none;
+}
+.action-btn {
+  padding: .75em;
+  color: #f9f6f2;
+  background: var(--button-background);
+  transition: transform 200ms;
+}
+.action-btn:hover {
+  transform: scale(1.03);
+}
+.action-btn:active {
+  transform: scale(0.97);
+}
+.action-btn:disabled {
+  filter: saturate(0);
 }
 //

@@ -127,6 +127,7 @@ function preloadImages(path){
 }
 
 var currentTheme = 1;
+var prefersDark = false;
 function setImageTheme(themeID){
   currentTheme = themeID;
   document.querySelector("html").classList = ["theme-" + themeID];
@@ -139,9 +140,13 @@ function setImageTheme(themeID){
 	catch{}
   applyThemeUIElements();
 }
+
+const darkThemeList = [1]
+
 function applyThemeUIElements(){
   var toggle = document.getElementById('darkmode-icon');
-  if(currentTheme == 1) {
+  prefersDark = darkThemeList.includes(currentTheme);
+  if(prefersDark) {
     toggle.classList.remove("dark");
     toggle.innerHTML = "🔆";
   }

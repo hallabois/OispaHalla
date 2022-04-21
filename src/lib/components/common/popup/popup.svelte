@@ -1,6 +1,33 @@
+<!-- Explain what global variables are to typescript -->
+<script context="module" lang="ts">
+    declare var GameManagerInstance: any;
+    declare var base_path: string;
+</script>
+<!-- / -->
 <script lang="ts">
+    import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     export let open = false;
+
+    let input_enabled = true; // tän vois siirtää inputManageriin
+    $: if(mounted && window != null && open != null){
+        (window as any).isLeaderboardOpen = open;
+        if(GameManagerInstance != null){
+            if(open && input_enabled == true){
+                GameManagerInstance.inputManager.removeKeydownHandler()
+                input_enabled = false;
+            }
+            else if(!open && input_enabled == false){
+                GameManagerInstance.inputManager.addKeydownHandler();
+                input_enabled = true;
+            }
+        }
+    }
+
+    let mounted = false;
+    onMount(()=>{
+        mounted = true;
+    });
 </script>
 
 {#if open}
