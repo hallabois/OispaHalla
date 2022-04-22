@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createTournament } from "$lib/tournamentstore";
+    import { createTournament, joined_game_id } from "$lib/tournamentstore";
     let name;
     let create_public = true;
     let max_clients = 4;
@@ -10,8 +10,6 @@
     function createT() {
         createRequest = createTournament(create_public ? name : "private", create_public, max_clients, password);
     }
-
-    export let joinedGameId;
 </script>
 
 <main>

@@ -1,4 +1,5 @@
 let tournament_endpoint = "http://0.0.0.0:8000/ohts/api";
+import { type Writable, writable, get } from "svelte/store";
 
 class createResponse {
     success: boolean
@@ -71,6 +72,27 @@ export async function getPublicTournaments() {
     return new publicTournamentsResponse(false, -1, [], [], []); // Fetch failed
 }
 
+export async function checkNameValid(name: string) {
+    let resp = await fetch(`${tournament_endpoint}/create`, 
+        {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "create_name": name, 
+            })
+        }
+    );
+    if(resp.ok) {
+        let json = await resp.json();
+        return json.valid;
+    }
+    return false; // Fetch failed
+}
+
 export async function checkAlive(): Promise<boolean> {
     try {
         let resp = await fetch(`${tournament_endpoint}/alive`);
@@ -81,4 +103,35 @@ export async function checkAlive(): Promise<boolean> {
         return false;
     }
     return false;
+}
+
+export let joined_game_id: Writable<number> = writable(null);
+export let joined_game_data: Writable<TournamentInfo> = writable(null);
+export let joined_game_error: Writable<String> = writable(null);
+
+export async function refreshGameData() {
+    let resp = await fetch(`${tournament_endpoint}/game/${get(joined_game_id)}`);
+    console.log("refreshGameData response:", resp);
+    if(resp.ok) {
+        let json = await resp.json();
+        joined_game_data.set(json);
+        joined_game_error.set(null);
+    }
+    else {
+        joined_game_error.set(resp.statusText);
+    }
+}
+
+export async function joinGame(id: number) {
+    console.log("Trying to join game id", id, "...")
+    // TODO: Contact server
+    joined_game_id.set(id);
+    await refreshGameData();
+}
+
+export async function leaveGame() {
+    console.log("Leaving the current game...");
+    // TODO: Contact server
+    joined_game_id.set(null);
+    joined_game_data.set(null);
 }

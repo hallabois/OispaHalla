@@ -1,9 +1,10 @@
 <script lang="ts">
     import Popup from "$lib/components/common/popup/popup.svelte";
-    import { checkAlive } from "$lib/tournamentstore";
+    import { checkAlive, joined_game_id } from "$lib/tournamentstore";
     import TournamentCreator from "./tournaments/tournamentCreator.svelte";
     import TournamentBrowser from "./tournaments/tournamentBrowser.svelte";
-import Lobby from "./tournaments/lobby.svelte";
+    import Lobby from "./tournaments/lobby.svelte";
+import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
 
     export let open = false;
     export function show() {
@@ -17,15 +18,14 @@ import Lobby from "./tournaments/lobby.svelte";
     }
 
     let activeTab = 0;
-    let joinedGameId;
 </script>
 
 <Popup bind:open>
     <span slot="title">Moninpeli</span>
     <div slot="content">
         {#if serverAlive}
-            {#if joinedGameId != null}
-                <Lobby bind:joinedGameId />
+            {#if $joined_game_id != null}
+                <Lobby />
             {:else}
                 {#if !activeTab || activeTab == 0}
                     <div class="action-chooser">
@@ -36,10 +36,13 @@ import Lobby from "./tournaments/lobby.svelte";
                 {:else}
                     <button class="button action-btn back" on:click={()=>{activeTab = 0}}>&lt; Takaisin</button>
                     {#if activeTab == 1}
-                        <TournamentCreator bind:joinedGameId />
+                        <TournamentCreator />
+                    {/if}
+                    {#if activeTab == 2}
+                        <TournamentJoiner />
                     {/if}
                     {#if activeTab == 3}
-                        <TournamentBrowser bind:joinedGameId />
+                        <TournamentBrowser />
                     {/if}
                 {/if}
             {/if}
