@@ -1,8 +1,11 @@
 <script lang="ts">
+    import { fade } from "svelte/transition";
     import { getPublicTournaments } from "$lib/tournamentstore";
 
 
     let filter;
+    let chosen_game;
+    $: canJoin = chosen_game != null;
 </script>
 
 <main>
@@ -17,17 +20,24 @@
             </div>
             <hr />
             <div class="games">
-                {#each result.ongoing_games.filter(x=>filter==null||(x+"").includes(filter)) as game}
-                    <div class="game">
-                        <p>{game}</p>
+                {#each result.ongoing_games.filter(x=>filter==null||(x.name).includes(filter)) as game, index}
+                    <div class="game" class:selected={chosen_game == index} on:click={()=>{chosen_game = index}} in:fade={{delay: index*50}}>
+                        <p>{game.name}</p>
+                        <spacer />
+                        <p>{game.clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
                     </div>
                 {/each}
             </div>
+            <hr />
+            <button disabled={!canJoin} class="button action-btn fill-w">Liity</button>
         {/if}
     {/await}
 </main>
 
 <style>
+    .fill-w {
+        width: calc(100%);
+    }
     .search {
         width: calc(100% - 2em);
         padding: .25em 1em;
@@ -51,5 +61,9 @@
     }
     .game:hover {
         background: var(--background);
+    }
+    .game.selected {
+        background: var(--color);
+        color: var(--background);
     }
 </style>

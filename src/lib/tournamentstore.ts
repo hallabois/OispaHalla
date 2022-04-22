@@ -36,10 +36,19 @@ export async function createTournament(name: string, is_public: boolean, max_cli
     return new createResponse(false, 0, -1); // Fetch failed
 }
 
+class TournamentInfo {
+    name: string
+    requires_password: boolean
+    public: boolean
+    active: boolean
+    clients: number
+    starting_state: string
+}
+
 class publicTournamentsResponse {
     success: boolean
     status_code: number
-    ongoing_games: number[]
+    ongoing_games: TournamentInfo[]
     active_games: number[]
     past_games: number[]
     constructor(success, status_code, ongoing_games, active_games, past_games) {
