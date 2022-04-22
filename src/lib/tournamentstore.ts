@@ -3,6 +3,8 @@ import { type Writable, writable, get } from "svelte/store";
 
 class createResponse {
     success: boolean
+    edit_key: string
+    join_password: string
     tournament_id: number
     status_code: number
     constructor(success, tournament_id, status_code) {
@@ -32,7 +34,7 @@ export async function createTournament(name: string, is_public: boolean, max_cli
     if(resp.ok) {
         let json = await resp.json();
         console.log("tournament data:", json);
-        return new createResponse(json.success, json.tournament_id, json.status_code);
+        return json as createResponse;
     }
     return new createResponse(false, 0, -1); // Fetch failed
 }
@@ -106,6 +108,8 @@ export async function checkAlive(): Promise<boolean> {
 }
 
 export let joined_game_id: Writable<number> = writable(null);
+export let joined_game_am_host: Writable<boolean> = writable(false);
+export let joined_game_host_pswds = {};
 export let joined_game_data: Writable<TournamentInfo> = writable(null);
 export let joined_game_error: Writable<String> = writable(null);
 
@@ -122,10 +126,21 @@ export async function refreshGameData() {
     }
 }
 
-export async function joinGame(id: number) {
+export async function joinGame(id: number, joinPswd = null, isHost = false, hostPswd = null) {
     console.log("Trying to join game id", id, "...")
     // TODO: Contact server
+    
+    //
     joined_game_id.set(id);
+    if(isHost) {
+        joined_game_host_pswds[id] = hostPswd;
+    }
+    else {
+        if(Object.keys(joined_game_host_pswds).includes(id+"")) {
+            isHost = true;
+        }
+    }
+    joined_game_am_host.set(isHost);
     await refreshGameData();
 }
 
@@ -134,4 +149,33 @@ export async function leaveGame() {
     // TODO: Contact server
     joined_game_id.set(null);
     joined_game_data.set(null);
+}
+
+class startResponse {
+    success: boolean
+    tournament_id: number
+    status_code: number
+    msg: string
+}
+
+export async function host_startGame(): Promise<startResponse> {
+    let id = get(joined_game_id);
+    let resp = await fetch(`${tournament_endpoint}/start/${id}`, 
+        {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "edit_key": joined_game_host_pswds[id],
+            })
+        }
+    );
+    if(resp.ok) {
+        let json = await resp.json();
+        return json as startResponse;
+    }
+    return {success: false, tournament_id: id, status_code: -1, msg: "Virhe tai jtn"} // Fetch failed
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createTournament, joined_game_id } from "$lib/tournamentstore";
+    import { createTournament, joined_game_id, joinGame } from "$lib/tournamentstore";
     let name;
     let create_public = true;
     let max_clients = 4;
@@ -16,11 +16,12 @@
     {#if createRequest}
         {#await createRequest}
             <p>Luodaan peliä...</p>
-        {:then data} 
+        {:then data}
             <p>DEBUG: {data.status_code}</p>
             {#if data.success}
                 <p>Peli luotu!</p>
                 <p>ID: {data.tournament_id}</p>
+                {joinGame(data.tournament_id, data.join_password, true, data.edit_key)}
             {:else}
                 <p>Peliä luodessa sattui virhe.</p>
             {/if}

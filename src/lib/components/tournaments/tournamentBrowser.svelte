@@ -1,11 +1,18 @@
 <script lang="ts">
-    import { fade } from "svelte/transition";
-    import { getPublicTournaments, joinGame } from "$lib/tournamentstore";
+    import { fade, slide } from "svelte/transition";
+    import { getPublicTournaments, joined_game_host_pswds, joinGame } from "$lib/tournamentstore";
 
 
     let filter;
     let chosen_game;
-    $: canJoin = chosen_game != null;
+    let game_requires_password = false;
+    let passwords = {};
+    $: canJoin = chosen_game != null && !(game_requires_password && (passwords[chosen_game] == null || passwords[chosen_game] == ""));
+
+    function selectGame(game) {
+        chosen_game = game.id;
+        game_requires_password = game.requires_password;
+    }
 </script>
 
 <main>
@@ -20,12 +27,24 @@
             </div>
             <hr />
             <div class="games">
-                {#each result.ongoing_games.filter(x=>filter==null||(x.name).includes(filter)||chosen_game == x.id) as game, id (game.id)}
-                    <div class="game" class:selected={chosen_game == game.id} on:click={()=>{chosen_game = game.id}} in:fade={{delay: id*50}} title={game.id+""}>
+                {#each result.ongoing_games.filter(x=>filter==null||(x.name).includes(filter)||chosen_game == x.id) as game, index}
+                    <div class="game" class:selected={chosen_game == game.id} on:click={()=>{selectGame(game)}} title={game.id+""}>
                         <p>{game.name}</p>
                         <spacer />
+                        {#if Object.keys(joined_game_host_pswds).includes(game.id+"")}
+                            <p title="Olet tämän pelin luoja">👑</p>
+                        {/if}
+                        {#if game.requires_password}
+                            <p title="Tähän peliin liittyminen vaatii salasanan">🔐</p>
+                        {/if}
                         <p>{game.clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
                     </div>
+                    {#if game.requires_password && chosen_game == game.id}
+                        <div in:slide>
+                            <label for="pswd">Salasana:</label>
+                            <input bind:value={passwords[game.id]} />
+                        </div>
+                    {/if}
                 {/each}
             </div>
             <hr />
@@ -43,7 +62,8 @@
         padding: .25em 1em;
     }
     .games {
-        max-height: 50vh;
+        max-height: 30vh;
+        min-height: 2em;
         overflow-y: auto;
 
         display: flex;
@@ -53,7 +73,7 @@
     .game {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: .5em;
 
         padding: .25em 1em;
         border-radius: .25em;
@@ -66,5 +86,8 @@
     .game.selected {
         background: var(--color);
         color: var(--background);
+    }
+    spacer {
+        flex: 1;
     }
 </style>
