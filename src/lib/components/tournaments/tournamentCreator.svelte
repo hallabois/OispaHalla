@@ -10,6 +10,8 @@
     function createT() {
         createRequest = createTournament(create_public ? name : "private", create_public, max_clients, password);
     }
+
+    export let joinedGameId;
 </script>
 
 <main>

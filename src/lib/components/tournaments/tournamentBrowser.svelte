@@ -6,6 +6,8 @@
     let filter;
     let chosen_game;
     $: canJoin = chosen_game != null;
+
+    export let joinedGameId;
 </script>
 
 <main>
@@ -20,8 +22,8 @@
             </div>
             <hr />
             <div class="games">
-                {#each result.ongoing_games.filter(x=>filter==null||(x.name).includes(filter)) as game, index}
-                    <div class="game" class:selected={chosen_game == index} on:click={()=>{chosen_game = index}} in:fade={{delay: index*50}}>
+                {#each result.ongoing_games.filter(x=>filter==null||(x.name).includes(filter)||chosen_game == x.id) as game, id (game.id)}
+                    <div class="game" class:selected={chosen_game == game.id} on:click={()=>{chosen_game = game.id}} in:fade={{delay: id*50}}>
                         <p>{game.name}</p>
                         <spacer />
                         <p>{game.clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
@@ -29,7 +31,7 @@
                 {/each}
             </div>
             <hr />
-            <button disabled={!canJoin} class="button action-btn fill-w">Liity</button>
+            <button disabled={!canJoin} on:click={()=>{joinedGameId=chosen_game}} class="button action-btn fill-w">Liity</button>
         {/if}
     {/await}
 </main>
