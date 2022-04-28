@@ -22,48 +22,21 @@ function initGameManager(size = 4){
 
 // Wait till the browser (and svelte) are ready to render the game (avoids glitches)
 var onInitDone = function () {
-  // for debugging with plebs
-  if(window.location.href.includes("?debug")){
-    console.log("debug time!");
-    let out = "<div style='overflow-x:auto;height: 100%;background:#1e1e1e;color:#ddd!important;'>";
-    let toshare = JSON.stringify({title: "debug information", text: localStorage});
-    out += "<table><tr><th></th><th></th></tr>"; // Key, Value
-    for(let i in localStorage){
-      if(typeof(localStorage[i]) !== "function"){
-        out += "<tr>";
-          out += "<td style='color: #94d0f1 !important;'>";
-          out += i + ":";
-          out += "</td>";
-          out += "<td style='color: #ce9178 !important;'>";
-          out += localStorage[i];
-          out += "</td>";
-        out += "</tr>";
-      }
+  if(window.location.href.includes("?pack=")){
+    let packname = window.location.href.split("?pack=")[1];
+    console.log("Pack name: ", packname);
+    try{
+      let actual_path = atob(packname);
+      console.log("Parsed path: ", actual_path);
+      setImageBasePath(actual_path);
     }
-    out += "</table>";
-    if(navigator.share){
-      out += "<button style='font-size:2em;' onclick='navigator.share(" + toshare + ")'> Share </button>";
+    catch(e){
+      alert("Failed to parse pack!");
+      console.warn("Failed to parse pack!", e);
     }
-    out += "</div>";
-    out += "<style>html, body{margin: 0; padding: 0;font-family: monospace;}div{display:flex;flex-direction: column;}table{flex: 1;}</style>";
-    document.write(out);
   }
-  else{
-    if(window.location.href.includes("?pack=")){
-      let packname = window.location.href.split("?pack=")[1];
-      console.log("Pack name: ", packname);
-      try{
-        let actual_path = atob(packname);
-        console.log("Parsed path: ", actual_path);
-        setImageBasePath(actual_path);
-      }
-      catch(e){
-        alert("Failed to parse pack!");
-        console.warn("Failed to parse pack!", e);
-      }
-    }
-    initGameManager();
-  }
+  initGameManager();
+
   // Load theme from storage
   if(localStorage.imageTheme){
     if(localStorage.imageThemeLastVersion && localStorage.imageThemeLastVersion == currentImageThemeVersion){
