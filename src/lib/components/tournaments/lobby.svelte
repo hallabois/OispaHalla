@@ -8,9 +8,13 @@
         <button on:click={refreshGameData}>Yritä Uudelleen</button>
         <button on:click={leaveGame}>Anna Olla</button>
     {:else}
-        {#if $joined_game_am_host}
-            👑
-        {/if}
+        <div class="top">
+            <button class="" on:click={leaveGame}>Poistu Pelistä</button>
+            {#if $joined_game_am_host}
+                Admin 👑
+            {/if}
+        </div>
+        <hr />
         {#if $joined_game_data}
             <p>Liitytty peliin {$joined_game_id}: "{$joined_game_data.name}"</p>
         {:else}
@@ -21,10 +25,15 @@
                 <button class="button action-btn" on:click={host_startGame}>Aloita Peli</button>
             </div>
         {/if}
-        <button on:click={leaveGame}>Poistu Pelistä</button>
     {/if}
 </main>
 
 <style>
-
+    .top {
+        display: flex;
+        justify-content: space-between;
+    }
+    hr {
+        margin-block: .25em;
+    }
 </style>
