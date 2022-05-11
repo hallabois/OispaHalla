@@ -108,10 +108,22 @@ export async function checkAlive(): Promise<boolean> {
 }
 
 export let joined_game_id: Writable<number> = writable(null);
+export let joined_game_user_id: Writable<number> = writable(null);
 export let joined_game_am_host: Writable<boolean> = writable(false);
 export let joined_game_host_pswds = {};
 export let joined_game_data: Writable<TournamentInfo> = writable(null);
 export let joined_game_error: Writable<String> = writable(null);
+
+export async function getGameData(id: number) {
+    let resp = await fetch(`${tournament_endpoint}/game/${id}`);
+    if(resp.ok) {
+        let json = await resp.json();
+        return json;
+    }
+    else {
+        return null;
+    }
+}
 
 export async function refreshGameData() {
     let resp = await fetch(`${tournament_endpoint}/game/${get(joined_game_id)}`);
@@ -129,19 +141,38 @@ export async function refreshGameData() {
 export async function joinGame(id: number, joinPswd = null, isHost = false, hostPswd = null) {
     console.log("Trying to join game id", id, "...")
     // TODO: Contact server
-    
-    //
-    joined_game_id.set(id);
-    if(isHost) {
-        joined_game_host_pswds[id] = hostPswd;
+    let resp = await fetch(`${tournament_endpoint}/join/${id}`,
+        {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "join_password": joinPswd, 
+            })
+        }
+    );
+    if(resp.ok) {
+        let json = await resp.json();
+        joined_game_id.set(json.game_id);
+        joined_game_user_id.set(json.user_id);
+        if(isHost) {
+            joined_game_host_pswds[id] = hostPswd;
+        }
+        else {
+            if(Object.keys(joined_game_host_pswds).includes(id+"")) {
+                isHost = true;
+            }
+        }
+        joined_game_am_host.set(isHost);
+        await refreshGameData();
     }
     else {
-        if(Object.keys(joined_game_host_pswds).includes(id+"")) {
-            isHost = true;
-        }
+        joined_game_error.set(resp.statusText);
     }
-    joined_game_am_host.set(isHost);
-    await refreshGameData();
+    //
 }
 
 export async function leaveGame() {
@@ -149,6 +180,7 @@ export async function leaveGame() {
     // TODO: Contact server
     joined_game_id.set(null);
     joined_game_data.set(null);
+    joined_game_error.set(null);
 }
 
 class startResponse {

@@ -1,6 +1,6 @@
 <script lang="ts">
     import Popup from "$lib/components/common/popup/popup.svelte";
-    import { checkAlive, joined_game_id } from "$lib/tournamentstore";
+    import { checkAlive, joined_game_id, joined_game_error } from "$lib/tournamentstore";
     import TournamentCreator from "./tournaments/tournamentCreator.svelte";
     import TournamentBrowser from "./tournaments/tournamentBrowser.svelte";
     import Lobby from "./tournaments/lobby.svelte";
@@ -34,7 +34,7 @@ import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
                         <button on:click={()=>{activeTab = 3}} class="button action-btn">Selaa Julkisia Pelejä</button>
                     </div>
                 {:else}
-                    <button class="button action-btn back" on:click={()=>{activeTab = 0}}>&lt; Takaisin</button>
+                    <button class="button action-btn back" on:click={()=>{activeTab = 0;joined_game_error.set(null)}}>&lt; Takaisin</button>
                     {#if activeTab == 1}
                         <TournamentCreator />
                     {/if}

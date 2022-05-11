@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade, slide } from "svelte/transition";
-    import { getPublicTournaments, joined_game_host_pswds, joinGame } from "$lib/tournamentstore";
+    import { getPublicTournaments, joined_game_host_pswds, joinGame, joined_game_error } from "$lib/tournamentstore";
 
 
     let filter;
@@ -40,7 +40,7 @@
                         <p>{game.clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
                     </div>
                     {#if game.requires_password && chosen_game == game.id}
-                        <div in:slide>
+                        <div>
                             <label for="pswd">Salasana:</label>
                             <input bind:value={passwords[game.id]} />
                         </div>
@@ -48,7 +48,14 @@
                 {/each}
             </div>
             <hr />
-            <button disabled={!canJoin} on:click={()=>{joinGame(chosen_game)}} class="button action-btn fill-w">Liity</button>
+            {#if $joined_game_error}
+                <div class="err" transition:fade|local>
+                    <p>Virhe: {$joined_game_error}</p>
+                    <spacer />
+                    <button on:click={()=>{joined_game_error.set(null)}}>×</button>
+                </div>
+            {/if}
+            <button disabled={!canJoin} on:click={()=>{joinGame(chosen_game, passwords[chosen_game])}} class="button action-btn fill-w">Liity</button>
         {/if}
     {/await}
 </main>
@@ -89,5 +96,13 @@
     }
     spacer {
         flex: 1;
+    }
+    hr {
+        margin-block: .5em;
+    }
+    .err {
+        color: red;
+        display: flex;
+        align-items: baseline;
     }
 </style>
