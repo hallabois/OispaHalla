@@ -42,7 +42,7 @@
                     {#if game.requires_password && chosen_game == game.id}
                         <div>
                             <label for="pswd">Salasana:</label>
-                            <input bind:value={passwords[game.id]} />
+                            <input bind:value={passwords[game.id]} autofocus />
                         </div>
                     {/if}
                 {/each}
