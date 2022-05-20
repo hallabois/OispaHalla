@@ -986,19 +986,19 @@ $i: 2;
   
 }
 
-html.theme-0 .color-button img {
+.theme-0 .color-button img {
   filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
 }
 
-html.theme-1 .color-button img { //very fucking scufferoni but i couldn't find a better way to do this in sass
+.theme-1 .color-button img { //very fucking scufferoni but i couldn't find a better way to do this in sass
   filter: invert(43%) sepia(4%) saturate(922%) hue-rotate(349deg) brightness(99%) contrast(93%);
 }
 
-html.theme-3 .color-button img {
+.theme-3 .color-button img {
   filter: invert(79%) sepia(81%) saturate(3152%) hue-rotate(347deg) brightness(101%) contrast(91%);
 }
 
-html.theme-14 .color-button img {
+.theme-14 .color-button img {
   filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
 }
 
@@ -1057,7 +1057,7 @@ $colors: (
 );
 
 @mixin setThemeColors($color-number) {
-  html.theme-#{$t} {
+  .theme-#{$t} {
     // Formejen jne väritystä varten
     @if map.has-key($colors, '#{$color-number}-color-scheme') {
       --color-scheme: #{map-get($colors, '#{$color-number}-color-scheme')};
@@ -1147,7 +1147,7 @@ $t: 0;
 @while $t <= 20 {
   $i: 2;
   @while $i <= 32768 {
-    html.theme-#{$t} .tile-#{$i} .tile-inner {
+    .theme-#{$t} .tile-#{$i} .tile-inner {
       background-image: url('/img/theme-#{$t}/#{$i}.png');
       @if($i >= 128) {
         box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);

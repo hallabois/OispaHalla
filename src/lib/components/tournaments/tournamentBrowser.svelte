@@ -82,7 +82,7 @@
         align-items: center;
         gap: .5em;
 
-        padding: .25em 1em;
+        padding: .5em 1em;
         border-radius: .25em;
         cursor: pointer;
         transition: background 200ms, color 200ms;
@@ -93,6 +93,9 @@
     .game.selected {
         background: var(--color);
         color: var(--background);
+    }
+    .game p {
+        margin: 0;
     }
     spacer {
         flex: 1;
