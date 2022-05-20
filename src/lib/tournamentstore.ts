@@ -139,6 +139,8 @@ export async function refreshGameData() {
 }
 
 export async function poll() {
+    let moves = [...poll_send_moves];
+    poll_send_moves = [];
     let resp = await fetch(`${tournament_endpoint}/poll/${get(joined_game_id)}`,
         {
             method: 'POST',
@@ -149,14 +151,16 @@ export async function poll() {
             },
             body: JSON.stringify({
                 "user_id": get(joined_game_user_id), 
+                "moves": moves
             })
         }
     );
     if(resp.ok) {
-
+        let data = await resp.json();
+        return data as PollData;
     }
     else {
-
+        return null;
     }
 }
 
@@ -278,17 +282,45 @@ export async function host_deleteGame(): Promise<deleteResponse> {
         joined_game_id.set(null);
         joined_game_data.set(null);
         joined_game_error.set(null);
+        joined_game_host_pswds[id] = null;
         return {success: true};
     }
     return {success: false} // Fetch failed
 }
 
+
+class PollData {
+    board: string;
+    game: TournamentInfo;
+    history_index: number;
+    other_boards: string[];
+}
 // Polling
+export let poll_success: Writable<boolean> = writable(null);
+export let poll_board_string: Writable<string> = writable(null);
+export let poll_other_boards_string: Writable<string[]> = writable(null);
+export let poll_game: Writable<TournamentInfo> = writable(null);
+export let poll_index: Writable<number> = writable(null);
+
+export let poll_send_moves: number[] = [];
 setInterval(
-    async ()=>{
-        if(get(joined_game_id)) {
-            poll();
+    ()=>{
+        if(get(joined_game_id) != null) {
+            poll().then(
+                (polldata) => {
+                    if(poll != null) {
+                        poll_success.set(true);
+                        poll_board_string.set(polldata.board);
+                        poll_game.set(polldata.game);
+                        poll_index.set(polldata.history_index);
+                        poll_other_boards_string.set(polldata.other_boards);
+                    }
+                    else{
+                        poll_success.set(false);
+                    }
+                }
+            )
         }
     },
-    500
+    300
 )

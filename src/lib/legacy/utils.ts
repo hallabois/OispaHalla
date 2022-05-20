@@ -16,7 +16,7 @@ export function hac_gamestate_to_grid(gamestate: string) {
         t=> t && t.position
     )
     .map(
-        t=> new Tile(t.position, t.value)
+        t=> new Tile({x: t.position.y, y: t.position.x}, t.value)
     ).filter(
         (t: Tile)=> t.x < size && t.y < size
     );

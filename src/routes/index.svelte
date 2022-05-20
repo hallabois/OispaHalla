@@ -73,7 +73,6 @@
 
     let lbInstance;
     let TtInstance;
-    // import "./pwa_promoter.js";
 </script>
 
 <svelte:head>
@@ -194,7 +193,7 @@
       <!-- <button class="button background-none color-button" on:click={TtInstance.show()} title="Ohje">
         <img src="img/svg/help.svg" alt="?">
       </button> -->
-      <button class="button background-none color-button" on:click={TtInstance.show()} title="Tournament Mode">
+      <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Tournament Mode">
         ⚔
       </button>
       <div class="kurin-palautus-container">

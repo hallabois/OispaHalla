@@ -12,7 +12,7 @@
     let input_enabled = true; // tän vois siirtää inputManageriin
     $: if(mounted && window != null && open != null){
         (window as any).isLeaderboardOpen = open;
-        if(GameManagerInstance != null){
+        if(typeof GameManagerInstance !== "undefined" && GameManagerInstance != null){
             if(open && input_enabled == true){
                 GameManagerInstance.inputManager.removeKeydownHandler()
                 input_enabled = false;

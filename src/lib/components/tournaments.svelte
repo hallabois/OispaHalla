@@ -1,10 +1,12 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+
     import Popup from "$lib/components/common/popup/popup.svelte";
-    import { checkAlive, joined_game_id, joined_game_error } from "$lib/tournamentstore";
+    import { checkAlive, joined_game_id, joined_game_error, poll_success, poll_game, joined_game_user_id, joined_game_am_host, joined_game_host_pswds, refreshGameData } from "$lib/tournamentstore";
     import TournamentCreator from "./tournaments/tournamentCreator.svelte";
     import TournamentBrowser from "./tournaments/tournamentBrowser.svelte";
     import Lobby from "./tournaments/lobby.svelte";
-import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
+    import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
 
     export let open = false;
     export function show() {
@@ -17,7 +19,46 @@ import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
         serverAlive = await checkAlive();
     }
 
+    $: if($joined_game_id && !window.location.href.endsWith("/moninpeli")) {
+        let data = {
+            "game_id": $joined_game_id,
+            "user_id": $joined_game_user_id,
+            "am_host": $joined_game_am_host,
+            "host_pswd": joined_game_host_pswds[$joined_game_id]
+        };
+        localStorage["mp_data"] = JSON.stringify(data);
+        window.location.href = `/moninpeli`;
+    }
+
     let activeTab = 0;
+    let wasActive = false;
+    $: if($poll_success && $poll_game) {
+        if($poll_game.active && !wasActive) {
+            open = false;
+            wasActive = true;
+        }
+        else if(!$poll_game.active){
+            wasActive = false;
+        }
+    }
+
+    onMount(()=>{
+        if(localStorage["mp_data"] != null) {
+            let data = JSON.parse(localStorage["mp_data"]);
+            if(data) {
+                console.log("READ MP_DATA", data);
+
+                joined_game_id.set(data.game_id);
+                joined_game_user_id.set(data.user_id);
+                joined_game_am_host.set(data.am_host);
+                joined_game_host_pswds[data.game_id] = data.host_pswd;
+                refreshGameData();
+
+                // localStorage["mp_data"] = null;
+                show();
+            }
+        }
+    });
 </script>
 
 <Popup bind:open>

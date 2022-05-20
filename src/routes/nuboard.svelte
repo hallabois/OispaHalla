@@ -1,9 +1,9 @@
 <script lang="ts">
-    import Board from "$lib/components/board/template.svelte";
+    import Board from "$lib/components/board/board.svelte";
 </script>
 
 <main class="theme-0">
-    <Board />
+    <Board enableKIM={true} />
 </main>
 
 <style>

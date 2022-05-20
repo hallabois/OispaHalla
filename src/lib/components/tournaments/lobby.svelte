@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, refreshGameData } from "$lib/tournamentstore";
+    import { host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_success, refreshGameData } from "$lib/tournamentstore";
     import Board from "../board/board.svelte";
     import { hac_gamestate_to_grid } from "$lib/legacy/utils";
 </script>
@@ -37,9 +37,9 @@
             <p>Ladataan pelin tietoja...</p>
             <div class="game-preview"></div>
         {/if}
-        {#if $joined_game_am_host}
+        {#if $joined_game_am_host && $poll_success}
             <div class="start">
-                <button class="button action-btn" on:click={host_startGame}>Aloita Peli</button>
+                <button class="button action-btn" on:click={host_startGame} disabled={$poll_game.active}>Aloita Peli</button>
             </div>
         {/if}
     {/if}

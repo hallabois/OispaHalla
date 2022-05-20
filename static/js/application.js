@@ -1,3 +1,4 @@
+console.log("application.js loaded!");
 // Stuff to make sure that only one tab can play the game at a time
 var tabID = sessionStorage.tabID ? 
             sessionStorage.tabID : 
@@ -17,7 +18,12 @@ window.onbeforeunload = unregisterTabID;
 var GameManagerInstance;
 
 function initGameManager(size = 4){
-  GameManagerInstance = new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager);
+  if(typeof GameManager !== "undefined"){
+    GameManagerInstance = new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager);
+  }
+  else{
+    console.warn("GameManager class not loaded!");
+  }
 }
 
 // Wait till the browser (and svelte) are ready to render the game (avoids glitches)
@@ -118,13 +124,18 @@ const darkThemeList = [1]
 
 function applyThemeUIElements(){
   var toggle = document.getElementById('darkmode-icon');
-  prefersDark = darkThemeList.includes(currentTheme);
-  if(prefersDark) {
-    toggle.classList.remove("dark");
-    toggle.innerHTML = "🔆";
+  if(toggle != null){
+    prefersDark = darkThemeList.includes(currentTheme);
+    if(prefersDark) {
+      toggle.classList.remove("dark");
+      toggle.innerHTML = "🔆";
+    }
+    else{
+      toggle.classList.add("dark");
+      toggle.innerHTML = "🔅";
+    }
   }
   else{
-    toggle.classList.add("dark");
-    toggle.innerHTML = "🔅";
+    console.warn("Darktheme toggle not found");
   }
 }

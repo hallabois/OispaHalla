@@ -4,7 +4,7 @@
 
     export let enableKIM = false;
     export let enableLSM = false;
-    
+
     export let grid = null;
 
     import GameManager from "$lib/legacy/game_manager";
@@ -13,13 +13,21 @@
     import KeyboardInputManager from "$lib/legacy/keyboard_input_manager";
 
     let board;
+    let GameManagerInstance;
 
-    onMount(()=>{
-        console.log("Board:", board);
+    function reinitcomponents() {
         let HTMLActuator = new html_actuator(board);
         let KIM = new KeyboardInputManager(board, enableKIM);
         let LSM = new LocalStorageManager(enableLSM);
-        let GameManagerInstance = new GameManager(4, KIM, HTMLActuator, LSM, board, grid);
+        GameManagerInstance = new GameManager(4, KIM, HTMLActuator, LSM, board, grid);
+    }
+
+    $: if(board && grid && grid != null) {
+        reinitcomponents();
+    }
+
+    onMount(()=>{
+        reinitcomponents();
     });
 </script>
 

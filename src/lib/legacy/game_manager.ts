@@ -362,10 +362,11 @@ export default class GameManager {
       if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
         HallaAntiCheat.recordState(state);
         HallaAntiCheat.validate();
+
+        if(this.size == 4 || this.size == 3){
+          HallaAntiCheat.recordBest(this.score);
+        }
       }
-    }
-    if(this.size == 4 || this.size == 3){
-      HallaAntiCheat.recordBest(this.score);
     }
   }
   // Get the vector representing the chosen direction
