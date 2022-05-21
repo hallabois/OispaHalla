@@ -21,7 +21,8 @@
         </div>
         <hr />
         {#if $joined_game_data}
-            <p>Liitytty peliin {$joined_game_id}: "{$joined_game_data.name}"</p>
+            <p>Liitytty peliin "{$joined_game_data.name}"</p>
+            <p>Liittymiskoodi on {$joined_game_id}</p>
             <div class="data">
                 <div>
                     <h3>Aloitustilanne</h3>

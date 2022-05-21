@@ -7,6 +7,7 @@
     import TournamentBrowser from "./tournaments/tournamentBrowser.svelte";
     import Lobby from "./tournaments/lobby.svelte";
     import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
+    import type Announcer from "./tournaments/announcer.svelte";
 
     export let open = false;
     export function show() {
@@ -14,12 +15,15 @@
         checkServerAlive();
     }
 
+    export let announcer: Announcer = null;
+
     let serverAlive;
     async function checkServerAlive() {
         serverAlive = await checkAlive();
     }
 
-    $: if($joined_game_id && !window.location.href.endsWith("/moninpeli")) {
+    $: if($joined_game_id != null && !window.location.href.endsWith("/moninpeli")) {
+        console.log("Moving to multiplayer...");
         let data = {
             "game_id": $joined_game_id,
             "user_id": $joined_game_user_id,
@@ -36,14 +40,20 @@
         if($poll_game.active && !wasActive) {
             open = false;
             wasActive = true;
+            if(announcer) {
+                announcer.announce("Peli on alkanut!");
+            }
         }
         else if(!$poll_game.active){
             wasActive = false;
         }
     }
+    else {
+        wasActive = false;
+    }
 
     onMount(()=>{
-        if(localStorage["mp_data"] != null) {
+        if(localStorage["mp_data"] != null && window.location.href.endsWith("/moninpeli")) {
             let data = JSON.parse(localStorage["mp_data"]);
             if(data) {
                 console.log("READ MP_DATA", data);

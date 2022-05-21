@@ -9,7 +9,8 @@
 
     import Tournaments from "$lib/components/tournaments.svelte";
     import Board from "$lib/components/board/board.svelte";
-    import { joined_game_data, joined_game_id, poll_board_string, poll_game, poll_other_boards_string, poll_send_moves, poll_success } from '$lib/tournamentstore';
+    import Announcer from '$lib/components/tournaments/announcer.svelte';
+    import { checkAlive, joined_game_data, joined_game_id, poll_board_string, poll_game, poll_other_boards_string, poll_send_moves, poll_success, server_status } from '$lib/tournamentstore';
     import { hac_gamestate_to_grid } from '$lib/legacy/utils';
     import KeyboardInputManager from '$lib/legacy/keyboard_input_manager';
 
@@ -55,12 +56,17 @@
         onInitDone();
     });
     let TtInstance;
+    let AnnouncerInstance: Announcer;
 </script>
 
 <main bind:this={inputRoot}>
-    <Tournaments bind:this={TtInstance} />
+    <Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
+    <Announcer bind:this={AnnouncerInstance} />
     {#if $poll_success == false}
         <p class="err">Virhe pelitietoja haettaessa!</p>
+    {/if}
+    {#if $server_status == false}
+        <p class="err">Palvelimeen ei saada yhteyttä. <button on:click={checkAlive}>Yritä uudelleen</button></p>
     {/if}
     <div class="board-container">
         <Board {enableKIM} {grid} />
@@ -81,10 +87,21 @@
 
 
 <style>
+    main {
+        min-height: 100vh;
+
+        display: grid;
+        place-items: center;
+    }
     .err {
         background-color: red;
         color: black;
         text-align: center;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
     }
     .board-container {
         display: grid;
@@ -107,6 +124,10 @@
         animation: none !important;
         -moz-animation: none !important;
         -webkit-animation: none !important;
+    }
+    .patches {
+        height: 0;
+        width: 0;
     }
 </style>
 <div class="patches">

@@ -33,19 +33,20 @@ export function hac_gamestate_to_grid(gamestate: string) {
 }
 
 export function generate_previous_positions(grid: Grid, previous: Grid) {
-    grid.cells.forEach(
-        col =>
-        col.forEach(
-            t => {
-                if(t){
-                    let prev = previous.cells.find(
-                        t2 =>
-                            t.id == t2.id
-                    );
-                    t.previousPosition = prev ? {x: prev.x, y: prev.y} : null;
-                }
+    let newcells = grid.cells;
+    for(let colc in newcells) {
+        for(let tindex in newcells[colc]) {
+            let t = newcells[colc][tindex];
+            if(t){
+                let prev = previous.cells.flat().find(
+                    t2 =>
+                        t2 && t.id == t2.id
+                );
+                t.previousPosition = prev ? {x: prev.x, y: prev.y} : null;
+                newcells[colc][tindex] = t;
             }
-        )
-    );
+        }
+    }
+    grid.cells = newcells;
     return grid;
 }

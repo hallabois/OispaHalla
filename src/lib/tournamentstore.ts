@@ -1,4 +1,4 @@
-let tournament_endpoint = "http://0.0.0.0:8064/ohts/api";
+let tournament_endpoint = process.env.NODE_ENV !== "development" ? "https://hac.oispahalla.com:8064/ohts/api" : "https://0.0.0.0:8064/ohts/api";
 import { type Writable, writable, get } from "svelte/store";
 
 class createResponse {
@@ -95,15 +95,20 @@ export async function checkNameValid(name: string) {
     return false; // Fetch failed
 }
 
+export let server_status: Writable<boolean> = writable(null);
 export async function checkAlive(): Promise<boolean> {
     try {
+        server_status.set(null);
         let resp = await fetch(`${tournament_endpoint}/alive`);
         if(resp.ok) {
+            server_status.set(true);
             return true;
         }
     } catch (error) {
+        server_status.set(false);
         return false;
     }
+    server_status.set(false);
     return false;
 }
 
@@ -139,7 +144,8 @@ export async function refreshGameData() {
 }
 
 export async function poll() {
-    let moves = [...poll_send_moves];
+    let moves = poll_send_moves;
+    moves = moves.filter((i,idx) => poll_send_moves[idx-1] !== i); // Remove adjacent duplicates, as they do not affect the game
     poll_send_moves = [];
     let resp = await fetch(`${tournament_endpoint}/poll/${get(joined_game_id)}`,
         {
@@ -325,5 +331,5 @@ setInterval(
             poll_success.set(null);
         }
     },
-    1000
-)
+    400
+);
