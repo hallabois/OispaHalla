@@ -32,11 +32,20 @@
                 </div>
                 <div>
                     <h3>Pelaajat</h3>
+                    <p>{$joined_game_data.clients} pelaajaa</p>
                 </div>
             </div>
         {:else}
             <p>Ladataan pelin tietoja...</p>
-            <div class="game-preview"></div>
+            <div class="data">
+                <div>
+                    <h3></h3>
+                    <div class="game-preview"></div>
+                </div>
+                <div>
+                    <h3></h3>
+                </div>
+            </div>
         {/if}
         {#if $joined_game_am_host && $poll_success}
             <div class="start">
