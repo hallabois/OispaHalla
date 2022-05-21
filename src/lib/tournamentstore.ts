@@ -1,4 +1,4 @@
-let tournament_endpoint = process.env.NODE_ENV !== "development" ? "https://hac.oispahalla.com:8064/ohts/api" : "https://0.0.0.0:8064/ohts/api";
+let tournament_endpoint = process.env.NODE_ENV !== "development" ? "https://hac.oispahalla.com:9000/ohts/api" : "https://0.0.0.0:9000/ohts/api";
 import { type Writable, writable, get } from "svelte/store";
 
 class createResponse {
