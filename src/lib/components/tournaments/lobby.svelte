@@ -52,6 +52,11 @@
                 <button class="button action-btn" on:click={host_startGame} disabled={$poll_game.active}>Aloita Peli</button>
             </div>
         {/if}
+        {#if !$joined_game_am_host && $poll_success}
+            <div class="start">
+                <p>Odotetaan pelin alkua...</p>
+            </div>
+        {/if}
     {/if}
 </main>
 
