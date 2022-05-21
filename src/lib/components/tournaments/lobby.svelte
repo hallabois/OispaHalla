@@ -63,9 +63,9 @@
     .data {
         display: flex;
         flex-wrap: wrap;
+        gap: 1em;
     }
     .game-preview {
-        /* --tile-size: calc(300px / 5) !important; */
         --field-width: 300px !important;
         --tile-size: calc(calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) / var(--grid-size));
         overflow: hidden;
