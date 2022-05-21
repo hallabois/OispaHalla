@@ -13,6 +13,7 @@
     import Tournaments from "$lib/components/tournaments.svelte";
     import Icon from "$lib/components/common/icon/icon.svelte";
     import { leaderboardIconData } from "$lib/components/common/icon/iconData";
+    import ThemeChooser from '$lib/components/common/theme-chooser/themeChooser.svelte';
 
 
     let app_name = "";
@@ -188,6 +189,7 @@
       <div class="tile-container">
 
       </div>
+      <ThemeChooser />
     </div>
     <div class="underbar-container">
       <!-- <button class="button background-none color-button" on:click={TtInstance.show()} title="Ohje">
@@ -208,14 +210,14 @@
             <Icon stroke="var(--color)" d={leaderboardIconData} />
           </button>
         </div>
-        <div class="event-container">
-          <!-- svelte-ignore a11y-missing-attribute --> <!-- TODO: CONVERT TO BUTTON -->
+        <!-- <div class="event-container">
+          <!-- svelte-ignore a11y-missing-attribute --> <!-- TODO: CONVERT TO BUTTON --.>
           <button class="event-button button background-none icon-button" style="font-size: 1rem;" title="Toggle Dark Theme">
-            <!-- <img src="./img/no_snow.svg" id="event-icon"> -->
-            <!-- <p id="darkmode-icon">🔆</p> -->
+            <!-- <img src="./img/no_snow.svg" id="event-icon"> --.>
+            <!-- <p id="darkmode-icon">🔆</p> --.>
             <Icon text_id="darkmode-icon" stroke="var(--color)" text="🔆" />
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="pwa-container" style="width: 100%;z-index: 500;display: flex;justify-content: center;margin-top: 30px;margin-bottom: -50px;">

@@ -26,8 +26,8 @@ class GameManager {
     this.inputManager.on("move", this.move.bind(this));
     this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
     this.inputManager.on("paritaKuli", this.paritaKuli.bind(this));
-    this.inputManager.on("toggleEvent", this.toggleEvent.bind(this));
-    this.inputManager.on("toggleDarkMode", this.toggleDarkMode.bind(this));
+    // this.inputManager.on("toggleEvent", this.toggleEvent.bind(this));
+    // this.inputManager.on("toggleDarkMode", this.toggleDarkMode.bind(this));
 
     this.popup = document.getElementsByClassName("lb-popup")[0];
     

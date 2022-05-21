@@ -69,7 +69,7 @@ class KeyboardInputManager {
     //this.bindContextPress(".restart-button", this.restartplus);
     this.bindButtonPress(".keep-playing-button", this.keepPlaying);
     this.bindButtonPress(".kurin-palautus", this.paritaKuli);
-    this.bindButtonPress(".event-button", this.toggleDarkMode);
+    // this.bindButtonPress(".event-button", this.toggleDarkMode);
 
     // Respond to swipe events
     var touchStartClientX, touchStartClientY;
