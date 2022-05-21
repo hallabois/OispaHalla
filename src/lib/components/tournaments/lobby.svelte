@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <h3>Pelaajat</h3>
-                    <p>{$joined_game_data.clients} pelaajaa</p>
+                    <p>{$joined_game_data.clients} {$joined_game_data.clients == 1 ? "pelaaja" : "pelaajaa"}</p>
                 </div>
             </div>
         {:else}
