@@ -13,6 +13,7 @@
     import { checkAlive, joined_game_data, joined_game_id, poll_board_string, poll_game, poll_other_boards_string, poll_send_moves, poll_success, server_status } from '$lib/tournamentstore';
     import { hac_gamestate_to_grid } from '$lib/legacy/utils';
     import KeyboardInputManager from '$lib/legacy/keyboard_input_manager';
+    import type Grid from '$lib/legacy/grid';
 
     let app_name = "Oispa Halla";
     let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
@@ -23,7 +24,7 @@
 
     let enableKIM = false;
 
-    let grid = null;
+    let grid: Grid|null = null;
 
     $: if($poll_board_string) {
         grid = hac_gamestate_to_grid($poll_board_string);
@@ -51,11 +52,11 @@
     }
 
     let inputManager;
-    let inputRoot;
+    let inputRoot: HTMLElement;
     onMount(()=>{
         onInitDone();
     });
-    let TtInstance;
+    let TtInstance: Tournaments;
     let AnnouncerInstance: Announcer;
 </script>
 
@@ -131,6 +132,6 @@
     }
 </style>
 <div class="patches">
-    <script src="js/application.js"></script>
+    <script src="/js/application.js"></script>
     <div class="preload-container" />
 </div>

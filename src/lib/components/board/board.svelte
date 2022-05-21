@@ -5,13 +5,14 @@
     export let enableKIM = false;
     export let enableLSM = false;
 
-    export let grid = null;
+    export let grid: Grid|null = null;
 
     import GameManager from "$lib/legacy/game_manager";
     import html_actuator from "$lib/legacy/html_actuator";
     import LocalStorageManager from "$lib/legacy/local_storage_manager";
     import KeyboardInputManager from "$lib/legacy/keyboard_input_manager";
     import { generate_previous_positions } from "$lib/legacy/utils";
+    import type Grid from "$lib/legacy/grid";
 
     let board;
     let GameManagerInstance: GameManager;
