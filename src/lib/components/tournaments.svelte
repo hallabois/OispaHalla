@@ -53,19 +53,27 @@
     }
 
     onMount(()=>{
-        if(localStorage["mp_data"] != null && window.location.href.endsWith("/moninpeli")) {
-            let data = JSON.parse(localStorage["mp_data"]);
-            if(data) {
-                console.log("READ MP_DATA", data);
+        if(window.location.href.includes("game_id")) {
+            const params = new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop as string),
+            });
+            
+        }
+        else{
+            if(localStorage["mp_data"] != null && window.location.href.endsWith("/moninpeli")) {
+                let data = JSON.parse(localStorage["mp_data"]);
+                if(data) {
+                    console.log("READ MP_DATA", data);
 
-                joined_game_id.set(data.game_id);
-                joined_game_user_id.set(data.user_id);
-                joined_game_am_host.set(data.am_host);
-                joined_game_host_pswds[data.game_id] = data.host_pswd;
-                refreshGameData();
+                    joined_game_id.set(data.game_id);
+                    joined_game_user_id.set(data.user_id);
+                    joined_game_am_host.set(data.am_host);
+                    joined_game_host_pswds[data.game_id] = data.host_pswd;
+                    refreshGameData();
 
-                // localStorage["mp_data"] = null;
-                show();
+                    // localStorage["mp_data"] = null;
+                    show();
+                }
             }
         }
     });

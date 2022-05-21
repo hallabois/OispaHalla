@@ -4,11 +4,11 @@ import { type Writable, writable, get } from "svelte/store";
 
 class createResponse {
     success: boolean
-    edit_key: string
-    join_password: string
+    edit_key!: string;
+    join_password!: string
     tournament_id: number
     status_code: number
-    constructor(success, tournament_id, status_code) {
+    constructor(success: boolean, tournament_id: number, status_code: number) {
         this.success = success;
         this.tournament_id = tournament_id;
         this.status_code = status_code;
@@ -56,7 +56,7 @@ class publicTournamentsResponse {
     ongoing_games: TournamentInfo[]
     active_games: number[]
     past_games: number[]
-    constructor(success, status_code, ongoing_games, active_games, past_games) {
+    constructor(success: boolean, status_code: number, ongoing_games: TournamentInfo[], active_games: number[], past_games: number[]) {
         this.success = success;
         this.status_code = status_code;
         this.ongoing_games = ongoing_games;

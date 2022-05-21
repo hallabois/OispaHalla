@@ -255,6 +255,7 @@ class GameManager {
             // The mighty 2048 tile
             if (merged.value === 2048)
               self.won = true;
+              localStorage.setItem("hasWon", "true");
           } else {
             self.moveTile(tile, positions.farthest);
           }
