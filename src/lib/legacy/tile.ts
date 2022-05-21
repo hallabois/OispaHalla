@@ -4,10 +4,13 @@ export default class Tile {
   value: number;
   previousPosition: {x: number, y: number};
   mergedFrom: any;
-  constructor(position, value) {
+
+  id: number;
+  constructor(position, value, id = null) {
     this.x = position.x;
     this.y = position.y;
     this.value = value || 2;
+    this.id = id;
 
     this.previousPosition = null;
     this.mergedFrom = null; // Tracks tiles that merged together

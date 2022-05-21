@@ -308,7 +308,7 @@ setInterval(
         if(get(joined_game_id) != null) {
             poll().then(
                 (polldata) => {
-                    if(poll != null) {
+                    if(polldata != null) {
                         poll_success.set(true);
                         poll_board_string.set(polldata.board);
                         poll_game.set(polldata.game);
@@ -321,6 +321,9 @@ setInterval(
                 }
             )
         }
+        else {
+            poll_success.set(null);
+        }
     },
-    300
+    1000
 )

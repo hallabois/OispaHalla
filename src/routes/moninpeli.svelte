@@ -9,7 +9,7 @@
 
     import Tournaments from "$lib/components/tournaments.svelte";
     import Board from "$lib/components/board/board.svelte";
-    import { joined_game_data, joined_game_id, poll_board_string, poll_other_boards_string, poll_send_moves, poll_success } from '$lib/tournamentstore';
+    import { joined_game_data, joined_game_id, poll_board_string, poll_game, poll_other_boards_string, poll_send_moves, poll_success } from '$lib/tournamentstore';
     import { hac_gamestate_to_grid } from '$lib/legacy/utils';
     import KeyboardInputManager from '$lib/legacy/keyboard_input_manager';
 
@@ -41,31 +41,39 @@
         poll_send_moves.push(direction);
         // console.info(JSON.stringify(poll_send_moves));
     }
+    $: if($poll_success && $poll_game.active) {
+        inputManager = new KeyboardInputManager(inputRoot);
+        inputManager.on("move", move);
+    }
+    else {
+        inputManager = null;
+    }
 
     let inputManager;
     let inputRoot;
     onMount(()=>{
         onInitDone();
-        inputManager = new KeyboardInputManager(inputRoot);
-        inputManager.on("move", move);
     });
     let TtInstance;
 </script>
 
 <main bind:this={inputRoot}>
     <Tournaments bind:this={TtInstance} />
+    {#if $poll_success == false}
+        <p class="err">Virhe pelitietoja haettaessa!</p>
+    {/if}
     <div class="board-container">
         <Board {enableKIM} {grid} />
         <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Tournament Mode">
             ⚔
         </button>
-        {#if $joined_game_id && $poll_success}
+        {#if $poll_success}
             <div class="mini-container">
-                    {#each $poll_other_boards_string as board_string}
-                        <div class="mini-grid">
-                            <Board grid={hac_gamestate_to_grid(board_string)} />
-                        </div>
-                    {/each}
+                {#each $poll_other_boards_string as board_string, index}
+                    <div class="mini-grid">
+                        <Board grid={hac_gamestate_to_grid(board_string)} />
+                    </div>
+                {/each}
             </div>
         {/if}
     </div>
@@ -73,6 +81,11 @@
 
 
 <style>
+    .err {
+        background-color: red;
+        color: black;
+        text-align: center;
+    }
     .board-container {
         display: grid;
         place-items: center;

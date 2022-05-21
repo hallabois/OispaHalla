@@ -30,7 +30,7 @@ export default class HTMLActuator {
   }
   actuate(grid, metadata) {
     var self = this;
-
+    // @ts-ignore, it works or it doesn't
     this.html_component.style = "--grid-size:" + grid.size + "!important;";
 
     window.requestAnimationFrame(function () {
@@ -55,7 +55,8 @@ export default class HTMLActuator {
         }
       }
       if(base_path && base_path != ""){
-        let images = [...(self.documentRoot.querySelectorAll(".tile-inner"))];
+        // @ts-ignore, probably doesn't work but we don't care
+        let images = [...self.documentRoot.querySelectorAll(".tile-inner")];
         console.log("Images: ", images);
         for(let i in images){
           let img = images[i];

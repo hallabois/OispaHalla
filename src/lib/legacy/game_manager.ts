@@ -27,9 +27,11 @@ export default class GameManager {
   doKeepPlaying: boolean;
 
   documentRoot: HTMLElement;
+  enable_random: boolean;
 
-  constructor(size, InputManager: KeyboardInputManager, Actuator: HTMLActuator, StorageManager: LocalStorageManager, documentRoot: HTMLElement, grid = null) {
+  constructor(size, InputManager: KeyboardInputManager, Actuator: HTMLActuator, StorageManager: LocalStorageManager, documentRoot: HTMLElement, grid = null, enable_random = true) {
     this.documentRoot = documentRoot;
+    this.enable_random = enable_random;
 
     this.size = size; // Size of the grid
     this.inputManager = InputManager;
@@ -193,6 +195,9 @@ export default class GameManager {
   }
   // Set up the initial tiles to start the game with
   addStartTiles() {
+    if(!this.enable_random) {
+      return;
+    }
     for (var i = 0; i < this.startTiles; i++) {
       this.addRandomTile();
     }
@@ -202,6 +207,9 @@ export default class GameManager {
   }
   // Adds a tile in a random position
   addRandomTile() {
+    if(!this.enable_random) {
+      return;
+    }
     if (this.grid.cellsAvailable()) {
       var value = Math.random() < 0.9 ? 2 : 4;
       var tile = new Tile(this.grid.randomAvailableCell(), value);
