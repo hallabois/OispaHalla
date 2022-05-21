@@ -1,15 +1,15 @@
 <script lang="ts">
     import { fade, slide } from "svelte/transition";
-    import { getPublicTournaments, joined_game_host_pswds, joinGame, joined_game_error } from "$lib/tournamentstore";
+    import { getPublicTournaments, joined_game_host_pswds, joinGame, joined_game_error, TournamentInfo } from "$lib/tournamentstore";
 
 
-    let filter;
-    let chosen_game;
+    let filter: string|null;
+    let chosen_game: number|null;
     let game_requires_password = false;
-    let passwords = {};
+    let passwords: {[key: number]: string} = {};
     $: canJoin = chosen_game != null && !(game_requires_password && (passwords[chosen_game] == null || passwords[chosen_game] == ""));
 
-    function selectGame(game) {
+    function selectGame(game: TournamentInfo) {
         chosen_game = game.id;
         game_requires_password = game.requires_password;
     }
@@ -42,6 +42,7 @@
                     {#if game.requires_password && chosen_game == game.id}
                         <div>
                             <label for="pswd">Salasana:</label>
+                            <!-- svelte-ignore a11y-autofocus -->
                             <input bind:value={passwords[game.id]} autofocus />
                         </div>
                     {/if}

@@ -31,6 +31,7 @@
 </script>
 
 <main>
+    <!-- svelte-ignore a11y-autofocus -->
     <input bind:value={chosen_game} placeholder="Kirjoita liittymiskoodi tähän" autofocus/>
     {#if requires_password}
         <input bind:value={password} placeholder="Peli vaatii salasanan"/>

@@ -39,11 +39,11 @@
             <p>Ladataan pelin tietoja...</p>
             <div class="data">
                 <div>
-                    <h3></h3>
+                    <h3>...</h3>
                     <div class="game-preview"></div>
                 </div>
                 <div>
-                    <h3></h3>
+                    <h3>...</h3>
                 </div>
             </div>
         {/if}

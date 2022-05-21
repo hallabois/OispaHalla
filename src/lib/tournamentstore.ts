@@ -39,7 +39,7 @@ export async function createTournament(name: string, is_public: boolean, max_cli
     return new createResponse(false, 0, -1); // Fetch failed
 }
 
-class TournamentInfo {
+export class TournamentInfo {
     name: string
     id: number
     requires_password: boolean
