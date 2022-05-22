@@ -91,7 +91,7 @@
     <div slot="content">
         {#if serverAlive}
             {#if $joined_game_id != null}
-                <Lobby />
+                <Lobby {announcer} />
             {:else}
                 {#if !activeTab || activeTab == 0}
                     <div class="action-chooser">

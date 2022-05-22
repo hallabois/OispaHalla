@@ -2,6 +2,23 @@
     import { host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_success, refreshGameData } from "$lib/tournamentstore";
     import Board from "../board/board.svelte";
     import { hac_gamestate_to_grid } from "$lib/legacy/utils";
+    import type Announcer from "./announcer.svelte";
+
+    export let announcer: Announcer | null = null;
+
+    function shareGameID() {
+        navigator.share({
+            title: "Kutsu OispaHalla -peliin",
+            text: `Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id} tai linkin https://oispahalla.com/moninpeli?game_id=${$joined_game_id} kautta.`,
+            url: `https://oispahalla.com/moninpeli?game_id=${$joined_game_id}`
+        });
+    }
+    function copyGameID() {
+        if(announcer) {
+            navigator.clipboard.writeText(`Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id} tai linkin https://oispahalla.com/moninpeli?game_id=${$joined_game_id} kautta.`);
+            announcer.announce("Liittymiskoodi kopioitu!");
+        }
+    }
 </script>
 
 <main>
@@ -22,7 +39,14 @@
         <hr />
         {#if $joined_game_data}
             <p>Liitytty peliin "{$joined_game_data.name}"</p>
-            <p>Liittymiskoodi on {$joined_game_id}</p>
+            <p>Liittymiskoodi: <code>{$joined_game_id}</code>
+                {#if navigator.clipboard}
+                    <button on:click={copyGameID}>Kopioi</button>
+                {/if}
+                {#if navigator.share}
+                    <button on:click={shareGameID}>Jaa</button>
+                {/if}
+            </p>
             <div class="data">
                 <div>
                     <h3>Aloitustilanne</h3>
