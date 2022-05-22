@@ -38,6 +38,7 @@
 </script>
 
 <main>
+    <!-- svelte-ignore missing-declaration -->
     {#if typeof currentTheme !== "undefined"}
         {#each available_themes as theme, index}
             <!-- svelte-ignore missing-declaration -->
