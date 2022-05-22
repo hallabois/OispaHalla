@@ -1,6 +1,7 @@
 {
   "name": "OispaHalla",
   "short_name": "OispaHalla",
+  "description": "Yhdistä opettajat ja saavuta halla!",
   "icons": [
     {
       "src": "/img/raksahalla_192.png",
@@ -15,10 +16,8 @@
   ],
   "start_url": "/?source=pwa",
   "background_color": "#FAF8EF",
-  "theme_color": "#000000",
   "display": "standalone",
   "scope": "/",
   "orientation": "portrait",
-  "theme_color": "#FAF8EF",
-  "description": "Yhdistä opettajat ja saavuta halla!"
+  "theme_color": "#FAF8EF"
 }

@@ -1,10 +1,11 @@
 <!-- Explain what global variables are to typescript -->
 <script context="module" lang="ts">
     declare var setImageTheme: Function;
+    declare var currentTheme: number;
 </script>
 <!-- / -->
 <script lang="ts">
-    import { scale } from "svelte/transition";
+    import { slide } from "svelte/transition";
     import { browser } from "$app/env";
     class theme {
         index!: number
@@ -24,6 +25,7 @@
         },
     ];
 
+    let menu_open = false;
 
     $: if(browser && localStorage && localStorage.getItem("hasWon")) {
         available_themes.push({
@@ -36,23 +38,58 @@
 </script>
 
 <main>
-    {#each available_themes as theme, index}
-        <!-- svelte-ignore missing-declaration -->
-        <button on:click={()=>{setImageTheme(theme.index)}} transition:scale={{delay: index*50}}>
-            <img src={theme.icon_url} width="50px" alt="" style={theme.style} />
-        </button>
-    {/each}
+    {#if typeof currentTheme !== "undefined"}
+        {#each available_themes as theme, index}
+            <!-- svelte-ignore missing-declaration -->
+            {#if currentTheme == theme.index || menu_open}
+                <!-- svelte-ignore missing-declaration -->
+                <button
+                    on:click={()=>{
+                        if(currentTheme != theme.index) {
+                            setImageTheme(theme.index)
+                        }
+                        menu_open = !menu_open;
+                    }}
+                    transition:slide={{delay: index*50}}
+                >
+                    <img src={theme.icon_url} width="50px" height="50px" alt="" style={theme.style} />
+                </button>
+            {/if}
+        {/each}
+    {/if}
 </main>
 
 <style>
     main {
         position: relative;
-        left: 500px;
-        width: 0;
-        bottom: 0;
+        left: var(--field-width, 500px);
 
         display: flex;
         flex-wrap: wrap;
-        gap: 1em;
+        flex-direction: column;
+        /* we'll use margin-bottom instead, as it works better with slide */
+        /* gap: 1em; */
+
+        transition: left 200ms;
+    }
+    button {
+        padding: 0;
+        line-height: 0;
+        margin: 0;
+        margin-bottom: 1em;
+
+        border-width: 1px;
+        cursor: pointer;
+
+        width: 52px;
+        height: 52px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        transition: transform 200ms;
+    }
+    button, img {
+        border-radius: .25rem;
     }
 </style>

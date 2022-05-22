@@ -15,9 +15,10 @@
         checkServerAlive();
     }
 
-    export let announcer: Announcer = null;
+    export let announcer: Announcer|null = null;
+    let chosen_game: string|null|undefined = null;
 
-    let serverAlive;
+    let serverAlive: boolean|null;
     async function checkServerAlive() {
         serverAlive = await checkAlive();
     }
@@ -53,11 +54,17 @@
     }
 
     onMount(()=>{
-        if(window.location.href.includes("game_id")) {
-            const params = new Proxy(new URLSearchParams(window.location.search), {
-                get: (searchParams, prop) => searchParams.get(prop as string),
-            });
+        if(window.location.href.includes("?")) {
+            const params = new URLSearchParams(window.location.search);
+            let game_id = params.get("game_id");
+            if(game_id) {
+                chosen_game = game_id;
+                activeTab = 2;
+                show();
+            }
             
+            // @ts-ignore
+            history.pushState({}, null, window.location.href.split("?")[0]);
         }
         else{
             if(localStorage["mp_data"] != null && window.location.href.endsWith("/moninpeli")) {
@@ -98,7 +105,7 @@
                         <TournamentCreator />
                     {/if}
                     {#if activeTab == 2}
-                        <TournamentJoiner />
+                        <TournamentJoiner {chosen_game} />
                     {/if}
                     {#if activeTab == 3}
                         <TournamentBrowser />

@@ -41,13 +41,13 @@ export async function createTournament(name: string, is_public: boolean, max_cli
 }
 
 export class TournamentInfo {
-    name: string
-    id: number
-    requires_password: boolean
-    public: boolean
-    active: boolean
-    clients: number
-    starting_state: string
+    name!: string
+    id!: number
+    requires_password!: boolean
+    public!: boolean
+    active!: boolean
+    clients!: number
+    starting_state!: string
 }
 
 class publicTournamentsResponse {
@@ -96,7 +96,7 @@ export async function checkNameValid(name: string) {
     return false; // Fetch failed
 }
 
-export let server_status: Writable<boolean> = writable(null);
+export let server_status: Writable<boolean|null> = writable(null);
 export async function checkAlive(): Promise<boolean> {
     try {
         server_status.set(null);
@@ -113,12 +113,12 @@ export async function checkAlive(): Promise<boolean> {
     return false;
 }
 
-export let joined_game_id: Writable<number> = writable(null);
-export let joined_game_user_id: Writable<string> = writable(null);
-export let joined_game_am_host: Writable<boolean> = writable(false);
-export let joined_game_host_pswds = {};
-export let joined_game_data: Writable<TournamentInfo> = writable(null);
-export let joined_game_error: Writable<String> = writable(null);
+export let joined_game_id: Writable<number|null> = writable(null);
+export let joined_game_user_id: Writable<string|null> = writable(null);
+export let joined_game_am_host: Writable<boolean|null> = writable(false);
+export let joined_game_host_pswds: {[key: number]: string} = {};
+export let joined_game_data: Writable<TournamentInfo|null> = writable(null);
+export let joined_game_error: Writable<String|null> = writable(null);
 
 export async function getGameData(id: number) {
     let resp = await fetch(`${tournament_endpoint}/games/${id}`);
@@ -171,7 +171,7 @@ export async function poll() {
     }
 }
 
-export async function joinGame(id: number, joinPswd = null, isHost = false, hostPswd = null) {
+export async function joinGame(id: number, joinPswd = null, isHost = false, hostPswd: string|null = null) {
     console.log("Trying to join game id", id, "...")
     // TODO: Contact server
     let resp = await fetch(`${tournament_endpoint}/games/${id}/join`,
@@ -192,7 +192,7 @@ export async function joinGame(id: number, joinPswd = null, isHost = false, host
         let json = await resp.json();
         joined_game_id.set(json.game_id);
         joined_game_user_id.set(json.user_id);
-        if(isHost) {
+        if(isHost && hostPswd) {
             joined_game_host_pswds[id] = hostPswd;
         }
         else {
@@ -209,39 +209,42 @@ export async function joinGame(id: number, joinPswd = null, isHost = false, host
     //
 }
 
-export async function leaveGame() {
+export async function leaveGame(informServer = true) {
     console.log("Leaving the current game...");
 
-    let resp = await fetch(`${tournament_endpoint}/games/${get(joined_game_id)}/leave`,
-        {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "user_id": get(joined_game_user_id), 
-            })
-        }
-    );
-    if(resp.ok) {
+    if(informServer) {
+        let resp = await fetch(`${tournament_endpoint}/games/${get(joined_game_id)}/leave`,
+            {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "user_id": get(joined_game_user_id), 
+                })
+            }
+        );
+        if(resp.ok) {
 
-    }
-    else {
-        joined_game_error.set(resp.statusText);
+        }
+        else {
+            joined_game_error.set(resp.statusText);
+        }
     }
 
     joined_game_id.set(null);
     joined_game_data.set(null);
     joined_game_error.set(null);
+    localStorage.removeItem("mp_data");
 }
 
 class startResponse {
-    success: boolean
-    tournament_id: number
-    status_code: number
-    msg: string
+    success!: boolean
+    tournament_id!: number
+    status_code!: number
+    msg!: string
 }
 
 export async function host_startGame(): Promise<startResponse> {
@@ -286,9 +289,7 @@ export async function host_deleteGame(): Promise<deleteResponse> {
         }
     );
     if(resp.ok) {
-        joined_game_id.set(null);
-        joined_game_data.set(null);
-        joined_game_error.set(null);
+        leaveGame(false);
         joined_game_host_pswds[id] = null;
         return {success: true};
     }

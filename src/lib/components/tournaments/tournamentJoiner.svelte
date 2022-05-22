@@ -2,7 +2,7 @@
     import { fade } from "svelte/transition";
     import { joinGame, getGameData, joined_game_error } from "$lib/tournamentstore";
 
-    let chosen_game;
+    export let chosen_game: string|number|any[]|null = null;
     let requires_password = false;
     let password;
     let canJoin = false;
