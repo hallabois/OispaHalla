@@ -71,6 +71,8 @@
         /* we'll use margin-bottom instead, as it works better with slide */
         /* gap: 1em; */
 
+        width: 0;
+
         transition: left 200ms;
     }
     button {
