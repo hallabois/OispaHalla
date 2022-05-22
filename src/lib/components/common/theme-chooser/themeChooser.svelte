@@ -46,7 +46,7 @@
                 <!-- svelte-ignore missing-declaration -->
                 <button
                     on:click={()=>{
-                        if(currentTheme != theme.index) {
+                        if(menu_open) {
                             setImageTheme(theme.index)
                         }
                         menu_open = !menu_open;
