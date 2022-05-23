@@ -51,6 +51,12 @@
                         }
                         menu_open = !menu_open;
                     }}
+                    on:touchend={()=>{
+                        if(menu_open) {
+                            setImageTheme(theme.index)
+                        }
+                        menu_open = !menu_open;
+                    }}
                     transition:slide={{delay: index*50}}
                 >
                     <img src={theme.icon_url} width="50px" height="50px" alt="" style={theme.style} />
