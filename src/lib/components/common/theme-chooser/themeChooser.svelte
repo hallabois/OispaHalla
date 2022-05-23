@@ -27,9 +27,9 @@
 
     let menu_open = false;
 
-    $: if(browser && localStorage && localStorage.getItem("hasWon")) {
+    $: if(browser && localStorage && (localStorage.getItem("hasWon") || (localStorage.getItem("bestScore") != null && (+localStorage.getItem("bestScore")) && (+localStorage.getItem("bestScore")) > 7500 ))) {
         available_themes.push({
-            index: 14,
+            index: 14,localStorage.getItem("bestScores") && 
             icon_url: "/img/theme-14/2.png",
             style: ""
         });
