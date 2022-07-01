@@ -1,4 +1,4 @@
-let tournament_endpoint_dev = true ? "https://hac.oispahalla.com:9000/ohts/api" : "https://0.0.0.0:9000/ohts/api";
+let tournament_endpoint_dev = false ? "https://hac.oispahalla.com:9000/ohts/api" : "https://0.0.0.0:9000/ohts/api";
 let tournament_endpoint = process.env.NODE_ENV !== "development" ? "https://hac.oispahalla.com:9000/ohts/api" : tournament_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 
@@ -37,6 +37,9 @@ export async function createTournament(name: string, is_public: boolean, max_cli
         console.log("tournament data:", json);
         return json as createResponse;
     }
+    if(resp.status == 409) {
+        return new createResponse(false, 0, 1); // Name already in use
+    }
     return new createResponse(false, 0, -1); // Fetch failed
 }
 
@@ -47,6 +50,7 @@ export class TournamentInfo {
     public!: boolean
     active!: boolean
     clients!: number
+    client_aliases!: string[]
     starting_state!: string
 }
 
@@ -204,7 +208,15 @@ export async function joinGame(id: number, joinPswd = null, isHost = false, host
         await refreshGameData();
     }
     else {
-        joined_game_error.set(resp.statusText);
+        if(resp.status == 406) {
+            joined_game_error.set("Peli on täynnä");
+        }
+        else if(resp.status == 418) {
+            joined_game_error.set("Peli on jo käynnissä");
+        }
+        else{
+            joined_game_error.set(resp.statusText);
+        }
     }
     //
 }
@@ -302,6 +314,7 @@ class PollData {
     game: TournamentInfo;
     history_index: number;
     other_boards: string[];
+    id_index: number;
 }
 // Polling
 export let poll_success: Writable<boolean> = writable(null);
@@ -309,6 +322,7 @@ export let poll_board_string: Writable<string> = writable(null);
 export let poll_other_boards_string: Writable<string[]> = writable(null);
 export let poll_game: Writable<TournamentInfo> = writable(null);
 export let poll_index: Writable<number> = writable(null);
+export let poll_id_index: Writable<number> = writable(null);
 
 export let poll_send_moves: number[] = [];
 setInterval(
@@ -322,6 +336,7 @@ setInterval(
                         poll_game.set(polldata.game);
                         poll_index.set(polldata.history_index);
                         poll_other_boards_string.set(polldata.other_boards);
+                        poll_id_index.set(polldata.id_index);
                     }
                     else{
                         poll_success.set(false);
@@ -333,5 +348,5 @@ setInterval(
             poll_success.set(null);
         }
     },
-    400
+    600
 );

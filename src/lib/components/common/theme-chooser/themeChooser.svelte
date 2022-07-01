@@ -14,6 +14,11 @@
     }
     let available_themes: theme[] = [
         {
+            index: 16,
+            icon_url: "/img/theme-16/2048.png",
+            style: "background: transparent;"
+        },
+        {
             index: 0,
             icon_url: "/img/raksahalla_192.png",
             style: "background: black;"
@@ -27,9 +32,20 @@
 
     let menu_open = false;
 
-    $: if(browser && localStorage && (localStorage.getItem("hasWon") || (localStorage.getItem("bestScore") != null && (+localStorage.getItem("bestScore")) && (+localStorage.getItem("bestScore")) > 7500 ))) {
+    $: if(
+            browser && localStorage && 
+            (
+                localStorage.getItem("hasWon")
+                ||
+                (
+                    localStorage.getItem("bestScore") != null &&
+                    (+localStorage.getItem("bestScore")) &&
+                    (+localStorage.getItem("bestScore")) > 10000 
+                )
+            )
+        ) {
         available_themes.push({
-            index: 14,localStorage.getItem("bestScores") && 
+            index: 14,
             icon_url: "/img/theme-14/2.png",
             style: ""
         });

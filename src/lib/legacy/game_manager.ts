@@ -275,6 +275,8 @@ export default class GameManager {
     let HAC_grid = this.grid.serialize_HAC();
 
     // 0: up, 1: right, 2: down, 3: left
+    let directions = ["up", "right", "down", "left"];
+    console.log("clientside moving to", directions[direction]);
     var self = this;
 
     if (this.isGameTerminated())

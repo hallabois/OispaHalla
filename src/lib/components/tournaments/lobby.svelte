@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_success, refreshGameData } from "$lib/tournamentstore";
+    import { host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_id_index, poll_success, refreshGameData } from "$lib/tournamentstore";
     import Board from "../board/board.svelte";
     import { hac_gamestate_to_grid } from "$lib/legacy/utils";
     import type Announcer from "./announcer.svelte";
@@ -9,14 +9,14 @@
     function shareGameID() {
         navigator.share({
             title: "Kutsu OispaHalla -peliin",
-            text: `Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id} tai linkin https://oispahalla.com/moninpeli?game_id=${$joined_game_id} kautta.`,
+            text: `Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id} tai alla olevan linkin kautta.`,
             url: `https://oispahalla.com/moninpeli?game_id=${$joined_game_id}`
         });
     }
     function copyGameID() {
         if(announcer) {
-            navigator.clipboard.writeText(`Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id} tai linkin https://oispahalla.com/moninpeli?game_id=${$joined_game_id} kautta.`);
-            announcer.announce("Liittymiskoodi kopioitu!");
+            navigator.clipboard.writeText(`${window.location.origin}/moninpeli?game_id=${$joined_game_id}`);
+            announcer.announce("Liittymislinkki kopioitu!");
         }
     }
 </script>
@@ -41,10 +41,10 @@
             <p>Liitytty peliin "{$joined_game_data.name}"</p>
             <p>Liittymiskoodi: <code>{$joined_game_id}</code>
                 {#if navigator.clipboard}
-                    <button on:click={copyGameID}>Kopioi</button>
+                    <button on:click={copyGameID}>Kopioi linkki</button>
                 {/if}
                 {#if navigator.share}
-                    <button on:click={shareGameID}>Jaa</button>
+                    <button on:click={shareGameID}>Jaa kutsu</button>
                 {/if}
             </p>
             <div class="data">
@@ -55,8 +55,19 @@
                     </div>
                 </div>
                 <div>
-                    <h3>Pelaajat</h3>
-                    <p>{$joined_game_data.clients} {$joined_game_data.clients == 1 ? "pelaaja" : "pelaajaa"}</p>
+                    {#if $poll_success}
+                        <h4>{$poll_game.clients} {$poll_game.clients == 1 ? "pelaaja" : "pelaajaa"}</h4>
+                        <div style="max-height:300px;overflow-y: auto;">
+                            {#each $poll_game.client_aliases as player_name, index}
+                                <p>
+                                    {player_name}
+                                    {#if index == $poll_id_index}
+                                        (sinä)
+                                    {/if}
+                                </p>
+                            {/each}
+                        </div>
+                    {/if}
                 </div>
             </div>
         {:else}

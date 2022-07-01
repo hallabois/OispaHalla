@@ -4,16 +4,16 @@
 </script>
 <!-- / -->
 <script lang="ts">
-    import { marked } from 'marked';
     import { onMount } from "svelte";
 
     import Tournaments from "$lib/components/tournaments.svelte";
     import Board from "$lib/components/board/board.svelte";
     import Announcer from '$lib/components/tournaments/announcer.svelte';
-    import { checkAlive, joined_game_data, joined_game_id, poll_board_string, poll_game, poll_other_boards_string, poll_send_moves, poll_success, server_status } from '$lib/tournamentstore';
+    import { checkAlive, joined_game_data, poll_id_index, poll_board_string, poll_game, poll_other_boards_string, poll_send_moves, poll_success, server_status } from '$lib/tournamentstore';
     import { hac_gamestate_to_grid } from '$lib/legacy/utils';
     import KeyboardInputManager from '$lib/legacy/keyboard_input_manager';
     import type Grid from '$lib/legacy/grid';
+    import { browser } from "$app/env";
 
     let app_name = "Oispa Halla";
     let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
@@ -28,36 +28,66 @@
 
     $: if($poll_board_string) {
         grid = hac_gamestate_to_grid($poll_board_string);
-        enableKIM = true;
     }
     else if($joined_game_data) {
         grid = hac_gamestate_to_grid($joined_game_data.starting_state);
-        enableKIM = false;
     }
     else {
-        enableKIM = false;
+        // enableKIM = false;
     }
 
     function move(direction: number) {
-        // console.log("move called with the value", direction);
-        poll_send_moves.push(direction);
-        // console.info(JSON.stringify(poll_send_moves));
+        if($poll_game && $poll_game.active) {
+            BoardInstance.getGameManagerInstance().move(direction);
+            console.log("server-side move called with the value", direction);
+            poll_send_moves.push(direction);
+            // console.info(JSON.stringify(poll_send_moves));
+        }
+        else {
+            console.warn("Tried to move when the game hadn't started yet");
+        }
     }
     $: if($poll_success && $poll_game.active) {
-        inputManager = new KeyboardInputManager(inputRoot);
-        inputManager.on("move", move);
+        window.onbeforeunload = function(e) {
+            return "Oletko varma että haluat jättää pelin kesken?";
+        };
+        if(inputManager == null) {
+            console.log("Creating server-side inputmanager...");
+            inputManager = new KeyboardInputManager(inputRoot);
+            inputManager.on("move", move);
+            // enableKIM = true;
+        }
     }
     else {
-        inputManager = null;
+        if(browser) {
+            window.onbeforeunload = null;
+        }
+        if(inputManager != null) {
+            console.log("Destroying server-side inputmanager...");
+            inputManager = null;
+            // enableKIM = false;
+        }
     }
 
-    let inputManager;
+    let inputManager: KeyboardInputManager|null = null;
     let inputRoot: HTMLElement;
     onMount(()=>{
         onInitDone();
     });
     let TtInstance: Tournaments;
     let AnnouncerInstance: Announcer;
+    let BoardInstance: Board;
+
+    let enableMonkey = false;
+    let monkeyInterval: NodeJS.Timer|undefined;
+    $: if(enableMonkey) {
+        monkeyInterval = setInterval(()=>{
+            move(Math.round(Math.random() * 400)%4);
+        }, 500);
+    }
+    else {
+        clearInterval(monkeyInterval);
+    }
 </script>
 
 <main bind:this={inputRoot}>
@@ -70,7 +100,19 @@
         <p class="err">Palvelimeen ei saada yhteyttä. <button on:click={checkAlive}>Yritä uudelleen</button></p>
     {/if}
     <div class="board-container">
-        <Board {enableKIM} {grid} />
+        <div style="display: flex;justify-content:space-between;width:var(--field-width);">
+            <div style="display: flex;align-items: end;">
+                <a sveltekit:reload href="/">Takaisin yksinpeliin</a>
+            </div>
+            {#if $poll_success}
+                <h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
+            {/if}
+            <div style="display: flex;align-items: end;">
+                <label for="monkey">Enable monkey</label>
+                <input id="monkey" type="checkbox" bind:checked={enableMonkey}>
+            </div>
+        </div>
+        <Board {enableKIM} {grid} bind:this={BoardInstance} />
         <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Tournament Mode">
             ⚔
         </button>

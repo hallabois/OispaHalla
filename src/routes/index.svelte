@@ -97,14 +97,14 @@
         </div>
         <div class="score-container" style="--c:'{app_name_score}'">0</div>
         <div class="best-container"  style="--c:'{app_name_hiscore}'">0</div>
-        <button class="restart-button button">
+        <div class="restart-button button">
           <div class="uusi-jakso">{app_name_newgame}</div>
           <div class="size-selector">
             <button>&lt;</button>
             <button class="restart-3x3">3x3</button>
             <button class="restart-4x4">4x4</button>
           </div>
-        </button>
+        </div>
       </div>
     </div>
     <!-- <div class="heading">

@@ -4,8 +4,8 @@
 		<meta charset="utf-8">
 		<title>Oispa Halla</title>
 	  
-		<link rel="manifest" href="%svelte.assets%/manifest.json">
-		<link rel="shortcut icon" href="%svelte.assets%/img/favicon.ico">
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json">
+		<link rel="shortcut icon" href="%sveltekit.assets%/img/favicon.ico">
 		<!-- <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
 		<link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ --.>
 		<link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> iPhone, retina -->
@@ -25,7 +25,7 @@
 		<meta name="theme-color" content="#000000"/>
 		<script>window.sa_event=window.sa_event||function(){var a=[].slice.call(arguments);window.sa_event.q?window.sa_event.q.push(a):window.sa_event.q=[a]};</script>
 
-		%svelte.head%
+		%sveltekit.head%
 	</head>
 	<body>
 		<noscript>
@@ -37,7 +37,7 @@
 				</p>
 			</div>
 		</noscript>
-		<div id="svelte">%svelte.body%</div>
+		<div id="svelte">%sveltekit.body%</div>
 
 		<!-- import ".//sw.js"></pwa_promoter.js> -->
 		<script data-collect-dnt="true" async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

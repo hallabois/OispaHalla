@@ -32,7 +32,7 @@
 
 <style>
     main {
-        z-index: 72;
+        z-index: 217;
         position: absolute;
         top: 0;
         left: 0;

@@ -16,7 +16,7 @@ export function hac_gamestate_to_grid(gamestate: string) {
         t=> t && t.position
     )
     .map(
-        t=> new Tile({x: t.position.y, y: t.position.x}, t.value, t.id)
+        t=> new Tile({y: t.position.x, x: t.position.y}, t.value, t.id)
     ).filter(
         (t: Tile)=> t.x < size && t.y < size
     );
@@ -25,7 +25,7 @@ export function hac_gamestate_to_grid(gamestate: string) {
 
     for(let y in grid.cells) {
         for(let x in grid.cells) {
-            grid.cells[y][x] = newcells.find(t2 => x == t2.x && y == t2.y) || grid.cells[y][x];
+            grid.cells[y][x] = newcells.find(t2 => x == t2.y && y == t2.x) || grid.cells[y][x];
         }
     }
     // console.info("GRID", grid);

@@ -119,7 +119,7 @@ h1.title.dark{
 
 .lb-popup-container {
   background-color: $game-background;
-  width: min(450px, 100vw);
+  min-width: min(450px, 100vw);
   margin: 0;
   animation-name: popdown;
   animation-duration: 0.4s;
@@ -282,10 +282,8 @@ h1.title.dark{
   display: -webkit-flex;
   display: flex;
   text-align: center;
-  margin-left: 25px;
   min-height: 30px;
   position: relative;
-  left: 15px;
 }
 
 .kurin-palautus {
@@ -1026,6 +1024,13 @@ $colors: (
   '14-break-button-color-false': #ddd,
   '14-break-button-background-true': #49a636,
   '14-break-button-color-true': #dfdfdf,
+
+  '16-color-scheme': 'light', 
+  '16-game-background': $game-background,
+  '16-break-button-background-false': #a63636, //kurinpalautus!
+  '16-break-button-color-false': #ddd,
+  '16-break-button-background-true': #49a636,
+  '16-break-button-color-true': #dfdfdf,
 
   '1-color-scheme': 'light', 
   '1-game-background': $game-background,
