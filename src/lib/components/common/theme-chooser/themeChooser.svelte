@@ -8,25 +8,29 @@
     import { slide } from "svelte/transition";
     import { browser } from "$app/env";
     class theme {
+        name!: string
         index!: number
         icon_url!: string
         style!: string
     }
     let available_themes: theme[] = [
         {
-            index: 16,
-            icon_url: "/img/theme-16/2048.png",
-            style: "background: transparent;"
+            name: "OispaHalla",
+            index: 1,
+            icon_url: "/img/raksahalla_192.png",
+            style: "background: white;"
         },
         {
+            name: "OispaHalla (tumma)",
             index: 0,
             icon_url: "/img/raksahalla_192.png",
             style: "background: black;"
         },
         {
-            index: 1,
-            icon_url: "/img/raksahalla_192.png",
-            style: "background: white;"
+            name: "Classic",
+            index: 16,
+            icon_url: "/img/theme-16/2048.png",
+            style: "background: transparent;"
         },
     ];
 
@@ -45,6 +49,7 @@
             )
         ) {
         available_themes.push({
+            name: "Kaunis",
             index: 14,
             icon_url: "/img/theme-14/2.png",
             style: ""
@@ -61,6 +66,8 @@
             {#if currentTheme == theme.index || menu_open}
                 <!-- svelte-ignore missing-declaration -->
                 <button
+                    title={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
+                    aria-label={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
                     on:click={()=>{
                         if(menu_open) {
                             setImageTheme(theme.index)
