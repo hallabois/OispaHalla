@@ -291,17 +291,19 @@ h1.title.dark{
   background-color: #c00;
   cursor: pointer;
   width: fit-content;
-  border-radius: 3px;
   transition: 1s background, 1s color;
   display: -webkit-flex;
   display: flex;
   align-items: center;
-  justify-content: center; 
-  border: $game-background 1px solid;
+  justify-content: center;
+   
+  padding: .5em .3em;
 
-  &:hover {
-    border: $game-background-dark 1px solid;
-  }
+  // border: $game-background 1px solid;
+
+  // &:hover {
+  //   border: $game-background-dark 1px solid;
+  // }
 }
 
 
@@ -1123,13 +1125,13 @@ $colors: (
           background-color: map-get($colors, '#{$color-number}-cell-color');
         }
 
-        .kurin-palautus {
-          border: 1px map-get($colors, '#{$color-number}-game-background') solid;
+        // .kurin-palautus {
+        //   border: 1px map-get($colors, '#{$color-number}-game-background') solid;
 
-          &:hover {
-            border: 1px map-get($colors, '#{$color-number}-game-background-inverted') solid;
-          }
-        }
+        //   &:hover {
+        //     border: 1px map-get($colors, '#{$color-number}-game-background-inverted') solid;
+        //   }
+        // }
 
         .game-container, .score-container, .best-container, .HAC-container {
           background: map-get($colors, '#{$color-number}-game-container-background');
