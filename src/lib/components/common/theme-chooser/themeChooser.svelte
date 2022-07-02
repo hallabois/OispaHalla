@@ -124,4 +124,10 @@
     button, img {
         border-radius: .25rem;
     }
+
+    @media (max-width: 576px) {
+        main {
+            display: none;
+        }
+    }
 </style>
