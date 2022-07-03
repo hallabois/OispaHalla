@@ -66,14 +66,14 @@
             onInitDone();
         }
         mounted = true;
-        let score_size = lbInstance.hasUnsavedScore();
-        if( score_size != null && lbInstance.connected ){
-          lbInstance.show(score_size);
-        }
+        // let score_size = lbInstance.hasUnsavedScore();
+        // if( score_size != null && lbInstance.connected ){
+        //   lbInstance.show(score_size);
+        // }
     } );
 
-    let lbInstance;
-    let TtInstance;
+    let lbInstance: Leaderboards;
+    let TtInstance: Tournaments;
 </script>
 
 <svelte:head>

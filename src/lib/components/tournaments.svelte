@@ -37,6 +37,7 @@
 
     let activeTab = 0;
     let wasActive = false;
+    let hadEnded = false;
     $: if($poll_success && $poll_game) {
         if($poll_game.active && !wasActive) {
             open = false;
@@ -48,9 +49,18 @@
         else if(!$poll_game.active){
             wasActive = false;
         }
+
+        if($poll_game.ended && !hadEnded) {
+            open = true;
+            hadEnded = true;
+            if(announcer) {
+                announcer.announce("Peli on päättynyt!");
+            }
+        }
     }
     else {
         wasActive = false;
+        hadEnded = false;
     }
 
     onMount(()=>{

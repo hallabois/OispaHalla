@@ -2,7 +2,7 @@ let tournament_endpoint_dev = false ? "https://hac.oispahalla.com:9000/ohts/api"
 let tournament_endpoint = process.env.NODE_ENV !== "development" ? "https://hac.oispahalla.com:9000/ohts/api" : tournament_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 
-class createResponse {
+export class createResponse {
     success: boolean
     edit_key!: string;
     join_password!: string
@@ -15,7 +15,28 @@ class createResponse {
     }
 }
 
-export async function createTournament(name: string, is_public: boolean, max_clients: number, join_password: string): Promise<createResponse> {
+
+export let gamemode_0_goals = [32,    64,    128,   256,   512,   1024,  2048];
+export let gamemode_0_names: { [key: number]: string} = {
+    32:  "SSn",
+    64:  "MSl", 
+    128: "CFr",
+    256: "HTe",
+    512: "MPa",
+    1024:"EHy",
+    2048:"LHa"
+};
+
+export enum createTournamentGamemode {
+    FirstPastThePost = 0
+}
+
+export class createTournamentGamemodeOptions {
+    gamemode!: createTournamentGamemode
+    goal!: number
+}
+
+export async function createTournament(name: string, is_public: boolean, max_clients: number, join_password: string | null, gamemode_options: createTournamentGamemodeOptions): Promise<createResponse> {
     let resp = await fetch(`${tournament_endpoint}/games`, 
         {
             method: 'POST',
@@ -28,7 +49,8 @@ export async function createTournament(name: string, is_public: boolean, max_cli
                 "create_name": name,
                 "create_public": is_public,
                 "create_max_clients": max_clients,
-                "create_join_password": join_password          
+                "create_join_password": join_password,
+                "create_gamemode": gamemode_options        
             })
         }
     );
@@ -49,9 +71,12 @@ export class TournamentInfo {
     requires_password!: boolean
     public!: boolean
     active!: boolean
+    ended!: boolean
     clients!: number
     client_aliases!: string[]
     starting_state!: string
+    gamemode!: number
+    gamemode_goal!: number
 }
 
 class publicTournamentsResponse {
@@ -175,7 +200,7 @@ export async function poll() {
     }
 }
 
-export async function joinGame(id: number, joinPswd = null, isHost = false, hostPswd: string|null = null) {
+export async function joinGame(id: number, joinPswd: string | null = null, isHost = false, hostPswd: string|null = null) {
     console.log("Trying to join game id", id, "...")
     // TODO: Contact server
     let resp = await fetch(`${tournament_endpoint}/games/${id}/join`,

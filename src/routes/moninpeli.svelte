@@ -37,7 +37,7 @@
     }
 
     function move(direction: number) {
-        if($poll_game && $poll_game.active) {
+        if($poll_game && $poll_game.active && !$poll_game.ended) {
             BoardInstance.getGameManagerInstance().move(direction);
             console.log("server-side move called with the value", direction);
             poll_send_moves.push(direction);
@@ -137,6 +137,7 @@
         place-items: center;
     }
     .err {
+        z-index: 217;
         background-color: red;
         color: black;
         text-align: center;

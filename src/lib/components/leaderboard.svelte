@@ -2,8 +2,8 @@
 <script context="module" lang="ts">
     declare var GameManagerInstance: any;
     declare var base_path: string;
-  </script>
-  <!-- / -->
+</script>
+<!-- / -->
 <script lang="ts">
     import { onMount } from "svelte";
     import { fly, slide, fade } from "svelte/transition";

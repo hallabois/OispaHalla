@@ -54,7 +54,7 @@ async function fetchAndCache(request: Request) {
 }
 
 worker.addEventListener('fetch', (event) => {
-	if (event.request.method !== 'GET' || event.request.headers.has('range')) return;
+	if (event.request.method !== 'GET' || event.request.headers.has('range') || event.request.url.endsWith("/alive")) return;
 
 	const url = new URL(event.request.url);
 

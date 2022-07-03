@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_id_index, poll_success, refreshGameData } from "$lib/tournamentstore";
+    import { gamemode_0_names, host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_id_index, poll_success, refreshGameData } from "$lib/tournamentstore";
     import Board from "../board/board.svelte";
     import { hac_gamestate_to_grid } from "$lib/legacy/utils";
     import type Announcer from "./announcer.svelte";
@@ -47,6 +47,9 @@
                     <button on:click={shareGameID}>Jaa kutsu</button>
                 {/if}
             </p>
+            {#if $joined_game_data.gamemode == 0}
+                <p style="max-width:430px;">Pelaaja joka saavuttaa ensimmäisenä laatan <b style="white-space: nowrap;">{$joined_game_data.gamemode_goal} ({gamemode_0_names[+$joined_game_data.gamemode_goal]})</b> voittaa.</p>
+            {/if}
             <div class="data">
                 <div>
                     <h3>Aloitustilanne</h3>
@@ -84,7 +87,14 @@
         {/if}
         {#if $joined_game_am_host && $poll_success}
             <div class="start">
-                <button class="button action-btn" on:click={host_startGame} disabled={$poll_game.active}>Aloita Peli</button>
+                <button
+                    style="width:100%;"
+                    class="button action-btn"
+                    on:click={host_startGame}
+                    disabled={$poll_game.active || $poll_game.ended}
+                >
+                    {$poll_game.ended ? "Peli on päättynyt!" : $poll_game.active ? "Peli on alkanut!" : "Aloita Peli"}
+                </button>
             </div>
         {/if}
         {#if !$joined_game_am_host && $poll_success}
