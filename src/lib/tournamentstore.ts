@@ -1,4 +1,4 @@
-let tournament_endpoint_dev = false ? "https://hac.oispahalla.com:9000/ohts/api" : "https://0.0.0.0:9000/ohts/api";
+let tournament_endpoint_dev = true ? "https://hac.oispahalla.com:9000/ohts/api" : "https://0.0.0.0:9000/ohts/api";
 let tournament_endpoint = process.env.NODE_ENV !== "development" ? "https://hac.oispahalla.com:9000/ohts/api" : tournament_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 
@@ -73,6 +73,7 @@ export class TournamentInfo {
     active!: boolean
     ended!: boolean
     clients!: number
+    max_clients!: number
     client_aliases!: string[]
     starting_state!: string
     gamemode!: number
@@ -239,6 +240,9 @@ export async function joinGame(id: number, joinPswd: string | null = null, isHos
         else if(resp.status == 418) {
             joined_game_error.set("Peli on jo käynnissä");
         }
+        else if(resp.status == 401) {
+            joined_game_error.set("Väärä salasana");
+        }
         else{
             joined_game_error.set(resp.statusText);
         }
@@ -307,7 +311,7 @@ export async function host_startGame(): Promise<startResponse> {
 }
 
 class deleteResponse {
-    success: boolean
+    success!: boolean
 }
 
 export async function host_deleteGame(): Promise<deleteResponse> {
