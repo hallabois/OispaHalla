@@ -42,7 +42,7 @@
                     </h2>
                     <div class="lb-buttons">
                         <slot name="buttons">
-                            <button title="Close window" class="button background-none color-button" on:click={()=>{open=false;}}>×</button>
+                            <button title="Sulje ikkuna" class="button background-none color-button" on:click={()=>{open=false;}}>×</button>
                         </slot>
                     </div>
                 </div>

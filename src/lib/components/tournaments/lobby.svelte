@@ -99,7 +99,9 @@
         {/if}
         {#if !$joined_game_am_host && $poll_success}
             <div class="start">
-                <p>Odotetaan pelin alkua...</p>
+                <p style="width: 100%;text-align:center;">
+                    {$poll_game.ended ? "Peli on päättynyt!" : $poll_game.active ? "Peli on alkanut!" : "Odotetaan pelin alkua..."}
+                </p>
             </div>
         {/if}
     {/if}
