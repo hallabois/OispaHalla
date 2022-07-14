@@ -1,5 +1,6 @@
 <script lang="ts">
     import { tournament_endpoint } from "$lib/tournamentstore";
+    let refreshKey = {};
     let admin_token: string;
     let admin_token_checking = false;
     let admin_token_valid = false;
@@ -15,6 +16,9 @@
             admin_token_valid = false;
             admin_token_checking = false;
         }
+    }
+    $: if(!admin_token_valid) {
+        selected_game = null;
     }
 
     let action_status: null | boolean = null; // Null: Clear, true: OK, false: Error
@@ -33,6 +37,10 @@
         return fetch(`${tournament_endpoint}/admin/games/${admin_token}`);
     }
 
+    async function getGameDetails(game_id: string) {
+        return fetch(`${tournament_endpoint}/admin/games/${game_id}/${admin_token}`);
+    }
+
     async function deleteAllGames() {
         if(confirm_action()) {
             console.log("Confirmation received, deleting all games...");
@@ -44,23 +52,33 @@
             });
             console.log("Deletion request result:", result);
             action_status = result.ok;
+            refreshKey = {};
         }
     }
+
+    let selected_game: string | null;
     
 </script>
+
+<svelte:head>
+    <title>OHTS Admin Panel</title>
+</svelte:head>
 
 <main>
     {#if action_status != null}
         {#if action_status}
-            <p>Action successful!</p>
+            <p style="action success">Action successful!</p>
         {:else}
-            <p>Error completing action, check the console for details.</p>
+            <p style="action error">Error completing action, check the console for details.</p>
         {/if}
     {/if}
     <div class="header">
         <div class="header-bar">
             <h1>OispaHalla™ Multiplayer Admin Panel</h1>
-            {#if admin_token_valid}
+        </div>
+        {#if admin_token_valid}
+            <div class="actions">
+                <button on:click={deleteAllGames}>Delete ALL Games</button>
                 <button
                     on:click={
                         ()=>{
@@ -68,57 +86,100 @@
                         }
                     }
                 >Log Out</button>
-            {/if}
-        </div>
-        {#if admin_token_valid}
-            <div class="actions">
-                <button on:click={deleteAllGames}>Delete ALL Games</button>
+                <button on:click={()=>{refreshKey = {};}}>Refresh data</button>
             </div>
         {/if}
         <hr />
     </div>
     {#if admin_token_valid}
-        <div class="content">
+        {#key refreshKey}
             {#await getGames()}
-                <p>Loading games</p>
+                <div class="content">
+                    <p>Loading games</p>
+                </div>
             {:then resp} 
                 {#if resp.ok}
                     {#await resp.json()}
-                        <p>Parsing JSON</p>
-                    {:then data} 
+                        <div class="content">
+                            <p>Parsing JSON</p>
+                        </div>
+                    {:then data}
                         {#if data.ongoing_games && data.ongoing_games.length > 0}
-                            <div class="game">
-                                {#each Object.keys(data.ongoing_games[0]) as key}
-                                    <p
-                                        style="flex: 1;text-align: center;"
-                                    >{key}</p>
-                                {/each}
+                            <div class="data-view">
+                                <div class="games">
+                                    <table>
+                                        <thead>
+                                            <tr class="head">
+                                                {#each Object.keys(data.ongoing_games[0]) as key}
+                                                    <th>{key}</th>
+                                                {/each}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {#each data.ongoing_games as game}
+                                                <tr class="game"
+                                                    on:click={()=>{
+                                                        selected_game = game.id;
+                                                    }}
+                                                >
+                                                    {#each Object.keys(game) as key}
+                                                        <td>{game[key]}</td>
+                                                    {/each}
+                                                </tr>
+                                            {/each}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {#if selected_game != null}
+                                    <div class="game-inspector">
+                                        {#await getGameDetails(selected_game)}
+                                            <p class="message">Loading game {selected_game}</p>
+                                        {:then response} 
+                                            {#if response.ok}
+                                                {#await response.json()}
+                                                    <p class="message">Parsing JSON</p>
+                                                {:then json} 
+                                                    {#if json.data}
+                                                        {@const game_data = JSON.parse(json.data)}
+                                                        <h3>Game {game_data.id}: "{game_data.name}"</h3>
+                                                        {JSON.stringify(game_data)}
+                                                    {:else}
+                                                        <p class="message">Invalid data</p>
+                                                    {/if}
+                                                {/await}
+                                            {:else}
+                                                <p class="message">Error fetching game details: {response.statusText}</p>
+                                            {/if}
+                                        {/await}
+                                    </div>
+                                {/if}
                             </div>
                         {:else}
-                            <p>No games atm</p>
-                        {/if}
-                        {#each data.ongoing_games as game}
-                            <div class="game">
-                                {#each Object.keys(game) as key}
-                                    <p
-                                        style="flex: 1;text-align: center;"
-                                    >{game[key]}</p>
-                                {/each}
+                            <div class="content">
+                                <p>No games atm</p>
                             </div>
-                        {/each}
+                        {/if}
                     {/await}
                 {:else}
                     <p>Failed to get games: {resp.statusText}</p>
                 {/if}
             {/await}
-        </div>
+        {/key}
     {:else}
         <div class="content">
-            <label for="admin_token">Admin token</label>
+            <label for="admin_token">Please input the admin token</label>
+            <!-- svelte-ignore a11y-autofocus -->
             <input
                 id="admin_token"
-                bind:value={admin_token} 
+                type="password"
+                bind:value={admin_token}
+                autofocus
             />
+            {#if admin_token_checking}
+                <p>checking...</p>
+            {:else}
+                <p style="visibility: hidden;">.</p>
+            {/if}
         </div>
     {/if}
 </main>
@@ -128,21 +189,26 @@
         color-scheme: dark;
     }
     main {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+        height: 100vh;
+        --header-height: 100px;
 
         color: #e6d2bf;
+    }
+    .header {
+        height: var(--header-height);
     }
     .header-bar {
         display: flex;
         flex-wrap: wrap;
-        margin: .5em;
+        padding: .5em;
+        padding-bottom: 0;
+        margin: 0;
         align-items: center;
         justify-content: space-between;
     }
     .actions {
         margin: .5em;
+        margin-top: 0;
     }
     .content {
         flex: 1;
@@ -155,19 +221,66 @@
         gap: .5em;
     }
 
-    .game {
+    .data-view {
+        height: calc(100vh - var(--header-height));
+
         display: flex;
-        gap: .5em;
-        width: 100%;
-        justify-content: space-around;
+        /* flex-direction: column;
+        flex-wrap: wrap; */
     }
 
-    h1 {
+    .games {
+        flex: 1;
+        overflow-x: scroll;
+    }
+    .games table{
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .games tbody {
+        overflow-y: scroll;
+    }
+    .games td, .games th {
+        border: 1px solid #e6d2bf22;
+        text-align: left;
+        padding: 8px;
+
+        overflow: scroll;
+    }
+    .games tr:nth-child(even) {
+        background-color: #e6d2bf22;
+    }
+    tr.game {
+        cursor: pointer;
+    }
+    tr.game:hover {
+        background-color: #e6d2bf55;
+    }
+
+    .game-inspector {
+        flex: 1;
+
+        padding: 1em;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+    .game-inspector p.message {
+        flex: 1;
+
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    h1, h2, h3 {
         margin: 0;
     }
     hr {
         margin: 0;
-        margin-bottom: 1em;
     }
     p {
         margin: 0;
