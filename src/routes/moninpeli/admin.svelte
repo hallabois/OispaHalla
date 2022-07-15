@@ -19,6 +19,7 @@
     }
     $: if(!admin_token_valid) {
         selected_game = null;
+        action_status = null;
     }
 
     let action_status: null | boolean = null; // Null: Clear, true: OK, false: Error
@@ -45,12 +46,43 @@
         if(confirm_action()) {
             console.log("Confirmation received, deleting all games...");
             let result = await fetch(`${tournament_endpoint}/admin/clean/${admin_token}`, {
-                method: 'DELETE',
-                // headers: {
-                //     'Content-type': 'application/json'
-                // }
+                method: 'DELETE'
             });
             console.log("Deletion request result:", result);
+            action_status = result.ok;
+            refreshKey = {};
+        }
+    }
+    async function deleteGame(game_id: string) {
+        if(confirm_action()) {
+            console.log(`Confirmation received, deleting game ${game_id}...`);
+            let result = await fetch(`${tournament_endpoint}/games/${game_id}/delete`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    "edit_key": admin_token
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("Deletion request result:", result);
+            action_status = result.ok;
+            refreshKey = {};
+        }
+    }
+    async function startGame(game_id:string) {
+        if(confirm_action()) {
+            console.log(`Confirmation received, starting game ${game_id}...`);
+            let result = await fetch(`${tournament_endpoint}/games/${game_id}/start`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    "edit_key": admin_token
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log("Activation request result:", result);
             action_status = result.ok;
             refreshKey = {};
         }
@@ -66,11 +98,15 @@
 
 <main>
     {#if action_status != null}
-        {#if action_status}
-            <p style="action success">Action successful!</p>
-        {:else}
-            <p style="action error">Error completing action, check the console for details.</p>
-        {/if}
+        <div class="action"
+            on:click={()=>{action_status = null}}
+        >
+            {#if action_status}
+                <p class="success">Action successful!</p>
+            {:else}
+                <p class="error">Error completing action, check the console for details.</p>
+            {/if}
+        </div>
     {/if}
     <div class="header">
         <div class="header-bar">
@@ -121,6 +157,9 @@
                                                     on:click={()=>{
                                                         selected_game = game.id;
                                                     }}
+                                                    class:selected={
+                                                        selected_game === game.id
+                                                    }
                                                 >
                                                     {#each Object.keys(game) as key}
                                                         <td>{game[key]}</td>
@@ -141,8 +180,24 @@
                                                 {:then json} 
                                                     {#if json.data}
                                                         {@const game_data = JSON.parse(json.data)}
-                                                        <h3>Game {game_data.id}: "{game_data.name}"</h3>
-                                                        {JSON.stringify(game_data)}
+                                                        <div style="display: flex;gap: .5em;align-items: center;">
+                                                            <button on:click={()=>{selected_game = null;}}>×</button>
+                                                            <h3>Game {selected_game}: "{game_data.name}"</h3>
+                                                        </div>
+                                                        <div>
+                                                            <button on:click={()=>{deleteGame(selected_game||"")}}>Delete</button>
+                                                            {#if !game_data.active}
+                                                                <button on:click={()=>{startGame(selected_game||"")}}>Start</button>
+                                                            {/if}
+                                                        </div>
+                                                        <table>
+                                                            {#each Object.keys(game_data) as game_key}
+                                                                <tr>
+                                                                    <td>{game_key}</td>
+                                                                    <td>{game_data[game_key]}</td>
+                                                                </tr>
+                                                            {/each}
+                                                        </table>
                                                     {:else}
                                                         <p class="message">Invalid data</p>
                                                     {/if}
@@ -188,6 +243,22 @@
     :global(html, body) {
         color-scheme: dark;
     }
+    .action {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        text-align: center;
+        padding-block: .5em;
+
+        cursor: pointer;
+    }
+    .action .success {
+        color: #4D4;
+    }
+    .action .error {
+        color: #D44;
+    }
     main {
         height: 100vh;
         --header-height: 100px;
@@ -212,6 +283,7 @@
     }
     .content {
         flex: 1;
+        height: calc(100vh - var(--header-height));
 
         display: flex;
         flex-direction: column;
@@ -225,35 +297,35 @@
         height: calc(100vh - var(--header-height));
 
         display: flex;
-        /* flex-direction: column;
-        flex-wrap: wrap; */
+        flex-direction: column;
+        /* flex-wrap: wrap; */
     }
 
     .games {
         flex: 1;
         overflow-x: scroll;
     }
-    .games table{
+    table{
         width: 100%;
         border-collapse: collapse;
     }
-    .games tbody {
+    tbody {
         overflow-y: scroll;
     }
-    .games td, .games th {
+    td, th {
         border: 1px solid #e6d2bf22;
         text-align: left;
         padding: 8px;
 
         overflow: scroll;
     }
-    .games tr:nth-child(even) {
+    tr:nth-child(even) {
         background-color: #e6d2bf22;
     }
     tr.game {
         cursor: pointer;
     }
-    tr.game:hover {
+    tr.game:hover, tr.game.selected {
         background-color: #e6d2bf55;
     }
 
@@ -263,7 +335,9 @@
         padding: 1em;
         display: flex;
         flex-direction: column;
-        flex-wrap: wrap;
+        /* flex-wrap: wrap; */
+
+        overflow-y: scroll;
     }
     .game-inspector p.message {
         flex: 1;
