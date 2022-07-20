@@ -5,6 +5,8 @@
 </script>
 <!-- / -->
 <script lang="ts">
+    import { browser } from "$app/env";
+    import { open_popups } from "$lib/popupstore";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     export let open = false;
@@ -21,6 +23,18 @@
                 GameManagerInstance.inputManager.addKeydownHandler();
                 input_enabled = true;
             }
+        }
+    }
+
+    let my_key = {}; // All objects are unique
+    $: if(open && browser) {
+        if(!$open_popups.includes(my_key)) {
+            open_popups.set( [...$open_popups, my_key] );
+        }
+    }
+    else if(browser) {
+        if($open_popups.includes(my_key)) {
+            open_popups.set($open_popups.filter(x=>x!==my_key));
         }
     }
 

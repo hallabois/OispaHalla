@@ -1,5 +1,5 @@
 let leaderboard_enpoint_prod = "https://oispahallalb.herokuapp.com";
-let leaderboard_endpoint_dev = false ? leaderboard_enpoint_prod : "http://localhost:5000";
+let leaderboard_endpoint_dev = true ? leaderboard_enpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = process.env.NODE_ENV !== "development" ? leaderboard_enpoint_prod : leaderboard_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 
