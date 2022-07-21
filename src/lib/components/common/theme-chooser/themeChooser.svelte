@@ -5,7 +5,11 @@
 </script>
 <!-- / -->
 <script lang="ts">
-    import { slide } from "svelte/transition";
+    import { slide, scale } from "svelte/transition";
+    import { base_path } from "$lib/themestore";
+
+    const animate = (node, args) =>
+        args.condition ? slide(node, args) : scale(node, args);
     import { browser } from "$app/env";
     class theme {
         name!: string
@@ -13,7 +17,14 @@
         icon_url!: string
         style!: string
     }
-    let available_themes: theme[] = [
+    class theme_custom {
+        name!: string
+        index!: number
+        theme_url!: string
+        icon_url!: string
+        style!: string
+    }
+    let available_themes: theme[]|theme_custom[] = [
         {
             name: "OispaHalla",
             index: 1,
@@ -36,6 +47,12 @@
 
     let menu_open = false;
 
+    let kaunis = {
+        name: "Kaunis",
+        index: 14,
+        icon_url: "/img/theme-14/2.png",
+        style: ""
+    };
     $: if(
             browser && localStorage && 
             (
@@ -47,52 +64,110 @@
                     (+localStorage.getItem("bestScore")) > 10000 
                 )
             )
+            &&
+            !available_themes.includes(kaunis)
         ) {
+        available_themes.push(kaunis);
+        available_themes = available_themes;
+    }
+
+    async function fetchCustomThemeDetails(url) {
+        try {
+            let res = await fetch(`${url}/manifest.json`);
+            if(res.ok) {
+                try {
+                    let json = await res.json();
+                    return [true, json, null];
+                }
+                catch (e) {
+                    return [false, {}, "invalid json"];
+                }
+            }
+        }
+        catch (e) {
+            return [false, {}, "network error"];
+        }
+        return [false, {}, "what?"];
+    }
+    async function addCustomTheme() {
+        let url = prompt("Teeman osoite");
+        let fetch_result = await fetchCustomThemeDetails(url);
+        if(!fetch_result[0]) {
+            alert(`Virhe: ${fetch_result[2]}`);
+            return;
+        }
+        let manifest = fetch_result[1];
+        let name = manifest.name;
+        let icon_url = `${url}/theme-0/2048.png`;
         available_themes.push({
-            name: "Kaunis",
-            index: 14,
-            icon_url: "/img/theme-14/2.png",
+            name: name,
+            index: 0,
+            theme_url: url,
+            icon_url: icon_url,
             style: ""
         });
         available_themes = available_themes;
     }
+
+    export let relative = true;
+    export let expandX = false;
+    export let expandY = true;
 </script>
 
-<main>
+<main class:relative class:expandX class:expandY>
     <!-- svelte-ignore missing-declaration -->
     {#if typeof currentTheme !== "undefined"}
         {#each available_themes as theme, index}
             <!-- svelte-ignore missing-declaration -->
-            {#if currentTheme == theme.index || menu_open}
+            {#if (theme.theme_url && $base_path === theme.theme_url) || (currentTheme == theme.index && $base_path === "") || menu_open}
                 <!-- svelte-ignore missing-declaration -->
                 <button
                     title={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
                     aria-label={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
                     on:click={()=>{
                         if(menu_open) {
-                            setImageTheme(theme.index)
+                            if(theme.theme_url) {
+                                base_path.set(theme.theme_url);
+                            }
+                            else {
+                                base_path.set("");
+                                setImageTheme(theme.index);
+                            }
                         }
                         menu_open = !menu_open;
                     }}
                     on:touchend={()=>{
                         if(menu_open) {
-                            setImageTheme(theme.index)
+                            if(theme.theme_url) {
+                                base_path.set(theme.theme_url);
+                            }
+                            else {
+                                base_path.set("");
+                                setImageTheme(theme.index);
+                            }
                         }
                         menu_open = !menu_open;
                     }}
-                    transition:slide={{delay: index*50}}
+                    transition:animate={{condition: relative, delay: index*50}}
                 >
                     <img src={theme.icon_url} width="50px" height="50px" alt="" style={theme.style} />
                 </button>
             {/if}
         {/each}
+        {#if menu_open}
+            <button
+                    title="Lisää teema"
+                    aria-label="Lisää teema"
+                    on:click={addCustomTheme}
+                    on:touchend={addCustomTheme}
+                    transition:animate={{condition: relative, delay: available_themes.length*50}}
+            >+</button>
+        {/if}
     {/if}
 </main>
 
 <style>
     main {
-        position: relative;
-        left: var(--field-width, 500px);
 
         display: flex;
         flex-wrap: wrap;
@@ -100,9 +175,18 @@
         /* we'll use margin-bottom instead, as it works better with slide */
         /* gap: 1em; */
 
-        width: 0;
 
         transition: left 200ms;
+    }
+    main.relative {
+        position: relative;
+        left: var(--field-width, 500px);
+    }
+    main.expandX {
+        height: 0;
+    }
+    main.expandY {
+        width: 0;
     }
     button {
         padding: 0;

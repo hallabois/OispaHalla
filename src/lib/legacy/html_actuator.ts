@@ -1,4 +1,4 @@
-var base_path: any;
+import { get_base_path } from "$lib/themestore";
 
 export default class HTMLActuator {
   html_component: HTMLElement;
@@ -15,6 +15,7 @@ export default class HTMLActuator {
   score: number;
   constructor(documentRoot: HTMLElement) {
     this.documentRoot = documentRoot;
+    console.info("html actuator initialized with root", this.documentRoot);
 
     this.html_component = documentRoot;
     this.tileContainer = documentRoot.querySelector(".tile-container");
@@ -54,6 +55,7 @@ export default class HTMLActuator {
           self.message(true, metadata.palautukset); // You win!
         }
       }
+      const base_path = get_base_path();
       if(base_path && base_path != ""){
         // @ts-ignore, probably doesn't work but we don't care
         let images = [...self.documentRoot.querySelectorAll(".tile-inner")];

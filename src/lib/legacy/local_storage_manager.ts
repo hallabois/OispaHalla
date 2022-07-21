@@ -1,4 +1,4 @@
-var tabID: any;
+declare var tabID: any;
 
 var HallaAntiCheat: any;
 var sa_event: Function;

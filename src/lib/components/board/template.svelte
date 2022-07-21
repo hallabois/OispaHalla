@@ -1,3 +1,6 @@
+<script lang="ts">
+  import ThemeChooser from '$lib/components/common/theme-chooser/themeChooser.svelte';
+</script>
 <div class="game-container">
     <div class="kurin-palautus-viesti"></div>
     <div class="game-message">
@@ -55,6 +58,7 @@
     <div class="tile-container">
 
     </div>
+    <ThemeChooser />
 </div>
 
 <style>

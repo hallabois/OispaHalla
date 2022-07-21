@@ -8,6 +8,7 @@
     import { marked } from 'marked';
     import { onMount } from "svelte";
 
+    import Announcer from '$lib/components/tournaments/announcer.svelte';
     import Leaderboards from "$lib/components/leaderboard.svelte";
     import Tutorial from "$lib/components/tutorial.svelte";
     import Tournaments from "$lib/components/tournaments.svelte";
@@ -72,6 +73,7 @@
         // }
     } );
 
+    let AnnouncerInstance: Announcer;
     let lbInstance: Leaderboards;
     let TtInstance: Tournaments;
 </script>
@@ -82,8 +84,9 @@
 
 <main>
   <div class="container">
-    <Leaderboards bind:this={lbInstance} />
-    <Tournaments bind:this={TtInstance} />
+    <Announcer bind:this={AnnouncerInstance} />
+    <Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} />
+    <Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
     <div class="new-above-game">
       <div class="above-game-left">
         <a href="https://hallabois.github.io/invite/" target="_blank">

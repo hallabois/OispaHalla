@@ -276,7 +276,7 @@ export default class GameManager {
 
     // 0: up, 1: right, 2: down, 3: left
     let directions = ["up", "right", "down", "left"];
-    console.log("clientside moving to", directions[direction]);
+    // console.log("clientside moving", directions[direction]);
     var self = this;
 
     if (this.isGameTerminated())

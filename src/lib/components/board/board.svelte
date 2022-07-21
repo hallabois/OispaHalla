@@ -8,11 +8,16 @@
     import KeyboardInputManager from "$lib/legacy/keyboard_input_manager";
     import { generate_previous_positions } from "$lib/legacy/utils";
     import type Grid from "$lib/legacy/grid";
+    import { base_path } from "$lib/themestore";
 
     export let enableKIM = false;
     export let enableLSM = false;
+    export let enableRng = false;
+    export let documentRoot: HTMLElement|null;
+    export let initComponentsOnMount = true;
 
     export let grid: Grid|null = null;
+    export let size: number = 4;
 
     let board: HTMLElement;
     let GameManagerInstance: GameManager;
@@ -20,25 +25,30 @@
     let KIM: KeyboardInputManager;
     let LSM: LocalStorageManager;
 
-    function initcomponents() {
+    export function setDocumentRoot(root: HTMLElement) {
+        documentRoot = root;
+    }
+
+    export function initcomponents() {
         if(GameManagerInstance) {
             GameManagerInstance = null;
         }
-        HTMLActuatorInstance = new html_actuator(board);
+        HTMLActuatorInstance = new html_actuator(documentRoot||board);
         // if(KIM && KIM.removeKeydownHandler) {
         //     KIM.removeKeydownHandler();
         // }
         KIM = new KeyboardInputManager(board, enableKIM);
         LSM = new LocalStorageManager(enableLSM);
-        GameManagerInstance = new GameManager(4, KIM, HTMLActuatorInstance, LSM, board, grid, false);
+        GameManagerInstance = new GameManager(4, KIM, HTMLActuatorInstance, LSM, documentRoot||board, grid, enableRng);
     }
 
     export function getGameManagerInstance() {
         return GameManagerInstance;
     }
 
+    export let enablePrevGen = false;
     let prevGrid: Grid;
-    $: if(board && grid && grid != null) {
+    $: if(board && grid && grid != null && enablePrevGen) {
         if(prevGrid) {
             grid = generate_previous_positions(grid, prevGrid);
         }
@@ -52,6 +62,10 @@
             GameManagerInstance.grid = grid;
             prevGrid = grid;
         }
+    }
+
+    $: if($base_path && GameManagerInstance) {
+        GameManagerInstance.actuate();
     }
 
     $: if(KIM && enableKIM != KIM.enabled) {
@@ -72,7 +86,9 @@
     }
 
     onMount(()=>{
-        initcomponents();
+        if(initComponentsOnMount) {
+            initcomponents();
+        }
     });
 </script>
 
