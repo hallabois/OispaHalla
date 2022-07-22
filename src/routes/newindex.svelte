@@ -184,5 +184,6 @@
 </style>
 <div class="patches">
     <script src="/js/application.js"></script>
+    <script src="/js/HAC.js"></script>
     <div class="preload-container" />
 </div>

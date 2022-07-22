@@ -2,6 +2,16 @@
 const HAC_status = document.querySelector(".HAC-status");
 const HAC_container = document.querySelector(".HAC-container");
 
+// Test if localstorage works
+var localStorageWorks = false;
+try {
+    localStorage.setItem("test", "2022206");
+    localStorage.removeItem('test');
+    localStorageWorks = true;
+}catch(e){
+    console.warn(e);
+};
+
 function getHACRequest(){
     let hac = HallaAntiCheat;
     return hac.size + "x" + hac.size + "S" + hac.history.join(":");
@@ -41,7 +51,7 @@ class HAC {
         this.history = [];
         this.size = 4;
         this.secure = false;
-        this.urls = ["https://localhost:8000", "http://localhost:8000", "https://hac.oispahalla.com:8000", "https://hac.hallacoin.ml:8000", "http://34.71.42.176:8000"];
+        this.urls = ["https://localhost:8000", "http://localhost:8000", "https://hac.oispahalla.com:8000", "http://34.71.42.176:8000"];
         this.url = "";
         this.connected = false;
         if(localStorageWorks){
@@ -112,7 +122,6 @@ class HAC {
         HAC_status.innerHTML = this.connected ? "✅📶" : "🚫📶";
     }
     recordBest(score, finished = false) {
-        let storagem = GameManagerInstance.storageManager;
         if(localStorageWorks){
             let best = localStorage["HAC_best_score" + this.size];
             if(best == null && localStorage["HAC_best_score"] != null && this.size == 4){
@@ -122,7 +131,7 @@ class HAC {
             if(best == null){
                 best = 0;
             }
-            let old_best = storagem.getBestScorePlus(this.size);
+            let old_best = localStorage["HAC_best_score" + this.size] || -1;
             let best_history = localStorage["HAC_best_history" + this.size];
             if(best_history == null && localStorage["HAC_best_history"] != null && this.size == 4){
                 best_history = JSON.parse(localStorage["HAC_best_history"]);
