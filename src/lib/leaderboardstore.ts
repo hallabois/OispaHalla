@@ -1,10 +1,15 @@
 let leaderboard_enpoint_prod = "https://oispahallalb.herokuapp.com";
-let leaderboard_endpoint_dev = true ? leaderboard_enpoint_prod : "http://localhost:5000";
+let leaderboard_endpoint_dev = false ? leaderboard_enpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = process.env.NODE_ENV !== "development" ? leaderboard_enpoint_prod : leaderboard_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 import { browser } from "$app/env";
 
 export let lb_screenName: Writable<string|null> = writable(browser ? localStorage.lb_screenName || null : null);
+lb_screenName.subscribe((val)=>{
+    if(val == "null") {
+        lb_screenName.set(null);
+    }
+});
 lb_screenName.subscribe((value) => {if(browser){localStorage.lb_screenName = value}});
 
 export let lb_id: Writable<string|null> = writable(browser ? localStorage.lb_id || null : null);
@@ -88,9 +93,82 @@ export async function get_top_scores(size: number, threshold: number): Promise<s
     }
 }
 
+
+export class User {
+    _id!: string
+    screenName!: string
+}
+export class Score_ok {
+    success!: boolean
+    _id!: string
+    size!: number
+    score!: number
+    breaks!: number
+    user!: User
+    createdAt!: string
+    updatedAt!: string
+}
+export class Score_error {
+    success!: boolean
+    error_msg!: string
+}
+export type Score_response = Score_ok | Score_error;
+export async function get_my_top_score(size: number, id: string): Promise<Score_response> {
+    try {
+        const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/id/${id}`);
+        if(resp.ok) {
+            try {
+                const json_result = await resp.json();
+                return {
+                    ...json_result,
+                    success: true
+                };
+            }
+            catch(e) {
+                console.warn(e);
+                return {
+                    success: false,
+                    error_msg: "Invalid JSON"
+                };
+            }
+        }
+        else {
+            console.warn(resp);
+            return {
+                success: false,
+                error_msg: "Failed to contact server."
+            };
+        }
+    }
+    catch (e) {
+        console.warn(e);
+        return {
+            success: false,
+            error_msg: "Error contacting server."
+        };
+    }
+}
+export async function get_score_placement(size: number, screenName: string): Promise<string> {
+    let all_scores = await get_all_scores(size);
+    if(all_scores instanceof scores_error) {
+        return "?.";
+    }
+    else {
+        let index = 0;
+        for(let score of all_scores.scores) {
+            if(score.user.screenName === screenName) {
+                return (index + 1) + ".";
+            }
+            index++;
+        }
+        return "?.";
+    }
+}
+
 export class submit_response {
     success!: boolean
-    message!: string|null
+    message!: string
+    json!: any | null
 }
 export async function submit_score(size: number, user_id: string|null, user_screenName: string, run_score: number, run_breaks: number, run_history: string): Promise<submit_response> {
     try {
@@ -114,7 +192,8 @@ export async function submit_score(size: number, user_id: string|null, user_scre
         if(resp.ok) {
             return {
                 success: true,
-                message: "Suoritus tallennettu."
+                message: "Suoritus tallennettu.",
+                json: await resp.json()
             }
         }
         else {
@@ -122,7 +201,8 @@ export async function submit_score(size: number, user_id: string|null, user_scre
             let json = await resp.json();
             return {
                 success: false,
-                message: json.message || "Tuntematon virhe"
+                message: json.message || "Tuntematon virhe",
+                json: json
             };
         }
     }
@@ -130,25 +210,26 @@ export async function submit_score(size: number, user_id: string|null, user_scre
         console.warn(e);
         return {
             success: false,
-            message: "Error contacting server."
+            message: "Error contacting server.",
+            json: null
         };
     }
 }
 
-export type Scores = Map<number, number>;
-export type Histories = Map<number, string>;
+export type Scores = {[key: number]: number};
+export type Histories = {[key: number]: any[]};
 export function get_local_top_scores(): Scores {
-    const scores = new Map();
+    const scores: Scores = {};
     for(const size of [3, 4]) {
-        scores.set(size, JSON.parse(localStorage.getItem(`HAC_best_score${size}`) || "null"));
+        scores[size] = JSON.parse(localStorage.getItem(`HAC_best_score${size}`) || "null");
     }
     console.info(scores);
     return scores;
 };
 export function get_local_top_histories(): Histories {
-    const histories = new Map();
+    const histories: Histories = {};
     for(const size of [3, 4]) {
-        histories.set(size, JSON.parse(localStorage.getItem(`HAC_best_history${size}`) || "null"));
+        histories[size] = JSON.parse(localStorage.getItem(`HAC_best_history${size}`) || "null");
     }
     console.info(histories);
     return histories;
@@ -157,7 +238,7 @@ export function update_my_top_score() {
     my_top_scores.set(get_local_top_scores());
     my_top_score_histories.set(get_local_top_histories());
 }
-export let my_top_scores: Writable<Scores> = writable(browser ? get_local_top_scores() : new Map());
-export let my_top_score_histories: Writable<Histories> = writable(browser ? get_local_top_histories() : new Map());
-export let my_top_submitted_scores: Writable<Scores> = writable(browser ? JSON.parse(localStorage.lb_submitted || "null") || new Map() : new Map());
-my_top_submitted_scores.subscribe((value) => {if(browser){localStorage.lb_id = JSON.stringify(value)}});
+export let my_top_scores: Writable<Scores> = writable(browser ? get_local_top_scores() : {});
+export let my_top_score_histories: Writable<Histories> = writable(browser ? get_local_top_histories() : {});
+export let my_top_submitted_scores: Writable<Scores> = writable(browser ? JSON.parse(localStorage.lb_submitted || "null") || {} : {});
+my_top_submitted_scores.subscribe((value) => {if(browser){localStorage.lb_submitted = JSON.stringify(value)}});
