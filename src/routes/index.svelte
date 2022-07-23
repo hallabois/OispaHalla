@@ -11,8 +11,8 @@
     import Leaderboards from "$lib/components/leaderboard.svelte";
     import Board from "$lib/components/board/board.svelte";
     import Announcer from '$lib/components/tournaments/announcer.svelte';
-    import type KeyboardInputManager from '$lib/legacy/keyboard_input_manager';
-    import type GameManager from "$lib/legacy/game_manager";
+    import type KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
+    import type GameManager from "$lib/gamelogic/game_manager";
     import Icon from "$lib/components/common/icon/icon.svelte";
     import { leaderboardIconData } from "$lib/components/common/icon/iconData";
     import { base_path } from "$lib/themestore";

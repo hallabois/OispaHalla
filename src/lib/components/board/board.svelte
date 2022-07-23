@@ -2,12 +2,12 @@
     import { onMount } from "svelte";
     import Board from "./template.svelte";
 
-    import GameManager from "$lib/legacy/game_manager";
-    import html_actuator from "$lib/legacy/html_actuator";
-    import LocalStorageManager from "$lib/legacy/local_storage_manager";
-    import KeyboardInputManager from "$lib/legacy/keyboard_input_manager";
-    import { generate_previous_positions } from "$lib/legacy/utils";
-    import type Grid from "$lib/legacy/grid";
+    import GameManager from "$lib/gamelogic/game_manager";
+    import html_actuator from "$lib/gamelogic/html_actuator";
+    import LocalStorageManager from "$lib/gamelogic/local_storage_manager";
+    import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
+    import { generate_previous_positions } from "$lib/gamelogic/utils";
+    import type Grid from "$lib/gamelogic/grid";
     import { base_path } from "$lib/themestore";
 
     export let enableKIM = false;
