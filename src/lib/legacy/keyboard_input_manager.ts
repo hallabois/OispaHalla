@@ -1,3 +1,6 @@
+import { open_popups } from "$lib/popupstore";
+import { get } from "svelte/store";
+
 export default class KeyboardInputManager {
   enabled: boolean;
   documentRoot: HTMLElement;
@@ -134,7 +137,7 @@ export default class KeyboardInputManager {
     });
   }
   keydownHandler (event) {
-    if(!this.enabled) {
+    if(!this.enabled || get(open_popups).length > 0) {
       return;
     }
     var modifiers = event.altKey || event.ctrlKey || event.metaKey ||

@@ -11,9 +11,10 @@
     import Leaderboards from "$lib/components/leaderboard.svelte";
     import Board from "$lib/components/board/board.svelte";
     import Announcer from '$lib/components/tournaments/announcer.svelte';
-    import { hac_gamestate_to_grid } from '$lib/legacy/utils';
     import type KeyboardInputManager from '$lib/legacy/keyboard_input_manager';
     import type GameManager from "$lib/legacy/game_manager";
+    import Icon from "$lib/components/common/icon/icon.svelte";
+    import { leaderboardIconData } from "$lib/components/common/icon/iconData";
     import { base_path } from "$lib/themestore";
 
     let app_name = "";
@@ -132,7 +133,8 @@
                     ⚔
                 </button>
                 <button on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button button background-none icon-button" title="Leaderboards" style="display: flex;">
-                    <img src="img/svg/leaderboard.svg" alt="Leaderboard icon">
+                    <Icon stroke="var(--color)" d={leaderboardIconData} />
+                    <!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
                 </button>
             </div>
         </div>

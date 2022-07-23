@@ -1,7 +1,7 @@
 <script lang="ts">
     import Popup from "./common/popup/popup.svelte";
     import type Announcer from "./tournaments/announcer.svelte";
-    import {lb_screenName, lb_id, check_server_alive, get_all_scores, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "../leaderboardstore";
+    import {lb_screenName, lb_id, check_server_alive, get_all_scores, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "$lib/leaderboardstore";
     import { scale } from "svelte/transition";
 
     function submitUnsubmittedTopScores() {
@@ -162,7 +162,7 @@
                     </div>
                 {:else}
                     <p>Virhe otettaessa yhteyttä palvelimeen.</p>
-                    <button on:click={()=>{refreshKey = {};}}>Yritä uudelleen</button>
+                    <button class="button action-btn" on:click={()=>{refreshKey = {};}}>Yritä uudelleen</button>
                 {/if}
             {/await}
             {#if false}
