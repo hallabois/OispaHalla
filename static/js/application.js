@@ -110,7 +110,7 @@ var prefersDark = false;
 function setImageTheme(themeID){
   currentTheme = themeID;
   document.querySelector("html").classList = ["theme-" + themeID];
-  preloadImages("/img/theme-" + themeID + "/");
+  // preloadImages("/img/theme-" + themeID + "/");
   localStorage.imageTheme = themeID;
   localStorage.imageThemeLastVersion = currentImageThemeVersion;
   try{

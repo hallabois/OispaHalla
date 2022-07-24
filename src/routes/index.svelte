@@ -7,6 +7,7 @@
     import { marked } from 'marked';
     import { onMount } from "svelte";
 
+    import Preloader from '$lib/components/common/image-preloader/Preloader.svelte';
     import Tournaments from "$lib/components/tournaments.svelte";
     import Leaderboards from "$lib/components/leaderboard.svelte";
     import Board from "$lib/components/board/board.svelte";
@@ -89,6 +90,8 @@
     let AnnouncerInstance: Announcer;
     let BoardInstance: Board;
 </script>
+
+<Preloader />
 
 <div class="container">
     <Announcer bind:this={AnnouncerInstance} />
