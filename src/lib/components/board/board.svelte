@@ -17,7 +17,6 @@
     export let initComponentsOnMount = true;
 
     export let grid: Grid|null = null;
-    export let size: number = 4;
 
     let board: HTMLElement;
     let GameManagerInstance: GameManager;
