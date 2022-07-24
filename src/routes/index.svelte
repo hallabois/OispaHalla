@@ -81,6 +81,16 @@
     let lbInstance: Leaderboards;
     let AnnouncerInstance: Announcer;
     let BoardInstance: Board;
+
+    let restartbtn: HTMLElement;
+    function restartGame(size: number) {
+        let GameManagerInstance = BoardInstance.getGameManagerInstance();
+        GameManagerInstance.restartplus(size);
+    }
+    function paritaKuli() {
+        let GameManagerInstance = BoardInstance.getGameManagerInstance();
+        GameManagerInstance.paritaKuli();
+    }
 </script>
 
 <Preloader />
@@ -97,17 +107,24 @@
             <p class="game-intro">{@html marked.parse(app_description)}</p>
         </div>
         <div class="above-game-right">
-            <div class="HAC-container" title="HAC:n tila" style="display:none;">
-                <div class="HAC-status">...</div>
-            </div>
             <div class="score-container" style="--c:'{app_name_score}'">0</div>
             <div class="best-container"  style="--c:'{app_name_hiscore}'">0</div>
-            <div class="restart-button button">
+            <div class="restart-button button"
+                bind:this={restartbtn}
+                on:click={()=>{
+                    if(!restartbtn.classList.contains("open")){
+                        restartbtn.classList.add("open");
+                    }
+                    else{
+                        restartbtn.classList.remove("open");
+                    }
+                }}
+            >
                 <div class="uusi-jakso">{app_name_newgame}</div>
                 <div class="size-selector">
                     <button>&lt;</button>
-                    <button class="restart-3x3">3x3</button>
-                    <button class="restart-4x4">4x4</button>
+                    <button on:click={()=>{restartGame(3)}} class="restart-3x3">3x3</button>
+                    <button on:click={()=>{restartGame(4)}} class="restart-4x4">4x4</button>
                 </div>
             </div>
         </div>
@@ -119,7 +136,9 @@
                 <!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
             </div>
             <div class="kurin-palautus-container" style="flex: 1;">
-                <button class="button kurin-palautus kurin-palautus-color">
+                <button class="button kurin-palautus kurin-palautus-color"
+                    on:click={paritaKuli}
+                >
                     <span class="parin-kulautus" title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta.">KURINPALAUTUS</span>
                 </button>
             </div>

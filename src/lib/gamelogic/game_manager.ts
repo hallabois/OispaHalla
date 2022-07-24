@@ -1,15 +1,11 @@
-declare let HallaAntiCheat: any;
-//var HallaAntiCheat: any;
-var currentTheme: number;
-
-var setImageTheme: Function;
-var sa_event: Function;
+declare var sa_event: Function;
 
 import Grid from "./grid";
 import type HTMLActuator from "./html_actuator";
 import type KeyboardInputManager from "./keyboard_input_manager";
 import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
+import { HAC } from "$lib/HAC";
 
 export default class GameManager {
   size: any;
@@ -19,17 +15,18 @@ export default class GameManager {
   startTiles: number;
   numOfScores: number;
   popup: Element;
-  palautukset: number;
+  palautukset: number = 0;
   grid: Grid;
-  over: boolean;
-  won: boolean;
+  over: boolean = false;
+  won: boolean = false;
   score: number;
-  doKeepPlaying: boolean;
+  doKeepPlaying: boolean | null;
 
   documentRoot: HTMLElement;
   enable_random: boolean;
+  HallaAntiCheat: HAC;
 
-  constructor(size, InputManager: KeyboardInputManager, Actuator: HTMLActuator, StorageManager: LocalStorageManager, documentRoot: HTMLElement, grid = null, enable_random = true) {
+  constructor(size: number, InputManager: KeyboardInputManager, Actuator: HTMLActuator, StorageManager: LocalStorageManager, documentRoot: HTMLElement, grid = null, enable_random = true) {
     this.documentRoot = documentRoot;
     this.enable_random = enable_random;
 
@@ -43,33 +40,13 @@ export default class GameManager {
     this.startTiles = 2;
     this.numOfScores = 10;
 
-    let restartbtn: HTMLElement = this.documentRoot.querySelector(".restart-button");
-    let restart3: HTMLElement = this.documentRoot.querySelector(".restart-3x3");
-    let restart4: HTMLElement = this.documentRoot.querySelector(".restart-4x4");
-
-    if(restartbtn){
-      restartbtn.onclick = () => {
-        if(!restartbtn.classList.contains("open")){
-          restartbtn.classList.add("open");
-        }
-        else{
-          restartbtn.classList.remove("open");
-        }
-      };
-      restart3.onclick = () => {this.restartplus(3)};
-      restart4.onclick = () => {this.restartplus(4)};
-    }
-    else {
-      console.warn("Restart button not found!")
-    }
     this.inputManager.on("restart", this.restart.bind(this));
     this.inputManager.on("move", this.move.bind(this));
     this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
-    this.inputManager.on("paritaKuli", this.paritaKuli.bind(this));
-    this.inputManager.on("toggleEvent", this.toggleEvent.bind(this));
-    this.inputManager.on("toggleDarkMode", this.toggleDarkMode.bind(this));
 
     this.popup = this.documentRoot.getElementsByClassName("lb-popup")[0];
+
+    this.HallaAntiCheat = new HAC();
     
 
     if(typeof grid !== "undefined" && grid) {
@@ -87,9 +64,7 @@ export default class GameManager {
   }
   // Restart the game
   restart() {
-    if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
-      HallaAntiCheat.recordBest(this.score, true);
-    }
+    this.HallaAntiCheat.recordBest(this.score, true);
     this.storageManager.clearGameState();
     this.actuator.continueGame(); // Clear the game won/lost message
     //this.size = 4;
@@ -98,9 +73,7 @@ export default class GameManager {
 
   // Restart the game
   restartplus(size=3) {
-    if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
-      HallaAntiCheat.recordBest(this.score, true);
-    }
+    this.HallaAntiCheat.recordBest(this.score, true);
     this.storageManager.clearGameState();
     this.actuator.continueGame(); // Clear the game won/lost message
     this.size = size;
@@ -128,24 +101,6 @@ export default class GameManager {
       else
         alert("Et ole tarpeeksi suosittu opettajien keskuudessa lahjomaan heitä!");
     }
-  }
-  toggleEvent() {
-    let themeID = currentTheme;
-    var eventToggle: HTMLImageElement = this.documentRoot.querySelector('#event-icon');
-    var newIndex;
-    if(themeID == 1) {
-      newIndex = 3;
-      eventToggle.src = 'img/svg/no_snow.svg';
-    }
-    else {
-      newIndex = 1; 
-      eventToggle.src = 'img/svg/snow.svg';
-    }
-    
-    setImageTheme( newIndex );
-  }
-  toggleDarkMode(){
-    setImageTheme( currentTheme == 1 ? 0 : 1 );
   }
   // Return true if the game is lost, or has won and the user hasn't kept playing
   isGameTerminated() {
@@ -178,9 +133,7 @@ export default class GameManager {
       this.addStartTiles();
     }
 
-    if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
-      HallaAntiCheat.size = this.size;
-    }
+    this.HallaAntiCheat.size = this.size;
 
     // Analytics
     try{
@@ -201,9 +154,7 @@ export default class GameManager {
     for (var i = 0; i < this.startTiles; i++) {
       this.addRandomTile();
     }
-    if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
-      HallaAntiCheat.clearHistory();
-    }
+    this.HallaAntiCheat.clearHistory();
   }
   // Adds a tile in a random position
   addRandomTile() {
@@ -340,13 +291,12 @@ export default class GameManager {
       if (!this.movesAvailable()) {
         this.over = true; // Game over!
 
-        if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
-          let state = this.serialize_HAC(HAC_grid, "f", added);
-          HallaAntiCheat.recordState(state);
+        // Record end for HAC
+        let state = this.serialize_HAC(HAC_grid, "f", added);
+        this.HallaAntiCheat.recordState(state);
 
-          if(this.size == 4 || this.size == 3){
-            HallaAntiCheat.recordBest(this.score, true);
-          }
+        if(this.size == 4 || this.size == 3){
+          this.HallaAntiCheat.recordBest(this.score, true);
         }
 
         // Analytics
@@ -356,10 +306,7 @@ export default class GameManager {
         catch{}
         //
 
-        if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
-          HallaAntiCheat.validate();
-          HallaAntiCheat.clearHistory();
-        }
+        this.HallaAntiCheat.clearHistory();
         ended = true;
       }
 
@@ -369,13 +316,10 @@ export default class GameManager {
       let HAC_direction = moved ? direction : "e";
       //HAC_grid = this.grid.serialize_HAC();
       let state = this.serialize_HAC(HAC_grid, HAC_direction, added);
-      if(typeof HallaAntiCheat !== 'undefined' && HallaAntiCheat){
-        HallaAntiCheat.recordState(state);
-        HallaAntiCheat.validate();
+      this.HallaAntiCheat.recordState(state);
 
-        if(this.size == 4 || this.size == 3){
-          HallaAntiCheat.recordBest(this.score);
-        }
+      if(this.size == 4 || this.size == 3){
+        this.HallaAntiCheat.recordBest(this.score);
       }
     }
   }
