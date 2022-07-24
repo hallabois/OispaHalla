@@ -23,13 +23,13 @@
         {
             name: "OispaHalla",
             index: 1,
-            icon_url: "/img/raksahalla_512.webp",
+            icon_url: "/img/raksahalla_192.webp",
             style: "background: white;"
         },
         {
             name: "OispaHalla (tumma)",
             index: 0,
-            icon_url: "/img/raksahalla_512.webp",
+            icon_url: "/img/raksahalla_192.webp",
             style: "background: black;"
         },
         {
