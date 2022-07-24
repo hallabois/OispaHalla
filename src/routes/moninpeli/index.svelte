@@ -10,9 +10,9 @@
     import Board from "$lib/components/board/board.svelte";
     import Announcer from '$lib/components/tournaments/announcer.svelte';
     import { checkAlive, joined_game_data, poll_id_index, poll_board_string, poll_game, poll_other_boards_string, poll_send_moves, poll_success, server_status } from '$lib/tournamentstore';
-    import { hac_gamestate_to_grid } from '$lib/legacy/utils';
-    import KeyboardInputManager from '$lib/legacy/keyboard_input_manager';
-    import type Grid from '$lib/legacy/grid';
+    import { hac_gamestate_to_grid } from '$lib/gamelogic/utils';
+    import KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
+    import type Grid from '$lib/gamelogic/grid';
     import { browser } from "$app/env";
 
     let app_name = "Oispa Halla";

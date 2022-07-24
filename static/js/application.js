@@ -75,17 +75,17 @@ function setImageBasePath(path){
 function preloadImages(path){
   // path = base_path + path;
   var imageList = [
-    "2.png",
-    "4.png",
-    "8.png",
-    "16.png",
-    "32.png",
-    "64.png",
-    "128.png",
-    "256.png",
-    "512.png",
-    "1024.png",
-    "2048.png"
+    "2.webp",
+    "4.webp",
+    "8.webp",
+    "16.webp",
+    "32.webp",
+    "64.webp",
+    "128.webp",
+    "256.webp",
+    "512.webp",
+    "1024.webp",
+    "2048.webp"
   ];
   
   for(var i = 0; i < imageList.length; i++ ) {
@@ -99,7 +99,7 @@ function preloadImages(path){
   }
 
   let img = document.createElement("img");
-    img.src = 'img/parinkulautus.png';
+    img.src = 'img/parinkulautus.webp';
     img.style="height:0!important;";
     img.alt = ""; // decorative, alt not needed
     document.getElementsByClassName("preload-container")[0].appendChild(img);
@@ -110,7 +110,7 @@ var prefersDark = false;
 function setImageTheme(themeID){
   currentTheme = themeID;
   document.querySelector("html").classList = ["theme-" + themeID];
-  preloadImages("/img/theme-" + themeID + "/");
+  // preloadImages("/img/theme-" + themeID + "/");
   localStorage.imageTheme = themeID;
   localStorage.imageThemeLastVersion = currentImageThemeVersion;
   try{

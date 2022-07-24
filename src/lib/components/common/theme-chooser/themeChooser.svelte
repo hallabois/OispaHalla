@@ -28,19 +28,19 @@
         {
             name: "OispaHalla",
             index: 1,
-            icon_url: "/img/raksahalla_192.png",
+            icon_url: "/img/raksahalla_512.webp",
             style: "background: white;"
         },
         {
             name: "OispaHalla (tumma)",
             index: 0,
-            icon_url: "/img/raksahalla_192.png",
+            icon_url: "/img/raksahalla_512.webp",
             style: "background: black;"
         },
         {
             name: "Classic",
             index: 16,
-            icon_url: "/img/theme-16/2048.png",
+            icon_url: "/img/theme-16/2048.webp",
             style: "background: transparent;"
         },
     ];
@@ -50,7 +50,7 @@
     let kaunis = {
         name: "Kaunis",
         index: 14,
-        icon_url: "/img/theme-14/2.png",
+        icon_url: "/img/theme-14/2.webp",
         style: ""
     };
     $: if(

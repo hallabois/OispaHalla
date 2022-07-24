@@ -1,4 +1,4 @@
-// Halla Anti Cheat
+// Halla AntiCheat
 const HAC_status = document.querySelector(".HAC-status");
 const HAC_container = document.querySelector(".HAC-container");
 
@@ -47,7 +47,7 @@ let HAC_valid = '<img src="img/svg/HAC_small.svg" style="width: 1em;margin: -.1e
 class HAC {
     constructor() {
         this.enabled = false;
-    	this.debug = false;
+        this.debug = false;
         this.history = [];
         this.size = 4;
         this.secure = false;
@@ -80,21 +80,21 @@ class HAC {
             return
         }
         HAC_container.title = "Etsitään HAC-palvelimia...";
-    	for(let i in this.urls){
-    		let result = await this.connectivityCheck(this.urls[i]);
-    		if(result){
-    			this.url = this.urls[i];
+        for(let i in this.urls){
+            let result = await this.connectivityCheck(this.urls[i]);
+            if(result){
+                this.url = this.urls[i];
                 this.connected = true;
                 HAC_status.innerHTML = "✅📶";
                 HAC_container.title = "Yhdistetty palvelimeen " + this.url;
                 if(this.history.length > 0){
-                	this.validate();
+                    this.validate();
                 }
-    			return;
-    		}
-    	}
+                return;
+            }
+        }
         this.connected = false;
-    	HAC_status.innerHTML = "🚫📶";
+        HAC_status.innerHTML = "🚫📶";
         HAC_container.title = "Yhteyttä yhteenkään HAC-palvelimeen ei saatu muodostettua.";
     }
     recordState(state) {
@@ -172,25 +172,25 @@ class HAC {
         }
     }
     toggleDebug(){
-    	this.debug = !this.debug;
+        this.debug = !this.debug;
     }
     async connectivityCheck(url){
         if(!this.enabled){
             return
         }
-    	try{
-        	let response = await fetch(url + "/HAC/alive");
-	        let data = await response.json();
-	        if(this.debug){
-		        //console.log(response);
-		        console.log("Connectivity check result: ", data);
-	        }
-	        if(data){
-	        	return true;
-	        }
+        try{
+            let response = await fetch(url + "/HAC/alive");
+            let data = await response.json();
+            if(this.debug){
+                //console.log(response);
+                console.log("Connectivity check result: ", data);
+            }
+            if(data){
+                return true;
+            }
         }
         catch(e){
-        	return false;
+            return false;
         }
     }
     async validate(){
@@ -198,21 +198,21 @@ class HAC {
             return
         }
         try{
-	        HAC_status.innerHTML = "...";
-        	let response = await fetch( this.url + "/HAC/validate/" + getHACRequest() );
-	        let data = await response.json();
-	        if(this.debug){
-		        //console.log(response);
-		        console.log("Validation result: ", data);
-		        console.log("Score: ", data["score"]);
-	        }
-	        this.secure = data.valid;
-	        HAC_status.innerHTML = this.secure ? HAC_valid : "⚠️";
-	        return true;
+            HAC_status.innerHTML = "...";
+            let response = await fetch( this.url + "/HAC/validate/" + getHACRequest() );
+            let data = await response.json();
+            if(this.debug){
+                //console.log(response);
+                console.log("Validation result: ", data);
+                console.log("Score: ", data["score"]);
+            }
+            this.secure = data.valid;
+            HAC_status.innerHTML = this.secure ? HAC_valid : "⚠️";
+            return true;
         }
         catch(e){
-        	HAC_status.innerHTML = "🚫📶";
-        	return false;
+            HAC_status.innerHTML = "🚫📶";
+            return false;
         }
     }
 }
