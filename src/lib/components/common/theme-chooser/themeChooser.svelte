@@ -1,12 +1,7 @@
-<!-- Explain what global variables are to typescript -->
-<script context="module" lang="ts">
-    declare var setImageTheme: Function;
-    declare var currentTheme: number;
-</script>
 <!-- / -->
 <script lang="ts">
     import { slide, scale } from "svelte/transition";
-    import { base_path } from "$lib/themestore";
+    import { theme_index, base_path } from "$lib/themestore";
 
     const animate = (node, args) =>
         args.condition ? slide(node, args) : scale(node, args);
@@ -89,6 +84,9 @@
         }
         return [false, {}, "what?"];
     }
+    function setImageTheme(theme: number) {
+        theme_index.set(theme);
+    }
     async function addCustomTheme() {
         let url = prompt("Teeman osoite");
         let fetch_result = await fetchCustomThemeDetails(url);
@@ -116,10 +114,10 @@
 
 <main class:relative class:expandX class:expandY>
     <!-- svelte-ignore missing-declaration -->
-    {#if typeof currentTheme !== "undefined"}
+    {#if $theme_index != null}
         {#each available_themes as theme, index}
             <!-- svelte-ignore missing-declaration -->
-            {#if (theme.theme_url && $base_path === theme.theme_url) || (currentTheme == theme.index && $base_path === "") || menu_open}
+            {#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path === "") || menu_open}
                 <!-- svelte-ignore missing-declaration -->
                 <button
                     title={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}

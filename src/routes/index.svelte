@@ -1,8 +1,3 @@
-<!-- Explain what global variables are to typescript -->
-<script context="module" lang="ts">
-    declare var onInitDone: Function;
-</script>
-<!-- / -->
 <script lang="ts">
     import { marked } from 'marked';
     import { onMount } from "svelte";
@@ -66,9 +61,6 @@
     let GameManagerInstance: GameManager;
     onMount( ()=>{
         inputRoot = document.querySelector("html") as HTMLElement;
-        if(onInitDone != null){
-            onInitDone();
-        }
         mounted = true;
         // inputManager = new KeyboardInputManager(inputRoot);
         // inputManager.on("move", move);
@@ -188,7 +180,7 @@
     }
 </style>
 <div class="patches">
-    <script src="/js/application.js"></script>
-    <script src="/js/HAC.js"></script>
+    <!-- <script src="/js/application.js"></script>
+    <script src="/js/HAC.js"></script> -->
     <div class="preload-container" />
 </div>

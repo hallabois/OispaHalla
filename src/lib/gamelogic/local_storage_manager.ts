@@ -1,4 +1,4 @@
-declare var tabID: any;
+import { tabID } from "$lib/session_manager";
 
 var HallaAntiCheat: any;
 var sa_event: Function;
