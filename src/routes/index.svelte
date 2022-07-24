@@ -95,6 +95,7 @@
 
 <Preloader />
 
+
 <div class="container">
     <Announcer bind:this={AnnouncerInstance} />
     <Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} />
@@ -171,7 +172,6 @@
         </p>
     </div>
 </div>
-
 
 <style>
     .board-container {
