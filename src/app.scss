@@ -53,13 +53,15 @@ html, body {
   color: $text-color;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-size: 18px;
+  font-display: swap; // Ensure that text stays visible during font load
 
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-position: top center;
 }
 
-html.dark, body.dark{
+/* Depreciated, ...I hope */
+/*html.dark, body.dark{
   color: $text-color-dark;
 
   background: $game-background-dark;
@@ -67,7 +69,7 @@ html.dark, body.dark{
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-position: top center;
-}
+}*/
 
 .noscript{
   background-color: #8f7a66;
