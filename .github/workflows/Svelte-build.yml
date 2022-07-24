@@ -28,5 +28,5 @@ jobs:
       # Install packages with yarn
       - name: yarn install
         run: yarn install
-      - name: Svelte Check
-        run: yarn check
+      - name: Svelte Build
+        run: yarn build
