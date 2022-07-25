@@ -1,5 +1,21 @@
 <script lang="ts">
 	import { auth } from '$lib/Auth/authstore';
+
+	let token: string | null;
+	$: if($auth) {
+		$auth.getIdToken(true).then((t)=>{
+			token = t;
+		});
+	}
+
+	async function validate() {
+		let result = await fetch("/auth/validate", {
+			method: "POST",
+			body: JSON.stringify({
+				token
+			})
+		});
+	}
 </script>
 
 <main>
@@ -13,7 +29,13 @@
 			<h1>Hei, {$auth.displayName || $auth.email}</h1>
 			<button class="profilebtn" on:click={() => {if(confirm("Are you sure you want to sign out?")){auth.signOut();}}}>
              	Kirjaudu Ulos
-             </button>
+            </button>
+            {#if token}
+	            <button on:click={validate}>Validoi</button>
+	            <p>Token: {token}</p>
+            {:else}
+            	<p>Ladataan...</p>
+            {/if}
 		{/if}
 	{/if}
 </main>
