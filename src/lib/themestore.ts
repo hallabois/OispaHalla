@@ -20,7 +20,7 @@ theme_index.subscribe((themeID) => {
         }catch{}
         // Save choice as a cookie
         try {
-            document.cookie = `theme=${themeID};SameSite=Strict;expires=Fri, 31 Dec 9999 23:59:59 GMT"max-age=31536000;`;
+            document.cookie = `theme=${themeID};SameSite=Strict;expires=Fri, 31 Dec 9999 23:59:59 GMT"max-age=31536000;path=/;`;
         }catch{}
         // Apply theme
         let html = document.querySelector("html");
