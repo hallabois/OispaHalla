@@ -15,6 +15,7 @@ theme_index.subscribe((themeID) => {
         try {
             if(theme_loaded) {
                 localStorage.imageTheme = themeID;
+                localStorage.imageThemeLastVersion = currentImageThemeVersion;
             }
         }catch{}
         // Save choice as a cookie
