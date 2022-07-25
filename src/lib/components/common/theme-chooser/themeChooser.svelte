@@ -117,7 +117,7 @@
     {#if $theme_index != null}
         {#each available_themes as theme, index}
             <!-- svelte-ignore missing-declaration -->
-            {#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path === "") || menu_open}
+            {#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1) || menu_open}
                 <!-- svelte-ignore missing-declaration -->
                 <button
                     title={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}

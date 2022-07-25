@@ -221,7 +221,7 @@
             {/await}
         {/key}
     {:else}
-        <div class="content">
+        <div class="content sign-in">
             <label for="admin_token">Please input the admin token</label>
             <!-- svelte-ignore a11y-autofocus -->
             <input
@@ -242,6 +242,8 @@
 <style>
     :global(html, body) {
         color-scheme: dark;
+        background: #222 !important;
+        color: #ddd !important;
     }
     .action {
         position: fixed;

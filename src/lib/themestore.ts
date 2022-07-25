@@ -2,6 +2,9 @@ import { browser } from "$app/env";
 import { type Writable, writable, get } from "svelte/store";
 
 export let defaultTheme = 1;
+export function setDefaultTheme(theme: number) {
+    defaultTheme = theme;
+}
 export let currentImageThemeVersion = 5;
 
 export let theme_index: Writable<number> = writable(defaultTheme);
@@ -13,6 +16,10 @@ theme_index.subscribe((themeID) => {
             if(theme_loaded) {
                 localStorage.imageTheme = themeID;
             }
+        }catch{}
+        // Save choice as a cookie
+        try {
+            document.cookie = `theme=${themeID};SameSite=Strict;expires=Fri, 31 Dec 9999 23:59:59 GMT"max-age=31536000;`;
         }catch{}
         // Apply theme
         let html = document.querySelector("html");
