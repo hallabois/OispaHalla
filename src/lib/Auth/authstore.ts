@@ -64,7 +64,7 @@ const createAuth = () => {
   function clearTraces() {
     console.clear();
     console.info("Signed out, have a good day!");
-    localStorage.clear();
+    // localStorage.clear(); // Not a good idea
   }
 
   return {
