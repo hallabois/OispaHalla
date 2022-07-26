@@ -1,6 +1,7 @@
 import { readable } from 'svelte/store'
 import { browser } from '$app/env'
 import type { Auth, User } from "firebase/auth"
+import { actionCodeSettings } from './firebase_config'
 
 const createAuth = () => {
   let auth: Auth
@@ -42,6 +43,18 @@ const createAuth = () => {
     await signInWithRedirect(auth, provider)
   }
 
+  async function sendSignInLink(email: string) {
+    const { sendSignInLinkToEmail } = await import('firebase/auth');
+    try {
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      return true;
+    }
+    catch(e){
+      console.warn(e);
+    };
+    return false;
+  }
+
   async function signOut() {
     const { signOut } = await import('firebase/auth')
     clearTraces();
@@ -57,6 +70,7 @@ const createAuth = () => {
   return {
     subscribe,
     signInWith,
+    sendSignInLink,
     signOut,
   }
 }
