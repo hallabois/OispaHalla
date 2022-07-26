@@ -1,15 +1,57 @@
 <script lang="ts">
-
+	import { browser } from "$app/env";
+	import { auth } from "$lib/Auth/authstore";
+	let email: string | null;
+	if( browser ) {
+		email = localStorage.getItem('emailForSignIn');
+	}
+	function promptEmail() {
+		email = prompt("Sähköposti");
+	}
+	let signInMessage: string | null;
+	let loadingResults = false;
+	async function attemptSignIn() {
+		signInMessage = null;
+		loadingResults = true;
+		if(email) {
+			let result = await auth.signInWithLink(email, window.location.href);
+			if(result) {
+				localStorage.removeItem('emailForSignIn');
+				signInMessage = "Kirjautuminen onnistui.";
+			}
+			else {
+				signInMessage = "Kirjautuminen epäonnistui.";
+			}
+		}
+		loadingResults = false;
+	}
 </script>
 
 <main>
-	<h1>Not implemented yet.</h1>
-	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-	tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-	quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-	consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-	cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-	proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+	{#if browser || loadingResults}
+		<h1 class="title"><a href="/" target="_blank" style="text-decoration: none;" title="avautuu uuteen välilehteen">OispaHalla</a></h1>
+		{#if $auth}
+			<h1>Hei, {$auth.displayName || $auth.email}</h1>
+			<div class="actions">
+				<a class="button action-btn" href="/">Takaisin OispaHallaan</a>
+				<button class="button action-btn discouradge" on:click={() => {if(confirm("Oletko varma?")){auth.signOut();}}}>
+	             	Kirjaudu Ulos
+	            </button>
+			</div>
+		{:else}
+			{#if email != null}
+				<button class="button action-btn" on:click={attemptSignIn}>Kirjaudu sisään sähköpostilla {email}</button>
+			{:else}
+				<h1>Kirjautumista ei ole aloitettu</h1>
+				<a href="/auth">Aloita kirjautuminen</a>
+			{/if}
+		{/if}
+	{:else}
+		<p>Ladataan...</p>
+	{/if}
+	{#if signInMessage != null}
+		<p>{signInMessage}</p>
+	{/if}
 </main>
 
 <style>
@@ -20,6 +62,14 @@
 		justify-content: center;
 		align-items: center;
 
+		gap: .5em;
+		padding-inline: .5em;
+
 		min-height: 100vh;
+	}
+	.discouradge {
+		color: var(--button-background);
+		background: var(--background);
+		border: 1px solid var(--button-background);
 	}
 </style>

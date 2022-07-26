@@ -31,7 +31,7 @@
 				try{
 					window.localStorage.setItem('emailForSignIn', email);
 				}catch{};
-				alert("Linkki lähetetty!");
+				alert("Linkki lähetetty!\nVoit poistua tältä sivulta toistaiseksi.");
 			}
 			else {
 				alert("Virhe.");
@@ -76,15 +76,22 @@
 			{/if}
 		{/if}
 	{/if}
+	<a href="/">Takaisin OispaHallaan</a>
 </main>
 
 <style>
+	h1 {
+		margin: 0;
+	}
 	main {
 		background: var(--background);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+
+		padding-inline: .5em;
+		gap: .5em;
 
 		min-height: 100vh;
 	}

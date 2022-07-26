@@ -55,6 +55,17 @@ const createAuth = () => {
     return false;
   }
 
+  async function signInWithLink(email: string, href: string) {
+    const { signInWithEmailLink } = await import('firebase/auth');
+    try {
+      await signInWithEmailLink(auth, email, href);
+      return true;
+    }catch(e) {
+      console.warn(e);
+    }
+    return false;
+  }
+
   async function signOut() {
     const { signOut } = await import('firebase/auth')
     clearTraces();
@@ -71,6 +82,7 @@ const createAuth = () => {
     subscribe,
     signInWith,
     sendSignInLink,
+    signInWithLink,
     signOut,
   }
 }
