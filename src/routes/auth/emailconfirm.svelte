@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { browser } from "$app/env";
 	import { auth } from "$lib/Auth/authstore";
+	$: if($auth) {
+		// Redirect once signed in
+		window.location.href = "/auth";
+	}
 	let email: string | null;
 	if( browser ) {
 		email = localStorage.getItem('emailForSignIn');
@@ -31,13 +35,7 @@
 	{#if browser || loadingResults}
 		<h1 class="title"><a href="/" target="_blank" style="text-decoration: none;" title="avautuu uuteen välilehteen">OispaHalla</a></h1>
 		{#if $auth}
-			<h1>Hei, {$auth.displayName || $auth.email}</h1>
-			<div class="actions">
-				<a class="button action-btn" href="/">Takaisin OispaHallaan</a>
-				<button class="button action-btn discouradge" on:click={() => {if(confirm("Oletko varma?")){auth.signOut();}}}>
-	             	Kirjaudu Ulos
-	            </button>
-			</div>
+			<p>Ohjataan uudelleen...</p>
 		{:else}
 			{#if email != null}
 				<button class="button action-btn" on:click={attemptSignIn}>Kirjaudu sisään sähköpostilla {email}</button>

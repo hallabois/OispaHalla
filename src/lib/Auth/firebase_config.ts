@@ -10,7 +10,9 @@ const firebaseConfig = {
     projectId: "hallabois-auth",
     storageBucket: "hallabois-auth.appspot.com",
     messagingSenderId: "122091804244",
-    appId: "1:122091804244:web:6f8346acf9ade4b3d57fc1"
+    appId: "1:122091804244:web:6f8346acf9ade4b3d57fc1",
+
+    languageCode: "fi"
 };
 
 // Initialize Firebase

@@ -43,7 +43,7 @@
 <main>
 	{#if browser}
 		{#if $auth === undefined}
-			<p>Checking auth status...</p>
+			<p>Tarkistetaan tietoja...</p>
 		{:else}
 			{#if $auth === null}
 				<Popup bind:open={email_popup_open}>
@@ -74,9 +74,11 @@
 	            	<p>{validation_result.statusText}</p>
 	            {/if}
 			{/if}
+		<a href="/">Takaisin OispaHallaan</a>
 		{/if}
+	{:else}
+		<p>Ladataan...</p>
 	{/if}
-	<a href="/">Takaisin OispaHallaan</a>
 </main>
 
 <style>
