@@ -26,7 +26,7 @@
 
 	async function log_in_with_email() {
 		if(email) {
-			let result = await auth.sendSignInLink(email);
+			let result = await auth.sendSignInLink(email, window.location.origin);
 			if(result) {
 				try{
 					window.localStorage.setItem('emailForSignIn', email);
