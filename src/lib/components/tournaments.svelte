@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
+    import { auth } from "$lib/Auth/authstore";
+
     import Popup from "$lib/components/common/popup/popup.svelte";
     import { checkAlive, joined_game_id, joined_game_error, poll_success, poll_game, joined_game_user_id, joined_game_am_host, joined_game_host_pswds, refreshGameData } from "$lib/tournamentstore";
     import TournamentCreator from "./tournaments/tournamentCreator.svelte";
@@ -99,34 +101,40 @@
 <Popup bind:open>
     <span slot="title">Moninpeli</span>
     <div slot="content">
-        {#if serverAlive}
-            {#if $joined_game_id != null}
-                <Lobby {announcer} />
-            {:else}
-                {#if !activeTab || activeTab == 0}
-                    <div class="action-chooser">
-                        <button on:click={()=>{activeTab = 1}} class="button action-btn">Luo Peli</button>
-                        <button on:click={()=>{activeTab = 2}} class="button action-btn">Liity Peliin Koodilla</button>
-                        <button on:click={()=>{activeTab = 3}} class="button action-btn">Selaa Julkisia Pelejä</button>
-                    </div>
+        {#if $auth}
+            <p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
+            {#if serverAlive}
+                {#if $joined_game_id != null}
+                    <Lobby {announcer} />
                 {:else}
-                    <button class="button action-btn back" on:click={()=>{activeTab = 0;joined_game_error.set(null)}}>&lt; Takaisin</button>
-                    {#if activeTab == 1}
-                        <TournamentCreator />
-                    {/if}
-                    {#if activeTab == 2}
-                        <TournamentJoiner {chosen_game} />
-                    {/if}
-                    {#if activeTab == 3}
-                        <TournamentBrowser />
+                    {#if !activeTab || activeTab == 0}
+                        <div class="action-chooser">
+                            <button on:click={()=>{activeTab = 1}} class="button action-btn">Luo Peli</button>
+                            <button on:click={()=>{activeTab = 2}} class="button action-btn">Liity Peliin Koodilla</button>
+                            <button on:click={()=>{activeTab = 3}} class="button action-btn">Selaa Julkisia Pelejä</button>
+                        </div>
+                        <a href="/auth" style="text-align: center;display: block;padding: 0.75em;">Hallinnoi kirjautumista</a>
+                    {:else}
+                        <button class="button action-btn back" on:click={()=>{activeTab = 0;joined_game_error.set(null)}}>&lt; Takaisin</button>
+                        {#if activeTab == 1}
+                            <TournamentCreator />
+                        {/if}
+                        {#if activeTab == 2}
+                            <TournamentJoiner {chosen_game} />
+                        {/if}
+                        {#if activeTab == 3}
+                            <TournamentBrowser />
+                        {/if}
                     {/if}
                 {/if}
+            {:else if serverAlive == null}
+                <h3>Otetaan yhteyttä palvelimeen...</h3>
+            {:else}
+                <h3>Palvelimeen ei saatu yhteyttä.</h3>
+                <button on:click={checkServerAlive}>Yritä uudelleen</button>
             {/if}
-        {:else if serverAlive == null}
-            <h3>Otetaan yhteyttä palvelimeen...</h3>
         {:else}
-            <h3>Palvelimeen ei saatu yhteyttä.</h3>
-            <button on:click={checkServerAlive}>Yritä uudelleen</button>
+            <button on:click={()=>{window.location.href="/auth"}} class="button action-btn" style="width: 100%;">Kirjaudu sisään</button>
         {/if}
     </div>
 </Popup>

@@ -71,7 +71,7 @@
 		            {/if}
 	            </div>
 	            {#if validation_result}
-	            	<p>{validation_result.statusText}</p>
+	            	<p>{validation_result.status}: {validation_result.statusText}</p>
 	            {/if}
 			{/if}
 		<a href="/">Takaisin OispaHallaan</a>
