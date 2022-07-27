@@ -152,6 +152,14 @@
                 </button>
             {/if}
         {/each}
+        {#if available_themes.filter(theme => (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1)).length < 1}
+            <button
+                on:click={()=>{menu_open = !menu_open}}
+                on:touchend={()=>{menu_open = !menu_open}}
+            >
+                ?
+            </button>
+        {/if}
         {#if menu_open}
             <button
                     title="Lisää teema"
