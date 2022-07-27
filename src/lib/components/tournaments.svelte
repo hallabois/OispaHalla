@@ -134,7 +134,11 @@
                 <button on:click={checkServerAlive}>Yritä uudelleen</button>
             {/if}
         {:else}
-            <button on:click={()=>{window.location.href="/auth"}} class="button action-btn" style="width: 100%;">Kirjaudu sisään</button>
+            {#if $auth === undefined}
+                <p style="text-align: center;display: block;padding: 0.75em;">Tarkistetaan tietoja</p>
+            {:else}
+                <button on:click={()=>{window.location.href="/auth"}} class="button action-btn" style="width: 100%;">Kirjaudu sisään</button>
+            {/if}
         {/if}
     </div>
 </Popup>

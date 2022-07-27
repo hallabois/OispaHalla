@@ -31,7 +31,7 @@
 				try{
 					window.localStorage.setItem('emailForSignIn', email);
 				}catch{};
-				alert("Linkki lähetetty!\nVoit poistua tältä sivulta toistaiseksi.");
+				alert("Linkki lähetetty!\nMuistathan tarkistaa roskaposti-kansion.\n\nVoit poistua tältä sivulta toistaiseksi.");
 			}
 			else {
 				alert("Virhe.");
