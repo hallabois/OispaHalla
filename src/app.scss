@@ -58,18 +58,9 @@ html, body {
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-position: top center;
+  
+  accent-color: var(--button-background);
 }
-
-/* Depreciated, ...I hope */
-/*html.dark, body.dark{
-  color: $text-color-dark;
-
-  background: $game-background-dark;
-  background-image: url("/img/OispaHallaTausta2.webp");
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: top center;
-}*/
 
 .noscript{
   background-color: #8f7a66;
