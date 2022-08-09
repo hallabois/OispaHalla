@@ -2,6 +2,8 @@
     import { marked } from 'marked';
     import { onMount } from "svelte";
 
+    import { enable_multiplayer, enable_leaderboards } from '../features';
+
     import Preloader from '$lib/components/common/image-preloader/Preloader.svelte';
 
     import Settings from '$lib/components/settings.svelte';
@@ -151,13 +153,17 @@
                 </button>
             </div>
             <div class="button-container" style="margin-top: 0;flex: 1;justify-content: end;">
-                <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Moninpeli">
-                    ⚔
-                </button>
+                {#if enable_multiplayer}
+                    <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Moninpeli">
+                        ⚔
+                    </button>
+                {/if}
+                {#if enable_leaderboards}
                 <button on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button button background-none icon-button" title="Leaderboards" style="display: flex;">
                     <Icon stroke="var(--color)" d={leaderboardIconData} />
                     <!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
                 </button>
+                {/if}
             </div>
         </div>
     </div>
