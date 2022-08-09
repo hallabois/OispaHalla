@@ -71,7 +71,11 @@
 		            {/if}
 	            </div>
 	            {#if validation_result}
-	            	<p>{validation_result.status}: {validation_result.statusText}</p>
+	            	{#await validation_result.json()}
+	            		<p>{validation_result.status}: ladataan dataa...</p>
+	            	{:then data}
+	            		<p>{validation_result.status}: {data.message}</p>
+	            	{/await}
 	            {/if}
 			{/if}
 		<a href="/">Takaisin OispaHallaan</a>

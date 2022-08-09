@@ -16,10 +16,18 @@ export async function POST({ request }) {
 
         try {
             let result = await getAuth(app).verifyIdToken(token);
+            let info = {
+                name: result.name,
+                uid: result.uid,
+                email: result.email,
+                email_verified: result.email_verified,
+                picture: result.picture
+            };
             return {
                 status: 200,
                 body: {
                     message: "auth ok",
+                    info
                 }
             };
         }
