@@ -1,5 +1,6 @@
 import { type Writable, writable, get } from "svelte/store";
 import { browser, dev } from "$app/env";
+import { auth } from "$lib/Auth/authstore";
 
 let leaderboard_enpoint_prod = "https://oispahallalb.herokuapp.com";
 let leaderboard_endpoint_dev = true ? leaderboard_enpoint_prod : "http://localhost:5000";
@@ -9,6 +10,18 @@ export let lb_screenName: Writable<string|null> = writable(browser ? localStorag
 lb_screenName.subscribe((val)=>{
     if(val == "null") {
         lb_screenName.set(null);
+    }
+    if(val == null) {
+        let $auth = get(auth);
+        if($auth != null && $auth.email != null) {
+            // This is a bit cursed but does the job
+            let name = $auth.email.split("@")[0].split(".").map(
+                (namep,ind)=> {
+                    return namep.slice(0, Math.min(namep.length, Math.max(20-ind*20, 1)));
+                }
+            ).join("");
+            lb_screenName.set(name);
+        }
     }
 });
 lb_screenName.subscribe((value) => {if(browser){localStorage.lb_screenName = value}});

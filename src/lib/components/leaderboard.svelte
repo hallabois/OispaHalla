@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { auth } from "$lib/Auth/authstore";
+
     import Popup from "./common/popup/popup.svelte";
     import type Announcer from "./tournaments/announcer.svelte";
     import {lb_screenName, lb_id, check_server_alive, get_all_scores, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "$lib/leaderboardstore";
@@ -61,7 +63,7 @@
         if(new_name && new_name != $lb_screenName) {
             lb_screenName.set(new_name);
             if(announcer) {
-                announcer.announce("Nimimerkki muutettu");
+                announcer.announce("Nimimerkki muutettu"); // Muuttuu seuraavan tallennuksen yhteydessä
             }
         }
         else {
@@ -154,10 +156,18 @@
                         {/if}
                     {/if}
                     <div>
-                        {#if $lb_screenName}
-                            <button on:click={editScreenName} class="button action-btn" style="width: 100%;">Muuta nimimerkkiä "{$lb_screenName}"</button>
+                        {#if $auth}
+                            {#if $lb_screenName}
+                                <button on:click={editScreenName} class="button action-btn" style="width: 100%;">Muuta nimimerkkiä "{$lb_screenName}"</button>
+                            {:else}
+                                <button on:click={editScreenName} class="button action-btn" style="width: 100%;">Lisää nimimerkki</button>
+                            {/if}
                         {:else}
-                            <button on:click={editScreenName} class="button action-btn" style="width: 100%;">Lisää nimimerkki</button>
+                            {#if $auth === undefined}
+                                <p style="text-align: center;display: block;padding: 0.75em;">Tarkistetaan tietoja</p>
+                            {:else}
+                                <button on:click={()=>{window.location.href="/auth"}} class="button action-btn" style="width: 100%;">Kirjaudu sisään</button>
+                            {/if}
                         {/if}
                     </div>
                 {:else}

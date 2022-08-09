@@ -3,8 +3,11 @@
     import { onMount } from "svelte";
 
     import Preloader from '$lib/components/common/image-preloader/Preloader.svelte';
+
+    import Settings from '$lib/components/settings.svelte';
     import Tournaments from "$lib/components/tournaments.svelte";
     import Leaderboards from "$lib/components/leaderboard.svelte";
+
     import Board from "$lib/components/board/board.svelte";
     import Announcer from '$lib/components/tournaments/announcer.svelte';
     import type KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
@@ -22,7 +25,7 @@
 
     let app_name_default = "Oispa Halla";
     let app_description_default = "Yhdistä opettajat ja saavuta **Halla!**";
-    let app_notice_default = "**HUOMIO**: Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.";
+    let app_notice_default = "";
     let app_name_newgame_default = "Uusi Jakso";
     let app_name_score_default = "arvosana";
     let app_name_hiscore_default = "paras halla";
@@ -79,6 +82,7 @@
     let inputRoot: HTMLElement;
     let TtInstance: Tournaments;
     let lbInstance: Leaderboards;
+    let SettingsInstance: Settings;
     let AnnouncerInstance: Announcer;
     let BoardInstance: Board;
 
@@ -97,6 +101,7 @@
 
 <div class="container">
     <Announcer bind:this={AnnouncerInstance} />
+    <Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
     <Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} />
     <Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
     <div class="new-above-game">
@@ -132,8 +137,11 @@
     <div class="board-container">
         <Board {enableKIM} enableLSM={true} enableRng={true} documentRoot={inputRoot} initComponentsOnMount={false} bind:this={BoardInstance} />
         <div class="underbar-container">
-            <div style="flex: 1">
+            <div class="button-container" style="margin-top: 0;flex: 1;justify-content: start;">
                 <!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
+                <button class="button background-none color-button" on:click={()=>{SettingsInstance.show()}} title="Asetukset">
+                    ⚙️
+                </button>
             </div>
             <div class="kurin-palautus-container" style="flex: 1;">
                 <button class="button kurin-palautus kurin-palautus-color"
@@ -143,7 +151,7 @@
                 </button>
             </div>
             <div class="button-container" style="margin-top: 0;flex: 1;justify-content: end;">
-                <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Tournament Mode">
+                <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Moninpeli">
                     ⚔
                 </button>
                 <button on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button button background-none icon-button" title="Leaderboards" style="display: flex;">
@@ -159,15 +167,6 @@
     <div class="disclaimer">
         <p>
             {@html marked.parse(app_notice)}
-        </p>
-        <p>
-            Alkuperäisen projektin <a href="https://github.com/gabrielecirulli/2048" target="_blank">2048</a> on tehnyt <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
-        </p>
-        <p>
-            Made by <a href="https://hallabois.github.io/invite">Hallabois</a>
-        </p>
-        <p>
-            <a href="https://simpleanalytics.com/oispahalla.com" target="_blank">Simpleanalytics</a>
         </p>
     </div>
 </div>
