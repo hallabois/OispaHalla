@@ -74,6 +74,10 @@
     .popup {
         display: flex;
         flex-direction: column;
+        max-height: 100vh;
+    }
+    .lb-content {
+        overflow-y: auto;
     }
 
     h2.lb-title {
