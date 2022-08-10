@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { auth } from "$lib/Auth/authstore";
+    import { auth, token } from "$lib/Auth/authstore";
 
     import Popup from "./common/popup/popup.svelte";
     import type Announcer from "./tournaments/announcer.svelte";
-    import {lb_screenName, lb_id, check_server_alive, get_all_scores, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "$lib/leaderboardstore";
+    import {lb_screenName, check_server_alive, get_all_scores, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "$lib/leaderboardstore";
     import { scale } from "svelte/transition";
 
     function submitUnsubmittedTopScores() {
@@ -28,7 +28,7 @@
     }
     async function submit() {
         let starting_size = size;
-        let result = await submit_score(starting_size, $lb_id, $lb_screenName as string, $my_top_scores[starting_size] as number, 0, getHACString($my_top_score_histories[starting_size]));
+        let result = await submit_score(starting_size, $token, $lb_screenName as string, $my_top_scores[starting_size] as number, 0, getHACString($my_top_score_histories[starting_size]));
         console.info("submit result", result);
         if(result.message) {
             if(announcer) {
@@ -36,9 +36,6 @@
             }
         }
         if(result.success) {
-            if(result.json) {
-                lb_id.set(result.json.createdScore.user._id);
-            }
             markAsSubmitted(starting_size);
         }
     }
@@ -131,8 +128,8 @@
                                 {/await}
                             </table>
                         </div>
-                        {#if $lb_id != null}
-                            {#await get_my_top_score(size, $lb_id)}
+                        {#if $token != null}
+                            {#await get_my_top_score(size, $token)}
                                 <p>Ladataan tuloksiasi...</p>
                             {:then result} 
                                 {#if !result.success}

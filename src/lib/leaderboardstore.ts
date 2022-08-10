@@ -2,9 +2,9 @@ import { type Writable, writable, get } from "svelte/store";
 import { browser, dev } from "$app/env";
 import { auth } from "$lib/Auth/authstore";
 
-let leaderboard_enpoint_prod = "https://oispahallalb.herokuapp.com";
-let leaderboard_endpoint_dev = true ? leaderboard_enpoint_prod : "http://localhost:5000";
-export let leaderboard_endpoint = dev ? leaderboard_enpoint_prod : leaderboard_endpoint_dev;
+let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
+let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
+export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
 export let lb_screenName: Writable<string|null> = writable(browser ? localStorage.lb_screenName || null : null);
 lb_screenName.subscribe((val)=>{
@@ -25,9 +25,6 @@ lb_screenName.subscribe((val)=>{
     }
 });
 lb_screenName.subscribe((value) => {if(browser){localStorage.lb_screenName = value}});
-
-export let lb_id: Writable<string|null> = writable(browser ? localStorage.lb_id || null : null);
-lb_id.subscribe((value) => {if(browser){localStorage.lb_id = value}});
 
 export async function check_server_alive() {
     try {
@@ -127,9 +124,9 @@ export class Score_error {
     error_msg!: string
 }
 export type Score_response = Score_ok | Score_error;
-export async function get_my_top_score(size: number, id: string): Promise<Score_response> {
+export async function get_my_top_score(size: number, token: string): Promise<Score_response> {
     try {
-        const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/id/${id}`);
+        const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/token/${token}`);
         if(resp.ok) {
             try {
                 const json_result = await resp.json();
@@ -184,7 +181,7 @@ export class submit_response {
     message!: string
     json!: any | null
 }
-export async function submit_score(size: number, user_id: string|null, user_screenName: string, run_score: number, run_breaks: number, run_history: string): Promise<submit_response> {
+export async function submit_score(size: number, token: string|null, user_screenName: string, run_score: number, run_breaks: number, run_history: string): Promise<submit_response> {
     try {
         const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}`,
             {
@@ -194,7 +191,7 @@ export async function submit_score(size: number, user_id: string|null, user_scre
                 },
                 body: JSON.stringify({
                     "user": {
-                        "id": user_id,
+                        "token": token,
                         "screenName": user_screenName
                     },
                     "score": run_score,
