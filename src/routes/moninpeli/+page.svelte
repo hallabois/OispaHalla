@@ -1,8 +1,3 @@
-<!-- Explain what global variables are to typescript -->
-<script context="module" lang="ts">
-    declare var onInitDone: Function;
-</script>
-<!-- / -->
 <script lang="ts">
     import { onMount } from "svelte";
 
