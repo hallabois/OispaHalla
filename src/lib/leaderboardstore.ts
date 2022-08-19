@@ -11,7 +11,7 @@ lb_screenName.subscribe((val)=>{
     if(val == "null") {
         lb_screenName.set(null);
     }
-    if(val == null && browser) {
+    if(val == null && browser && auth != null) {
         let $auth = get(auth);
         if($auth != null && $auth.email != null) {
             // This is a bit cursed but does the job
