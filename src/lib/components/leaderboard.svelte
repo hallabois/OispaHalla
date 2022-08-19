@@ -33,9 +33,12 @@
     function getHACString(run: any[]) {
         return size + "x" + size + "S" + run.join(":");
     }
+    let submit_in_progress = false;
     async function submit() {
+        submit_in_progress = true;
         let starting_size = size;
         let result = await submit_score(starting_size, $token, $lb_screenName as string, $my_top_scores[starting_size] as number, 0, getHACString($my_top_score_histories[starting_size]));
+        submit_in_progress = false;
         console.info("submit result", result);
         if(result.message) {
             if(announcer) {
@@ -92,7 +95,7 @@
                     {#if submitting}
                         <p>Tallennetaas sun tulos!</p>
                         {#if $lb_screenName != null}
-                            <button on:click={submit} class="button action-btn" style="width: 100%;">Tallenna</button>
+                            <button disabled={submit_in_progress} on:click={submit} class="button action-btn" style="width: 100%;">{submit_in_progress ? "Tallennetaan..." : "Tallenna"}</button>
                             <button on:click={()=>{submitting = false;}} class="button" style="width: 100%;font-weight: normal !important;">Älä Tallenna Vielä</button>
                             <button on:click={()=>{markAsSubmitted(size)}} class="button" style="width: 100%;font-weight: normal !important;">Merkitse tallennetuksi (indev)</button>
                         {/if}
