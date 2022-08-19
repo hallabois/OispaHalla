@@ -2,6 +2,7 @@ import { readable, writable, type Writable } from 'svelte/store'
 import { browser } from '$app/env'
 import type { Auth, User } from "firebase/auth"
 import { generateActionCodeSettings } from './firebase_config'
+import { lb_screenName } from '$lib/leaderboardstore'
 
 const createAuth = () => {
 	let auth: Auth
@@ -75,6 +76,8 @@ const createAuth = () => {
 	function clearTraces() {
 		console.clear();
 		console.info("Signed out, have a good day!");
+		lb_screenName.set(null);
+		token.set(null);
 		// localStorage.clear(); // Not a good idea
 	}
 

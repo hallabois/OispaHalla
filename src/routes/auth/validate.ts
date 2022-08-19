@@ -36,7 +36,7 @@ export async function POST({ request }) {
             return {
                 status: 403,
                 body: {
-                    message: "auth failed",
+                    message: "invalid token",
                 }
             };
         }

@@ -3,19 +3,26 @@
 
     import Popup from "./common/popup/popup.svelte";
     import type Announcer from "./tournaments/announcer.svelte";
-    import {lb_screenName, check_server_alive, get_all_scores, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "$lib/leaderboardstore";
+    import {lb_screenName, check_server_alive, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "$lib/leaderboardstore";
     import { scale } from "svelte/transition";
+    import type GameManager from "$lib/gamelogic/game_manager";
 
+    export let GameManagerInstance: GameManager | null = null;
     function submitUnsubmittedTopScores() {
-        for(let s of [3, 4]) {
-            let top_saved = $my_top_scores[s] || -1;
-            let top_submitted = $my_top_submitted_scores[s] || -1;
-            if(top_saved > top_submitted) {
-                console.info(`Please submit score for size ${s}...`);
-                submitting = true;
-                size = s;
-                show();
-                return;
+        if(GameManagerInstance != null) {
+            for(let s of [3, 4]) {
+                let top_saved = $my_top_scores[s] || -1;
+                let top_submitted = $my_top_submitted_scores[s] || -1;
+                if(GameManagerInstance?.score > top_saved) {
+                    // Do nothing, as the top scoring game is not over yet.
+                }
+                else if(top_saved > top_submitted) {
+                    console.info(`Please submit score for size ${s}...`);
+                    submitting = true;
+                    size = s;
+                    show();
+                    return;
+                }
             }
         }
     }
@@ -60,7 +67,7 @@
         if(new_name && new_name != $lb_screenName) {
             lb_screenName.set(new_name);
             if(announcer) {
-                announcer.announce("Nimimerkki muutettu"); // Muuttuu seuraavan tallennuksen yhteydessä
+                announcer.announce("Nimimerkki muuttuu seuraavan tallennuksen yhteydessä."); // Muuttuu seuraavan tallennuksen yhteydessä
             }
         }
         else {
@@ -159,6 +166,7 @@
                             {:else}
                                 <button on:click={editScreenName} class="button action-btn" style="width: 100%;">Lisää nimimerkki</button>
                             {/if}
+                            <a href="/auth" style="text-align: center;display: block;padding: 0.75em;">Hallinnoi kirjautumista</a>
                         {:else}
                             {#if $auth === undefined}
                                 <p style="text-align: center;display: block;padding: 0.75em;">Tarkistetaan tietoja</p>
@@ -172,13 +180,6 @@
                     <button class="button action-btn" on:click={()=>{refreshKey = {};}}>Yritä uudelleen</button>
                 {/if}
             {/await}
-            {#if false}
-                <div class="debug">
-                    <p>Top saved: {JSON.stringify(Array.from($my_top_scores))}</p>
-                    <p>Top submitted: {JSON.stringify(Array.from($my_top_submitted_scores))}</p>
-                    <p>Top histories: {$my_top_score_histories}</p>
-                </div>
-            {/if}
         {/key}
     </div>
 </Popup>

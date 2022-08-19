@@ -16,7 +16,7 @@
 		validation_result = await fetch("/auth/validate", {
 			method: "POST",
 			body: JSON.stringify({
-				token
+				token: token
 			})
 		});
 	}
@@ -60,6 +60,9 @@
 				</div>
 			{:else}
 				<h1>Hei, {$auth.displayName || $auth.email}</h1>
+				{#if $auth.displayName}
+					<h3>({$auth.email})</h3>
+				{/if}
 				<div class="actions">
 					<button class="button action-btn" on:click={() => {if(confirm("Oletko varma?")){auth.signOut();}}}>
 		             	Kirjaudu Ulos
@@ -71,11 +74,22 @@
 		            {/if}
 	            </div>
 	            {#if validation_result}
-	            	{#await validation_result.json()}
-	            		<p>{validation_result.status}: ladataan dataa...</p>
-	            	{:then data}
-	            		<p>{validation_result.status}: {data.message}</p>
-	            	{/await}
+					{#if validation_result.ok}
+						{#await validation_result.json()}
+							<p>{validation_result.status}: ladataan dataa...</p>
+						{:then data}
+							<p>Kaikki OK</p>
+						{/await}
+					{:else}
+						<div style="text-align: center;">
+							<p>Virhe.</p>
+							{#await validation_result.json()}
+								<p>{validation_result.status}: ladataan dataa...</p>
+							{:then data}
+								<p class="error">{data.message}</p>
+							{/await}
+						</div>
+					{/if}
 	            {/if}
 			{/if}
 		<a href="/">Takaisin OispaHallaan</a>
@@ -89,6 +103,11 @@
 	h1 {
 		margin: 0;
 	}
+	h3 {
+		margin: 0;
+		opacity: .5;
+		margin-top: -.5em;
+	}
 	main {
 		background: var(--background);
 		display: flex;
@@ -100,5 +119,12 @@
 		gap: .5em;
 
 		min-height: 100vh;
+	}
+
+	.error {
+		background-color: #111;
+		color: red;
+		padding: .2em 1em;
+		border-radius: .25rem;
 	}
 </style>

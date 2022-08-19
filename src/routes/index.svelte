@@ -104,7 +104,7 @@
 <div class="container">
     <Announcer bind:this={AnnouncerInstance} />
     <Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
-    <Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} />
+    <Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
     <Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
     <div class="new-above-game">
         <div class="above-game-left">
