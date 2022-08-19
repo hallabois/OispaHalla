@@ -1,5 +1,5 @@
-let tournament_endpoint_dev = true ? "https://hac.oispahalla.com:9000/ohts/api" : "https://0.0.0.0:9000/ohts/api";
-export let tournament_endpoint = false ? "https://hac.oispahalla.com:9000/ohts/api" : tournament_endpoint_dev;
+let tournament_endpoint_dev = true ? "https://mp.oispahalla.com/api" : "https://0.0.0.0:9000/ohts/api";
+export let tournament_endpoint = false ? "https://mp.oispahalla.com/api" : tournament_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 
 export class createResponse {
@@ -36,7 +36,7 @@ export class createTournamentGamemodeOptions {
     goal!: number
 }
 
-export async function createTournament(name: string, is_public: boolean, max_clients: number, join_password: string | null, gamemode_options: createTournamentGamemodeOptions): Promise<createResponse> {
+export async function createTournament(name: string, is_public: boolean, max_clients: number, join_password: string | null, gamemode_options: createTournamentGamemodeOptions, token: string): Promise<createResponse> {
     let resp = await fetch(`${tournament_endpoint}/games`, 
         {
             method: 'POST',
@@ -50,7 +50,9 @@ export async function createTournament(name: string, is_public: boolean, max_cli
                 "create_public": is_public,
                 "create_max_clients": max_clients,
                 "create_join_password": join_password,
-                "create_gamemode": gamemode_options        
+                "create_gamemode": gamemode_options,
+                
+                "token": token
             })
         }
     );
@@ -83,13 +85,13 @@ export class TournamentInfo {
 class publicTournamentsResponse {
     success: boolean
     status_code: number
-    ongoing_games: TournamentInfo[]
+    joinable_games: TournamentInfo[]
     active_games: number[]
     past_games: number[]
-    constructor(success: boolean, status_code: number, ongoing_games: TournamentInfo[], active_games: number[], past_games: number[]) {
+    constructor(success: boolean, status_code: number, joinable_games: TournamentInfo[], active_games: number[], past_games: number[]) {
         this.success = success;
         this.status_code = status_code;
-        this.ongoing_games = ongoing_games;
+        this.joinable_games = joinable_games;
         this.active_games = active_games;
         this.past_games = past_games;
     }

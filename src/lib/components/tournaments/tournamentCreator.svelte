@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { token } from "$lib/Auth/authstore";
+
     import { createTournament, type createResponse, joinGame, gamemode_0_goals, gamemode_0_names } from "$lib/tournamentstore";
     let name: string;
     let create_public = true;
@@ -13,6 +15,10 @@
 
     let createRequest: Promise<createResponse> | null;
     function createT() {
+        if($token == null) {
+            alert("Virheellinen sisäänkirjautuminen");
+            return;
+        }
         createRequest = createTournament(
             create_public ? name : "Yksityinen Peli",
             create_public,
@@ -21,7 +27,8 @@
             {
                 gamemode: gamemode,
                 goal: gamemode_0_goal
-            }
+            },
+            $token
         );
     }
 </script>
