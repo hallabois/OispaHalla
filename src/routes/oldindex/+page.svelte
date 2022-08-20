@@ -1,9 +1,3 @@
-<!-- Explain what global variables are to typescript -->
-<script context="module" lang="ts">
-  declare var onInitDone: Function;
-  declare var base_path: string;
-</script>
-<!-- / -->
 <script lang="ts">
     import { marked } from 'marked';
     import { onMount } from "svelte";
