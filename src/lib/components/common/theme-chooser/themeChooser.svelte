@@ -113,49 +113,55 @@
 </script>
 
 <main class:relative class:expandX class:expandY>
-    <!-- svelte-ignore missing-declaration -->
-    {#if $theme_index != null}
-        {#each available_themes as theme, index}
-            <!-- svelte-ignore missing-declaration -->
-            {#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1) || menu_open}
+    {#if browser}
+        <!-- svelte-ignore missing-declaration -->
+        {#if $theme_index != null}
+            {#each available_themes as theme, index}
                 <!-- svelte-ignore missing-declaration -->
+                {#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1) || menu_open}
+                    <!-- svelte-ignore missing-declaration -->
+                    <button
+                        title={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
+                        aria-label={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
+                        on:click={()=>{
+                            if(menu_open) {
+                                if(theme.theme_url) {
+                                    base_path.set(theme.theme_url);
+                                }
+                                else {
+                                    base_path.set("");
+                                    setImageTheme(theme.index);
+                                }
+                            }
+                            menu_open = !menu_open;
+                        }}
+                        transition:animate={{condition: relative, delay: index*50}}
+                    >
+                        <img src={theme.icon_url} width="50px" height="50px" alt="" style={theme.style} />
+                    </button>
+                {/if}
+            {/each}
+            {#if available_themes.filter(theme => (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1)).length < 1}
                 <button
-                    title={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
-                    aria-label={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
-                    on:click={()=>{
-                        if(menu_open) {
-                            if(theme.theme_url) {
-                                base_path.set(theme.theme_url);
-                            }
-                            else {
-                                base_path.set("");
-                                setImageTheme(theme.index);
-                            }
-                        }
-                        menu_open = !menu_open;
-                    }}
-                    transition:animate={{condition: relative, delay: index*50}}
+                    on:click={()=>{menu_open = !menu_open}}
+                    on:touchend={()=>{menu_open = !menu_open}}
                 >
-                    <img src={theme.icon_url} width="50px" height="50px" alt="" style={theme.style} />
+                    ?
                 </button>
             {/if}
-        {/each}
-        {#if available_themes.filter(theme => (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1)).length < 1}
-            <button
-                on:click={()=>{menu_open = !menu_open}}
-                on:touchend={()=>{menu_open = !menu_open}}
-            >
-                ?
-            </button>
+            {#if menu_open}
+                <button
+                        title="Lisää teema"
+                        aria-label="Lisää teema"
+                        on:click={addCustomTheme}
+                        transition:animate={{condition: relative, delay: available_themes.length*50}}
+                >+</button>
+            {/if}
         {/if}
-        {#if menu_open}
-            <button
-                    title="Lisää teema"
-                    aria-label="Lisää teema"
-                    on:click={addCustomTheme}
-                    transition:animate={{condition: relative, delay: available_themes.length*50}}
-            >+</button>
-        {/if}
+    {:else}
+        <button>
+            ...
+        </button>
     {/if}
 </main>
 
