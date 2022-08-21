@@ -13,7 +13,7 @@
             for(let s of [3, 4]) {
                 let top_saved = $my_top_scores[s] || -1;
                 let top_submitted = $my_top_submitted_scores[s] || -1;
-                if(GameManagerInstance?.score > top_saved) {
+                if(GameManagerInstance?.size == s && GameManagerInstance?.score > top_saved) {
                     // Do nothing, as the top scoring game is not over yet.
                 }
                 else if(top_saved > top_submitted) {
@@ -49,12 +49,15 @@
             markAsSubmitted(starting_size);
         }
     }
-    $: if($my_top_scores && $my_top_submitted_scores && open != null) {
+    function submitUnsubmittedTopScoresIfAlive() {
         check_server_alive().then((alive)=>{
             if(alive) {
                 submitUnsubmittedTopScores();
             }
-        })
+        });
+    }
+    $: if($my_top_scores && $my_top_submitted_scores && open != null) {
+        submitUnsubmittedTopScoresIfAlive();
     }
 
     export let open = false;
@@ -62,7 +65,7 @@
     export let submitting = false;
     export function show() {
         open = true;
-        //checkServerAlive();
+        submitUnsubmittedTopScoresIfAlive();
     }
 
     function editScreenName() {
