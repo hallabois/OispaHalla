@@ -111,7 +111,7 @@
             <a href="https://hallabois.github.io/invite/" target="_blank">
                 <h1 class="title">{app_name}</h1>
             </a>
-            <p class="game-intro">{@html marked.parse(app_description)}</p>
+            {@html marked.parse(app_description)}
         </div>
         <div class="above-game-right">
             <div class="score-container" style="--c:'{app_name_score}'">0</div>
