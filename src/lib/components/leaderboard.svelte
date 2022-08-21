@@ -13,7 +13,7 @@
             for(let s of [3, 4]) {
                 let top_saved = $my_top_scores[s] || -1;
                 let top_submitted = $my_top_submitted_scores[s] || -1;
-                if(GameManagerInstance?.size == s && GameManagerInstance?.score > top_saved) {
+                if(GameManagerInstance?.size == s && GameManagerInstance?.score >= top_saved) {
                     // Do nothing, as the top scoring game is not over yet.
                 }
                 else if(top_saved > top_submitted) {
