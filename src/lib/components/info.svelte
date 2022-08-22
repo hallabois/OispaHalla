@@ -14,7 +14,8 @@
 	<span slot="title">OispaHallasta</span>
 	<div slot="content" class="content">
 		<div class="section notice">
-			Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.
+			<p>Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen.</p>
+            <p>Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.</p>
 		</div>
         <div class="section credits">
             <p>

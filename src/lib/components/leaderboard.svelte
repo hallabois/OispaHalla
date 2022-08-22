@@ -123,8 +123,8 @@
                                         {#each new Array(10) as index}
                                             <tr>
                                                 <td>...</td>
-                                                <td>....</td>
                                                 <td>.....</td>
+                                                <td>.......</td>
                                             </tr>
                                         {/each}
                                     </tbody>

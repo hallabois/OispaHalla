@@ -98,7 +98,7 @@
             height: 100%;
         }
         .lb-header {
-            margin-bottom: .75em;
+            margin-bottom: 3em;
         }
     }
 </style>
