@@ -7,6 +7,7 @@
     import Preloader from '$lib/components/common/image-preloader/Preloader.svelte';
 
     import Settings from '$lib/components/settings.svelte';
+    import Info from '$lib/components/info.svelte';
     import Tournaments from "$lib/components/tournaments.svelte";
     import Leaderboards from "$lib/components/leaderboard.svelte";
 
@@ -84,6 +85,7 @@
     let inputRoot: HTMLElement;
     let TtInstance: Tournaments;
     let lbInstance: Leaderboards;
+    let InfoInstance: Info;
     let SettingsInstance: Settings;
     let AnnouncerInstance: Announcer;
     let BoardInstance: Board;
@@ -104,6 +106,7 @@
 <div class="container">
     <Announcer bind:this={AnnouncerInstance} />
     <Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
+    <Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
     <Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
     <Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
     <div class="new-above-game">
@@ -143,6 +146,9 @@
                 <!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
                 <button class="button background-none color-button" on:click={()=>{SettingsInstance.show()}} title="Asetukset">
                     ⚙️
+                </button>
+                <button class="button background-none color-button" on:click={()=>{InfoInstance.show()}} title="Asetukset">
+                    ℹ
                 </button>
             </div>
             <div class="kurin-palautus-container" style="flex: 1;">

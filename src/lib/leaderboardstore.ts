@@ -3,7 +3,7 @@ import { browser, dev } from "$app/env";
 import { auth } from "$lib/Auth/authstore";
 
 let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
-let leaderboard_endpoint_dev = false ? leaderboard_endpoint_prod : "http://localhost:5000";
+let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
 export let lb_screenName: Writable<string|null> = writable(browser ? localStorage.lb_screenName || null : null);
@@ -124,9 +124,9 @@ export class Score_error {
     error_msg!: string
 }
 export type Score_response = Score_ok | Score_error;
-export async function get_my_top_score(size: number, token: string): Promise<Score_response> {
+export async function fetchboard(size: number, token: string): Promise<Score_response> {
     try {
-        const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/token/${token}`);
+        const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/fetchboard/token/${token}`);
         if(resp.ok) {
             try {
                 const json_result = await resp.json();
@@ -147,7 +147,7 @@ export async function get_my_top_score(size: number, token: string): Promise<Sco
             console.warn(resp);
             return {
                 success: false,
-                error_msg: "Failed to contact server."
+                error_msg: "Failed to reach server."
             };
         }
     }
@@ -157,22 +157,6 @@ export async function get_my_top_score(size: number, token: string): Promise<Sco
             success: false,
             error_msg: "Error contacting server."
         };
-    }
-}
-export async function get_score_placement(size: number, screenName: string): Promise<string> {
-    let all_scores = await get_all_scores(size);
-    if(all_scores instanceof scores_error) {
-        return "?.";
-    }
-    else {
-        let index = 0;
-        for(let score of all_scores.scores) {
-            if(score.user.screenName === screenName) {
-                return (index + 1) + ".";
-            }
-            index++;
-        }
-        return "?.";
     }
 }
 

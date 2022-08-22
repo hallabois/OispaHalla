@@ -3,7 +3,7 @@
 
     import Popup from "./common/popup/popup.svelte";
     import type Announcer from "./tournaments/announcer.svelte";
-    import {lb_screenName, check_server_alive, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement} from "$lib/leaderboardstore";
+    import {lb_screenName, check_server_alive, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement, fetchboard} from "$lib/leaderboardstore";
     import { scale } from "svelte/transition";
     import type GameManager from "$lib/gamelogic/game_manager";
 
@@ -142,7 +142,7 @@
                             </table>
                         </div>
                         {#if $token != null}
-                            {#await get_my_top_score(size, $token)}
+                            {#await fetchboard(size, $token)}
                                 <p>Ladataan tuloksiasi...</p>
                             {:then result} 
                                 {#if !result.success}
@@ -151,13 +151,9 @@
                                     <div class="my-results">
                                         <table>
                                             <tr>
-                                                {#await get_score_placement(size, result.user.screenName)}
-                                                    <td>...</td>
-                                                {:then placement} 
-                                                    <td>{placement}</td>
-                                                {/await}
-                                                <td>{result.score}</td>
-                                                <td>{result.user.screenName}</td>
+                                                <td>{result.rank}.</td>
+                                                <td>{result.score.score}</td>
+                                                <td>{result.score.user.screenName}</td>
                                             </tr>
                                         </table>
                                     </div>
