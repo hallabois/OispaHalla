@@ -3,7 +3,7 @@ import { browser, dev } from "$app/env";
 import { auth } from "$lib/Auth/authstore";
 
 let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
-let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
+let leaderboard_endpoint_dev = false ? leaderboard_endpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
 export let lb_screenName: Writable<string|null> = writable(browser ? localStorage.lb_screenName || null : null);

@@ -38,6 +38,8 @@
 			}
 		}
 	}
+
+	let help_open = false;
 </script>
 
 <main>
@@ -58,6 +60,20 @@
 					<button class="button action-btn" on:click={() => auth.signInWith('google')}>Googlella</button>
 					<button class="button action-btn" on:click={() => email_popup_open = true}>Sähköpostilla</button>
 				</div>
+				<a href="#help" on:click={()=>{help_open = true}}>Ongelmia kirjautumisessa?</a>
+				<Popup bind:open={help_open}>
+					<span slot="title">Kirjautumisesta</span>
+					<div slot="content">
+						<b>Jos käytät firefoxia, tai muuta selainta jossa evästeet eristetään sivustokohtaisesti</b>
+						<p>Laita evästeiden eristys pois päältä.</p>
+						<p style="margin: 0;">Firefoxissa:</p>
+						<ol style="margin: 0;">
+							<li>Paina sivuston osoitteen vasemmalla olevasta kilvestä</li>
+							<li>Laita tehostettu seurannan suojaus pois päältä</li>
+						</ol>
+						<p>Muita ongelmia? <a href="mailto:oispahalla@eliaseskelinen.fi">Ota yhteyttä kehittäjiin</a></p>
+					</div>
+				</Popup>
 			{:else}
 				<h1>Hei, {$auth.displayName || $auth.email}</h1>
 				{#if $auth.displayName}
