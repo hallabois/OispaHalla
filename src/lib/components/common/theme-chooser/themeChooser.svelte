@@ -46,13 +46,13 @@
         name: "Kaunis",
         index: 5,
         icon_url: "/img/theme-4/cover.webp",
-        style: "background: white;"
+        style: "background: #8cc4e3;"
     };
     let kaunis_dark = {
         name: "Kaunis (tumma)",
         index: 4,
         icon_url: "/img/theme-4/cover.webp",
-        style: "background: black;"
+        style: "background: #001522;"
     };
     if(true) {
         available_themes = [
