@@ -8,7 +8,7 @@
     import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
     import { generate_previous_positions } from "$lib/gamelogic/utils";
     import type Grid from "$lib/gamelogic/grid";
-    import { base_path } from "$lib/themestore";
+    import { base_path } from "$lib/stores/themestore";
 
     export let enableKIM = false;
     export let enableLSM = false;

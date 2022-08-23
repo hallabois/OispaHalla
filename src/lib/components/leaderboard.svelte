@@ -3,7 +3,7 @@
 
     import Popup from "./common/popup/popup.svelte";
     import type Announcer from "./tournaments/announcer.svelte";
-    import {lb_screenName, check_server_alive, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement, fetchboard} from "$lib/leaderboardstore";
+    import {lb_screenName, check_server_alive, submit_score, get_top_scores, get_my_top_score, Score_error, my_top_scores, my_top_submitted_scores, my_top_score_histories, get_score_placement, fetchboard} from "$lib/stores/leaderboardstore";
     import { scale } from "svelte/transition";
     import type GameManager from "$lib/gamelogic/game_manager";
 

@@ -1,4 +1,4 @@
-import { open_popups } from "$lib/popupstore";
+import { open_popups } from "$lib/stores/popupstore";
 import { get } from "svelte/store";
 
 export default class KeyboardInputManager {

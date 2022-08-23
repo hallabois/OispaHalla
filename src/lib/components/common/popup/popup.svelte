@@ -6,7 +6,7 @@
 <!-- / -->
 <script lang="ts">
     import { browser } from "$app/env";
-    import { open_popups } from "$lib/popupstore";
+    import { open_popups } from "$lib/stores/popupstore";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     export let open = false;

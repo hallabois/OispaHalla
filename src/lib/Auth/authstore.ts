@@ -76,7 +76,7 @@ const createAuth = () => {
 		console.clear();
 		console.info("Signed out, have a good day!");
 		token.set(null);
-		import('$lib/leaderboardstore').then(({lb_screenName})=>{
+		import('$lib/stores/leaderboardstore').then(({lb_screenName})=>{
 			lb_screenName.set(null);
 		});
 		// localStorage.clear(); // Not a good idea

@@ -1,7 +1,7 @@
 <!-- / -->
 <script lang="ts">
     import { slide, scale } from "svelte/transition";
-    import { theme_index, base_path } from "$lib/themestore";
+    import { theme_index, base_path } from "$lib/stores/themestore";
 
     const animate = (node, args) =>
         args.condition ? slide(node, args) : scale(node, args);

@@ -1,4 +1,4 @@
-import { defaultTheme } from "$lib/themestore";
+import { defaultTheme } from "$lib/stores/themestore";
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ request, setHeaders }) {

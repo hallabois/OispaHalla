@@ -1,7 +1,7 @@
 <script lang="ts">
     import { token } from "$lib/Auth/authstore";
 
-    import { createTournament, type createResponse, joinGame, gamemode_0_goals, gamemode_0_names } from "$lib/tournamentstore";
+    import { createTournament, type createResponse, joinGame, gamemode_0_goals, gamemode_0_names } from "$lib/stores/tournamentstore";
     let name: string;
     let create_public = true;
     let max_clients = 4;

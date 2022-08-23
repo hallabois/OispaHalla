@@ -17,7 +17,7 @@
     import type GameManager from "$lib/gamelogic/game_manager";
     import Icon from "$lib/components/common/icon/icon.svelte";
     import { leaderboardIconData } from "$lib/components/common/icon/iconData";
-    import { base_path } from "$lib/themestore";
+    import { base_path } from "$lib/stores/themestore";
 
     let app_name = "";
     let app_description = "";

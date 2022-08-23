@@ -4,7 +4,7 @@
     import { auth } from "$lib/Auth/authstore";
 
     import Popup from "$lib/components/common/popup/popup.svelte";
-    import { checkAlive, joined_game_id, joined_game_error, poll_success, poll_game, joined_game_user_id, joined_game_am_host, joined_game_host_pswds, refreshGameData } from "$lib/tournamentstore";
+    import { checkAlive, joined_game_id, joined_game_error, poll_success, poll_game, joined_game_user_id, joined_game_am_host, joined_game_host_pswds, refreshGameData } from "$lib/stores/tournamentstore";
     import TournamentCreator from "./tournaments/tournamentCreator.svelte";
     import TournamentBrowser from "./tournaments/tournamentBrowser.svelte";
     import Lobby from "./tournaments/lobby.svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade, slide } from "svelte/transition";
-    import { getPublicTournaments, joined_game_host_pswds, joinGame, joined_game_error, TournamentInfo } from "$lib/tournamentstore";
+    import { getPublicTournaments, joined_game_host_pswds, joinGame, joined_game_error, TournamentInfo } from "$lib/stores/tournamentstore";
 
 
     let filter: string|null;

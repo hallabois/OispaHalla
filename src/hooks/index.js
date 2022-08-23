@@ -1,7 +1,7 @@
 /* ~/src/hooks.js */
 
 // This hook "pre-renders" the appropriate theme server-side.
-import { defaultTheme } from "$lib/themestore";
+import { defaultTheme } from "$lib/stores/themestore";
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {

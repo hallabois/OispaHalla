@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { gamemode_0_names, host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_id_index, poll_success, refreshGameData } from "$lib/tournamentstore";
+    import { gamemode_0_names, host_deleteGame, host_startGame, joined_game_am_host, joined_game_data, joined_game_error, joined_game_id, leaveGame, poll_game, poll_id_index, poll_success, refreshGameData } from "$lib/stores/tournamentstore";
     import Board from "../board/board.svelte";
     import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
     import type Announcer from "./announcer.svelte";

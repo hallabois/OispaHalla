@@ -1,4 +1,4 @@
-import { get_base_path } from "$lib/themestore";
+import { get_base_path } from "$lib/stores/themestore";
 
 export default class HTMLActuator {
   html_component: HTMLElement;

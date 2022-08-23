@@ -6,7 +6,7 @@
 	import { browser } from "$app/env";
 	import "../app.scss";
     import PopupScrolllock from "$lib/components/common/popup/popup_scrolllock.svelte";
-	import { theme_index } from "$lib/themestore";
+	import { theme_index } from "$lib/stores/themestore";
     //export let theme_override: number | null;
     if(!browser && theme_override != null) {
     	theme_index.set(theme_override);

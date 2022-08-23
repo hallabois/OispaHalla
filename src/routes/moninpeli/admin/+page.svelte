@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { tournament_endpoint } from "$lib/tournamentstore";
+    import { tournament_endpoint } from "$lib/stores/tournamentstore";
     let refreshKey = {};
     let admin_token: string;
     let admin_token_checking = false;

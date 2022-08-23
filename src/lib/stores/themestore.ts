@@ -25,7 +25,7 @@ theme_index.subscribe((themeID) => {
         // Apply theme
         let html = document.querySelector("html");
         if(html) {
-            html.classList = ["theme-" + themeID];
+            html.setAttribute("class", "theme-" + themeID);
         }
         theme_loaded = true;
     }

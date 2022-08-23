@@ -1,4 +1,4 @@
-import { get_all_scores } from "$lib/leaderboardstore";
+import { get_all_scores } from "$lib/stores/leaderboardstore";
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ request, setHeaders, params }) {

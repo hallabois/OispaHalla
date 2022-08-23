@@ -1,6 +1,6 @@
 <script lang="ts">
     import { browser } from "$app/env";
-    import { open_popups } from "$lib/popupstore";
+    import { open_popups } from "$lib/stores/popupstore";
 
     $: if(browser && $open_popups.length > 0) {
         document.querySelector("html").style.overflowY = "hidden";
