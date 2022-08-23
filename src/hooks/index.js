@@ -20,7 +20,4 @@ export async function handle({ event, resolve }) {
     return await resolve(event, {
         transformPageChunk: ({ html }) => html.replace(/<html/g, `<html class="theme-${theme}"`)
     });
-
-    const response = await resolve(event)
-    return response
 }

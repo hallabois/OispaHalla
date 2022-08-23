@@ -1,11 +1,11 @@
 import { browser } from "$app/env";
 import { type Writable, writable, get } from "svelte/store";
 
-export let defaultTheme = 1;
+export let defaultTheme = 5;
 export function setDefaultTheme(theme: number) {
     defaultTheme = theme;
 }
-export let currentImageThemeVersion = 5;
+export let currentImageThemeVersion = 6;
 
 export let theme_index: Writable<number> = writable(defaultTheme);
 export let theme_loaded = false;
@@ -20,7 +20,7 @@ theme_index.subscribe((themeID) => {
         }catch{}
         // Save choice as a cookie
         try {
-            document.cookie = `theme=${themeID};SameSite=Strict;expires=Fri, 31 Dec 9999 23:59:59 GMT"max-age=31536000;path=/;`;
+            document.cookie = `theme=${themeID};SameSite=None;secure=true;expires=Fri, 31 Dec 9999 23:59:59 GMT"max-age=31536000;path=/;`;
         }catch{}
         // Apply theme
         let html = document.querySelector("html");

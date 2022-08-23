@@ -654,6 +654,7 @@ hr {
       width: var(--tile-size);
       height: var(--tile-size);
       line-height: var(--tile-size);
+      image-rendering: auto;
     }
 
     // Build position classes
@@ -997,6 +998,11 @@ $i: 2;
   filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
 }
 
+// Ensure that pixelart looks nice and crisp
+.theme-4, .theme-5 {
+  image-rendering: pixelated;
+}
+
 $colors: (
   '0-color-scheme': 'dark', 
   '0-text-color': #eee,
@@ -1009,6 +1015,18 @@ $colors: (
   '0-break-button-color-false': #ddd,
   '0-break-button-background-true': #49a636,
   '0-break-button-color-true': #dfdfdf,
+
+  '4-color-scheme': 'dark', 
+  '4-text-color': #eee,
+  '4-game-background': #161817,
+  '4-game-background-inverted': #E9E7E8, //käytetään kurinpalautusnapin hoverausefektille
+  '4-game-container-background': #3e3933,
+  '4-title-color': #e6d2bf,
+  '4-button-color': #365ca6,
+  '4-break-button-background-false': #a63636, //kurinpalautus!
+  '4-break-button-color-false': #ddd,
+  '4-break-button-background-true': #49a636,
+  '4-break-button-color-true': #dfdfdf,
 
   '14-color-scheme': 'dark', 
   '14-text-color': #eee,
@@ -1035,6 +1053,14 @@ $colors: (
   '1-break-button-color-false': #ddd,
   '1-break-button-background-true': #00cc00,
   '1-break-button-color-true': #dfdfdf,
+
+  '5-color-scheme': 'light', 
+  '5-game-background': $game-background,
+  '5-title-color': #534D48,
+  '5-break-button-background-false': #cc0000, //kurinpalautus!
+  '5-break-button-color-false': #ddd,
+  '5-break-button-background-true': #00cc00,
+  '5-break-button-color-true': #dfdfdf,
 
   '2-color-scheme': 'dark', 
   '2-text-color': #eee,

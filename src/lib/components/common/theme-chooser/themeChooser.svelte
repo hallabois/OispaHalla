@@ -5,7 +5,7 @@
 
     const animate = (node, args) =>
         args.condition ? slide(node, args) : scale(node, args);
-    import { browser } from "$app/env";
+    import { browser, dev } from "$app/env";
     class theme {
         name!: string
         index!: number
@@ -32,22 +32,35 @@
             icon_url: "/img/raksahalla_192.webp",
             style: "background: black;"
         },
-        {
-            name: "Classic",
-            index: 16,
-            icon_url: "/img/theme-16/2048.webp",
-            style: "background: transparent;"
-        },
     ];
 
     let menu_open = false;
 
+    let classic = {
+        name: "Classic",
+        index: 16,
+        icon_url: "/img/theme-16/2048.webp",
+        style: "background: transparent;"
+    }
     let kaunis = {
         name: "Kaunis",
-        index: 14,
-        icon_url: "/img/theme-14/2.webp",
-        style: ""
+        index: 5,
+        icon_url: "/img/theme-4/cover.webp",
+        style: "background: white;"
     };
+    let kaunis_dark = {
+        name: "Kaunis (tumma)",
+        index: 4,
+        icon_url: "/img/theme-4/cover.webp",
+        style: "background: black;"
+    };
+    if(true) {
+        available_themes = [
+            kaunis,
+            kaunis_dark,
+            ...available_themes,
+        ];
+    }
     $: if(
             browser && localStorage && 
             (
@@ -60,9 +73,9 @@
                 )
             )
             &&
-            !available_themes.includes(kaunis)
+            !available_themes.includes(classic)
         ) {
-        available_themes.push(kaunis);
+        available_themes.push(classic);
         available_themes = available_themes;
     }
 
@@ -167,6 +180,7 @@
 
 <style>
     main {
+        image-rendering: auto;
 
         display: flex;
         flex-wrap: wrap;

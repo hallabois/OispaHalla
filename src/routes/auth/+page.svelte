@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/env';
+	import { browser, dev } from '$app/env';
 	import { auth } from '$lib/Auth/authstore';
 	import Popup from "$lib/components/common/popup/popup.svelte";
 
@@ -23,10 +23,14 @@
 
 	let email_popup_open = false;
 	let email: string | null;
+	let email_submitting = false;
+	$: email_valid = email != null && email.endsWith("@ksyk.fi");
 
 	async function log_in_with_email() {
-		if(email) {
+		if(email && email_valid) {
+			email_submitting = true;
 			let result = await auth.sendSignInLink(email, window.location.origin);
+			email_submitting = false;
 			if(result) {
 				try{
 					window.localStorage.setItem('emailForSignIn', email);
@@ -50,9 +54,14 @@
 			{#if $auth === null}
 				<Popup bind:open={email_popup_open}>
 					<span slot="title">Kirjaudu sisään sähköpostilla</span>
-					<div slot="content" style="display: flex;gap: .5em;flex-wrap: wrap;">
-						<input bind:value={email} placeholder="sähköposti" style="flex:1;font-size: 1em;">
-						<button on:click={log_in_with_email} class="button action-btn" style="width: 100%;">Kirjaudu sisään</button>
+					<div slot="content">
+						<small>Toistaiseksi vain ksyk.fi -sähköpostit ovat sallittuja</small>
+						<div style="display: flex;gap: .5em;flex-wrap: wrap;">
+							<input bind:value={email} placeholder="sähköposti" style="flex:1;font-size: 1em;">
+							<button disabled={!email_valid || email_submitting} on:click={log_in_with_email} class="button action-btn" style="width: 100%;">
+								{email_submitting ? "Lähetetään" : "Kirjaudu sisään"}
+							</button>
+						</div>
 					</div>
 				</Popup>
 				<h1>Kirjaudu sisään</h1>
@@ -68,7 +77,7 @@
 						<p>Laita evästeiden eristys pois päältä.</p>
 						<p style="margin: 0;">Firefoxissa:</p>
 						<ol style="margin: 0;">
-							<li>Paina sivuston osoitteen vasemmalla olevasta kilvestä</li>
+							<li>Paina sivuston osoitteen vasemmalla puolella olevasta kilvestä</li>
 							<li>Laita tehostettu seurannan suojaus pois päältä</li>
 						</ol>
 						<p>Muita ongelmia? <a href="mailto:oispahalla@eliaseskelinen.fi">Ota yhteyttä kehittäjiin</a></p>
@@ -83,11 +92,13 @@
 					<button class="button action-btn" on:click={() => {if(confirm("Oletko varma?")){auth.signOut();}}}>
 		             	Kirjaudu Ulos
 		            </button>
-		            {#if token}
-			            <button class="button action-btn" on:click={validate}>Validoi</button>
-		            {:else}
-		            	<button class="button action-btn" disabled>Ladataan...</button>
-		            {/if}
+					{#if dev}
+						{#if token}
+							<button class="button action-btn" on:click={validate}>Validoi</button>
+						{:else}
+							<button class="button action-btn" disabled>Ladataan...</button>
+						{/if}
+					{/if}
 	            </div>
 	            {#if validation_result}
 					{#if validation_result.ok}
