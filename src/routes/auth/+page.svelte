@@ -126,7 +126,7 @@
 	{/if}
 </main>
 
-<style>
+<style lang="scss">
 	h1 {
 		margin: 0;
 	}
@@ -137,6 +137,9 @@
 	}
 	main {
 		background: var(--background);
+		background-position: center;
+		background-size: cover;
+
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -146,6 +149,16 @@
 		gap: .5em;
 
 		min-height: 100vh;
+	}
+
+	main {
+		background-image: url("/img/ABC/blur_night.webp");
+	}
+
+	:global(.theme-1), :global(.theme-5), :global(.theme-16) {
+		main {
+			background-image: url("/img/ABC/blur.webp");
+		}
 	}
 
 	.error {
