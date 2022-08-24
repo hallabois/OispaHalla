@@ -1,14 +1,12 @@
 import { tabID } from "$lib/session_manager";
 
-var HallaAntiCheat: any;
-var sa_event: Function;
+import { getItem, setItem } from "$lib/stores/storage";
+import { browser } from "$app/env";
 
 export default class LocalStorageManager {
   enabled: boolean;
   bestScoreKey: string;
   gameStateKey: string;
-  storage: any;
-  localStorageWorks: boolean;
   constructor(enabled: boolean = true) {
     this.enabled = enabled;
     if(!this.enabled){
@@ -17,43 +15,16 @@ export default class LocalStorageManager {
     this.bestScoreKey = "bestScore";
     this.gameStateKey = "gameState";
 
-    var supported = this.localStorageSupported();
-    this.storage = localStorage;
-    if(this.localStorageWorks){
-        if(localStorage.bestScore && localStorage.bestScores == null){
-          localStorage.bestScores = JSON.stringify({
-            "4": localStorage.bestScore,
-          });
-        }
-        if(localStorage.bestScores == null){
-          localStorage.bestScores = JSON.stringify({
-            "3": 0,
-            "4": 0,
-          });
-        }
+    if(getItem("bestScore") && getItem("bestScores") == null){
+      setItem("bestScores", {
+        "4": getItem("bestScore"),
+      });
     }
-  }
-  localStorageSupported() {
-    try{
-      localStorage.test = "test";
-      let i = localStorage.test;
-      let t = i[0];
-      delete localStorage.test;
-      this.localStorageWorks = true;
-    }
-    catch(e){
-      this.localStorageWorks = false;
-      console.log("Localstorage not working");
-    }
-    var testKey = "test";
-
-    try {
-      var storage = window.localStorage;
-      storage.setItem(testKey, "1");
-      storage.removeItem(testKey);
-      return true;
-    } catch (error) {
-      return false;
+    if(getItem("bestScores") == null){
+      setItem("bestScores", {
+        "3": 0,
+        "4": 0,
+      });
     }
   }
   // Best score getters/setters
@@ -61,19 +32,17 @@ export default class LocalStorageManager {
     if(!this.enabled){
       return 0;
     }
-    return this.storage.getItem(this.bestScoreKey) || 0;
+    return getItem(this.bestScoreKey) || 0;
   }
-  getBestScorePlus(size) {
+  getBestScorePlus(size: number) {
     if(!this.enabled){
       return 0;
     }
     try{
-      if(this.localStorageWorks){
-        if(localStorage.bestScores != null){
-          if( Object.keys(JSON.parse(localStorage.bestScores)).includes(size.toString()) ){
-            let val = JSON.parse(localStorage.bestScores)[size];
-            return val;
-          }
+      if(getItem("bestScores") != null){
+        if( Object.keys(getItem("bestScores")).includes(size.toString()) ){
+          let val = getItem("bestScores")[size];
+          return val;
         }
       }
     }
@@ -86,31 +55,29 @@ export default class LocalStorageManager {
     }
     return 0;
   }
-  setBestScore(score) {
+  setBestScore(score: number) {
     if(!this.enabled){
       return;
     }
-    if(this.localStorageWorks && localStorage.lastSession && localStorage.lastSession != tabID){
+    if(browser && localStorage.lastSession && localStorage.lastSession != tabID){
       this.resolveConflict();
     }
     else{
-      this.storage.setItem(this.bestScoreKey, score);
+      setItem(this.bestScoreKey, score);
     }
   }
   setBestScorePlus(score, size) {
     if(!this.enabled){
       return;
     }
-    if(this.localStorageWorks && localStorage.lastSession && localStorage.lastSession != tabID){
+    if(browser && localStorage.lastSession && localStorage.lastSession != tabID){
       this.resolveConflict();
     }
     else{
-      this.storage.setItem(this.bestScoreKey, score);
-      if(this.localStorageWorks){
-        let current = JSON.parse(localStorage.bestScores);
-        current[size] = score;
-        localStorage.bestScores = JSON.stringify(current);
-      }
+      setItem(this.bestScoreKey, score);
+      let current = getItem("bestScores");
+      current[size] = score;
+      setItem("bestScores", current);
     }
   }
   // Game state getters/setters and clearing
@@ -118,39 +85,33 @@ export default class LocalStorageManager {
     if(!this.enabled){
       return;
     }
-    if(!this.localStorageWorks){
-      return;
-    }
-    var stateJSON = this.storage.getItem(this.gameStateKey);
-    return stateJSON ? JSON.parse(stateJSON) : null;
+    let state = getItem(this.gameStateKey);
+    console.log("state", state);
+    return state;
   }
-  setGameState(gameState) {
+  setGameState(gameState: any) {
     if(!this.enabled){
       return;
     }
-    if(!this.localStorageWorks){
-      return;
-    }
-    if(this.localStorageWorks && localStorage.lastSession && localStorage.lastSession != tabID){
+    if(browser && localStorage.lastSession && localStorage.lastSession != tabID){
       this.resolveConflict();
     }
-    else{
-      this.storage.setItem("lastSession", tabID);
-      this.storage.setItem(this.gameStateKey, JSON.stringify(gameState));
+    else {
+      if(browser) {
+        localStorage.setItem("lastSession", tabID);
+      }
+      setItem(this.gameStateKey, gameState);
     }
   }
   clearGameState() {
     if(!this.enabled){
       return;
     }
-    if(!this.localStorageWorks){
-      return;
-    }
-    if(this.localStorageWorks && localStorage.lastSession && localStorage.lastSession != tabID){
+    if(browser && localStorage.lastSession && localStorage.lastSession != tabID){
       this.resolveConflict();
     }
     else{
-      this.storage.removeItem(this.gameStateKey);
+      setItem(this.gameStateKey, null);
     }
   }
   resolveConflict(){
@@ -160,13 +121,13 @@ export default class LocalStorageManager {
     let overwrite = confirm("Sinulla on useampi Oispa Halla™ välilehti auki!\nHaluatko lataa aiemman välilehden tilan tähän välilehteen?\n\n(Jos et paina OK, pelisi ei tallennu, kunnes suljet toiset välilehdet)");
     // Analytics
     try{
-			sa_event('conflict_resolved_to_' + overwrite);
+			// sa_event('conflict_resolved_to_' + overwrite);
 		}
 	  catch{}
     //
     if(overwrite){
-      this.storage.setItem("lastSession", tabID);
-      HallaAntiCheat = null; // Estää vahingolliset kirjoitukset historiaan. Aiheuttaa virheitä ennen reloadia, mutta ketä kiinnostaa ¯\_(ツ)_/¯
+      localStorage.setItem("lastSession", tabID);
+      // HallaAntiCheat = null; // Estää vahingolliset kirjoitukset historiaan. Aiheuttaa virheitä ennen reloadia, mutta ketä kiinnostaa ¯\_(ツ)_/¯
       document.write("Ladataan uudelleen...");
       window.location.reload();
     }

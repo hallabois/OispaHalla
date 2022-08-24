@@ -2,11 +2,13 @@ import { type Writable, writable, get } from "svelte/store";
 import { browser, dev } from "$app/env";
 import { auth } from "$lib/Auth/authstore";
 
+import { setItem, getItem } from "$lib/stores/storage";
+
 let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
 let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
-export let lb_screenName: Writable<string|null> = writable(browser ? localStorage.lb_screenName || null : null);
+export let lb_screenName: Writable<string|null> = writable(getItem("lb_screenName") || null);
 lb_screenName.subscribe((val)=>{
     if(val == "null") {
         lb_screenName.set(null);
@@ -24,7 +26,9 @@ lb_screenName.subscribe((val)=>{
         }
     }
 });
-lb_screenName.subscribe((value) => {if(browser){localStorage.lb_screenName = value}});
+lb_screenName.subscribe((value) => {
+    setItem("lb_screenName", value);
+});
 
 export async function check_server_alive() {
     try {
@@ -216,7 +220,7 @@ export type Histories = {[key: number]: any[]};
 export function get_local_top_scores(): Scores {
     const scores: Scores = {};
     for(const size of [3, 4]) {
-        scores[size] = JSON.parse(localStorage.getItem(`HAC_best_score${size}`) || "null");
+        scores[size] = getItem(`HAC_best_score${size}`);
     }
     console.info(scores);
     return scores;
@@ -224,7 +228,7 @@ export function get_local_top_scores(): Scores {
 export function get_local_top_histories(): Histories {
     const histories: Histories = {};
     for(const size of [3, 4]) {
-        histories[size] = JSON.parse(localStorage.getItem(`HAC_best_history${size}`) || "null");
+        histories[size] = getItem(`HAC_best_history${size}`);
     }
     console.info(histories);
     return histories;
@@ -235,5 +239,7 @@ export function update_my_top_score() {
 }
 export let my_top_scores: Writable<Scores> = writable(browser ? get_local_top_scores() : {});
 export let my_top_score_histories: Writable<Histories> = writable(browser ? get_local_top_histories() : {});
-export let my_top_submitted_scores: Writable<Scores> = writable(browser ? JSON.parse(localStorage.lb_submitted || "null") || {} : {});
-my_top_submitted_scores.subscribe((value) => {if(browser){localStorage.lb_submitted = JSON.stringify(value)}});
+export let my_top_submitted_scores: Writable<Scores> = writable(browser ? getItem("lb_submitted") || {} : {});
+my_top_submitted_scores.subscribe((value) => {
+    setItem("lb_submitted", value);
+});

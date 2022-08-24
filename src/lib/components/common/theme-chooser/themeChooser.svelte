@@ -3,6 +3,8 @@
     import { slide, scale } from "svelte/transition";
     import { theme_index, base_path } from "$lib/stores/themestore";
 
+    import { getItem } from "$lib/stores/storage";
+
     const animate = (node, args) =>
         args.condition ? slide(node, args) : scale(node, args);
     import { browser, dev } from "$app/env";
@@ -62,14 +64,14 @@
         ];
     }
     $: if(
-            browser && localStorage && 
+            browser && 
             (
-                localStorage.getItem("hasWon")
+                getItem("hasWon")
                 ||
                 (
-                    localStorage.getItem("bestScore") != null &&
-                    (+localStorage.getItem("bestScore")) &&
-                    (+localStorage.getItem("bestScore")) > 10000 
+                    getItem("bestScore") != null &&
+                    (+getItem("bestScore")) &&
+                    (+getItem("bestScore")) > 10000 
                 )
             )
             &&

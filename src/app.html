@@ -39,6 +39,14 @@
 		</noscript>
 		<div id="svelte">%sveltekit.body%</div>
 
+		<!-- Backup localstorage just in case -->
+		<script>
+			if(localStorage["backup"] == null) {
+				console.info("Trying to backup localstorage...");
+				localStorage.setItem("backup", JSON.stringify(localStorage));
+			}
+		</script>
+
 		<!-- import ".//sw.js"></pwa_promoter.js> -->
 		<script data-collect-dnt="true" async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 		<noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" collect-dnt=true /></noscript>

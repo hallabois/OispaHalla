@@ -7,6 +7,8 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 import { HAC } from "$lib/HAC";
 
+import { storage } from "$lib/stores/storage";
+
 export default class GameManager {
   size: any;
   inputManager: any;
@@ -110,28 +112,7 @@ export default class GameManager {
   // Set up the game
   setup() {
     var previousState = this.storageManager.getGameState();
-
-    // Reload the game from a previous game if present
-    if (previousState) {
-      this.grid = new Grid(previousState.grid.size,
-        previousState.grid.cells); // Reload grid
-      this.size = previousState.grid.size;
-      this.score = previousState.score;
-      this.palautukset = previousState.palautukset == undefined ? 0 : previousState.palautukset;
-      this.over = previousState.over;
-      this.won = previousState.won;
-      this.doKeepPlaying = previousState.keepPlaying;
-    } else {
-      this.grid = new Grid(this.size);
-      this.score = 0;
-      this.palautukset = 0;
-      this.over = false;
-      this.won = false;
-      this.doKeepPlaying = false;
-
-      // Add the initial tiles
-      this.addStartTiles();
-    }
+    this.loadPreviousState(previousState);
 
     this.HallaAntiCheat.size = this.size;
 
@@ -169,6 +150,31 @@ export default class GameManager {
       return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
     }
   }
+
+  loadPreviousState(previousState: any) {
+    // Reload the game from a previous game if present
+    if (previousState) {
+      this.grid = new Grid(previousState.grid.size,
+        previousState.grid.cells); // Reload grid
+      this.size = previousState.grid.size;
+      this.score = previousState.score;
+      this.palautukset = previousState.palautukset == undefined ? 0 : previousState.palautukset;
+      this.over = previousState.over;
+      this.won = previousState.won;
+      this.doKeepPlaying = previousState.keepPlaying;
+    } else {
+      this.grid = new Grid(this.size);
+      this.score = 0;
+      this.palautukset = 0;
+      this.over = false;
+      this.won = false;
+      this.doKeepPlaying = false;
+
+      // Add the initial tiles
+      this.addStartTiles();
+    }
+  }
+
   // Sends the updated grid to the actuator
   actuate() {
     if (this.storageManager.getBestScorePlus(this.size) < this.score) {
