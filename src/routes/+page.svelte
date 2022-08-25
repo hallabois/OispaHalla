@@ -147,7 +147,7 @@
                 <button class="button background-none color-button icon-button" on:click={()=>{SettingsInstance.show()}} title="Asetukset">
                     <Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
                 </button>
-                <button class="button background-none color-button icon-button" on:click={()=>{InfoInstance.show()}} title="Asetukset">
+                <button class="button background-none color-button icon-button" on:click={()=>{InfoInstance.show()}} title="Info">
                     <Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
                 </button>
             </div>
@@ -166,7 +166,7 @@
                 {/if}
                 {#if enable_leaderboards}
                 <button on:click={ ()=>{lbInstance.show()}} id="lb-button" class="color-button button background-none icon-button" title="Leaderboards" style="display: flex;">
-                    <Icon stroke="var(--color)" d={leaderboardIconData} />
+                    <Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
                     <!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
                 </button>
                 {/if}
