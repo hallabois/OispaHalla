@@ -1,4 +1,6 @@
 <script lang="ts">
+    import "$lib/devtools";
+
     import type { LayoutData } from './$types';
     export let data: LayoutData;
     $: ({ theme_override } = data);

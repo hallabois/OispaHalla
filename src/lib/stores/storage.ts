@@ -31,6 +31,11 @@ function update_storage_from_localstorage() {
             data[k] = parsed;
         }
         storage.set(data);
+        for(let k of Object.keys(data)) {
+            if(k !== "backup" && k !== "lastSession") {
+                delete localStorage[k];
+            }
+        }
     }
     else {
         storage.set(JSON.parse(localStorage.data));
