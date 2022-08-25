@@ -42,18 +42,6 @@
 		<div class="grid-cell" />
 		<div class="grid-cell" />
 		<div class="grid-cell" />
-		<!-- 6x6 -->
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
 	</div>
 
 	<div class="tile-container" />

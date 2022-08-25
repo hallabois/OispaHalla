@@ -8,7 +8,7 @@
 	--field-width: 500px;
 	--grid-gap: 15px;
 	--grid-size: 4;
-	--grid-size-max: 6;
+	--grid-size-max: 5;
 	--tile-size: calc(
 		calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) / var(--grid-size)
 	);
