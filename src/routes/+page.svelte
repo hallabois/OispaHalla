@@ -16,7 +16,7 @@
     import type KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
     import type GameManager from "$lib/gamelogic/game_manager";
     import Icon from "$lib/components/common/icon/icon.svelte";
-    import { leaderboardIconData } from "$lib/components/common/icon/iconData";
+    import { multiplayerIconData, leaderboardIconData, infoIconData, settingsIconData } from "$lib/components/common/icon/iconData";
     import { base_path } from "$lib/stores/themestore";
 
     let app_name = "";
@@ -144,11 +144,11 @@
         <div class="underbar-container">
             <div class="button-container" style="margin-top: 0;flex: 1;justify-content: start;">
                 <!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
-                <button class="button background-none color-button" on:click={()=>{SettingsInstance.show()}} title="Asetukset">
-                    ⚙️
+                <button class="button background-none color-button icon-button" on:click={()=>{SettingsInstance.show()}} title="Asetukset">
+                    <Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
                 </button>
-                <button class="button background-none color-button" on:click={()=>{InfoInstance.show()}} title="Asetukset">
-                    ℹ
+                <button class="button background-none color-button icon-button" on:click={()=>{InfoInstance.show()}} title="Asetukset">
+                    <Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
                 </button>
             </div>
             <div class="kurin-palautus-container" style="flex: 1;">
@@ -161,7 +161,7 @@
             <div class="button-container" style="margin-top: 0;flex: 1;justify-content: end;">
                 {#if enable_multiplayer}
                     <button class="button background-none color-button" on:click={()=>{TtInstance.show()}} title="Moninpeli">
-                        ⚔
+                        <Icon stroke="var(--color)" viewBox="0 0 48 48" d={multiplayerIconData} />
                     </button>
                 {/if}
                 {#if enable_leaderboards}

@@ -10,6 +10,7 @@
     export let fill = "var(--color)";
     export let fill_opacity = "1.0";
     export let animation_length = 1500;
+    export let viewBox = "0 0 24 24"
 
     export let text = null;
     export let text_id = "";
@@ -17,7 +18,7 @@
 
 <main style="--duration:{animation_length/10}ms;--s-width:{stroke_width}px">
     {#if d != null}
-        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24">
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox={viewBox}>
             <path transition:draw="{{duration: animation_length, easing: quintOut}}"
                     d={d}
                     fill={fill}
