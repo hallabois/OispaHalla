@@ -56,7 +56,7 @@
             }
         });
     }
-    $: if($my_top_scores && $my_top_submitted_scores && open != null) {
+    $: if($my_top_scores && $my_top_submitted_scores && open == true) {
         submitUnsubmittedTopScoresIfAlive();
     }
 
