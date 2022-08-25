@@ -808,6 +808,12 @@ $i: 2;
   display: flex;
   flex-direction: column;
   flex: 1;
+  p {
+    float: left;
+    line-height: 42px;
+    margin-bottom: 0;
+    font-size: smaller;
+  }
 }
 .above-game-right{
   display: -webkit-flex;
@@ -821,13 +827,6 @@ $i: 2;
 
 .above-game {
   @include clearfix;
-}
-
-.game-intro {
-  float: left;
-  line-height: 42px;
-  margin-bottom: 0;
-  font-size: smaller;
 }
 
 .restart-button {
