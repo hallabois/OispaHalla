@@ -1,30 +1,29 @@
 <script lang="ts">
-	import { browser } from "$app/env";
-	import { auth } from "$lib/Auth/authstore";
-	$: if($auth) {
+	import { browser } from '$app/env';
+	import { auth } from '$lib/Auth/authstore';
+	$: if ($auth) {
 		// Redirect once signed in
-		window.location.href = "/auth";
+		window.location.href = '/auth';
 	}
 	let email: string | null;
-	if( browser ) {
+	if (browser) {
 		email = localStorage.getItem('emailForSignIn');
 	}
 	function promptEmail() {
-		email = prompt("Sähköposti");
+		email = prompt('Sähköposti');
 	}
 	let signInMessage: string | null;
 	let loadingResults = false;
 	async function attemptSignIn() {
 		signInMessage = null;
 		loadingResults = true;
-		if(email) {
+		if (email) {
 			let result = await auth.signInWithLink(email, window.location.href);
-			if(result) {
+			if (result) {
 				localStorage.removeItem('emailForSignIn');
-				signInMessage = "Kirjautuminen onnistui.";
-			}
-			else {
-				signInMessage = "Kirjautuminen epäonnistui.";
+				signInMessage = 'Kirjautuminen onnistui.';
+			} else {
+				signInMessage = 'Kirjautuminen epäonnistui.';
 			}
 		}
 		loadingResults = false;
@@ -33,16 +32,20 @@
 
 <main>
 	{#if browser || loadingResults}
-		<h1 class="title"><a href="/" target="_blank" style="text-decoration: none;" title="avautuu uuteen välilehteen">OispaHalla</a></h1>
+		<h1 class="title">
+			<a href="/" target="_blank" style="text-decoration: none;" title="avautuu uuteen välilehteen"
+				>OispaHalla</a
+			>
+		</h1>
 		{#if $auth}
 			<p>Ohjataan uudelleen...</p>
+		{:else if email != null}
+			<button class="button action-btn" on:click={attemptSignIn}
+				>Kirjaudu sisään sähköpostilla {email}</button
+			>
 		{:else}
-			{#if email != null}
-				<button class="button action-btn" on:click={attemptSignIn}>Kirjaudu sisään sähköpostilla {email}</button>
-			{:else}
-				<h1>Kirjautumista ei ole aloitettu</h1>
-				<a href="/auth">Aloita kirjautuminen</a>
-			{/if}
+			<h1>Kirjautumista ei ole aloitettu</h1>
+			<a href="/auth">Aloita kirjautuminen</a>
 		{/if}
 	{:else}
 		<p>Ladataan...</p>
@@ -60,8 +63,8 @@
 		justify-content: center;
 		align-items: center;
 
-		gap: .5em;
-		padding-inline: .5em;
+		gap: 0.5em;
+		padding-inline: 0.5em;
 
 		min-height: 100vh;
 	}

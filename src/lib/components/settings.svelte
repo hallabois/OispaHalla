@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { dev } from "$app/env";
-	import { auth } from "$lib/Auth/authstore";
+	import { dev } from '$app/env';
+	import { auth } from '$lib/Auth/authstore';
 
-	import Popup from "./common/popup/popup.svelte";
-	import ThemeChooser from "./common/theme-chooser/themeChooser.svelte";
-	import type Announcer from "./tournaments/announcer.svelte";
+	import Popup from './common/popup/popup.svelte';
+	import ThemeChooser from './common/theme-chooser/themeChooser.svelte';
+	import type Announcer from './tournaments/announcer.svelte';
 
 	let open = false;
 	export function show() {
-        open = true;
-    }
+		open = true;
+	}
 
-	export let announcer: Announcer|null = null;
+	export let announcer: Announcer | null = null;
 </script>
 
 <Popup bind:open>
@@ -28,13 +28,19 @@
 			{#if $auth}
 				<p>Kirjautuneena sisään: <b>{$auth.displayName || $auth.email}</b></p>
 				<p>Käyttäjätunnus: <b>{$auth.uid}</b></p>
-				<a href="/auth" style="text-align: center;display: block;padding: 0.75em;">Hallinnoi kirjautumista</a>
+				<a href="/auth" style="text-align: center;display: block;padding: 0.75em;"
+					>Hallinnoi kirjautumista</a
+				>
+			{:else if $auth === undefined}
+				<p style="text-align: center;display: block;padding: 0.75em;">Tarkistetaan tietoja</p>
 			{:else}
-				{#if $auth === undefined}
-					<p style="text-align: center;display: block;padding: 0.75em;">Tarkistetaan tietoja</p>
-				{:else}
-					<button on:click={()=>{window.location.href="/auth"}} class="button action-btn" style="width: 100%;">Kirjaudu sisään</button>
-				{/if}
+				<button
+					on:click={() => {
+						window.location.href = '/auth';
+					}}
+					class="button action-btn"
+					style="width: 100%;">Kirjaudu sisään</button
+				>
 			{/if}
 		</div>
 	</div>
@@ -45,11 +51,12 @@
 		margin: 0;
 		border-bottom: 1px solid var(--color);
 	}
-	a, p {
+	a,
+	p {
 		margin: 0;
 	}
 	.section {
-		margin-top: .25em;
+		margin-top: 0.25em;
 		max-width: 550px;
 	}
 </style>
