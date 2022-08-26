@@ -186,7 +186,7 @@
 							{#await fetchboard(size, $token)}
 								<p>Ladataan tuloksiasi...</p>
 							{:then result}
-								{#if !result.success}
+								{#if !result.success || !result.score}
 									<p>Et ole tallentanut yhtäkään tulosta sarjaan "{size}"</p>
 								{:else}
 									<div class="my-results">
