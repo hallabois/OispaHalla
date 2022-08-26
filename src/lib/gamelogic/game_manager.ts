@@ -206,7 +206,7 @@ export default class GameManager {
 			over: this.over,
 			won: this.won,
 			size: this.size,
-			keepPlaying: this.keepPlaying
+			keepPlaying: this.doKeepPlaying
 		};
 	}
 	// Save all tile positions and remove merger info

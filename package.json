@@ -25,6 +25,7 @@
 		"eslint-plugin-svelte3": "^3.2.1",
 		"firebase": "^9.9.1",
 		"firebase-admin": "^11.0.0",
+		"localforage": "^1.10.0",
 		"marked": "^4.0.10",
 		"prettier": "^2.4.1",
 		"prettier-plugin-svelte": "^2.4.0",

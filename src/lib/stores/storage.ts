@@ -1,5 +1,6 @@
 import { type Writable, writable, get } from 'svelte/store';
 import { browser } from '$app/env';
+import localforage from 'localforage';
 
 type KeyValueMap = { [key: string]: any };
 
@@ -13,9 +14,9 @@ storage.set = (value: KeyValueMap) => {
 		__updated_ms: new Date().getTime()
 	});
 };
-function update_storage_from_localstorage() {
-	let data = localStorage.data;
-	if (data == null) {
+async function update_storage_from_localstorage() {
+	let flag = await localforage.getItem("__updated_ms");
+	if (flag == null && localStorage.data == null) {
 		console.info('Migrating localstorage...');
 		let data: KeyValueMap = {};
 		for (let k of Object.keys(localStorage)) {
@@ -34,40 +35,41 @@ function update_storage_from_localstorage() {
 				delete localStorage[k];
 			}
 		}
-	} else {
+	} else if(localStorage.data != null) {
+		console.info('Migrating localstoragev2...');
 		storage.set(JSON.parse(localStorage.data));
+	} else {
+		localforage.iterate(function(value, key, _iterationNumber) {
+			storage.set({
+				...get(storage),
+				[key]: value
+			});
+		});
 	}
 }
 
 if (browser) {
-	update_storage_from_localstorage();
+	update_storage_from_localstorage().then(()=>{});
 	/* window.addEventListener('storage', function(event){
         update_storage_from_localstorage();
     }, false); */
 }
 
-storage.subscribe((data) => {
+storage.subscribe(async (data) => {
 	if (browser) {
-		let backup = localStorage.data;
+		let backup = (await localforage.getItem("data") || {});
 		try {
 			if (data) {
 				for (let key of Object.keys(data)) {
-					let existing_raw_data = localStorage.data;
-					let existing_data = existing_raw_data == null ? {} : JSON.parse(existing_raw_data);
-					let new_data = {
-						...(existing_data || {}),
-						[key]: data[key]
-					};
-
-					let new_json = JSON.stringify(new_data);
-					if (localStorage.data !== new_json) {
-						localStorage.data = new_json;
-					}
+					await localforage.setItem(key, data[key]);
 				}
+				
 			}
 		} catch (e) {
 			console.warn("Couldn't update storage", e);
-			localStorage.data = backup;
+			await localforage.setItem("data", {
+				backup
+			});
 		}
 	} else {
 		console.info('Skipping localstorage operations outside browser...');
