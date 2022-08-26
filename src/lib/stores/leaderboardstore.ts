@@ -9,11 +9,8 @@ let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : 'http://localh
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
 export let lb_screenName: Writable<string | null> = writable(getItem('lb_screenName') || null);
-lb_screenName.subscribe((val) => {
-	if (val == 'null') {
-		lb_screenName.set(null);
-	}
-	if (val == null && browser && auth != null) {
+function ensure_screenname() {
+	if (get(lb_screenName) == null && browser && auth != null) {
 		let $auth = get(auth);
 		if ($auth != null && $auth.email != null) {
 			// This is a bit cursed but does the job
@@ -27,10 +24,19 @@ lb_screenName.subscribe((val) => {
 			lb_screenName.set(name);
 		}
 	}
+}
+lb_screenName.subscribe((val) => {
+	if (val == 'null') {
+		lb_screenName.set(null);
+	}
+	ensure_screenname();
 });
 lb_screenName.subscribe((value) => {
 	setItem('lb_screenName', value);
 });
+auth.subscribe(() => {
+	ensure_screenname();
+})
 
 export async function check_server_alive() {
 	try {

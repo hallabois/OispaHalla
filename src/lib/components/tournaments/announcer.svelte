@@ -40,8 +40,8 @@
 	}
 	main p {
 		text-align: center;
-		background-color: var(--color);
-		color: var(--background);
+		background-color: var(--container-background);
+		color: var(--color);
 		margin: 0;
 	}
 </style>
