@@ -1040,6 +1040,11 @@ $i: 2;
 	filter: invert(79%) sepia(81%) saturate(3152%) hue-rotate(347deg) brightness(101%) contrast(91%);
 }
 
+.theme-5 .color-button {
+	//should this be done in the sass loops? yes. do i care? no.
+	--color: #3f3b37;
+}
+
 .theme-14 .color-button img {
 	filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
 }
