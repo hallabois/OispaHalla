@@ -14,10 +14,15 @@ storage.set = (value: KeyValueMap) => {
 		__updated_ms: new Date().getTime()
 	});
 };
+export let storage_loaded: Writable<boolean> = writable(false);
+export let storage_status: Writable<string|null> = writable(null);
 async function update_storage_from_localstorage() {
+	storage_loaded.set(false);
+	storage_status.set("Tarkistetaan tallennustilaa...");
 	let flag = await localforage.getItem("__updated_ms");
 	if (flag == null && localStorage.data == null) {
 		console.info('Migrating localstorage...');
+		storage_status.set("Muutetaan tallennustilaa uuteen muotoon...");
 		let data: KeyValueMap = {};
 		for (let k of Object.keys(localStorage)) {
 			let oregano = localStorage[k];
@@ -35,10 +40,14 @@ async function update_storage_from_localstorage() {
 				delete localStorage[k];
 			}
 		}
-	} else if(flag == null && localStorage.data != null) {
+	} else if(localStorage.data != null) {
 		console.info('Migrating localstoragev2...');
+		storage_status.set("Muutetaan tallennustilaa uuteen muotoon (2)...");
 		storage.set(JSON.parse(localStorage.data));
+		localStorage.backup = localStorage.data;
+		delete localStorage.data;
 	} else {
+		storage_status.set("Ladataan tallennustilaa...");
 		localforage.iterate(function(value, key, _iterationNumber) {
 			storage.set({
 				...get(storage),
@@ -46,6 +55,7 @@ async function update_storage_from_localstorage() {
 			});
 		});
 	}
+	storage_loaded.set(true);
 }
 
 if (browser) {

@@ -19,7 +19,7 @@
 	export let grid: Grid | null = null;
 
 	let board: HTMLElement;
-	let GameManagerInstance: GameManager;
+	let GameManagerInstance: GameManager | null;
 	let HTMLActuatorInstance: html_actuator;
 	let KIM: KeyboardInputManager;
 	let LSM: LocalStorageManager;

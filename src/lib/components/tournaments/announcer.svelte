@@ -2,8 +2,8 @@
 	import { slide, fade } from 'svelte/transition';
 
 	class announcement {
-		msg: string;
-		time: Date;
+		msg!: string;
+		time!: Date;
 	}
 	let announcements: announcement[] = [];
 
