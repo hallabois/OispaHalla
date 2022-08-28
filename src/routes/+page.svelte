@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 
 	import { enable_multiplayer, enable_leaderboards } from '../features';
+	import { storage_loaded } from '$lib/stores/storage';
 
 	import Preloader from '$lib/components/common/image-preloader/Preloader.svelte';
 
@@ -73,12 +74,17 @@
 	onMount(() => {
 		inputRoot = document.querySelector('html') as HTMLElement;
 		mounted = true;
+	});
+
+	$: if(mounted && $storage_loaded) {
+		console.info("Starting to load game logic...");
 		// inputManager = new KeyboardInputManager(inputRoot);
 		// inputManager.on("move", move);
 		BoardInstance.setDocumentRoot(inputRoot);
 		BoardInstance.initcomponents();
 		GameManagerInstance = BoardInstance.getGameManagerInstance();
-	});
+		console.info("Game logic loaded.");
+	}
 
 	let enableKIM = true;
 

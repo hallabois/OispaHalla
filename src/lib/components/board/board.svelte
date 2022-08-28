@@ -87,10 +87,6 @@
 	let unique = {};
 	export function destruct() {
 		return;
-		if (KIM && KIM.removeKeydownHandler) {
-			KIM.removeKeydownHandler();
-		}
-		unique = {}; // Each {} is unique
 	}
 
 	let mounted = false;
@@ -99,6 +95,7 @@
 	});
 
 	$: if (initComponentsOnMount && mounted && $storage_loaded) {
+		console.info("Starting to load game logic...");
 		initcomponents();
 	}
 </script>
