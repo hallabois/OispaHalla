@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageData } from '../../../../.svelte-kit/types/src/routes/leaderboards./../../../.svelte-kit/types/src/routes/leaderboards/$types';
+	import type { PageData } from "../../../../.svelte-kit/types/src/routes/leaderboards./../../../.svelte-kit/types/src/routes/leaderboards/$types";
 	export let data: PageData;
 	$: ({ leaderboard_data } = data);
 	$: scores = leaderboard_data.scores.sort((a, b) => b.score - a.score);

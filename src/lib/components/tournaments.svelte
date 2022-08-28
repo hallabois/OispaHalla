@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount } from "svelte";
 
-	import { auth } from '$lib/Auth/authstore';
+	import { auth } from "$lib/Auth/authstore";
 
-	import Popup from '$lib/components/common/popup/popup.svelte';
+	import Popup from "$lib/components/common/popup/popup.svelte";
 	import {
 		checkAlive,
 		joined_game_id,
@@ -14,12 +14,12 @@
 		joined_game_am_host,
 		joined_game_host_pswds,
 		refreshGameData
-	} from '$lib/stores/tournamentstore';
-	import TournamentCreator from './tournaments/tournamentCreator.svelte';
-	import TournamentBrowser from './tournaments/tournamentBrowser.svelte';
-	import Lobby from './tournaments/lobby.svelte';
-	import TournamentJoiner from './tournaments/tournamentJoiner.svelte';
-	import type Announcer from './tournaments/announcer.svelte';
+	} from "$lib/stores/tournamentstore";
+	import TournamentCreator from "./tournaments/tournamentCreator.svelte";
+	import TournamentBrowser from "./tournaments/tournamentBrowser.svelte";
+	import Lobby from "./tournaments/lobby.svelte";
+	import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
+	import type Announcer from "./tournaments/announcer.svelte";
 
 	export let open = false;
 	export function show() {
@@ -35,15 +35,15 @@
 		serverAlive = await checkAlive();
 	}
 
-	$: if ($joined_game_id != null && !window.location.href.endsWith('/moninpeli')) {
-		console.log('Moving to multiplayer...');
+	$: if ($joined_game_id != null && !window.location.href.endsWith("/moninpeli")) {
+		console.log("Moving to multiplayer...");
 		let data = {
 			game_id: $joined_game_id,
 			user_id: $joined_game_user_id,
 			am_host: $joined_game_am_host,
 			host_pswd: joined_game_host_pswds[$joined_game_id]
 		};
-		localStorage['mp_data'] = JSON.stringify(data);
+		localStorage["mp_data"] = JSON.stringify(data);
 		window.location.href = `/moninpeli`;
 	}
 
@@ -55,7 +55,7 @@
 			open = false;
 			wasActive = true;
 			if (announcer) {
-				announcer.announce('Peli on alkanut!');
+				announcer.announce("Peli on alkanut!");
 			}
 		} else if (!$poll_game.active) {
 			wasActive = false;
@@ -65,7 +65,7 @@
 			open = true;
 			hadEnded = true;
 			if (announcer) {
-				announcer.announce('Peli on päättynyt!');
+				announcer.announce("Peli on päättynyt!");
 			}
 		}
 	} else {
@@ -74,9 +74,9 @@
 	}
 
 	onMount(() => {
-		if (window.location.href.includes('?')) {
+		if (window.location.href.includes("?")) {
 			const params = new URLSearchParams(window.location.search);
-			let game_id = params.get('game_id');
+			let game_id = params.get("game_id");
 			if (game_id) {
 				chosen_game = game_id;
 				activeTab = 2;
@@ -84,12 +84,12 @@
 			}
 
 			// @ts-ignore
-			history.pushState({}, null, window.location.href.split('?')[0]);
+			history.pushState({}, null, window.location.href.split("?")[0]);
 		} else {
-			if (localStorage['mp_data'] != null && window.location.href.endsWith('/moninpeli')) {
-				let data = JSON.parse(localStorage['mp_data']);
+			if (localStorage["mp_data"] != null && window.location.href.endsWith("/moninpeli")) {
+				let data = JSON.parse(localStorage["mp_data"]);
 				if (data) {
-					console.log('READ MP_DATA', data);
+					console.log("READ MP_DATA", data);
 
 					joined_game_id.set(data.game_id);
 					joined_game_user_id.set(data.user_id);
@@ -166,7 +166,7 @@
 		{:else}
 			<button
 				on:click={() => {
-					window.location.href = '/auth';
+					window.location.href = "/auth";
 				}}
 				class="button action-btn"
 				style="width: 100%;">Kirjaudu sisään</button

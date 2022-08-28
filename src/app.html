@@ -51,9 +51,9 @@
 
 		<!-- Backup localstorage just in case -->
 		<script>
-			if (localStorage['backup'] == null) {
-				console.info('Trying to backup localstorage...');
-				localStorage.setItem('backup', JSON.stringify(localStorage));
+			if (localStorage["backup"] == null) {
+				console.info("Trying to backup localstorage...");
+				localStorage.setItem("backup", JSON.stringify(localStorage));
 			}
 		</script>
 

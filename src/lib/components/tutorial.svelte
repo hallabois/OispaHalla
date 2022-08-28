@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { swipe } from 'svelte-gestures';
-	import { fly, slide, fade } from 'svelte/transition';
-	import TutorialSlide from './tutorial/tutorialSlide.svelte';
-	let slides_content = ['Slide 1', 'Slide 2', 'Slide 3'];
+	import { swipe } from "svelte-gestures";
+	import { fly, slide, fade } from "svelte/transition";
+	import TutorialSlide from "./tutorial/tutorialSlide.svelte";
+	let slides_content = ["Slide 1", "Slide 2", "Slide 3"];
 	let active_slide_index = 0;
 	let visible = false;
 	export function show() {
@@ -22,10 +22,10 @@
 	}
 	function swipeHandler(event) {
 		let swipeDirection = event.detail.direction;
-		if (swipeDirection == 'left' && active_slide_index != slides_content.length - 1) {
+		if (swipeDirection == "left" && active_slide_index != slides_content.length - 1) {
 			next();
 		}
-		if (swipeDirection == 'right' && active_slide_index != 0) {
+		if (swipeDirection == "right" && active_slide_index != 0) {
 			prev();
 		}
 	}

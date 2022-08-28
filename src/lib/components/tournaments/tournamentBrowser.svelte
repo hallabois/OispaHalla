@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { fade, slide } from 'svelte/transition';
+	import { fade, slide } from "svelte/transition";
 	import {
 		getPublicTournaments,
 		joined_game_host_pswds,
 		joinGame,
 		joined_game_error,
 		TournamentInfo
-	} from '$lib/stores/tournamentstore';
+	} from "$lib/stores/tournamentstore";
 
 	let filter: string | null;
 	let chosen_game: number | null;
@@ -14,7 +14,7 @@
 	let passwords: { [key: number]: string } = {};
 	$: canJoin =
 		chosen_game != null &&
-		!(game_requires_password && (passwords[chosen_game] == null || passwords[chosen_game] == ''));
+		!(game_requires_password && (passwords[chosen_game] == null || passwords[chosen_game] == ""));
 
 	function selectGame(game: TournamentInfo) {
 		chosen_game = game.id;
@@ -31,7 +31,7 @@
 			<div>
 				<p>
 					Löydettiin {result.ongoing_games.length}
-					{result.ongoing_games.length == 1 ? 'julkinen peli' : 'julkista peliä'}!
+					{result.ongoing_games.length == 1 ? "julkinen peli" : "julkista peliä"}!
 				</p>
 				<input class="search" bind:value={filter} placeholder="Hae pelejä nimen perusteella" />
 			</div>
@@ -44,17 +44,17 @@
 						on:click={() => {
 							selectGame(game);
 						}}
-						title={game.id + ''}
+						title={game.id + ""}
 					>
 						<p>{game.name}</p>
 						<spacer />
-						{#if Object.keys(joined_game_host_pswds).includes(game.id + '')}
+						{#if Object.keys(joined_game_host_pswds).includes(game.id + "")}
 							<p title="Olet tämän pelin luoja">👑</p>
 						{/if}
 						{#if game.requires_password}
 							<p title="Tähän peliin liittyminen vaatii salasanan">🔐</p>
 						{/if}
-						<p>{game.clients}/{game.max_clients} {game.clients == 1 ? 'pelaaja ' : 'pelaajaa'}</p>
+						<p>{game.clients}/{game.max_clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
 					</div>
 					{#if game.requires_password && chosen_game == game.id}
 						<div>

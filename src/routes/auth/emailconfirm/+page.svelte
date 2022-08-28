@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { auth } from '$lib/Auth/authstore';
+	import { browser } from "$app/environment";
+	import { auth } from "$lib/Auth/authstore";
 	$: if ($auth) {
 		// Redirect once signed in
-		window.location.href = '/auth';
+		window.location.href = "/auth";
 	}
 	let email: string | null;
 	if (browser) {
-		email = localStorage.getItem('emailForSignIn');
+		email = localStorage.getItem("emailForSignIn");
 	}
 	function promptEmail() {
-		email = prompt('Sähköposti');
+		email = prompt("Sähköposti");
 	}
 	let signInMessage: string | null;
 	let loadingResults = false;
@@ -20,10 +20,10 @@
 		if (email) {
 			let result = await auth.signInWithLink(email, window.location.href);
 			if (result) {
-				localStorage.removeItem('emailForSignIn');
-				signInMessage = 'Kirjautuminen onnistui.';
+				localStorage.removeItem("emailForSignIn");
+				signInMessage = "Kirjautuminen onnistui.";
 			} else {
-				signInMessage = 'Kirjautuminen epäonnistui.';
+				signInMessage = "Kirjautuminen epäonnistui.";
 			}
 		}
 		loadingResults = false;

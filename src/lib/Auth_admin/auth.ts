@@ -1,8 +1,8 @@
-import * as admin from 'firebase-admin';
+import * as admin from "firebase-admin";
 
 let config = process.env.OH_FIREBASE_ADMIN_CONFIG;
 if (!config) {
-	throw new Error('Env variable OH_FIREBASE_ADMIN_CONFIG missing!');
+	throw new Error("Env variable OH_FIREBASE_ADMIN_CONFIG missing!");
 }
 var serviceAccount = JSON.parse(config);
 

@@ -1,38 +1,38 @@
-import { type Writable, writable, get } from 'svelte/store';
-import { browser, dev } from '$app/environment';
-import { auth } from '$lib/Auth/authstore';
+import { type Writable, writable, get } from "svelte/store";
+import { browser, dev } from "$app/environment";
+import { auth } from "$lib/Auth/authstore";
 
-import { setItem, getItem } from '$lib/stores/storage';
+import { setItem, getItem } from "$lib/stores/storage";
 
-let leaderboard_endpoint_prod = 'https://oispahallalb.herokuapp.com';
-let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : 'http://localhost:5000';
+let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
+let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
-export let lb_screenName: Writable<string | null> = writable(getItem('lb_screenName') || null);
+export let lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
 function ensure_screenname() {
 	if (get(lb_screenName) == null && browser && auth != null) {
 		let $auth = get(auth);
 		if ($auth != null && $auth.email != null) {
 			// This is a bit cursed but does the job
 			let name = $auth.email
-				.split('@')[0]
-				.split('.')
+				.split("@")[0]
+				.split(".")
 				.map((namep, ind) => {
 					return namep.slice(0, Math.min(namep.length, Math.max(20 - ind * 20, 1)));
 				})
-				.join('');
+				.join("");
 			lb_screenName.set(name);
 		}
 	}
 }
 lb_screenName.subscribe((val) => {
-	if (val == 'null') {
+	if (val == "null") {
 		lb_screenName.set(null);
 	}
 	ensure_screenname();
 });
 lb_screenName.subscribe((value) => {
-	setItem('lb_screenName', value);
+	setItem("lb_screenName", value);
 });
 auth.subscribe(() => {
 	ensure_screenname();
@@ -65,19 +65,19 @@ export async function get_all_scores(size: number): Promise<scores_response> {
 			} catch (e) {
 				console.warn(e);
 				return {
-					error_msg: 'Invalid JSON'
+					error_msg: "Invalid JSON"
 				};
 			}
 		} else {
 			console.warn(resp);
 			return {
-				error_msg: 'Failed to contact server.'
+				error_msg: "Failed to contact server."
 			};
 		}
 	} catch (e) {
 		console.warn(e);
 		return {
-			error_msg: 'Error contacting server.'
+			error_msg: "Error contacting server."
 		};
 	}
 }
@@ -92,19 +92,19 @@ export async function get_top_scores(size: number, threshold: number): Promise<s
 			} catch (e) {
 				console.warn(e);
 				return {
-					error_msg: 'Invalid JSON'
+					error_msg: "Invalid JSON"
 				};
 			}
 		} else {
 			console.warn(resp);
 			return {
-				error_msg: 'Failed to contact server.'
+				error_msg: "Failed to contact server."
 			};
 		}
 	} catch (e) {
 		console.warn(e);
 		return {
-			error_msg: 'Error contacting server.'
+			error_msg: "Error contacting server."
 		};
 	}
 }
@@ -144,21 +144,21 @@ export async function fetchboard(size: number, token: string): Promise<Score_res
 				console.warn(e);
 				return {
 					success: false,
-					error_msg: 'Invalid JSON'
+					error_msg: "Invalid JSON"
 				};
 			}
 		} else {
 			console.warn(resp);
 			return {
 				success: false,
-				error_msg: 'Failed to reach server.'
+				error_msg: "Failed to reach server."
 			};
 		}
 	} catch (e) {
 		console.warn(e);
 		return {
 			success: false,
-			error_msg: 'Error contacting server.'
+			error_msg: "Error contacting server."
 		};
 	}
 }
@@ -178,9 +178,9 @@ export async function submit_score(
 ): Promise<submit_response> {
 	try {
 		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}`, {
-			method: 'POST',
+			method: "POST",
 			headers: {
-				'Content-Type': 'application/json'
+				"Content-Type": "application/json"
 			},
 			body: JSON.stringify({
 				user: {
@@ -195,7 +195,7 @@ export async function submit_score(
 		if (resp.ok) {
 			return {
 				success: true,
-				message: 'Suoritus tallennettu.',
+				message: "Suoritus tallennettu.",
 				json: await resp.json()
 			};
 		} else {
@@ -203,7 +203,7 @@ export async function submit_score(
 			let json = await resp.json();
 			return {
 				success: false,
-				message: json.message || 'Tuntematon virhe',
+				message: json.message || "Tuntematon virhe",
 				json: json
 			};
 		}
@@ -211,7 +211,7 @@ export async function submit_score(
 		console.warn(e);
 		return {
 			success: false,
-			message: 'Error contacting server.',
+			message: "Error contacting server.",
 			json: null
 		};
 	}
@@ -244,8 +244,8 @@ export let my_top_score_histories: Writable<Histories> = writable(
 	browser ? get_local_top_histories() : {}
 );
 export let my_top_submitted_scores: Writable<Scores> = writable(
-	browser ? getItem('lb_submitted') || {} : {}
+	browser ? getItem("lb_submitted") || {} : {}
 );
 my_top_submitted_scores.subscribe((value) => {
-	setItem('lb_submitted', value);
+	setItem("lb_submitted", value);
 });

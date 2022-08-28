@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { browser, dev } from '$app/environment';
-	import { auth } from '$lib/Auth/authstore';
-	import Popup from '$lib/components/common/popup/popup.svelte';
+	import { browser, dev } from "$app/environment";
+	import { auth } from "$lib/Auth/authstore";
+	import Popup from "$lib/components/common/popup/popup.svelte";
 
 	let token: string | null;
 	$: if ($auth) {
@@ -13,8 +13,8 @@
 	let validation_result: Response | null;
 	async function validate() {
 		validation_result = null;
-		validation_result = await fetch('/auth/validate', {
-			method: 'POST',
+		validation_result = await fetch("/auth/validate", {
+			method: "POST",
 			body: JSON.stringify({
 				token: token
 			})
@@ -24,7 +24,7 @@
 	let email_popup_open = false;
 	let email: string | null;
 	let email_submitting = false;
-	$: email_valid = email != null && email.endsWith('@ksyk.fi');
+	$: email_valid = email != null && email.endsWith("@ksyk.fi");
 
 	async function log_in_with_email() {
 		if (email && email_valid) {
@@ -33,13 +33,13 @@
 			email_submitting = false;
 			if (result) {
 				try {
-					window.localStorage.setItem('emailForSignIn', email);
+					window.localStorage.setItem("emailForSignIn", email);
 				} catch {}
 				alert(
-					'Linkki lähetetty!\nMuistathan tarkistaa roskaposti-kansion.\n\nVoit poistua tältä sivulta toistaiseksi.'
+					"Linkki lähetetty!\nMuistathan tarkistaa roskaposti-kansion.\n\nVoit poistua tältä sivulta toistaiseksi."
 				);
 			} else {
-				alert('Virhe.');
+				alert("Virhe.");
 			}
 		}
 	}
@@ -65,14 +65,14 @@
 								class="button action-btn"
 								style="width: 100%;"
 							>
-								{email_submitting ? 'Lähetetään' : 'Kirjaudu sisään'}
+								{email_submitting ? "Lähetetään" : "Kirjaudu sisään"}
 							</button>
 						</div>
 					</div>
 				</Popup>
 				<h1>Kirjaudu sisään</h1>
 				<div class="actions">
-					<button class="button action-btn" on:click={() => auth.signInWith('google')}
+					<button class="button action-btn" on:click={() => auth.signInWith("google")}
 						>Googlella</button
 					>
 					<button class="button action-btn" on:click={() => (email_popup_open = true)}
@@ -113,7 +113,7 @@
 					<button
 						class="button action-btn"
 						on:click={() => {
-							if (confirm('Oletko varma?')) {
+							if (confirm("Oletko varma?")) {
 								auth.signOut();
 							}
 						}}
@@ -180,14 +180,14 @@
 	}
 
 	main {
-		background-image: url('/img/ABC/blur_night.webp');
+		background-image: url("/img/ABC/blur_night.webp");
 	}
 
 	:global(.theme-1),
 	:global(.theme-5),
 	:global(.theme-16) {
 		main {
-			background-image: url('/img/ABC/blur.webp');
+			background-image: url("/img/ABC/blur.webp");
 		}
 	}
 

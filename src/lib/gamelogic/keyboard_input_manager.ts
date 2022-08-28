@@ -1,5 +1,5 @@
-import { open_popups } from '$lib/stores/popupstore';
-import { get } from 'svelte/store';
+import { open_popups } from "$lib/stores/popupstore";
+import { get } from "svelte/store";
 
 export default class KeyboardInputManager {
 	enabled: boolean;
@@ -34,9 +34,9 @@ export default class KeyboardInputManager {
 		this.documentRoot = documentRoot;
 		this.events = {};
 
-		this.eventTouchstart = 'touchstart';
-		this.eventTouchmove = 'touchmove';
-		this.eventTouchend = 'touchend';
+		this.eventTouchstart = "touchstart";
+		this.eventTouchmove = "touchmove";
+		this.eventTouchend = "touchend";
 
 		this.map = {
 			38: 0,
@@ -56,10 +56,10 @@ export default class KeyboardInputManager {
 		this.boundKeyDownHandler = this.keydownHandler.bind(this);
 
 		this.addKeydownHandler = () => {
-			document.addEventListener('keydown', this.boundKeyDownHandler);
+			document.addEventListener("keydown", this.boundKeyDownHandler);
 		};
 		this.removeKeydownHandler = () => {
-			document.removeEventListener('keydown', this.boundKeyDownHandler);
+			document.removeEventListener("keydown", this.boundKeyDownHandler);
 		};
 
 		this.listen();
@@ -95,16 +95,16 @@ export default class KeyboardInputManager {
 		this.addKeydownHandler();
 
 		// Respond to button presses
-		this.bindButtonPress('.retry-button', this.restart);
+		this.bindButtonPress(".retry-button", this.restart);
 		//this.bindButtonPress(".restart-button", this.restart);
 		//this.bindContextPress(".restart-button", this.restartplus);
-		this.bindButtonPress('.keep-playing-button', this.keepPlaying);
-		this.bindButtonPress('.kurin-palautus', this.paritaKuli);
-		this.bindButtonPress('.event-button', this.toggleDarkMode);
+		this.bindButtonPress(".keep-playing-button", this.keepPlaying);
+		this.bindButtonPress(".kurin-palautus", this.paritaKuli);
+		this.bindButtonPress(".event-button", this.toggleDarkMode);
 
 		// Respond to swipe events
 		var touchStartClientX, touchStartClientY;
-		var gameContainer = this.documentRoot.getElementsByClassName('game-container')[0];
+		var gameContainer = this.documentRoot.getElementsByClassName("game-container")[0];
 
 		gameContainer.addEventListener(this.eventTouchstart, function (event: TouchEvent) {
 			if (event.touches.length > 1 || event.targetTouches.length > 1) {
@@ -139,7 +139,7 @@ export default class KeyboardInputManager {
 
 			if (Math.max(absDx, absDy) > 10) {
 				// (right : left) : (down : up)
-				self.emit('move', absDx > absDy ? (dx > 0 ? 1 : 3) : dy > 0 ? 2 : 0);
+				self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : dy > 0 ? 2 : 0);
 			}
 		});
 	}
@@ -153,7 +153,7 @@ export default class KeyboardInputManager {
 		if (!modifiers) {
 			if (mapped !== undefined) {
 				event.preventDefault();
-				this.emit('move', mapped);
+				this.emit("move", mapped);
 			}
 		}
 
@@ -167,14 +167,14 @@ export default class KeyboardInputManager {
 			return;
 		}
 		event.preventDefault();
-		this.emit('restart', null);
+		this.emit("restart", null);
 	}
 	restartplus(event) {
 		if (!this.enabled) {
 			return;
 		}
 		event.preventDefault();
-		this.emit('restartplus', null);
+		this.emit("restartplus", null);
 		event.stopPropagation();
 	}
 	keepPlaying(event) {
@@ -182,7 +182,7 @@ export default class KeyboardInputManager {
 			return;
 		}
 		event.preventDefault();
-		this.emit('keepPlaying', null);
+		this.emit("keepPlaying", null);
 	}
 	bindButtonPress(selector, fn) {
 		if (!this.enabled) {
@@ -190,7 +190,7 @@ export default class KeyboardInputManager {
 		}
 		var button = this.documentRoot.querySelector(selector);
 		if (button) {
-			button.addEventListener('click', fn.bind(this));
+			button.addEventListener("click", fn.bind(this));
 			button.addEventListener(this.eventTouchend, fn.bind(this));
 		}
 	}
@@ -200,7 +200,7 @@ export default class KeyboardInputManager {
 		}
 		var button = this.documentRoot.querySelector(selector);
 		if (button) {
-			button.addEventListener('contextmenu', fn.bind(this));
+			button.addEventListener("contextmenu", fn.bind(this));
 		}
 	}
 	paritaKuli(event) {
@@ -208,7 +208,7 @@ export default class KeyboardInputManager {
 			return;
 		}
 		event.preventDefault();
-		this.emit('paritaKuli', null);
+		this.emit("paritaKuli", null);
 		event.stopPropagation();
 	}
 	toggleEvent(event) {
@@ -216,7 +216,7 @@ export default class KeyboardInputManager {
 			return;
 		}
 		event.preventDefault();
-		this.emit('toggleEvent', null);
+		this.emit("toggleEvent", null);
 		event.stopPropagation();
 	}
 	toggleDarkMode(event) {
@@ -224,7 +224,7 @@ export default class KeyboardInputManager {
 			return;
 		}
 		event.preventDefault();
-		this.emit('toggleDarkMode', null);
+		this.emit("toggleDarkMode", null);
 		event.stopPropagation();
 	}
 }

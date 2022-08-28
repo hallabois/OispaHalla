@@ -1,6 +1,6 @@
-import { type Writable, writable, get } from 'svelte/store';
-import { browser } from '$app/environment';
-import localforage from 'localforage';
+import { type Writable, writable, get } from "svelte/store";
+import { browser } from "$app/environment";
+import localforage from "localforage";
 
 type KeyValueMap = { [key: string]: any };
 
@@ -16,12 +16,12 @@ export let storage_loaded: Writable<boolean> = writable(false);
 export let storage_status: Writable<string | null> = writable(null);
 async function update_storage_from_localstorage() {
 	storage_loaded.set(false);
-	storage_status.set('Tarkistetaan tallennustilaa...');
-	console.log('Loading storage...');
-	let flag = await localforage.getItem('__updated_ms');
+	storage_status.set("Tarkistetaan tallennustilaa...");
+	console.log("Loading storage...");
+	let flag = await localforage.getItem("__updated_ms");
 	if (flag == null && localStorage.data == null) {
-		console.info('Migrating localstorage...');
-		storage_status.set('Muutetaan tallennustilaa uuteen muotoon...');
+		console.info("Migrating localstorage...");
+		storage_status.set("Muutetaan tallennustilaa uuteen muotoon...");
 		let data: KeyValueMap = {};
 		for (let k of Object.keys(localStorage)) {
 			let oregano = localStorage[k];
@@ -35,18 +35,18 @@ async function update_storage_from_localstorage() {
 		}
 		storage.set(data);
 		for (let k of Object.keys(data)) {
-			if (k !== 'backup' && k !== 'lastSession') {
+			if (k !== "backup" && k !== "lastSession") {
 				delete localStorage[k];
 			}
 		}
 	} else if (localStorage.data != null) {
-		console.info('Migrating localstoragev2...');
-		storage_status.set('Muutetaan tallennustilaa uuteen muotoon (2)...');
+		console.info("Migrating localstoragev2...");
+		storage_status.set("Muutetaan tallennustilaa uuteen muotoon (2)...");
 		storage.set(JSON.parse(localStorage.data));
 		localStorage.backup = localStorage.data;
 		delete localStorage.data;
 	} else {
-		storage_status.set('Ladataan tallennustilaa...');
+		storage_status.set("Ladataan tallennustilaa...");
 		let composite = {};
 		await localforage.iterate(function (value, key, _iterationNumber) {
 			composite = {
@@ -59,7 +59,7 @@ async function update_storage_from_localstorage() {
 			...composite
 		});
 	}
-	console.log('Storage loaded.');
+	console.log("Storage loaded.");
 	storage_loaded.set(true);
 	storage_status.set(null);
 }
@@ -73,7 +73,7 @@ if (browser) {
 
 storage.subscribe(async (data) => {
 	if (browser) {
-		let backup = (await localforage.getItem('data')) || {};
+		let backup = (await localforage.getItem("data")) || {};
 		try {
 			if (data) {
 				for (let key of Object.keys(data)) {
@@ -82,12 +82,12 @@ storage.subscribe(async (data) => {
 			}
 		} catch (e) {
 			console.warn("Couldn't update storage", e);
-			await localforage.setItem('data', {
+			await localforage.setItem("data", {
 				backup
 			});
 		}
 	} else {
-		console.info('Skipping localstorage operations outside browser...');
+		console.info("Skipping localstorage operations outside browser...");
 	}
 });
 
@@ -103,7 +103,7 @@ export function getItem(key: string): any {
 }
 
 export function clearStorage() {
-	console.info('Clearing storage...');
+	console.info("Clearing storage...");
 	delete localStorage.data;
 	storage.set({});
 }

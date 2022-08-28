@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
-	import { auth } from '$lib/Auth/authstore';
+	import { dev } from "$app/environment";
+	import { auth } from "$lib/Auth/authstore";
 
-	import Popup from './common/popup/popup.svelte';
-	import ThemeChooser from './common/theme-chooser/themeChooser.svelte';
-	import type Announcer from './tournaments/announcer.svelte';
+	import Popup from "./common/popup/popup.svelte";
+	import ThemeChooser from "./common/theme-chooser/themeChooser.svelte";
+	import type Announcer from "./tournaments/announcer.svelte";
 
 	let open = false;
 	export function show() {
@@ -36,7 +36,7 @@
 			{:else}
 				<button
 					on:click={() => {
-						window.location.href = '/auth';
+						window.location.href = "/auth";
 					}}
 					class="button action-btn"
 					style="width: 100%;">Kirjaudu sisään</button

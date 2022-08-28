@@ -1,8 +1,8 @@
-import Grid from './grid';
-import Tile from './tile';
+import Grid from "./grid";
+import Tile from "./tile";
 
 export function hac_gamestate_to_grid(gamestate: string) {
-	let data = JSON.parse(gamestate.replaceAll('SCOREHERE', '0'));
+	let data = JSON.parse(gamestate.replaceAll("SCOREHERE", "0"));
 	let size = data.grid.size;
 	let cells = data.grid.cells.flat();
 

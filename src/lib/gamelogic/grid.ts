@@ -1,4 +1,4 @@
-import Tile from './tile';
+import Tile from "./tile";
 
 export default class Grid {
 	size: any;

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount } from "svelte";
 
-	import Tournaments from '$lib/components/tournaments.svelte';
-	import Board from '$lib/components/board/board.svelte';
-	import Announcer from '$lib/components/tournaments/announcer.svelte';
+	import Tournaments from "$lib/components/tournaments.svelte";
+	import Board from "$lib/components/board/board.svelte";
+	import Announcer from "$lib/components/tournaments/announcer.svelte";
 	import {
 		checkAlive,
 		joined_game_data,
@@ -14,19 +14,19 @@
 		poll_send_moves,
 		poll_success,
 		server_status
-	} from '$lib/stores/tournamentstore';
-	import { hac_gamestate_to_grid } from '$lib/gamelogic/utils';
-	import KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
-	import type Grid from '$lib/gamelogic/grid';
-	import { browser } from '$app/environment';
+	} from "$lib/stores/tournamentstore";
+	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
+	import type Grid from "$lib/gamelogic/grid";
+	import { browser } from "$app/environment";
 
-	let app_name = 'Oispa Halla';
-	let app_description = 'Yhdistä opettajat ja saavuta **Halla!**';
+	let app_name = "Oispa Halla";
+	let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
 	let app_notice =
-		'**HUOMIO**: Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.';
-	let app_name_newgame = 'Uusi Jakso';
-	let app_name_score = 'arvosana';
-	let app_name_hiscore = 'paras halla';
+		"**HUOMIO**: Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.";
+	let app_name_newgame = "Uusi Jakso";
+	let app_name_score = "arvosana";
+	let app_name_hiscore = "paras halla";
 
 	let enableKIM = false;
 
@@ -43,7 +43,7 @@
 	function move(direction: number) {
 		if ($poll_game && $poll_game.active && !$poll_game.ended) {
 			BoardInstance.getGameManagerInstance().move(direction);
-			console.log('server-side move called with the value', direction);
+			console.log("server-side move called with the value", direction);
 			poll_send_moves.push(direction);
 			// console.info(JSON.stringify(poll_send_moves));
 		} else {
@@ -52,12 +52,12 @@
 	}
 	$: if ($poll_success && $poll_game.active) {
 		window.onbeforeunload = function (e) {
-			return 'Oletko varma että haluat jättää pelin kesken?';
+			return "Oletko varma että haluat jättää pelin kesken?";
 		};
 		if (inputManager == null) {
-			console.log('Creating server-side inputmanager...');
+			console.log("Creating server-side inputmanager...");
 			inputManager = new KeyboardInputManager(inputRoot);
-			inputManager.on('move', move);
+			inputManager.on("move", move);
 			// enableKIM = true;
 		}
 	} else {
@@ -65,7 +65,7 @@
 			window.onbeforeunload = null;
 		}
 		if (inputManager != null) {
-			console.log('Destroying server-side inputmanager...');
+			console.log("Destroying server-side inputmanager...");
 			inputManager = null;
 			// enableKIM = false;
 		}

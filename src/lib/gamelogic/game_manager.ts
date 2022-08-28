@@ -1,13 +1,13 @@
 declare var sa_event: Function;
 
-import Grid from './grid';
-import type HTMLActuator from './html_actuator';
-import type KeyboardInputManager from './keyboard_input_manager';
-import type LocalStorageManager from './local_storage_manager';
-import Tile from './tile';
-import { HAC } from '$lib/HAC';
+import Grid from "./grid";
+import type HTMLActuator from "./html_actuator";
+import type KeyboardInputManager from "./keyboard_input_manager";
+import type LocalStorageManager from "./local_storage_manager";
+import Tile from "./tile";
+import { HAC } from "$lib/HAC";
 
-import { storage } from '$lib/stores/storage';
+import { storage } from "$lib/stores/storage";
 
 export default class GameManager {
 	size: any;
@@ -50,15 +50,15 @@ export default class GameManager {
 		this.startTiles = 2;
 		this.numOfScores = 10;
 
-		this.inputManager.on('restart', this.restart.bind(this));
-		this.inputManager.on('move', this.move.bind(this));
-		this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
+		this.inputManager.on("restart", this.restart.bind(this));
+		this.inputManager.on("move", this.move.bind(this));
+		this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
-		this.popup = this.documentRoot.getElementsByClassName('lb-popup')[0];
+		this.popup = this.documentRoot.getElementsByClassName("lb-popup")[0];
 
 		this.HallaAntiCheat = new HAC();
 
-		if (typeof grid !== 'undefined' && grid) {
+		if (typeof grid !== "undefined" && grid) {
 			this.grid = grid;
 			// Update the actuator
 			this.actuate();
@@ -68,7 +68,7 @@ export default class GameManager {
 	}
 	// Export the current game for later analysis
 	serialize_HAC(gridState, direction, added) {
-		return gridState.join('.') + '+' + added + ';' + direction;
+		return gridState.join(".") + "+" + added + ";" + direction;
 	}
 	// Restart the game
 	restart() {
@@ -102,8 +102,8 @@ export default class GameManager {
 					this.grid.palautaKuri();
 					this.actuate();
 					this.actuator.paritaKuli();
-				} else alert('Olet lahjonut opettajia liikaa! Halla on pettynyt sinuun.');
-			} else alert('Et ole tarpeeksi suosittu opettajien keskuudessa lahjomaan heitä!');
+				} else alert("Olet lahjonut opettajia liikaa! Halla on pettynyt sinuun.");
+			} else alert("Et ole tarpeeksi suosittu opettajien keskuudessa lahjomaan heitä!");
 		}
 	}
 	// Return true if the game is lost, or has won and the user hasn't kept playing
@@ -120,8 +120,8 @@ export default class GameManager {
 
 		// Analytics
 		try {
-			sa_event('new_game');
-			sa_event('new_game_size_' + this.size);
+			sa_event("new_game");
+			sa_event("new_game_size_" + this.size);
 		} catch {}
 		//
 
@@ -148,7 +148,7 @@ export default class GameManager {
 			var tile = new Tile(this.grid.randomAvailableCell(), value);
 
 			this.grid.insertTile(tile);
-			return '' + tile.x + ',' + tile.y + '.' + tile.value; // for HAC
+			return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
 		}
 	}
 
@@ -230,7 +230,7 @@ export default class GameManager {
 		let HAC_grid = this.grid.serialize_HAC();
 
 		// 0: up, 1: right, 2: down, 3: left
-		let directions = ['up', 'right', 'down', 'left'];
+		let directions = ["up", "right", "down", "left"];
 		// console.log("clientside moving", directions[direction]);
 		var self = this;
 
@@ -285,7 +285,7 @@ export default class GameManager {
 		});
 		let ended = false;
 
-		let added = '';
+		let added = "";
 		if (moved) {
 			added = this.addRandomTile();
 
@@ -293,7 +293,7 @@ export default class GameManager {
 				this.over = true; // Game over!
 
 				// Record end for HAC
-				let state = this.serialize_HAC(HAC_grid, 'f', added);
+				let state = this.serialize_HAC(HAC_grid, "f", added);
 				this.HallaAntiCheat.recordState(state);
 
 				if (this.size == 4 || this.size == 3) {
@@ -302,7 +302,7 @@ export default class GameManager {
 
 				// Analytics
 				try {
-					sa_event('game_failed');
+					sa_event("game_failed");
 				} catch {}
 				//
 
@@ -313,7 +313,7 @@ export default class GameManager {
 			this.actuate();
 		}
 		if (!ended && moved) {
-			let HAC_direction = moved ? direction : 'e';
+			let HAC_direction = moved ? direction : "e";
 			//HAC_grid = this.grid.serialize_HAC();
 			let state = this.serialize_HAC(HAC_grid, HAC_direction, added);
 			this.HallaAntiCheat.recordState(state);

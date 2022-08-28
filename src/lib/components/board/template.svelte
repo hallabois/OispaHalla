@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ThemeChooser from '$lib/components/common/theme-chooser/themeChooser.svelte';
+	import ThemeChooser from "$lib/components/common/theme-chooser/themeChooser.svelte";
 </script>
 
 <div class="game-container">

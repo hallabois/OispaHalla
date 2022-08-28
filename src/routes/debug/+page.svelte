@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { onMount } from "svelte";
+	import { browser } from "$app/environment";
 	let data = {};
 	onMount(() => {
 		data = localStorage;
@@ -10,19 +10,19 @@
 
 	function shareData() {
 		navigator.share({
-			title: 'Oispahalla debug dump',
+			title: "Oispahalla debug dump",
 			text: JSON.stringify(localStorage)
 		});
 	}
 	function copy() {
 		navigator.clipboard.writeText(JSON.stringify(localStorage));
-		copytext = 'Kopioitu!';
+		copytext = "Kopioitu!";
 		setTimeout(() => {
 			copytext = null;
 		}, 500);
 	}
 	function email() {
-		let mail_template = 'Kuvaile bugia:\n\nAutomaattiset Virheenkorjaustiedot:\n';
+		let mail_template = "Kuvaile bugia:\n\nAutomaattiset Virheenkorjaustiedot:\n";
 		window.open(
 			`mailto:bugreports@oispahalla.com?subject=Bugiraportti&body=${mail_template}${JSON.stringify(
 				localStorage
@@ -62,7 +62,7 @@
 			<button on:click={shareData}>Jaa</button>
 		{/if}
 		{#if browser && navigator.clipboard}
-			<button on:click={copy}>{copytext || 'Kopioi leikepöydälle'}</button>
+			<button on:click={copy}>{copytext || "Kopioi leikepöydälle"}</button>
 		{/if}
 		<!-- <button on:click={email}>Lähetä bugi-ilmoitus sähköpostilla.</button> -->
 	{:else}

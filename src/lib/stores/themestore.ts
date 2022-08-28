@@ -1,7 +1,7 @@
-import { browser } from '$app/environment';
-import { type Writable, writable, get } from 'svelte/store';
+import { browser } from "$app/environment";
+import { type Writable, writable, get } from "svelte/store";
 
-import { setItem, getItem, storage_loaded, storage } from '$lib/stores/storage';
+import { setItem, getItem, storage_loaded, storage } from "$lib/stores/storage";
 
 export let defaultTheme = 5;
 export function setDefaultTheme(theme: number) {
@@ -13,15 +13,15 @@ export let theme_index: Writable<number> = writable(defaultTheme);
 export let theme_loaded = false;
 theme_index.subscribe((themeID) => {
 	if (!get(storage_loaded)) {
-		console.info('Skipping set of theme to', themeID);
+		console.info("Skipping set of theme to", themeID);
 		return; // Overwriting at this point would always cause the default theme to load
 	}
-	console.info('theme changed to', themeID);
+	console.info("theme changed to", themeID);
 	// Save choice to localstorage
 	try {
 		if (theme_loaded) {
-			setItem('imageTheme', themeID);
-			setItem('imageThemeLastVersion', currentImageThemeVersion);
+			setItem("imageTheme", themeID);
+			setItem("imageThemeLastVersion", currentImageThemeVersion);
 		}
 	} catch {}
 	if (browser) {
@@ -30,14 +30,14 @@ theme_index.subscribe((themeID) => {
 			document.cookie = `theme=${themeID};SameSite=None;secure=true;expires=Fri, 31 Dec 9999 23:59:59 GMT"max-age=31536000;path=/;`;
 		} catch {}
 		// Apply theme
-		let html = document.querySelector('html');
+		let html = document.querySelector("html");
 		if (html) {
-			html.setAttribute('class', 'theme-' + themeID);
+			html.setAttribute("class", "theme-" + themeID);
 		}
 	}
 	theme_loaded = true;
 });
-export let base_path: Writable<string> = writable('');
+export let base_path: Writable<string> = writable("");
 
 export function get_base_path(): string {
 	return get(base_path);
@@ -46,13 +46,13 @@ export function get_base_path(): string {
 // Load theme from storage
 storage_loaded.subscribe(($storage_loaded) => {
 	if ($storage_loaded) {
-		console.info('readtheme', getItem('imageTheme'), get(storage));
-		if (getItem('imageTheme') != null) {
+		console.info("readtheme", getItem("imageTheme"), get(storage));
+		if (getItem("imageTheme") != null) {
 			if (
-				getItem('imageThemeLastVersion') &&
-				getItem('imageThemeLastVersion') == currentImageThemeVersion
+				getItem("imageThemeLastVersion") &&
+				getItem("imageThemeLastVersion") == currentImageThemeVersion
 			) {
-				theme_index.set(+getItem('imageTheme'));
+				theme_index.set(+getItem("imageTheme"));
 			} else {
 				theme_index.set(defaultTheme);
 			}

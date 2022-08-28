@@ -1,7 +1,7 @@
-import { readable, writable, type Writable } from 'svelte/store';
-import { browser } from '$app/environment';
-import type { Auth, User } from 'firebase/auth';
-import { generateActionCodeSettings } from './firebase_config';
+import { readable, writable, type Writable } from "svelte/store";
+import { browser } from "$app/environment";
+import type { Auth, User } from "firebase/auth";
+import { generateActionCodeSettings } from "./firebase_config";
 
 const createAuth = () => {
 	let auth: Auth;
@@ -11,8 +11,8 @@ const createAuth = () => {
 
 		async function listen() {
 			if (browser) {
-				const { app } = await import('./firebase_config');
-				const { getAuth, onAuthStateChanged } = await import('firebase/auth');
+				const { app } = await import("./firebase_config");
+				const { getAuth, onAuthStateChanged } = await import("firebase/auth");
 
 				auth = getAuth(app);
 
@@ -29,28 +29,28 @@ const createAuth = () => {
 
 	async function providerFor(name: string) {
 		const { GoogleAuthProvider, GithubAuthProvider, TwitterAuthProvider } = await import(
-			'firebase/auth'
+			"firebase/auth"
 		);
 		switch (name) {
-			case 'google':
+			case "google":
 				return new GoogleAuthProvider();
-			case 'github':
+			case "github":
 				return new GithubAuthProvider();
-			case 'twitter':
+			case "twitter":
 				return new TwitterAuthProvider();
 			default:
-				throw 'unknown provider ' + name;
+				throw "unknown provider " + name;
 		}
 	}
 
 	async function signInWith(name: string) {
-		const { signInWithRedirect } = await import('firebase/auth');
+		const { signInWithRedirect } = await import("firebase/auth");
 		const provider = await providerFor(name);
 		await signInWithRedirect(auth, provider);
 	}
 
 	async function sendSignInLink(email: string, origin: string) {
-		const { sendSignInLinkToEmail } = await import('firebase/auth');
+		const { sendSignInLinkToEmail } = await import("firebase/auth");
 		try {
 			await sendSignInLinkToEmail(auth, email, generateActionCodeSettings(origin));
 			return true;
@@ -61,7 +61,7 @@ const createAuth = () => {
 	}
 
 	async function signInWithLink(email: string, href: string) {
-		const { signInWithEmailLink } = await import('firebase/auth');
+		const { signInWithEmailLink } = await import("firebase/auth");
 		try {
 			await signInWithEmailLink(auth, email, href);
 			return true;
@@ -72,16 +72,16 @@ const createAuth = () => {
 	}
 
 	async function signOut() {
-		const { signOut } = await import('firebase/auth');
+		const { signOut } = await import("firebase/auth");
 		clearTraces();
 		await signOut(auth);
 	}
 
 	function clearTraces() {
 		console.clear();
-		console.info('Signed out, have a good day!');
+		console.info("Signed out, have a good day!");
 		token.set(null);
-		import('$lib/stores/leaderboardstore').then(({ lb_screenName }) => {
+		import("$lib/stores/leaderboardstore").then(({ lb_screenName }) => {
 			lb_screenName.set(null);
 		});
 		// localStorage.clear(); // Not a good idea

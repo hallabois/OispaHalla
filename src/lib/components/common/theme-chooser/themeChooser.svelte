@@ -1,12 +1,12 @@
 <!-- / -->
 <script lang="ts">
-	import { slide, scale } from 'svelte/transition';
-	import { theme_index, base_path } from '$lib/stores/themestore';
+	import { slide, scale } from "svelte/transition";
+	import { theme_index, base_path } from "$lib/stores/themestore";
 
-	import { getItem, storage_loaded } from '$lib/stores/storage';
+	import { getItem, storage_loaded } from "$lib/stores/storage";
 
 	const animate = (node, args) => (args.condition ? slide(node, args) : scale(node, args));
-	import { browser, dev } from '$app/environment';
+	import { browser, dev } from "$app/environment";
 	class theme {
 		name!: string;
 		index!: number;
@@ -22,38 +22,38 @@
 	}
 	let available_themes: theme[] | theme_custom[] = [
 		{
-			name: 'OispaHalla',
+			name: "OispaHalla",
 			index: 1,
-			icon_url: '/img/raksahalla_192.webp',
-			style: 'background: white;'
+			icon_url: "/img/raksahalla_192.webp",
+			style: "background: white;"
 		},
 		{
-			name: 'OispaHalla (tumma)',
+			name: "OispaHalla (tumma)",
 			index: 0,
-			icon_url: '/img/raksahalla_192.webp',
-			style: 'background: black;'
+			icon_url: "/img/raksahalla_192.webp",
+			style: "background: black;"
 		}
 	];
 
 	let menu_open = false;
 
 	let classic = {
-		name: 'Classic',
+		name: "Classic",
 		index: 16,
-		icon_url: '/img/theme-16/2048.webp',
-		style: 'background: transparent;'
+		icon_url: "/img/theme-16/2048.webp",
+		style: "background: transparent;"
 	};
 	let kaunis = {
-		name: 'Kaunis',
+		name: "Kaunis",
 		index: 5,
-		icon_url: '/img/theme-4/cover.webp',
-		style: 'background: #8cc4e3;'
+		icon_url: "/img/theme-4/cover.webp",
+		style: "background: #8cc4e3;"
 	};
 	let kaunis_dark = {
-		name: 'Kaunis (tumma)',
+		name: "Kaunis (tumma)",
 		index: 4,
-		icon_url: '/img/theme-4/cover.webp',
-		style: 'background: #001522;'
+		icon_url: "/img/theme-4/cover.webp",
+		style: "background: #001522;"
 	};
 	if (true) {
 		available_themes = [kaunis, kaunis_dark, ...available_themes];
@@ -61,8 +61,8 @@
 	$: if (
 		browser &&
 		$storage_loaded &&
-		(getItem('hasWon') ||
-			(getItem('bestScore') != null && +getItem('bestScore') && +getItem('bestScore') > 10000)) &&
+		(getItem("hasWon") ||
+			(getItem("bestScore") != null && +getItem("bestScore") && +getItem("bestScore") > 10000)) &&
 		!available_themes.includes(classic)
 	) {
 		available_themes.push(classic);
@@ -77,19 +77,19 @@
 					let json = await res.json();
 					return [true, json, null];
 				} catch (e) {
-					return [false, {}, 'invalid json'];
+					return [false, {}, "invalid json"];
 				}
 			}
 		} catch (e) {
-			return [false, {}, 'network error'];
+			return [false, {}, "network error"];
 		}
-		return [false, {}, 'what?'];
+		return [false, {}, "what?"];
 	}
 	function setImageTheme(theme: number) {
 		theme_index.set(theme);
 	}
 	async function addCustomTheme() {
-		let url = prompt('Teeman osoite');
+		let url = prompt("Teeman osoite");
 		let fetch_result = await fetchCustomThemeDetails(url);
 		if (!fetch_result[0]) {
 			alert(`Virhe: ${fetch_result[2]}`);
@@ -103,7 +103,7 @@
 			index: 0,
 			theme_url: url,
 			icon_url: icon_url,
-			style: ''
+			style: ""
 		});
 		available_themes = available_themes;
 	}
@@ -122,14 +122,14 @@
 				{#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1) || menu_open}
 					<!-- svelte-ignore missing-declaration -->
 					<button
-						title={menu_open ? `vaihda teemaan ${theme.name}` : 'avaa teemavalitsin'}
-						aria-label={menu_open ? `vaihda teemaan ${theme.name}` : 'avaa teemavalitsin'}
+						title={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
+						aria-label={menu_open ? `vaihda teemaan ${theme.name}` : "avaa teemavalitsin"}
 						on:click={() => {
 							if (menu_open) {
 								if (theme.theme_url) {
 									base_path.set(theme.theme_url);
 								} else {
-									base_path.set('');
+									base_path.set("");
 									setImageTheme(theme.index);
 								}
 							}

@@ -1,43 +1,43 @@
 <script lang="ts">
-	import { marked } from 'marked';
-	import { onMount } from 'svelte';
+	import { marked } from "marked";
+	import { onMount } from "svelte";
 
-	import { enable_multiplayer, enable_leaderboards } from '../features';
-	import { storage_loaded } from '$lib/stores/storage';
+	import { enable_multiplayer, enable_leaderboards } from "../features";
+	import { storage_loaded } from "$lib/stores/storage";
 
-	import Preloader from '$lib/components/common/image-preloader/Preloader.svelte';
+	import Preloader from "$lib/components/common/image-preloader/Preloader.svelte";
 
-	import Settings from '$lib/components/settings.svelte';
-	import Info from '$lib/components/info.svelte';
-	import Tournaments from '$lib/components/tournaments.svelte';
-	import Leaderboards from '$lib/components/leaderboard.svelte';
+	import Settings from "$lib/components/settings.svelte";
+	import Info from "$lib/components/info.svelte";
+	import Tournaments from "$lib/components/tournaments.svelte";
+	import Leaderboards from "$lib/components/leaderboard.svelte";
 
-	import Board from '$lib/components/board/board.svelte';
-	import Announcer from '$lib/components/tournaments/announcer.svelte';
-	import type KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
-	import type GameManager from '$lib/gamelogic/game_manager';
-	import Icon from '$lib/components/common/icon/icon.svelte';
+	import Board from "$lib/components/board/board.svelte";
+	import Announcer from "$lib/components/tournaments/announcer.svelte";
+	import type KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
+	import type GameManager from "$lib/gamelogic/game_manager";
+	import Icon from "$lib/components/common/icon/icon.svelte";
 	import {
 		multiplayerIconData,
 		leaderboardIconData,
 		infoIconData,
 		settingsIconData
-	} from '$lib/components/common/icon/iconData';
-	import { base_path } from '$lib/stores/themestore';
+	} from "$lib/components/common/icon/iconData";
+	import { base_path } from "$lib/stores/themestore";
 
-	let app_name = '';
-	let app_description = '';
-	let app_notice = '';
-	let app_name_newgame = '';
-	let app_name_score = '';
-	let app_name_hiscore = '';
+	let app_name = "";
+	let app_description = "";
+	let app_notice = "";
+	let app_name_newgame = "";
+	let app_name_score = "";
+	let app_name_hiscore = "";
 
-	let app_name_default = 'Oispa Halla';
-	let app_description_default = 'Yhdistä opettajat ja saavuta **Halla!**';
-	let app_notice_default = '';
-	let app_name_newgame_default = 'Uusi Jakso';
-	let app_name_score_default = 'arvosana';
-	let app_name_hiscore_default = 'paras halla';
+	let app_name_default = "Oispa Halla";
+	let app_description_default = "Yhdistä opettajat ja saavuta **Halla!**";
+	let app_notice_default = "";
+	let app_name_newgame_default = "Uusi Jakso";
+	let app_name_score_default = "arvosana";
+	let app_name_hiscore_default = "paras halla";
 
 	function setDefaultMetaValues() {
 		app_name = app_name_default;
@@ -48,8 +48,8 @@
 		app_name_hiscore = app_name_hiscore_default;
 	}
 
-	$: if (mounted && $base_path != null && $base_path != '') {
-		fetch($base_path + '/manifest.json')
+	$: if (mounted && $base_path != null && $base_path != "") {
+		fetch($base_path + "/manifest.json")
 			.then((response) => response.json())
 			.then((data) => {
 				app_name = data.name;
@@ -63,7 +63,7 @@
 			})
 			.finally(() => {
 				app_notice =
-					'This is a custom pack and as such is not endorsed in any way by the original team.';
+					"This is a custom pack and as such is not endorsed in any way by the original team.";
 			});
 	} else {
 		setDefaultMetaValues();
@@ -72,18 +72,18 @@
 	let mounted = false;
 	let GameManagerInstance: GameManager;
 	onMount(() => {
-		inputRoot = document.querySelector('html') as HTMLElement;
+		inputRoot = document.querySelector("html") as HTMLElement;
 		mounted = true;
 	});
 
 	$: if (mounted && $storage_loaded) {
-		console.info('Starting to load game logic...');
+		console.info("Starting to load game logic...");
 		// inputManager = new KeyboardInputManager(inputRoot);
 		// inputManager.on("move", move);
 		BoardInstance.setDocumentRoot(inputRoot);
 		BoardInstance.initcomponents();
 		GameManagerInstance = BoardInstance.getGameManagerInstance();
-		console.info('Game logic loaded.');
+		console.info("Game logic loaded.");
 	}
 
 	let enableKIM = true;
@@ -134,10 +134,10 @@
 				class="restart-button button"
 				bind:this={restartbtn}
 				on:click={() => {
-					if (!restartbtn.classList.contains('open')) {
-						restartbtn.classList.add('open');
+					if (!restartbtn.classList.contains("open")) {
+						restartbtn.classList.add("open");
 					} else {
-						restartbtn.classList.remove('open');
+						restartbtn.classList.remove("open");
 					}
 				}}
 			>

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { auth, token } from '$lib/Auth/authstore';
+	import { auth, token } from "$lib/Auth/authstore";
 
-	import Popup from './common/popup/popup.svelte';
-	import type Announcer from './tournaments/announcer.svelte';
+	import Popup from "./common/popup/popup.svelte";
+	import type Announcer from "./tournaments/announcer.svelte";
 	import {
 		lb_screenName,
 		check_server_alive,
@@ -15,9 +15,9 @@
 		my_top_score_histories,
 		get_score_placement,
 		fetchboard
-	} from '$lib/stores/leaderboardstore';
-	import { scale } from 'svelte/transition';
-	import type GameManager from '$lib/gamelogic/game_manager';
+	} from "$lib/stores/leaderboardstore";
+	import { scale } from "svelte/transition";
+	import type GameManager from "$lib/gamelogic/game_manager";
 
 	export let GameManagerInstance: GameManager | null = null;
 	function submitUnsubmittedTopScores() {
@@ -42,7 +42,7 @@
 		submitting = false;
 	}
 	function getHACString(run: any[]) {
-		return size + 'x' + size + 'S' + run.join(':');
+		return size + "x" + size + "S" + run.join(":");
 	}
 	let submit_in_progress = false;
 	async function submit() {
@@ -57,7 +57,7 @@
 			getHACString($my_top_score_histories[starting_size])
 		);
 		submit_in_progress = false;
-		console.info('submit result', result);
+		console.info("submit result", result);
 		if (result.message) {
 			if (announcer) {
 				announcer.announce(result.message);
@@ -87,15 +87,15 @@
 	}
 
 	function editScreenName() {
-		let new_name = prompt('Uusi nimimerkki', $lb_screenName || undefined);
+		let new_name = prompt("Uusi nimimerkki", $lb_screenName || undefined);
 		if (new_name && new_name != $lb_screenName) {
 			lb_screenName.set(new_name);
 			if (announcer) {
-				announcer.announce('Nimimerkki muuttuu seuraavan tallennuksen yhteydessä.'); // Muuttuu seuraavan tallennuksen yhteydessä
+				announcer.announce("Nimimerkki muuttuu seuraavan tallennuksen yhteydessä."); // Muuttuu seuraavan tallennuksen yhteydessä
 			}
 		} else {
 			if (announcer) {
-				announcer.announce('Nimimerkki ei muuttunut');
+				announcer.announce("Nimimerkki ei muuttunut");
 			}
 		}
 	}
@@ -119,7 +119,7 @@
 								disabled={submit_in_progress}
 								on:click={submit}
 								class="button action-btn"
-								style="width: 100%;">{submit_in_progress ? 'Tallennetaan...' : 'Tallenna'}</button
+								style="width: 100%;">{submit_in_progress ? "Tallennetaan..." : "Tallenna"}</button
 							>
 							<button
 								on:click={() => {
@@ -175,7 +175,7 @@
 											<tr in:scale={{ delay: 100 * index }}>
 												<td>{index + 1}.</td>
 												<td>{entry.score}</td>
-												<td>{entry.user ? entry.user.screenName : '[Virheellinen nimi]'}</td>
+												<td>{entry.user ? entry.user.screenName : "[Virheellinen nimi]"}</td>
 											</tr>
 										{/each}
 									</tbody>
@@ -221,7 +221,7 @@
 						{:else}
 							<button
 								on:click={() => {
-									window.location.href = '/auth';
+									window.location.href = "/auth";
 								}}
 								class="button action-btn"
 								style="width: 100%;">Kirjaudu sisään</button

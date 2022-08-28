@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly, slide, fade } from 'svelte/transition';
+	import { fly, slide, fade } from "svelte/transition";
 </script>
 
 <main>

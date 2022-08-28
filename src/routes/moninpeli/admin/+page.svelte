@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { tournament_endpoint } from '$lib/stores/tournamentstore';
+	import { tournament_endpoint } from "$lib/stores/tournamentstore";
 	let refreshKey = {};
 	let admin_token: string;
 	let admin_token_checking = false;
 	let admin_token_valid = false;
 	$: {
-		if (admin_token != null && admin_token != '' && admin_token.length > 2) {
+		if (admin_token != null && admin_token != "" && admin_token.length > 2) {
 			admin_token_checking = true;
 			testAdminToken().then((v) => {
 				admin_token_valid = v;
@@ -24,7 +24,7 @@
 	let action_status: null | boolean = null; // Null: Clear, true: OK, false: Error
 
 	function confirm_action() {
-		let answer = prompt('Please retype the admin token');
+		let answer = prompt("Please retype the admin token");
 		return answer === admin_token;
 	}
 
@@ -43,11 +43,11 @@
 
 	async function deleteAllGames() {
 		if (confirm_action()) {
-			console.log('Confirmation received, deleting all games...');
+			console.log("Confirmation received, deleting all games...");
 			let result = await fetch(`${tournament_endpoint}/admin/clean/${admin_token}`, {
-				method: 'DELETE'
+				method: "DELETE"
 			});
-			console.log('Deletion request result:', result);
+			console.log("Deletion request result:", result);
 			action_status = result.ok;
 			refreshKey = {};
 		}
@@ -56,15 +56,15 @@
 		if (confirm_action()) {
 			console.log(`Confirmation received, deleting game ${game_id}...`);
 			let result = await fetch(`${tournament_endpoint}/games/${game_id}/delete`, {
-				method: 'POST',
+				method: "POST",
 				body: JSON.stringify({
 					edit_key: admin_token
 				}),
 				headers: {
-					'Content-Type': 'application/json'
+					"Content-Type": "application/json"
 				}
 			});
-			console.log('Deletion request result:', result);
+			console.log("Deletion request result:", result);
 			action_status = result.ok;
 			refreshKey = {};
 		}
@@ -73,15 +73,15 @@
 		if (confirm_action()) {
 			console.log(`Confirmation received, starting game ${game_id}...`);
 			let result = await fetch(`${tournament_endpoint}/games/${game_id}/start`, {
-				method: 'POST',
+				method: "POST",
 				body: JSON.stringify({
 					edit_key: admin_token
 				}),
 				headers: {
-					'Content-Type': 'application/json'
+					"Content-Type": "application/json"
 				}
 			});
-			console.log('Activation request result:', result);
+			console.log("Activation request result:", result);
 			action_status = result.ok;
 			refreshKey = {};
 		}
@@ -118,7 +118,7 @@
 				<button on:click={deleteAllGames}>Delete ALL Games</button>
 				<button
 					on:click={() => {
-						admin_token = '';
+						admin_token = "";
 					}}>Log Out</button
 				>
 				<button
@@ -193,13 +193,13 @@
 														<div>
 															<button
 																on:click={() => {
-																	deleteGame(selected_game || '');
+																	deleteGame(selected_game || "");
 																}}>Delete</button
 															>
 															{#if !game_data.active}
 																<button
 																	on:click={() => {
-																		startGame(selected_game || '');
+																		startGame(selected_game || "");
 																	}}>Start</button
 																>
 															{/if}

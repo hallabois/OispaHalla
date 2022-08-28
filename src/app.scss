@@ -1,8 +1,8 @@
-@use 'sass:map';
-@use 'sass:math';
+@use "sass:map";
+@use "sass:math";
 
-@import './style/helpers';
-@import './style/fonts/clear-sans.css';
+@import "./style/helpers";
+@import "./style/fonts/clear-sans.css";
 
 :root {
 	--field-width: 500px;
@@ -55,7 +55,7 @@ body {
 
 	background: $game-background-dark;
 	color: $text-color;
-	font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+	font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
 	font-size: 18px;
 	font-display: swap; // Ensure that text stays visible during font load
 
@@ -178,7 +178,7 @@ h1.title.dark {
 
 	& .lb-stat-label::before {
 		counter-increment: leaderboard; // scuffed but works
-		content: counter(leaderboard) '. ';
+		content: counter(leaderboard) ". ";
 	}
 }
 
@@ -325,7 +325,7 @@ h1.title.dark {
 	text-align: center;
 }
 .HAC-container::after {
-	content: 'HAC';
+	content: "HAC";
 	position: absolute;
 	width: 100%;
 	top: 10px;
@@ -430,11 +430,11 @@ h1.title.dark {
 }
 
 .score-container:after {
-	content: var(--c, 'Arvosana');
+	content: var(--c, "Arvosana");
 }
 
 .best-container:after {
-	content: var(--c, 'Paras Halla');
+	content: var(--c, "Paras Halla");
 }
 
 p {
@@ -634,7 +634,7 @@ hr {
 		}
 
 		&:after {
-			content: '';
+			content: "";
 			display: block;
 			clear: both;
 		}
@@ -727,7 +727,7 @@ $i: 2;
 
 @while $i <= 32768 {
 	.tile-#{$i} .tile-inner {
-		background-image: url('/img/#{$i}.webp');
+		background-image: url("/img/#{$i}.webp");
 		@if ($i >= 128) {
 			box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
 		}
@@ -762,7 +762,7 @@ $i: 2;
 	position: absolute; // Makes transforms relative to the top-left corner
 
 	.tile-inner {
-		background-image: url('/img/tile_unknown.png');
+		background-image: url("/img/tile_unknown.png");
 		border-radius: $tile-border-radius;
 
 		text-align: center;
@@ -915,14 +915,14 @@ $i: 2;
 			background: #ccc;
 		}
 		button.restart-4x4::after {
-			content: 'oletus';
+			content: "oletus";
 			display: block;
 			line-height: 40%;
 			font-size: 75%;
 			margin-top: -1.5px;
 		}
 		button.restart-3x3::after {
-			content: ' ';
+			content: " ";
 			display: block;
 			line-height: 40%;
 			font-size: 75%;
@@ -1056,129 +1056,129 @@ $i: 2;
 }
 
 $colors: (
-	'0-color-scheme': 'dark',
-	'0-text-color': #eee,
-	'0-game-background': #161817,
-	'0-game-background-inverted': #e9e7e8,
+	"0-color-scheme": "dark",
+	"0-text-color": #eee,
+	"0-game-background": #161817,
+	"0-game-background-inverted": #e9e7e8,
 	//käytetään kurinpalautusnapin hoverausefektille
-	'0-game-container-background': #3e3933,
-	'0-title-color': #e6d2bf,
-	'0-button-color': #365ca6,
-	'0-break-button-background-false': #a63636,
+	"0-game-container-background": #3e3933,
+	"0-title-color": #e6d2bf,
+	"0-button-color": #365ca6,
+	"0-break-button-background-false": #a63636,
 	//kurinpalautus!
-	'0-break-button-color-false': #ddd,
-	'0-break-button-background-true': #49a636,
-	'0-break-button-color-true': #dfdfdf,
+	"0-break-button-color-false": #ddd,
+	"0-break-button-background-true": #49a636,
+	"0-break-button-color-true": #dfdfdf,
 
-	'4-color-scheme': 'dark',
-	'4-text-color': #eee,
-	'4-game-background': #262e17,
-	'4-game-background-inverted': #e9e7e8,
+	"4-color-scheme": "dark",
+	"4-text-color": #eee,
+	"4-game-background": #262e17,
+	"4-game-background-inverted": #e9e7e8,
 	//käytetään kurinpalautusnapin hoverausefektille
-	'4-game-container-background': #3e3933,
-	'4-title-color': #e6d2bf,
-	'4-button-color': #365ca6,
-	'4-break-button-background-false': #a63636,
+	"4-game-container-background": #3e3933,
+	"4-title-color": #e6d2bf,
+	"4-button-color": #365ca6,
+	"4-break-button-background-false": #a63636,
 	//kurinpalautus!
-	'4-break-button-color-false': #ddd,
-	'4-break-button-background-true': #49a636,
-	'4-break-button-color-true': #dfdfdf,
+	"4-break-button-color-false": #ddd,
+	"4-break-button-background-true": #49a636,
+	"4-break-button-color-true": #dfdfdf,
 
-	'14-color-scheme': 'dark',
-	'14-text-color': #eee,
-	'14-game-background': #161817,
-	'14-game-background-inverted': #e9e7e8,
+	"14-color-scheme": "dark",
+	"14-text-color": #eee,
+	"14-game-background": #161817,
+	"14-game-background-inverted": #e9e7e8,
 	//käytetään kurinpalautusnapin hoverausefektille
-	'14-game-container-background': #3e3933,
-	'14-title-color': #e6d2bf,
-	'14-button-color': #365ca6,
-	'14-break-button-background-false': #a63636,
+	"14-game-container-background": #3e3933,
+	"14-title-color": #e6d2bf,
+	"14-button-color": #365ca6,
+	"14-break-button-background-false": #a63636,
 	//kurinpalautus!
-	'14-break-button-color-false': #ddd,
-	'14-break-button-background-true': #49a636,
-	'14-break-button-color-true': #dfdfdf,
+	"14-break-button-color-false": #ddd,
+	"14-break-button-background-true": #49a636,
+	"14-break-button-color-true": #dfdfdf,
 
-	'16-color-scheme': 'light',
-	'16-game-background': $game-background,
-	'16-break-button-background-false': #a63636,
+	"16-color-scheme": "light",
+	"16-game-background": $game-background,
+	"16-break-button-background-false": #a63636,
 	//kurinpalautus!
-	'16-break-button-color-false': #ddd,
-	'16-break-button-background-true': #49a636,
-	'16-break-button-color-true': #dfdfdf,
+	"16-break-button-color-false": #ddd,
+	"16-break-button-background-true": #49a636,
+	"16-break-button-color-true": #dfdfdf,
 
-	'1-color-scheme': 'light',
-	'1-game-background': $game-background,
-	'1-break-button-background-false': #cc0000,
+	"1-color-scheme": "light",
+	"1-game-background": $game-background,
+	"1-break-button-background-false": #cc0000,
 	//kurinpalautus!
-	'1-break-button-color-false': #ddd,
-	'1-break-button-background-true': #00cc00,
-	'1-break-button-color-true': #dfdfdf,
+	"1-break-button-color-false": #ddd,
+	"1-break-button-background-true": #00cc00,
+	"1-break-button-color-true": #dfdfdf,
 
-	'5-color-scheme': 'light',
-	'5-game-background': #7d9847,
-	'5-title-color': #534d48,
-	'5-break-button-background-false': #cc0000,
+	"5-color-scheme": "light",
+	"5-game-background": #7d9847,
+	"5-title-color": #534d48,
+	"5-break-button-background-false": #cc0000,
 	//kurinpalautus!
-	'5-break-button-color-false': #ddd,
-	'5-break-button-background-true': #00cc00,
-	'5-break-button-color-true': #dfdfdf,
+	"5-break-button-color-false": #ddd,
+	"5-break-button-background-true": #00cc00,
+	"5-break-button-color-true": #dfdfdf,
 
-	'2-color-scheme': 'dark',
-	'2-text-color': #eee,
-	'2-game-background': #161817,
-	'2-game-background-inverted': #e9e7e8,
+	"2-color-scheme": "dark",
+	"2-text-color": #eee,
+	"2-game-background": #161817,
+	"2-game-background-inverted": #e9e7e8,
 	//käytetään kurinpalautusnapin hoverausefektille
-	'2-game-container-background': #3e3933,
-	'2-title-color': #e6d2bf,
-	'2-button-color': #974f23,
+	"2-game-container-background": #3e3933,
+	"2-title-color": #e6d2bf,
+	"2-button-color": #974f23,
 
-	'3-color-scheme': 'dark',
-	'3-text-color': #dfdfdf,
-	'3-cell-color': rgba(204, 63, 63, 0.35),
-	'3-game-background': #460811,
-	'3-game-background-inverted': #b9f7ee,
+	"3-color-scheme": "dark",
+	"3-text-color": #dfdfdf,
+	"3-cell-color": rgba(204, 63, 63, 0.35),
+	"3-game-background": #460811,
+	"3-game-background-inverted": #b9f7ee,
 	//käytetään kurinpalautusnapin hoverausefektille
-	'3-game-container-background': #8b0f17,
-	'3-title-color': #f4ab1d,
-	'3-button-color': #146b3a,
-	'3-break-button-background-false': #8b0f17,
+	"3-game-container-background": #8b0f17,
+	"3-title-color": #f4ab1d,
+	"3-button-color": #146b3a,
+	"3-break-button-background-false": #8b0f17,
 	//kurinpalautus!
-	'3-break-button-color-false': #ddd,
-	'3-break-button-background-true': #146b3a,
-	'3-break-button-color-true': #dfdfdf
+	"3-break-button-color-false": #ddd,
+	"3-break-button-background-true": #146b3a,
+	"3-break-button-color-true": #dfdfdf
 );
 
 @mixin setThemeColors($color-number) {
 	.theme-#{$t} {
 		// Formejen jne väritystä varten
-		@if map.has-key($colors, '#{$color-number}-color-scheme') {
-			--color-scheme: #{map-get($colors, '#{$color-number}-color-scheme')};
-			color-scheme: var(--color-scheme, 'light');
+		@if map.has-key($colors, "#{$color-number}-color-scheme") {
+			--color-scheme: #{map-get($colors, "#{$color-number}-color-scheme")};
+			color-scheme: var(--color-scheme, "light");
 		}
-		--background: #{map-get($colors, '#{$color-number}-game-background')};
-		--background-inverted: #{map-get($colors, '#{$color-number}-game-background-inverted')};
+		--background: #{map-get($colors, "#{$color-number}-game-background")};
+		--background-inverted: #{map-get($colors, "#{$color-number}-game-background-inverted")};
 		--color: #{$text-color};
-		@if map.has-key($colors, '#{$color-number}-text-color') {
-			--color: #{map-get($colors, '#{$color-number}-text-color')};
+		@if map.has-key($colors, "#{$color-number}-text-color") {
+			--color: #{map-get($colors, "#{$color-number}-text-color")};
 		}
 		--container-background: #{$game-background};
-		@if map.has-key($colors, '#{$color-number}-game-container-background') {
-			--container-background: #{map-get($colors, '#{$color-number}-game-container-background')};
+		@if map.has-key($colors, "#{$color-number}-game-container-background") {
+			--container-background: #{map-get($colors, "#{$color-number}-game-container-background")};
 		}
 		--button-background: #8f7a66;
-		@if map.has-key($colors, '#{$color-number}-button-color') {
-			--button-background: #{map-get($colors, '#{$color-number}-button-color')};
+		@if map.has-key($colors, "#{$color-number}-button-color") {
+			--button-background: #{map-get($colors, "#{$color-number}-button-color")};
 		}
 
-		background: map-get($colors, '#{$color-number}-game-background');
-		@if map.has-key($colors, '#{$color-number}-break-button-background-false') {
+		background: map-get($colors, "#{$color-number}-game-background");
+		@if map.has-key($colors, "#{$color-number}-break-button-background-false") {
 			.parin-kulautus,
 			.kurin-palautus {
-				background: map-get($colors, '#{$color-number}-break-button-background-false');
-				color: map-get($colors, '#{$color-number}-break-button-color-false');
+				background: map-get($colors, "#{$color-number}-break-button-background-false");
+				color: map-get($colors, "#{$color-number}-break-button-color-false");
 				&.allowed {
-					background: map-get($colors, '#{$color-number}-break-button-background-true');
-					color: map-get($colors, '#{$color-number}-break-button-color-true');
+					background: map-get($colors, "#{$color-number}-break-button-background-true");
+					color: map-get($colors, "#{$color-number}-break-button-color-true");
 				}
 			}
 		} @else {
@@ -1193,22 +1193,22 @@ $colors: (
 			}
 		}
 		& body {
-			background-image: url('/img/theme-#{$color-number}/OispaHallaTausta.webp');
-			@if map.has-key($colors, '#{$color-number}-game-background') {
+			background-image: url("/img/theme-#{$color-number}/OispaHallaTausta.webp");
+			@if map.has-key($colors, "#{$color-number}-game-background") {
 				// skips the definitions if the game background doesn't exist
-				color: map-get($colors, '#{$color-number}-text-color');
-				background-color: map-get($colors, '#{$color-number}-game-background');
+				color: map-get($colors, "#{$color-number}-text-color");
+				background-color: map-get($colors, "#{$color-number}-game-background");
 
 				a {
-					color: map-get($colors, '#{$color-number}-title-color');
+					color: map-get($colors, "#{$color-number}-title-color");
 				}
 
 				.lb-popup-container {
-					background-color: map-get($colors, '#{$color-number}-game-container-background');
+					background-color: map-get($colors, "#{$color-number}-game-container-background");
 				}
 
 				.grid-cell {
-					background-color: map-get($colors, '#{$color-number}-cell-color');
+					background-color: map-get($colors, "#{$color-number}-cell-color");
 				}
 
 				// .kurin-palautus {
@@ -1223,16 +1223,16 @@ $colors: (
 				.score-container,
 				.best-container,
 				.HAC-container {
-					background: map-get($colors, '#{$color-number}-game-container-background');
+					background: map-get($colors, "#{$color-number}-game-container-background");
 				}
 
 				.game-message.game-over {
-					background: rgba(map-get($colors, '#{$color-number}-game-background'), 0.8);
+					background: rgba(map-get($colors, "#{$color-number}-game-background"), 0.8);
 				}
 
 				.restart-button,
 				.lower > * {
-					background: map-get($colors, '#{$color-number}-button-color') !important;
+					background: map-get($colors, "#{$color-number}-button-color") !important;
 				}
 			}
 		}
@@ -1245,14 +1245,14 @@ $t: 0;
 	$i: 2;
 	@while $i <= 32768 {
 		.theme-#{$t} .tile-#{$i} .tile-inner {
-			background-image: url('/img/theme-#{$t}/#{$i}.webp');
+			background-image: url("/img/theme-#{$t}/#{$i}.webp");
 			@if ($i >= 128) {
 				box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
 			}
 		}
 		$i: $i * 2;
 	}
-	@include setThemeColors('#{$t}');
+	@include setThemeColors("#{$t}");
 	$t: $t + 1;
 }
 
@@ -1278,7 +1278,7 @@ $t: 0;
 	border-radius: 3px;
 	font-weight: bold;
 	font-size: 1em;
-	font-family: 'Clear Sans';
+	font-family: "Clear Sans";
 	cursor: pointer;
 }
 .icon-button {

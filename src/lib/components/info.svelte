@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Popup from './common/popup/popup.svelte';
-	import type Announcer from './tournaments/announcer.svelte';
+	import Popup from "./common/popup/popup.svelte";
+	import type Announcer from "./tournaments/announcer.svelte";
 
 	let open = false;
 	export function show() {

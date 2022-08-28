@@ -1,13 +1,13 @@
-import { json as json$1 } from '@sveltejs/kit';
-import { getAuth } from 'firebase-admin/auth';
-import { app } from '$lib/Auth_admin/auth';
+import { json as json$1 } from "@sveltejs/kit";
+import { getAuth } from "firebase-admin/auth";
+import { app } from "$lib/Auth_admin/auth";
 
 export async function POST({ request }) {
 	let body = await request.json();
 	if (body.token == null) {
 		return json$1(
 			{
-				message: 'please include a token'
+				message: "please include a token"
 			},
 			{
 				status: 400
@@ -26,14 +26,14 @@ export async function POST({ request }) {
 				picture: result.picture
 			};
 			return json$1({
-				message: 'auth ok',
+				message: "auth ok",
 				info
 			});
 		} catch (e) {
-			console.warn('Auth error:', e);
+			console.warn("Auth error:", e);
 			return json$1(
 				{
-					message: 'invalid token'
+					message: "invalid token"
 				},
 				{
 					status: 403

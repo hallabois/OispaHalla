@@ -12,16 +12,16 @@
 		poll_id_index,
 		poll_success,
 		refreshGameData
-	} from '$lib/stores/tournamentstore';
-	import Board from '../board/board.svelte';
-	import { hac_gamestate_to_grid } from '$lib/gamelogic/utils';
-	import type Announcer from './announcer.svelte';
+	} from "$lib/stores/tournamentstore";
+	import Board from "../board/board.svelte";
+	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import type Announcer from "./announcer.svelte";
 
 	export let announcer: Announcer | null = null;
 
 	function shareGameID() {
 		navigator.share({
-			title: 'Kutsu OispaHalla -peliin',
+			title: "Kutsu OispaHalla -peliin",
 			text: `Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id} tai alla olevan linkin kautta.`,
 			url: `https://oispahalla.com/moninpeli?game_id=${$joined_game_id}`
 		});
@@ -31,7 +31,7 @@
 			navigator.clipboard.writeText(
 				`${window.location.origin}/moninpeli?game_id=${$joined_game_id}`
 			);
-			announcer.announce('Liittymislinkki kopioitu!');
+			announcer.announce("Liittymislinkki kopioitu!");
 		}
 	}
 </script>
@@ -79,7 +79,7 @@
 				</div>
 				<div>
 					{#if $poll_success}
-						<h4>{$poll_game.clients} {$poll_game.clients == 1 ? 'pelaaja' : 'pelaajaa'}</h4>
+						<h4>{$poll_game.clients} {$poll_game.clients == 1 ? "pelaaja" : "pelaajaa"}</h4>
 						<div style="max-height:300px;overflow-y: auto;">
 							{#each $poll_game.client_aliases as player_name, index}
 								<p>
@@ -114,10 +114,10 @@
 					disabled={$poll_game.active || $poll_game.ended}
 				>
 					{$poll_game.ended
-						? 'Peli on päättynyt!'
+						? "Peli on päättynyt!"
 						: $poll_game.active
-						? 'Peli on alkanut!'
-						: 'Aloita Peli'}
+						? "Peli on alkanut!"
+						: "Aloita Peli"}
 				</button>
 			</div>
 		{/if}
@@ -125,10 +125,10 @@
 			<div class="start">
 				<p style="width: 100%;text-align:center;">
 					{$poll_game.ended
-						? 'Peli on päättynyt!'
+						? "Peli on päättynyt!"
 						: $poll_game.active
-						? 'Peli on alkanut!'
-						: 'Odotetaan pelin alkua...'}
+						? "Peli on alkanut!"
+						: "Odotetaan pelin alkua..."}
 				</p>
 			</div>
 		{/if}

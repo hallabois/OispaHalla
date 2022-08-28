@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { storage_status, storage_loaded } from '$lib/stores/storage';
-	import Board from './template.svelte';
+	import { onMount } from "svelte";
+	import { storage_status, storage_loaded } from "$lib/stores/storage";
+	import Board from "./template.svelte";
 
-	import GameManager from '$lib/gamelogic/game_manager';
-	import html_actuator from '$lib/gamelogic/html_actuator';
-	import LocalStorageManager from '$lib/gamelogic/local_storage_manager';
-	import KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
-	import { generate_previous_positions } from '$lib/gamelogic/utils';
-	import type Grid from '$lib/gamelogic/grid';
-	import { base_path } from '$lib/stores/themestore';
+	import GameManager from "$lib/gamelogic/game_manager";
+	import html_actuator from "$lib/gamelogic/html_actuator";
+	import LocalStorageManager from "$lib/gamelogic/local_storage_manager";
+	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
+	import { generate_previous_positions } from "$lib/gamelogic/utils";
+	import type Grid from "$lib/gamelogic/grid";
+	import { base_path } from "$lib/stores/themestore";
 
 	export let enableKIM = false;
 	export let enableLSM = false;
@@ -95,7 +95,7 @@
 	});
 
 	$: if (initComponentsOnMount && mounted && $storage_loaded) {
-		console.info('Starting to load game logic...');
+		console.info("Starting to load game logic...");
 		initcomponents();
 	}
 </script>

@@ -1,8 +1,8 @@
 let tournament_endpoint_dev = true
-	? 'https://mp.oispahalla.com/api'
-	: 'https://0.0.0.0:9000/ohts/api';
-export let tournament_endpoint = false ? 'https://mp.oispahalla.com/api' : tournament_endpoint_dev;
-import { type Writable, writable, get } from 'svelte/store';
+	? "https://mp.oispahalla.com/api"
+	: "https://0.0.0.0:9000/ohts/api";
+export let tournament_endpoint = false ? "https://mp.oispahalla.com/api" : tournament_endpoint_dev;
+import { type Writable, writable, get } from "svelte/store";
 
 export class createResponse {
 	success: boolean;
@@ -19,13 +19,13 @@ export class createResponse {
 
 export let gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
 export let gamemode_0_names: { [key: number]: string } = {
-	32: 'SSn',
-	64: 'MSl',
-	128: 'CFr',
-	256: 'HTe',
-	512: 'MPa',
-	1024: 'EHy',
-	2048: 'LHa'
+	32: "SSn",
+	64: "MSl",
+	128: "CFr",
+	256: "HTe",
+	512: "MPa",
+	1024: "EHy",
+	2048: "LHa"
 };
 
 export enum createTournamentGamemode {
@@ -46,11 +46,11 @@ export async function createTournament(
 	token: string
 ): Promise<createResponse> {
 	let resp = await fetch(`${tournament_endpoint}/games`, {
-		method: 'POST',
-		mode: 'cors',
-		cache: 'no-cache',
+		method: "POST",
+		mode: "cors",
+		cache: "no-cache",
 		headers: {
-			'Content-Type': 'application/json'
+			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
 			create_name: name,
@@ -64,7 +64,7 @@ export async function createTournament(
 	});
 	if (resp.ok) {
 		let json = await resp.json();
-		console.log('tournament data:', json);
+		console.log("tournament data:", json);
 		return json as createResponse;
 	}
 	if (resp.status == 409) {
@@ -113,7 +113,7 @@ export async function getPublicTournaments() {
 	let resp = await fetch(`${tournament_endpoint}/games`);
 	if (resp.ok) {
 		let json = await resp.json();
-		console.log('public tournaments:', json);
+		console.log("public tournaments:", json);
 		return new publicTournamentsResponse(
 			true,
 			0,
@@ -127,11 +127,11 @@ export async function getPublicTournaments() {
 
 export async function checkNameValid(name: string) {
 	let resp = await fetch(`${tournament_endpoint}/create`, {
-		method: 'POST',
-		mode: 'cors',
-		cache: 'no-cache',
+		method: "POST",
+		mode: "cors",
+		cache: "no-cache",
 		headers: {
-			'Content-Type': 'application/json'
+			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
 			create_name: name
@@ -180,7 +180,7 @@ export async function getGameData(id: number) {
 
 export async function refreshGameData() {
 	let resp = await fetch(`${tournament_endpoint}/games/${get(joined_game_id)}`);
-	console.log('refreshGameData response:', resp);
+	console.log("refreshGameData response:", resp);
 	if (resp.ok) {
 		let json = await resp.json();
 		joined_game_data.set(json);
@@ -195,11 +195,11 @@ export async function poll() {
 	moves = moves.filter((i, idx) => poll_send_moves[idx - 1] !== i); // Remove adjacent duplicates, as they do not affect the game
 	poll_send_moves = [];
 	let resp = await fetch(`${tournament_endpoint}/poll/${get(joined_game_id)}`, {
-		method: 'POST',
-		mode: 'cors',
-		cache: 'no-cache',
+		method: "POST",
+		mode: "cors",
+		cache: "no-cache",
 		headers: {
-			'Content-Type': 'application/json'
+			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
 			user_id: get(joined_game_user_id),
@@ -220,18 +220,18 @@ export async function joinGame(
 	isHost = false,
 	hostPswd: string | null = null
 ) {
-	console.log('Trying to join game id', id, '...');
+	console.log("Trying to join game id", id, "...");
 	// TODO: Contact server
 	let resp = await fetch(`${tournament_endpoint}/games/${id}/join`, {
-		method: 'POST',
-		mode: 'cors',
-		cache: 'no-cache',
+		method: "POST",
+		mode: "cors",
+		cache: "no-cache",
 		headers: {
-			'Content-Type': 'application/json'
+			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
 			join_password: joinPswd,
-			moves: '[]'
+			moves: "[]"
 		})
 	});
 	if (resp.ok) {
@@ -241,7 +241,7 @@ export async function joinGame(
 		if (isHost && hostPswd) {
 			joined_game_host_pswds[id] = hostPswd;
 		} else {
-			if (Object.keys(joined_game_host_pswds).includes(id + '')) {
+			if (Object.keys(joined_game_host_pswds).includes(id + "")) {
 				isHost = true;
 			}
 		}
@@ -249,11 +249,11 @@ export async function joinGame(
 		await refreshGameData();
 	} else {
 		if (resp.status == 406) {
-			joined_game_error.set('Peli on täynnä');
+			joined_game_error.set("Peli on täynnä");
 		} else if (resp.status == 418) {
-			joined_game_error.set('Peli on jo käynnissä');
+			joined_game_error.set("Peli on jo käynnissä");
 		} else if (resp.status == 401) {
-			joined_game_error.set('Väärä salasana');
+			joined_game_error.set("Väärä salasana");
 		} else {
 			joined_game_error.set(resp.statusText);
 		}
@@ -262,15 +262,15 @@ export async function joinGame(
 }
 
 export async function leaveGame(informServer = true) {
-	console.log('Leaving the current game...');
+	console.log("Leaving the current game...");
 
 	if (informServer) {
 		let resp = await fetch(`${tournament_endpoint}/games/${get(joined_game_id)}/leave`, {
-			method: 'POST',
-			mode: 'cors',
-			cache: 'no-cache',
+			method: "POST",
+			mode: "cors",
+			cache: "no-cache",
 			headers: {
-				'Content-Type': 'application/json'
+				"Content-Type": "application/json"
 			},
 			body: JSON.stringify({
 				user_id: get(joined_game_user_id)
@@ -285,7 +285,7 @@ export async function leaveGame(informServer = true) {
 	joined_game_id.set(null);
 	joined_game_data.set(null);
 	joined_game_error.set(null);
-	localStorage.removeItem('mp_data');
+	localStorage.removeItem("mp_data");
 }
 
 class startResponse {
@@ -298,11 +298,11 @@ class startResponse {
 export async function host_startGame(): Promise<startResponse> {
 	let id = get(joined_game_id);
 	let resp = await fetch(`${tournament_endpoint}/games/${id}/start`, {
-		method: 'POST',
-		mode: 'cors',
-		cache: 'no-cache',
+		method: "POST",
+		mode: "cors",
+		cache: "no-cache",
 		headers: {
-			'Content-Type': 'application/json'
+			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
 			edit_key: joined_game_host_pswds[id]
@@ -312,7 +312,7 @@ export async function host_startGame(): Promise<startResponse> {
 		let json = await resp.json();
 		return json as startResponse;
 	}
-	return { success: false, tournament_id: id, status_code: -1, msg: 'Virhe tai jtn' }; // Fetch failed
+	return { success: false, tournament_id: id, status_code: -1, msg: "Virhe tai jtn" }; // Fetch failed
 }
 
 class deleteResponse {
@@ -322,11 +322,11 @@ class deleteResponse {
 export async function host_deleteGame(): Promise<deleteResponse> {
 	let id = get(joined_game_id);
 	let resp = await fetch(`${tournament_endpoint}/games/${id}/delete`, {
-		method: 'POST',
-		mode: 'cors',
-		cache: 'no-cache',
+		method: "POST",
+		mode: "cors",
+		cache: "no-cache",
 		headers: {
-			'Content-Type': 'application/json'
+			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
 			edit_key: joined_game_host_pswds[id]

@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { draw } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+	import { onMount } from "svelte";
+	import { draw } from "svelte/transition";
+	import { quintOut } from "svelte/easing";
 
 	export let d = null;
 	export let show_stroke = false;
-	export let stroke = 'none';
-	export let stroke_width = '0.5';
-	export let fill = 'var(--color)';
-	export let fill_opacity = '1.0';
+	export let stroke = "none";
+	export let stroke_width = "0.5";
+	export let fill = "var(--color)";
+	export let fill_opacity = "1.0";
 	export let animation_length = 1500;
-	export let viewBox = '0 0 24 24';
+	export let viewBox = "0 0 24 24";
 
 	export let text = null;
-	export let text_id = '';
+	export let text_id = "";
 </script>
 
 <main style="--duration:{animation_length / 10}ms;--s-width:{stroke_width}px">
@@ -32,7 +32,7 @@
 					{d}
 					fill="none"
 					{stroke}
-					stroke-width={stroke_width + 'px'}
+					stroke-width={stroke_width + "px"}
 				/>
 			{/if}
 		</svg>

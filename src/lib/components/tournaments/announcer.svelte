@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { slide, fade } from 'svelte/transition';
+	import { slide, fade } from "svelte/transition";
 
 	class announcement {
 		msg!: string;
@@ -8,7 +8,7 @@
 	let announcements: announcement[] = [];
 
 	export function announce(msg: string) {
-		console.info('ANNOUNCER announcing', msg);
+		console.info("ANNOUNCER announcing", msg);
 		announcements.push({
 			msg: msg,
 			time: new Date()

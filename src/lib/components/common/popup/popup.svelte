@@ -6,16 +6,16 @@
 
 <!-- / -->
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { open_popups } from '$lib/stores/popupstore';
-	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { browser } from "$app/environment";
+	import { open_popups } from "$lib/stores/popupstore";
+	import { onMount } from "svelte";
+	import { fade } from "svelte/transition";
 	export let open = false;
 
 	let input_enabled = true; // tän vois siirtää inputManageriin
 	$: if (mounted && window != null && open != null) {
 		(window as any).isLeaderboardOpen = open;
-		if (typeof GameManagerInstance !== 'undefined' && GameManagerInstance != null) {
+		if (typeof GameManagerInstance !== "undefined" && GameManagerInstance != null) {
 			if (open && input_enabled == true) {
 				GameManagerInstance.inputManager.removeKeydownHandler();
 				input_enabled = false;
