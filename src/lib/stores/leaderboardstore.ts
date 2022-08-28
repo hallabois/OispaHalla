@@ -1,5 +1,5 @@
 import { type Writable, writable, get } from 'svelte/store';
-import { browser, dev } from '$app/env';
+import { browser, dev } from '$app/environment';
 import { auth } from '$lib/Auth/authstore';
 
 import { setItem, getItem } from '$lib/stores/storage';

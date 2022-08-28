@@ -1,4 +1,4 @@
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import { tabID } from '$lib/session_manager';
 
 import { storage, getItem, setItem } from '$lib/stores/storage';

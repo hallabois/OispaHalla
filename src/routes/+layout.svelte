@@ -5,7 +5,7 @@
 	export let data: LayoutData;
 	$: ({ theme_override } = data);
 
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import '../app.scss';
 	import PopupScrolllock from '$lib/components/common/popup/popup_scrolllock.svelte';
 	import { theme_index } from '$lib/stores/themestore';

@@ -1,5 +1,5 @@
 import { type Writable, writable, get } from 'svelte/store';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import localforage from 'localforage';
 
 type KeyValueMap = { [key: string]: any };

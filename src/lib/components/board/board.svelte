@@ -98,7 +98,7 @@
 		mounted = true;
 	});
 
-	$: if (initComponentsOnMount && mounted && storage_loaded) {
+	$: if (initComponentsOnMount && mounted && $storage_loaded) {
 		initcomponents();
 	}
 </script>

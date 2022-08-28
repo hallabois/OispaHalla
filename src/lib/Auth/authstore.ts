@@ -1,5 +1,5 @@
 import { readable, writable, type Writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import type { Auth, User } from 'firebase/auth';
 import { generateActionCodeSettings } from './firebase_config';
 

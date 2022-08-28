@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import { auth } from '$lib/Auth/authstore';
 	$: if ($auth) {
 		// Redirect once signed in

@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import { storage, getItem, setItem } from './stores/storage';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 
 function getAllItems() {
 	return get(storage);

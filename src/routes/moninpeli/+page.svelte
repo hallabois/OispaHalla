@@ -18,7 +18,7 @@
 	import { hac_gamestate_to_grid } from '$lib/gamelogic/utils';
 	import KeyboardInputManager from '$lib/gamelogic/keyboard_input_manager';
 	import type Grid from '$lib/gamelogic/grid';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 
 	let app_name = 'Oispa Halla';
 	let app_description = 'Yhdistä opettajat ja saavuta **Halla!**';

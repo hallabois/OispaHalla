@@ -6,7 +6,7 @@
 	import { getItem } from '$lib/stores/storage';
 
 	const animate = (node, args) => (args.condition ? slide(node, args) : scale(node, args));
-	import { browser, dev } from '$app/env';
+	import { browser, dev } from '$app/environment';
 	class theme {
 		name!: string;
 		index!: number;

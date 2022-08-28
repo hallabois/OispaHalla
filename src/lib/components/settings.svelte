@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { dev } from '$app/env';
+	import { dev } from '$app/environment';
 	import { auth } from '$lib/Auth/authstore';
 
 	import Popup from './common/popup/popup.svelte';
