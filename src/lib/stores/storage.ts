@@ -35,7 +35,7 @@ async function update_storage_from_localstorage() {
 				delete localStorage[k];
 			}
 		}
-	} else if(localStorage.data != null) {
+	} else if(flag == null && localStorage.data != null) {
 		console.info('Migrating localstoragev2...');
 		storage.set(JSON.parse(localStorage.data));
 	} else {
