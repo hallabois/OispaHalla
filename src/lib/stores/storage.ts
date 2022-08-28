@@ -73,18 +73,16 @@ if (browser) {
 
 storage.subscribe(async (data) => {
 	if (browser) {
-		let backup = (await localforage.getItem("data")) || {};
 		try {
 			if (data) {
+				// console.log("Updating storage...");
 				for (let key of Object.keys(data)) {
 					await localforage.setItem(key, data[key]);
 				}
+				// console.log("Storage updated.");
 			}
 		} catch (e) {
 			console.warn("Couldn't update storage", e);
-			await localforage.setItem("data", {
-				backup
-			});
 		}
 	} else {
 		console.info("Skipping localstorage operations outside browser...");

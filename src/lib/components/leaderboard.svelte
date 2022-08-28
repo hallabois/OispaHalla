@@ -8,21 +8,20 @@
 		check_server_alive,
 		submit_score,
 		get_top_scores,
-		get_my_top_score,
-		Score_error,
 		my_top_scores,
 		my_top_submitted_scores,
 		my_top_score_histories,
-		get_score_placement,
-		fetchboard
+		fetchboard,
+type Score_response
 	} from "$lib/stores/leaderboardstore";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
 
 	export let GameManagerInstance: GameManager | null = null;
+	let enabled_sizes = [3, 4];
 	function submitUnsubmittedTopScores() {
 		if (GameManagerInstance != null) {
-			for (let s of [3, 4]) {
+			for (let s of enabled_sizes) {
 				let top_saved = $my_top_scores[s] || -1;
 				let top_submitted = $my_top_submitted_scores[s] || -1;
 				if (GameManagerInstance?.size == s && GameManagerInstance?.score >= top_saved) {
@@ -67,15 +66,25 @@
 			markAsSubmitted(starting_size);
 		}
 	}
+	let is_server_alive: Promise<boolean> | null = null;
+	let was_server_alive: boolean | null = null;
 	function submitUnsubmittedTopScoresIfAlive() {
-		check_server_alive().then((alive) => {
+		is_server_alive = check_server_alive();
+		is_server_alive.then((alive) => {
+			was_server_alive = alive;
 			if (alive) {
 				submitUnsubmittedTopScores();
 			}
 		});
 	}
-	$: if ($my_top_scores && $my_top_submitted_scores && open == true) {
+	$: if ($my_top_scores && $my_top_submitted_scores) {
 		submitUnsubmittedTopScoresIfAlive();
+	}
+	let fetchboard_results: {[key: number]: Promise<Score_response>} = {};
+	$: if(refreshKey != null && $token != null && was_server_alive) {
+		for(let s of enabled_sizes) {
+			fetchboard_results[s] = fetchboard(s, $token);
+		}
 	}
 
 	export let open = false;
@@ -100,6 +109,13 @@
 		}
 	}
 
+	function refresh(full = false) {
+		if(full) {
+			submitUnsubmittedTopScoresIfAlive();
+		}
+		refreshKey = {};
+	}
+
 	export let announcer: Announcer | null = null;
 	let refreshKey = {}; // Every {} is unique
 </script>
@@ -107,8 +123,8 @@
 <Popup bind:open>
 	<span slot="title">Leaderboards {size}x{size}</span>
 	<div slot="content" class="content">
-		{#key refreshKey}
-			{#await check_server_alive()}
+		{#if is_server_alive != null}
+			{#await is_server_alive}
 				<p>Otetaan yhteyttä palvelimeen...</p>
 			{:then alive}
 				{#if alive}
@@ -138,69 +154,81 @@
 							>
 						{/if}
 					{:else}
-						<div class="size-selection">
-							{#each [3, 4] as s}
-								<button
-									class="button action-btn"
-									on:click={() => {
-										size = s;
-									}}
-									disabled={size == s}>{s}</button
-								>
-							{/each}
-						</div>
-						<div style="height: 300px;overflow-y: scroll;">
-							<table>
-								<thead>
-									<tr>
-										<th>Sija</th>
-										<th>Pisteet</th>
-										<th>Nimi</th>
-									</tr>
-								</thead>
-								{#await get_top_scores(size, 10)}
-									<!-- skeleton -->
-									<tbody>
-										{#each new Array(10) as index}
-											<tr>
-												<td>...</td>
-												<td>.....</td>
-												<td>.......</td>
-											</tr>
-										{/each}
-									</tbody>
-								{:then top}
-									<tbody>
-										{#each top as entry, index}
-											<tr in:scale={{ delay: 100 * index }}>
-												<td>{index + 1}.</td>
-												<td>{entry.score}</td>
-												<td>{entry.user ? entry.user.screenName : "[Virheellinen nimi]"}</td>
-											</tr>
-										{/each}
-									</tbody>
-								{/await}
-							</table>
-						</div>
-						{#if $token != null}
-							{#await fetchboard(size, $token)}
-								<p>Ladataan tuloksiasi...</p>
-							{:then result}
-								{#if !result.success || !result.score}
-									<p>Et ole tallentanut yhtäkään tulosta sarjaan "{size}"</p>
-								{:else}
-									<div class="my-results">
-										<table>
-											<tr>
-												<td>{result.rank}.</td>
-												<td>{result.score.score}</td>
-												<td>{result.score.user.screenName}</td>
-											</tr>
-										</table>
-									</div>
+						{#key refreshKey}
+							<div class="size-selection">
+								{#each enabled_sizes as s}
+									<button
+										class="button action-btn"
+										on:click={() => {
+											size = s;
+										}}
+										disabled={size == s}>{s}</button
+									>
+								{/each}
+							</div>
+							<div style="height: 300px;overflow-y: scroll;">
+								<table>
+									<thead>
+										<tr>
+											<th>Sija</th>
+											<th>Pisteet</th>
+											<th>Nimi</th>
+										</tr>
+									</thead>
+									{#await get_top_scores(size, 10)}
+										<!-- skeleton -->
+										<tbody>
+											{#each new Array(10) as index}
+												<tr>
+													<td>...</td>
+													<td>.....</td>
+													<td>.......</td>
+												</tr>
+											{/each}
+										</tbody>
+									{:then top}
+										<tbody>
+											{#each top as entry, index}
+												<tr in:scale={{ delay: 100 * index }}>
+													<td>{index + 1}.</td>
+													<td>{entry.score}</td>
+													<td>{entry.user ? entry.user.screenName : "[Virheellinen nimi]"}</td>
+												</tr>
+											{/each}
+										</tbody>
+									{/await}
+								</table>
+							</div>
+							<div class="actionbar">
+								<a href="javascript:;" on:click={refresh}>
+									Päivitä
+								</a>
+								<a href="/leaderboards/{size}">
+									Näytä kaikki
+								</a>
+							</div>
+							{#if $token != null}
+								{#if fetchboard_results[size] != null}
+									{#await fetchboard_results[size]}
+										<p>Ladataan tuloksiasi...</p>
+									{:then result}
+										{#if !result.success || !result.score}
+											<p>Et ole tallentanut yhtäkään tulosta sarjaan "{size}"</p>
+										{:else}
+											<div class="my-results">
+												<table>
+													<tr>
+														<td>{result.rank}.</td>
+														<td>{result.score.score}</td>
+														<td>{result.score.user.screenName}</td>
+													</tr>
+												</table>
+											</div>
+										{/if}
+									{/await}
 								{/if}
-							{/await}
-						{/if}
+							{/if}
+						{/key}
 					{/if}
 					<div>
 						{#if $auth}
@@ -232,13 +260,13 @@
 					<p>Virhe otettaessa yhteyttä palvelimeen.</p>
 					<button
 						class="button action-btn"
-						on:click={() => {
-							refreshKey = {};
-						}}>Yritä uudelleen</button
+						on:click={refresh}>Yritä uudelleen</button
 					>
 				{/if}
 			{/await}
-		{/key}
+		{:else}
+			{refresh()}
+		{/if}
 	</div>
 </Popup>
 
@@ -250,6 +278,12 @@
 	}
 	.size-selection * {
 		flex: 1;
+	}
+	.actionbar {
+		display: flex;
+		gap: .5em;
+		flex-wrap: wrap;
+		justify-content: end;
 	}
 	table {
 		width: 100%;

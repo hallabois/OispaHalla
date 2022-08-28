@@ -47,7 +47,7 @@
 	let help_open = false;
 </script>
 
-<main>
+<main class="blurry-bg">
 	{#if browser}
 		{#if $auth === undefined}
 			<p>Tarkistetaan tietoja...</p>
@@ -177,18 +177,6 @@
 		gap: 0.5em;
 
 		min-height: 100vh;
-	}
-
-	main {
-		background-image: url("/img/ABC/blur_night.webp");
-	}
-
-	:global(.theme-1),
-	:global(.theme-5),
-	:global(.theme-16) {
-		main {
-			background-image: url("/img/ABC/blur.webp");
-		}
 	}
 
 	.error {

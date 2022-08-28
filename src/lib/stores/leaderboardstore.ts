@@ -2,7 +2,7 @@ import { type Writable, writable, get } from "svelte/store";
 import { browser, dev } from "$app/environment";
 import { auth } from "$lib/Auth/authstore";
 
-import { setItem, getItem } from "$lib/stores/storage";
+import { setItem, getItem, storage } from "$lib/stores/storage";
 
 let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
 let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
@@ -113,6 +113,9 @@ export class User {
 	_id!: string;
 	screenName!: string;
 }
+export class Score {
+
+}
 export class Score_ok {
 	success!: boolean;
 	_id!: string;
@@ -136,6 +139,13 @@ export async function fetchboard(size: number, token: string): Promise<Score_res
 		if (resp.ok) {
 			try {
 				const json_result = await resp.json();
+				if(json_result.score && json_result.score.size && json_result.score.score) {
+					let existing = getItem("bestScores") || {};
+					setItem("bestScores", {
+						...existing,
+						[json_result.score.size]: json_result.score.score
+					});
+				}
 				return {
 					...json_result,
 					success: true
@@ -224,7 +234,7 @@ export function get_local_top_scores(): Scores {
 	for (const size of [3, 4]) {
 		scores[size] = getItem(`HAC_best_score${size}`);
 	}
-	console.info(scores);
+	// console.info(scores);
 	return scores;
 }
 export function get_local_top_histories(): Histories {
@@ -232,7 +242,7 @@ export function get_local_top_histories(): Histories {
 	for (const size of [3, 4]) {
 		histories[size] = getItem(`HAC_best_history${size}`);
 	}
-	console.info(histories);
+	// console.info(histories);
 	return histories;
 }
 export function update_my_top_score() {

@@ -13,7 +13,6 @@ export let theme_index: Writable<number> = writable(defaultTheme);
 export let theme_loaded = false;
 theme_index.subscribe((themeID) => {
 	if (!get(storage_loaded)) {
-		console.info("Skipping set of theme to", themeID);
 		return; // Overwriting at this point would always cause the default theme to load
 	}
 	console.info("theme changed to", themeID);
@@ -46,6 +45,7 @@ export function get_base_path(): string {
 // Load theme from storage
 storage_loaded.subscribe(($storage_loaded) => {
 	if ($storage_loaded) {
+		console.info("Loading theme...");
 		if (getItem("imageTheme") != null) {
 			if (
 				getItem("imageThemeLastVersion") &&
@@ -58,5 +58,6 @@ storage_loaded.subscribe(($storage_loaded) => {
 		} else {
 			theme_index.set(defaultTheme);
 		}
+		console.info(`Loaded theme ${get(theme_index)}.`);
 	}
 });

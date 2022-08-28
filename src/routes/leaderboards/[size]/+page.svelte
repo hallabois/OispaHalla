@@ -27,7 +27,7 @@
 <style>
 	table {
 		width: 100%;
-		background-color: var(--background);
+		background-color: var(--container-background);
 
 		box-shadow: 0.25em 0.25em 0.1em var(--color);
 		border-radius: 0.25rem;

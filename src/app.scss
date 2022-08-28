@@ -1304,3 +1304,16 @@ $t: 0;
 	filter: saturate(0);
 }
 //
+
+.blurry-bg {
+	background-image: url("/img/ABC/blur_night.webp") !important;
+	background-size: cover !important;
+}
+
+.theme-1,
+.theme-5,
+.theme-16 {
+	.blurry-bg {
+		background-image: url("/img/ABC/blur.webp") !important;
+	}
+}

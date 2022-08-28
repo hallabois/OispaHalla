@@ -7,6 +7,7 @@
 
 	const animate = (node, args) => (args.condition ? slide(node, args) : scale(node, args));
 	import { browser, dev } from "$app/environment";
+	import { enable_custom_themes } from "../../../../features";
 	class theme {
 		name!: string;
 		index!: number;
@@ -153,7 +154,7 @@
 					?
 				</button>
 			{/if}
-			{#if menu_open}
+			{#if menu_open && enable_custom_themes}
 				<button
 					title="Lisää teema"
 					aria-label="Lisää teema"
