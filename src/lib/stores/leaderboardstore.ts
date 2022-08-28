@@ -113,9 +113,7 @@ export class User {
 	_id!: string;
 	screenName!: string;
 }
-export class Score {
-
-}
+export class Score {}
 export class Score_ok {
 	success!: boolean;
 	_id!: string;
@@ -139,7 +137,7 @@ export async function fetchboard(size: number, token: string): Promise<Score_res
 		if (resp.ok) {
 			try {
 				const json_result = await resp.json();
-				if(json_result.score && json_result.score.size && json_result.score.score) {
+				if (json_result.score && json_result.score.size && json_result.score.score) {
 					let existing = getItem("bestScores") || {};
 					setItem("bestScores", {
 						...existing,

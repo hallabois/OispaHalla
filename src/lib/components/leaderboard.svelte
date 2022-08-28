@@ -12,7 +12,7 @@
 		my_top_submitted_scores,
 		my_top_score_histories,
 		fetchboard,
-type Score_response
+		type Score_response
 	} from "$lib/stores/leaderboardstore";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
@@ -80,9 +80,9 @@ type Score_response
 	$: if ($my_top_scores && $my_top_submitted_scores) {
 		submitUnsubmittedTopScoresIfAlive();
 	}
-	let fetchboard_results: {[key: number]: Promise<Score_response>} = {};
-	$: if(refreshKey != null && $token != null && was_server_alive) {
-		for(let s of enabled_sizes) {
+	let fetchboard_results: { [key: number]: Promise<Score_response> } = {};
+	$: if (refreshKey != null && $token != null && was_server_alive) {
+		for (let s of enabled_sizes) {
 			fetchboard_results[s] = fetchboard(s, $token);
 		}
 	}
@@ -110,7 +110,7 @@ type Score_response
 	}
 
 	function refresh(full = false) {
-		if(full) {
+		if (full) {
 			submitUnsubmittedTopScoresIfAlive();
 		}
 		refreshKey = {};
@@ -200,12 +200,8 @@ type Score_response
 								</table>
 							</div>
 							<div class="actionbar">
-								<a href="javascript:;" on:click={refresh}>
-									Päivitä
-								</a>
-								<a href="/leaderboards/{size}">
-									Näytä kaikki
-								</a>
+								<a href="javascript:;" on:click={refresh}> Päivitä </a>
+								<a href="/leaderboards/{size}"> Näytä kaikki </a>
 							</div>
 							{#if $token != null}
 								{#if fetchboard_results[size] != null}
@@ -258,10 +254,7 @@ type Score_response
 					</div>
 				{:else}
 					<p>Virhe otettaessa yhteyttä palvelimeen.</p>
-					<button
-						class="button action-btn"
-						on:click={refresh}>Yritä uudelleen</button
-					>
+					<button class="button action-btn" on:click={refresh}>Yritä uudelleen</button>
 				{/if}
 			{/await}
 		{:else}
@@ -281,7 +274,7 @@ type Score_response
 	}
 	.actionbar {
 		display: flex;
-		gap: .5em;
+		gap: 0.5em;
 		flex-wrap: wrap;
 		justify-content: end;
 	}
