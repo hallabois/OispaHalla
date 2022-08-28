@@ -7,6 +7,7 @@ export async function load({ request, setHeaders, params }) {
 	let leaderboard_data = await get_all_scores(size);
 
 	return {
-		leaderboard_data
+		leaderboard_data,
+		size
 	};
 }

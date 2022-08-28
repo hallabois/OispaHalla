@@ -1,10 +1,14 @@
 <script lang="ts">
-	import type { PageData } from "../../../../.svelte-kit/types/src/routes/leaderboards./../../../.svelte-kit/types/src/routes/leaderboards/$types";
+	import Header from "../header.svelte";
+	import type { PageData } from "./$types";
 	export let data: PageData;
-	$: ({ leaderboard_data } = data);
+	$: ({ leaderboard_data, size } = data);
 	$: scores = leaderboard_data.scores.sort((a, b) => b.score - a.score);
 </script>
 
+<Header>
+	<h3 slot="size">{size}x{size}</h3>
+</Header>
 <table>
 	<tr>
 		<th>Sija</th>

@@ -21,6 +21,7 @@
 			<p>Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.</p>
 		</div>
 		<div class="section credits">
+			<p>Alkuperäiset teemat ovat tehneet Vinski Lång, Aarni </p>
 			<p>
 				Alkuperäisen projektin <a href="https://github.com/gabrielecirulli/2048" target="_blank"
 					>2048</a
