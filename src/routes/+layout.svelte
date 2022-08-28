@@ -10,7 +10,7 @@
 	import { theme_index } from '$lib/stores/themestore';
 	//export let theme_override: number | null;
 	if (theme_override != null) {
-		console.info("Found theme override", theme_override);
+		console.info('Found theme override', theme_override);
 		theme_index.set(theme_override);
 	}
 </script>

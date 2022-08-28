@@ -13,15 +13,15 @@ storage.set = (value: KeyValueMap) => {
 	});
 };
 export let storage_loaded: Writable<boolean> = writable(false);
-export let storage_status: Writable<string|null> = writable(null);
+export let storage_status: Writable<string | null> = writable(null);
 async function update_storage_from_localstorage() {
 	storage_loaded.set(false);
-	storage_status.set("Tarkistetaan tallennustilaa...");
-	console.log("Loading storage...");
-	let flag = await localforage.getItem("__updated_ms");
+	storage_status.set('Tarkistetaan tallennustilaa...');
+	console.log('Loading storage...');
+	let flag = await localforage.getItem('__updated_ms');
 	if (flag == null && localStorage.data == null) {
 		console.info('Migrating localstorage...');
-		storage_status.set("Muutetaan tallennustilaa uuteen muotoon...");
+		storage_status.set('Muutetaan tallennustilaa uuteen muotoon...');
 		let data: KeyValueMap = {};
 		for (let k of Object.keys(localStorage)) {
 			let oregano = localStorage[k];
@@ -39,16 +39,16 @@ async function update_storage_from_localstorage() {
 				delete localStorage[k];
 			}
 		}
-	} else if(localStorage.data != null) {
+	} else if (localStorage.data != null) {
 		console.info('Migrating localstoragev2...');
-		storage_status.set("Muutetaan tallennustilaa uuteen muotoon (2)...");
+		storage_status.set('Muutetaan tallennustilaa uuteen muotoon (2)...');
 		storage.set(JSON.parse(localStorage.data));
 		localStorage.backup = localStorage.data;
 		delete localStorage.data;
 	} else {
-		storage_status.set("Ladataan tallennustilaa...");
+		storage_status.set('Ladataan tallennustilaa...');
 		let composite = {};
-		await localforage.iterate(function(value, key, _iterationNumber) {
+		await localforage.iterate(function (value, key, _iterationNumber) {
 			composite = {
 				...composite,
 				[key]: value
@@ -59,13 +59,13 @@ async function update_storage_from_localstorage() {
 			...composite
 		});
 	}
-	console.log("Storage loaded.");
+	console.log('Storage loaded.');
 	storage_loaded.set(true);
 	storage_status.set(null);
 }
 
 if (browser) {
-	update_storage_from_localstorage().then(()=>{});
+	update_storage_from_localstorage().then(() => {});
 	/* window.addEventListener('storage', function(event){
         update_storage_from_localstorage();
     }, false); */
@@ -73,17 +73,16 @@ if (browser) {
 
 storage.subscribe(async (data) => {
 	if (browser) {
-		let backup = (await localforage.getItem("data") || {});
+		let backup = (await localforage.getItem('data')) || {};
 		try {
 			if (data) {
 				for (let key of Object.keys(data)) {
 					await localforage.setItem(key, data[key]);
 				}
-				
 			}
 		} catch (e) {
 			console.warn("Couldn't update storage", e);
-			await localforage.setItem("data", {
+			await localforage.setItem('data', {
 				backup
 			});
 		}

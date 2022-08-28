@@ -36,7 +36,7 @@ lb_screenName.subscribe((value) => {
 });
 auth.subscribe(() => {
 	ensure_screenname();
-})
+});
 
 export async function check_server_alive() {
 	try {

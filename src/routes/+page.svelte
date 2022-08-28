@@ -76,14 +76,14 @@
 		mounted = true;
 	});
 
-	$: if(mounted && $storage_loaded) {
-		console.info("Starting to load game logic...");
+	$: if (mounted && $storage_loaded) {
+		console.info('Starting to load game logic...');
 		// inputManager = new KeyboardInputManager(inputRoot);
 		// inputManager.on("move", move);
 		BoardInstance.setDocumentRoot(inputRoot);
 		BoardInstance.initcomponents();
 		GameManagerInstance = BoardInstance.getGameManagerInstance();
-		console.info("Game logic loaded.");
+		console.info('Game logic loaded.');
 	}
 
 	let enableKIM = true;
