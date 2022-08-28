@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { type Writable, writable, get } from 'svelte/store';
 
-import { setItem, getItem } from '$lib/stores/storage';
+import { setItem, getItem, storage_loaded, storage } from '$lib/stores/storage';
 
 export let defaultTheme = 5;
 export function setDefaultTheme(theme: number) {
@@ -12,6 +12,11 @@ export let currentImageThemeVersion = 6;
 export let theme_index: Writable<number> = writable(defaultTheme);
 export let theme_loaded = false;
 theme_index.subscribe((themeID) => {
+	if(!get(storage_loaded)) {
+		console.info("Skipping set of theme to", themeID);
+		return; // Overwriting at this point would always cause the default theme to load
+	}
+	console.info("theme changed to", themeID);
 	// Save choice to localstorage
 	try {
 		if (theme_loaded) {
@@ -39,17 +44,20 @@ export function get_base_path(): string {
 }
 
 // Load theme from storage
-if (browser) {
-	if (getItem('imageTheme') != null) {
-		if (
-			getItem('imageThemeLastVersion') &&
-			getItem('imageThemeLastVersion') == currentImageThemeVersion
-		) {
-			theme_index.set(+getItem('imageTheme'));
+storage_loaded.subscribe(($storage_loaded) => {
+	if ($storage_loaded) {
+		console.info("readtheme", getItem('imageTheme'), get(storage));
+		if (getItem('imageTheme') != null) {
+			if (
+				getItem('imageThemeLastVersion') &&
+				getItem('imageThemeLastVersion') == currentImageThemeVersion
+			) {
+				theme_index.set(+getItem('imageTheme'));
+			} else {
+				theme_index.set(defaultTheme);
+			}
 		} else {
 			theme_index.set(defaultTheme);
 		}
-	} else {
-		theme_index.set(defaultTheme);
 	}
-}
+});

@@ -7,8 +7,6 @@ type KeyValueMap = { [key: string]: any };
 export let storage: Writable<KeyValueMap> = writable({});
 let _superset = storage.set;
 storage.set = (value: KeyValueMap) => {
-	let existing = get(storage);
-
 	_superset({
 		...value,
 		__updated_ms: new Date().getTime()
@@ -19,6 +17,7 @@ export let storage_status: Writable<string|null> = writable(null);
 async function update_storage_from_localstorage() {
 	storage_loaded.set(false);
 	storage_status.set("Tarkistetaan tallennustilaa...");
+	console.log("Loading storage...");
 	let flag = await localforage.getItem("__updated_ms");
 	if (flag == null && localStorage.data == null) {
 		console.info('Migrating localstorage...');
@@ -48,13 +47,19 @@ async function update_storage_from_localstorage() {
 		delete localStorage.data;
 	} else {
 		storage_status.set("Ladataan tallennustilaa...");
-		localforage.iterate(function(value, key, _iterationNumber) {
-			storage.set({
-				...get(storage),
+		let composite = {};
+		await localforage.iterate(function(value, key, _iterationNumber) {
+			composite = {
+				...composite,
 				[key]: value
-			});
+			};
+		});
+		storage.set({
+			...get(storage),
+			...composite
 		});
 	}
+	console.log("Storage loaded.");
 	storage_loaded.set(true);
 	storage_status.set(null);
 }

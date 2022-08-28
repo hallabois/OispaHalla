@@ -3,7 +3,7 @@
 	import { slide, scale } from 'svelte/transition';
 	import { theme_index, base_path } from '$lib/stores/themestore';
 
-	import { getItem } from '$lib/stores/storage';
+	import { getItem, storage_loaded } from '$lib/stores/storage';
 
 	const animate = (node, args) => (args.condition ? slide(node, args) : scale(node, args));
 	import { browser, dev } from '$app/environment';
@@ -60,6 +60,7 @@
 	}
 	$: if (
 		browser &&
+		$storage_loaded &&
 		(getItem('hasWon') ||
 			(getItem('bestScore') != null && +getItem('bestScore') && +getItem('bestScore') > 10000)) &&
 		!available_themes.includes(classic)
@@ -115,7 +116,7 @@
 <main class:relative class:expandX class:expandY>
 	{#if browser}
 		<!-- svelte-ignore missing-declaration -->
-		{#if $theme_index != null}
+		{#if $theme_index != null && $storage_loaded}
 			{#each available_themes as theme, index}
 				<!-- svelte-ignore missing-declaration -->
 				{#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1) || menu_open}
