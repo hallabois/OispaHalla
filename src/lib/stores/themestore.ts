@@ -46,7 +46,6 @@ export function get_base_path(): string {
 // Load theme from storage
 storage_loaded.subscribe(($storage_loaded) => {
 	if ($storage_loaded) {
-		console.info("readtheme", getItem("imageTheme"), get(storage));
 		if (getItem("imageTheme") != null) {
 			if (
 				getItem("imageThemeLastVersion") &&

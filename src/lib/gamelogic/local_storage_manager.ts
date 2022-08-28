@@ -83,7 +83,6 @@ export default class LocalStorageManager {
 			return;
 		}
 		let state = getItem(this.gameStateKey);
-		console.log("state", state);
 		return state;
 	}
 	setGameState(gameState: any) {
