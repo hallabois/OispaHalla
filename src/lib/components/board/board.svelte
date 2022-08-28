@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { storage_status, storage_loaded } from '$lib/stores/storage';
 	import Board from './template.svelte';
 
 	import GameManager from '$lib/gamelogic/game_manager';
@@ -92,14 +93,17 @@
 		unique = {}; // Each {} is unique
 	}
 
+	let mounted = false;
 	onMount(() => {
-		if (initComponentsOnMount) {
-			initcomponents();
-		}
+		mounted = true;
 	});
+
+	$: if (initComponentsOnMount && mounted && storage_loaded) {
+		initcomponents();
+	}
 </script>
 
-<main bind:this={board}>
+<main bind:this={board} title={$storage_status}>
 	{#key unique}
 		<Board />
 	{/key}

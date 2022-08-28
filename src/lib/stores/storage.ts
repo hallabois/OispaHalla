@@ -56,6 +56,7 @@ async function update_storage_from_localstorage() {
 		});
 	}
 	storage_loaded.set(true);
+	storage_status.set(null);
 }
 
 if (browser) {
