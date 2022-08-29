@@ -22,7 +22,7 @@
 	$: if (launch && date) {
 		timeToLaunch = new Date(launch - date.getTime()).getTime();
 	}
-	$: launched = timeToLaunch < 0 || !enable_countdown;
+	$: launched = date.getTime() >= launch || !enable_countdown;
 	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");
 
 	$: if (browser) console.log("Time to launch:", timeToLaunch);
@@ -31,9 +31,6 @@
 		if (!launched) {
 			date = new Date();
 		} else {
-			if (browser && enable_countdown) {
-				location.reload(true);
-			}
 		}
 	}, 1000);
 </script>

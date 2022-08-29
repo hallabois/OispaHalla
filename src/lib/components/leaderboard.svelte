@@ -149,7 +149,8 @@
 								submitting = false;
 							}}
 							class="button"
-							style="width: 100%;font-weight: normal !important;padding: 0.75em;">Älä Tallenna Vielä</button
+							style="width: 100%;font-weight: normal !important;padding: 0.75em;"
+							>Älä Tallenna Vielä</button
 						>
 					{:else}
 						{#key refreshKey}
