@@ -133,13 +133,6 @@
 								class="button action-btn"
 								style="width: 100%;">{submit_in_progress ? "Tallennetaan..." : "Tallenna"}</button
 							>
-							<button
-								on:click={() => {
-									submitting = false;
-								}}
-								class="button"
-								style="width: 100%;font-weight: normal !important;">Älä Tallenna Vielä</button
-							>
 							{#if dev}
 								<button
 									on:click={() => {
@@ -151,6 +144,13 @@
 								>
 							{/if}
 						{/if}
+						<button
+							on:click={() => {
+								submitting = false;
+							}}
+							class="button"
+							style="width: 100%;font-weight: normal !important;padding: 0.75em;">Älä Tallenna Vielä</button
+						>
 					{:else}
 						{#key refreshKey}
 							<div class="size-selection">
