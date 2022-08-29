@@ -76,7 +76,7 @@
 		mounted = true;
 	});
 
-	$: if (mounted && $storage_loaded) {
+	$: if (mounted && $storage_loaded && timeToLaunch < 0) {
 		console.info("Starting to load game logic...");
 		// inputManager = new KeyboardInputManager(inputRoot);
 		// inputManager.on("move", move);
