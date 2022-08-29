@@ -16,6 +16,7 @@
 	} from "$lib/stores/leaderboardstore";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
+	import { dev } from "$app/environment";
 
 	export let GameManagerInstance: GameManager | null = null;
 	let enabled_sizes = [3, 4];
@@ -147,14 +148,16 @@
 								class="button"
 								style="width: 100%;font-weight: normal !important;">Älä Tallenna Vielä</button
 							>
-							<button
-								on:click={() => {
-									markAsSubmitted(size);
-								}}
-								class="button"
-								style="width: 100%;font-weight: normal !important;"
-								>Merkitse tallennetuksi (indev)</button
-							>
+							{#if dev}
+								<button
+									on:click={() => {
+										markAsSubmitted(size);
+									}}
+									class="button"
+									style="width: 100%;font-weight: normal !important;"
+									>Merkitse tallennetuksi (indev)</button
+								>
+							{/if}
 						{/if}
 					{:else}
 						{#key refreshKey}
