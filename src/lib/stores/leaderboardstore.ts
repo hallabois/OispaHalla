@@ -225,6 +225,20 @@ export async function submit_score(
 	}
 }
 
+export async function check_name(name: string, uid: string): Promise<boolean> {
+	try {
+		const resp = await fetch(`${leaderboard_endpoint}/meta/verifyname/${name}/uid/${uid}`);
+		if (resp.ok) {
+			return true;
+		} else {
+			return false;
+		}
+	} catch (e) {
+		console.warn(e);
+		return false;
+	}
+}
+
 export type Scores = { [key: number]: number };
 export type Histories = { [key: number]: any[] };
 export function get_local_top_scores(): Scores {

@@ -2,6 +2,7 @@
 	import { auth, token } from "$lib/Auth/authstore";
 
 	import Popup from "./common/popup/popup.svelte";
+	import NameChanger from "./leaderboard/nameChanger.svelte";
 	import type Announcer from "./tournaments/announcer.svelte";
 	import {
 		lb_screenName,
@@ -100,17 +101,7 @@
 	}
 
 	function editScreenName() {
-		let new_name = prompt("Uusi nimimerkki", $lb_screenName || undefined);
-		if (new_name && new_name != $lb_screenName) {
-			lb_screenName.set(new_name);
-			if (announcer) {
-				announcer.announce("Nimimerkki muuttuu seuraavan tallennuksen yhteydessä."); // Muuttuu seuraavan tallennuksen yhteydessä
-			}
-		} else {
-			if (announcer) {
-				announcer.announce("Nimimerkki ei muuttunut");
-			}
-		}
+		NameChangerInstance.show();
 	}
 
 	function refresh(full = false) {
@@ -121,6 +112,7 @@
 	}
 
 	export let announcer: Announcer | null = null;
+	let NameChangerInstance: NameChanger;
 	let refreshKey = {}; // Every {} is unique
 </script>
 
@@ -268,6 +260,7 @@
 		{/if}
 	</div>
 </Popup>
+<NameChanger bind:this={NameChangerInstance} {announcer} />
 
 <style>
 	.size-selection {
