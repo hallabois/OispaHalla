@@ -116,17 +116,21 @@
 	let date = new Date();
 	let launch = new Date(2022, 8, 29, 13, 33, 0, 0).getTime();
 	let timeToLaunch = 1;
-	$: if(launch && date) {
+	$: if (launch && date) {
 		timeToLaunch = new Date(launch - date.getTime()).getTime();
 	}
 	$: launched = timeToLaunch < 0 || !enable_countdown;
-	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");;
-	
-	$: if(browser) console.log("Time to launch:", timeToLaunch);
-	
+	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");
+
+	$: if (browser) console.log("Time to launch:", timeToLaunch);
+
 	setInterval(() => {
 		if (!launched) {
 			date = new Date();
+		} else {
+			if (browser && enable_countdown) {
+				location.reload(true);
+			}
 		}
 	}, 1000);
 </script>
