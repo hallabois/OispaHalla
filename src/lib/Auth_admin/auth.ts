@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
 
-let config = process.env.OH_FIREBASE_ADMIN_CONFIG;
+import { env } from '$env/dynamic/private';
+
+let config = env.OH_FIREBASE_ADMIN_CONFIG;
 if (!config) {
 	throw new Error("Env variable OH_FIREBASE_ADMIN_CONFIG missing!");
 }
