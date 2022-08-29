@@ -31,6 +31,7 @@
 		if (!launched) {
 			date = new Date();
 		} else {
+			
 		}
 	}, 1000);
 </script>
