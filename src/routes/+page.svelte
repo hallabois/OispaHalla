@@ -2,7 +2,7 @@
 	import { marked } from "marked";
 	import { onMount } from "svelte";
 
-	import { enable_multiplayer, enable_leaderboards } from "../features";
+	import { enable_multiplayer, enable_leaderboards, enable_countdown } from "../features";
 	import { storage_loaded } from "$lib/stores/storage";
 
 	import Preloader from "$lib/components/common/image-preloader/Preloader.svelte";
@@ -24,7 +24,7 @@
 		settingsIconData
 	} from "$lib/components/common/icon/iconData";
 	import { base_path } from "$lib/stores/themestore";
-	import { dev } from "$app/environment";
+	import { browser, dev } from "$app/environment";
 
 	let app_name = "";
 	let app_description = "";
@@ -114,11 +114,16 @@
 		GameManagerInstance.paritaKuli();
 	}
 	let date = new Date();
-	let launch = new Date(2022, 8, 29, 13, 33, 0, 0);
-	$: timeToLaunch = launch - date;
-	$: launched = timeToLaunch < 0 || dev;
-	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");
-
+	let launch = new Date(2022, 8, 29, 13, 33, 0, 0).getTime();
+	let timeToLaunch = 1;
+	$: if(launch && date) {
+		timeToLaunch = new Date(launch - date.getTime()).getTime();
+	}
+	$: launched = timeToLaunch < 0 || !enable_countdown;
+	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");;
+	
+	$: if(browser) console.log("Time to launch:", timeToLaunch);
+	
 	setInterval(() => {
 		if (!launched) {
 			date = new Date();
