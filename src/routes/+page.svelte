@@ -78,7 +78,7 @@
 	});
 
 	let load_started = false;
-	$: if (mounted && $storage_loaded && launched && !load_started) {
+	$: if (mounted && $storage_loaded && !load_started) {
 		load_started = true;
 		console.info("Starting to load game logic...");
 		// inputManager = new KeyboardInputManager(inputRoot);
@@ -113,167 +113,139 @@
 		let GameManagerInstance = BoardInstance.getGameManagerInstance();
 		GameManagerInstance.paritaKuli();
 	}
-	let date = new Date();
-	let launch = new Date(2022, 8, 29, 13, 33, 0, 0).getTime();
-	let timeToLaunch = 1;
-	$: if (launch && date) {
-		timeToLaunch = new Date(launch - date.getTime()).getTime();
-	}
-	$: launched = timeToLaunch < 0 || !enable_countdown;
-	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");
-
-	$: if (browser) console.log("Time to launch:", timeToLaunch);
-
-	setInterval(() => {
-		if (!launched) {
-			date = new Date();
-		} else {
-			if (browser && enable_countdown) {
-				location.reload(true);
-			}
-		}
-	}, 1000);
 </script>
 
 <Preloader />
 
-{#if !launched}
-	<div class="countdown-div">
-		<h1 class="title" style="color:#e6d2bf">OispaHalla</h1>
-		<span class="countdown">{dateToLaunch}</span>
-	</div>
-{:else}
-	<div class="container">
-		<Announcer bind:this={AnnouncerInstance} />
-		<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
-		<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
-		<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
-		<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
-		<div class="new-above-game">
-			<div class="above-game-left">
-				<a href="https://hallabois.github.io/invite/" target="_blank">
-					<h1 class="title">{app_name}</h1>
-				</a>
-				{@html marked.parse(app_description)}
-			</div>
-			<div class="above-game-right">
-				<div class="score-container" style="--c:'{app_name_score}'">0</div>
-				<div class="best-container" style="--c:'{app_name_hiscore}'">0</div>
-				<div
-					class="restart-button button"
-					bind:this={restartbtn}
-					on:click={() => {
-						if (!restartbtn.classList.contains("open")) {
-							restartbtn.classList.add("open");
-						} else {
-							restartbtn.classList.remove("open");
-						}
-					}}
-				>
-					<div class="uusi-jakso">{app_name_newgame}</div>
-					<div class="size-selector">
-						<button>&lt;</button>
-						<button
-							on:click={() => {
-								restartGame(3);
-							}}
-							class="restart-3x3">3x3</button
-						>
-						<button
-							on:click={() => {
-								restartGame(4);
-							}}
-							class="restart-4x4">4x4</button
-						>
-					</div>
-				</div>
-			</div>
+<div class="container">
+	<Announcer bind:this={AnnouncerInstance} />
+	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
+	<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
+	<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
+	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
+	<div class="new-above-game">
+		<div class="above-game-left">
+			<a href="https://hallabois.github.io/invite/" target="_blank">
+				<h1 class="title">{app_name}</h1>
+			</a>
+			{@html marked.parse(app_description)}
 		</div>
-		<div class="board-container">
-			<Board
-				{enableKIM}
-				enableLSM={true}
-				enableRng={true}
-				documentRoot={inputRoot}
-				initComponentsOnMount={false}
-				bind:this={BoardInstance}
-			/>
-			<div class="underbar-container">
-				<div class="button-container" style="margin-top: 0;flex: 1;justify-content: start;">
-					<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
-					<button
-						class="button background-none color-button icon-button"
-						on:click={() => {
-							SettingsInstance.show();
-						}}
-						title="Asetukset"
-					>
-						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
-					</button>
-					<button
-						class="button background-none color-button icon-button"
-						on:click={() => {
-							InfoInstance.show();
-						}}
-						title="Info"
-					>
-						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
-					</button>
-				</div>
-				<div class="kurin-palautus-container" style="flex: 1;">
-					<button class="button kurin-palautus kurin-palautus-color" on:click={paritaKuli}>
-						<span
-							class="parin-kulautus"
-							title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
-							>KURINPALAUTUS</span
-						>
-					</button>
-				</div>
-				<div class="button-container" style="margin-top: 0;flex: 1;justify-content: end;">
-					{#if enable_multiplayer}
-						<button
-							class="button background-none color-button"
-							on:click={() => {
-								TtInstance.show();
-							}}
-							title="Moninpeli"
-						>
-							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={multiplayerIconData} />
-						</button>
-					{/if}
-					{#if enable_leaderboards}
-						<button
-							on:click={() => {
-								lbInstance.show();
-							}}
-							id="lb-button"
-							class="color-button button background-none icon-button"
-							title="Leaderboards"
-							style="display: flex;"
-						>
-							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
-							<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
-						</button>
-					{/if}
-				</div>
-			</div>
-		</div>
-		<div
-			class="pwa-container"
-			style="width: 100%;z-index: 500;display: flex;justify-content: center;margin-top: 30px;margin-bottom: -50px;"
-		>
-			<button
-				class="pwa-add-button"
-				style="display: none;border: none;margin: .5em;cursor: pointer;">Asenna sovelluksena</button
+		<div class="above-game-right">
+			<div class="score-container" style="--c:'{app_name_score}'">0</div>
+			<div class="best-container" style="--c:'{app_name_hiscore}'">0</div>
+			<div
+				class="restart-button button"
+				bind:this={restartbtn}
+				on:click={() => {
+					if (!restartbtn.classList.contains("open")) {
+						restartbtn.classList.add("open");
+					} else {
+						restartbtn.classList.remove("open");
+					}
+				}}
 			>
-		</div>
-		<div class="disclaimer">
-			<p>
-				{@html marked.parse(app_notice)}
-			</p>
+				<div class="uusi-jakso">{app_name_newgame}</div>
+				<div class="size-selector">
+					<button>&lt;</button>
+					<button
+						on:click={() => {
+							restartGame(3);
+						}}
+						class="restart-3x3">3x3</button
+					>
+					<button
+						on:click={() => {
+							restartGame(4);
+						}}
+						class="restart-4x4">4x4</button
+					>
+				</div>
+			</div>
 		</div>
 	</div>
-{/if}
+	<div class="board-container">
+		<Board
+			{enableKIM}
+			enableLSM={true}
+			enableRng={true}
+			documentRoot={inputRoot}
+			initComponentsOnMount={false}
+			bind:this={BoardInstance}
+		/>
+		<div class="underbar-container">
+			<div class="button-container" style="margin-top: 0;flex: 1;justify-content: start;">
+				<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
+				<button
+					class="button background-none color-button icon-button"
+					on:click={() => {
+						SettingsInstance.show();
+					}}
+					title="Asetukset"
+				>
+					<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
+				</button>
+				<button
+					class="button background-none color-button icon-button"
+					on:click={() => {
+						InfoInstance.show();
+					}}
+					title="Info"
+				>
+					<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
+				</button>
+			</div>
+			<div class="kurin-palautus-container" style="flex: 1;">
+				<button class="button kurin-palautus kurin-palautus-color" on:click={paritaKuli}>
+					<span
+						class="parin-kulautus"
+						title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
+						>KURINPALAUTUS</span
+					>
+				</button>
+			</div>
+			<div class="button-container" style="margin-top: 0;flex: 1;justify-content: end;">
+				{#if enable_multiplayer}
+					<button
+						class="button background-none color-button"
+						on:click={() => {
+							TtInstance.show();
+						}}
+						title="Moninpeli"
+					>
+						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={multiplayerIconData} />
+					</button>
+				{/if}
+				{#if enable_leaderboards}
+					<button
+						on:click={() => {
+							lbInstance.show();
+						}}
+						id="lb-button"
+						class="color-button button background-none icon-button"
+						title="Leaderboards"
+						style="display: flex;"
+					>
+						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
+						<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
+					</button>
+				{/if}
+			</div>
+		</div>
+	</div>
+	<div
+		class="pwa-container"
+		style="width: 100%;z-index: 500;display: flex;justify-content: center;margin-top: 30px;margin-bottom: -50px;"
+	>
+		<button class="pwa-add-button" style="display: none;border: none;margin: .5em;cursor: pointer;"
+			>Asenna sovelluksena</button
+		>
+	</div>
+	<div class="disclaimer">
+		<p>
+			{@html marked.parse(app_notice)}
+		</p>
+	</div>
+</div>
 <div class="patches">
 	<!-- <script src="/js/application.js"></script>
     <script src="/js/HAC.js"></script> -->
