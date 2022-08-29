@@ -46,6 +46,8 @@
 		status = checking_name ? "Tarkistetaan..." : name_valid ? "Nimi OK" : "Virheellinen nimi";
 	}
 
+    $: name_in_progress = name_in_progress?.trim();
+
 	export let announcer: Announcer | null = null;
 </script>
 
