@@ -141,7 +141,12 @@ export async function fetchboard(size: number, token: string): Promise<Score_res
 					let existing = getItem("bestScores") || {};
 					setItem("bestScores", {
 						...existing,
-						[json_result.score.size]: json_result.score.score
+						[json_result.score.size]: Math.max(json_result.score.score, existing[json_result.score.size] || 0)
+					});
+					let existing_submitted = getItem("lb_submitted") || {};
+					setItem("lb_submitted", {
+						...existing_submitted,
+						[json_result.score.size]: Math.max(json_result.score.score, existing_submitted[json_result.score.size] || 0)
 					});
 				}
 				return {
