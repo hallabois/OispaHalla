@@ -55,7 +55,7 @@
 	<span slot="title">Muuta nimimerkkiä</span>
 	<div slot="content" class="content">
 		{#if $auth && $auth.uid}
-			<input bind:value={name_in_progress} />
+			<input bind:value={name_in_progress} autofocus />
 			<p>{status || ""}</p>
 			<button disabled={checking_name || !name_valid} class="button action-btn" on:click={save}
 				>Tallenna</button
