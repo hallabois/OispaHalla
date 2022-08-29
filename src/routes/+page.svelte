@@ -113,7 +113,10 @@
 	let date = new Date();
 	let launch = new Date(2022, 8, 29, 13, 33, 0, 0);
 	$: timeToLaunch = launch - date;
-	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString().replaceAll(".", ":");
+	$: dateToLaunch = new Date(timeToLaunch)
+		.toLocaleTimeString()
+		.replaceAll(".", ":")
+		.replaceAll("AM", "");
 
 	setInterval(() => {
 		date = new Date();
