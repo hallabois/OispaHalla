@@ -68,7 +68,10 @@
 	}
 	let is_server_alive: Promise<boolean> | null = null;
 	let was_server_alive: boolean | null = null;
-	function submitUnsubmittedTopScoresIfAlive() {
+	function submitUnsubmittedTopScoresIfAlive(force = false) {
+		if (is_server_alive != null && !force) {
+			return;
+		}
 		is_server_alive = check_server_alive();
 		is_server_alive.then((alive) => {
 			was_server_alive = alive;
@@ -111,7 +114,7 @@
 
 	function refresh(full = false) {
 		if (full) {
-			submitUnsubmittedTopScoresIfAlive();
+			submitUnsubmittedTopScoresIfAlive(true);
 		}
 		refreshKey = {};
 	}

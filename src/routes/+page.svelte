@@ -24,6 +24,7 @@
 		settingsIconData
 	} from "$lib/components/common/icon/iconData";
 	import { base_path } from "$lib/stores/themestore";
+	import { dev } from "$app/environment";
 
 	let app_name = "";
 	let app_description = "";
@@ -76,7 +77,9 @@
 		mounted = true;
 	});
 
-	$: if (mounted && $storage_loaded && timeToLaunch < 0) {
+	let load_started = false;
+	$: if (mounted && $storage_loaded && launched && !load_started) {
+		load_started = true;
 		console.info("Starting to load game logic...");
 		// inputManager = new KeyboardInputManager(inputRoot);
 		// inputManager.on("move", move);
@@ -113,22 +116,25 @@
 	let date = new Date();
 	let launch = new Date(2022, 8, 29, 13, 33, 0, 0);
 	$: timeToLaunch = launch - date;
+	$: launched = timeToLaunch < 0 || dev;
 	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");
 
 	setInterval(() => {
-		date = new Date();
+		if (!launched) {
+			date = new Date();
+		}
 	}, 1000);
 </script>
 
 <Preloader />
 
-{#if timeToLaunch >= 0}
+{#if !launched}
 	<div class="countdown-div">
 		<h1 class="title" style="color:#e6d2bf">OispaHalla</h1>
 		<span class="countdown">{dateToLaunch}</span>
 	</div>
 {:else}
-	<div class="container" style={timeToLaunch <= 0 ? "" : "visibility:hidden"}>
+	<div class="container">
 		<Announcer bind:this={AnnouncerInstance} />
 		<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
 		<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
