@@ -110,11 +110,25 @@
 		let GameManagerInstance = BoardInstance.getGameManagerInstance();
 		GameManagerInstance.paritaKuli();
 	}
+	let date = new Date();
+	let launch = new Date(2022, 8, 29, 13, 33, 0, 0);
+	$: timeToLaunch = launch - date;
+	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString().replaceAll(".", ":");
+
+	setInterval(() => {
+		date = new Date();
+	}, 1000);
 </script>
 
 <Preloader />
 
-<div class="container">
+<div style={timeToLaunch >= 0 ? "" : "visibility:hidden"}>
+	<div class="countdown-div">
+		<h1 class="title" style="color:#e6d2bf">OispaHalla</h1>
+		<span class="countdown">{dateToLaunch}</span>
+	</div>
+</div>
+<div class="container" style={timeToLaunch <= 0 ? "" : "visibility:hidden"}>
 	<Announcer bind:this={AnnouncerInstance} />
 	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
 	<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />

@@ -3,7 +3,7 @@ import { type Writable, writable, get } from "svelte/store";
 
 import { setItem, getItem, storage_loaded, storage } from "$lib/stores/storage";
 
-export let defaultTheme = 5;
+export let defaultTheme = 4;
 export function setDefaultTheme(theme: number) {
 	defaultTheme = theme;
 }
