@@ -21,20 +21,25 @@
 			return;
 		}
 		if (name_in_progress === $lb_screenName) {
-			if(announcer != null) {announcer.announce("Nimimerkki ei muuttunut.")};
+			if (announcer != null) {
+				announcer.announce("Nimimerkki ei muuttunut.");
+			}
 			open = false;
 			return;
 		}
 		try {
 			let resp = await change_name(name_in_progress, $token);
-			if(announcer != null) {announcer.announce(resp.message)};
-			if(resp.success) {
+			if (announcer != null) {
+				announcer.announce(resp.message);
+			}
+			if (resp.success) {
 				lb_screenName.set(name_in_progress);
 				open = false;
 			}
-		}
-		catch(e) {
-			if(announcer != null) {announcer.announce(`Virhe: ${e}`)};
+		} catch (e) {
+			if (announcer != null) {
+				announcer.announce(`Virhe: ${e}`);
+			}
 		}
 	}
 	let names_checked = {};

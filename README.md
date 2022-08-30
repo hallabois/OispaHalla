@@ -6,6 +6,10 @@ Please populate OH_FIREBASE_ADMIN_CONFIG with firebase service account details (
 
 ## Contributing
 
+## Installing dependencies
+
+Run `yarn install` to install the needed dependencies.
+
 ### Code formatting
 
 Please run `yarn format` before committing any changes.

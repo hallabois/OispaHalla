@@ -1,7 +1,7 @@
 import { json as json$1 } from "@sveltejs/kit";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "$lib/Auth_admin/auth";
-import { env } from '$env/dynamic/private';
+import { env } from "$env/dynamic/private";
 
 export async function POST({ request, getClientAddress }) {
 	console.info("Validating token...");
@@ -19,8 +19,8 @@ export async function POST({ request, getClientAddress }) {
 		let token = body.token;
 
 		try {
-			if(env.ADMIN_TOKEN) {
-				if(token === env.ADMIN_TOKEN) {
+			if (env.ADMIN_TOKEN) {
+				if (token === env.ADMIN_TOKEN) {
 					let ip = getClientAddress();
 					console.info(`ADMIN TOKEN USED BY ${ip}`);
 					let info = {
@@ -35,8 +35,7 @@ export async function POST({ request, getClientAddress }) {
 						info
 					});
 				}
-			}
-			else {
+			} else {
 				console.warn("ADMIN_TOKEN not set!");
 			}
 

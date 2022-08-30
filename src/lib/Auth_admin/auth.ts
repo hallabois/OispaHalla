@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 
-import { env } from '$env/dynamic/private';
+import { env } from "$env/dynamic/private";
 
 let config = env.OH_FIREBASE_ADMIN_CONFIG;
 if (!config) {

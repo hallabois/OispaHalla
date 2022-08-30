@@ -141,12 +141,18 @@ export async function fetchboard(size: number, token: string): Promise<Score_res
 					let existing = getItem("bestScores") || {};
 					setItem("bestScores", {
 						...existing,
-						[json_result.score.size]: Math.max(json_result.score.score, existing[json_result.score.size] || 0)
+						[json_result.score.size]: Math.max(
+							json_result.score.score,
+							existing[json_result.score.size] || 0
+						)
 					});
 					let existing_submitted = getItem("lb_submitted") || {};
 					setItem("lb_submitted", {
 						...existing_submitted,
-						[json_result.score.size]: Math.max(json_result.score.score, existing_submitted[json_result.score.size] || 0)
+						[json_result.score.size]: Math.max(
+							json_result.score.score,
+							existing_submitted[json_result.score.size] || 0
+						)
 					});
 				}
 				return {
@@ -248,7 +254,10 @@ export class change_name_response {
 	success!: boolean;
 	message!: string;
 }
-export async function change_name(name: string | null, token: string): Promise<change_name_response> {
+export async function change_name(
+	name: string | null,
+	token: string
+): Promise<change_name_response> {
 	try {
 		const resp = await fetch(`${leaderboard_endpoint}/meta/changename/${token}`, {
 			method: "POST",
@@ -270,14 +279,14 @@ export async function change_name(name: string | null, token: string): Promise<c
 			let json = await resp.json();
 			return {
 				success: false,
-				message: json.message || "Tuntematon virhe",
+				message: json.message || "Tuntematon virhe"
 			};
 		}
 	} catch (e) {
 		console.warn(e);
 		return {
 			success: false,
-			message: "Verkkovirhe.",
+			message: "Verkkovirhe."
 		};
 	}
 }
