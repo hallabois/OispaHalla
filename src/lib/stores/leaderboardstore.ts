@@ -244,6 +244,44 @@ export async function check_name(name: string, uid: string): Promise<boolean> {
 	}
 }
 
+export class change_name_response {
+	success!: boolean;
+	message!: string;
+}
+export async function change_name(name: string | null, token: string): Promise<change_name_response> {
+	try {
+		const resp = await fetch(`${leaderboard_endpoint}/meta/changename/${token}`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				token: token,
+				name
+			})
+		});
+		if (resp.ok) {
+			return {
+				success: true,
+				message: "Nimi vaihdettu."
+			};
+		} else {
+			console.warn(resp);
+			let json = await resp.json();
+			return {
+				success: false,
+				message: json.message || "Tuntematon virhe",
+			};
+		}
+	} catch (e) {
+		console.warn(e);
+		return {
+			success: false,
+			message: "Verkkovirhe.",
+		};
+	}
+}
+
 export type Scores = { [key: number]: number };
 export type Histories = { [key: number]: any[] };
 export function get_local_top_scores(): Scores {

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { auth } from "$lib/Auth/authstore";
-	import { lb_screenName, check_name } from "$lib/stores/leaderboardstore";
+	import { auth, token } from "$lib/Auth/authstore";
+	import { lb_screenName, check_name, change_name } from "$lib/stores/leaderboardstore";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
 	import type Announcer from "$lib/components/tournaments/announcer.svelte";
@@ -16,21 +16,29 @@
 		name_in_progress = $lb_screenName;
 		open = true;
 	}
-	export function save() {
-		if (!name_valid) {
+	export async function save() {
+		if (!name_valid || !$token) {
 			return;
 		}
 		if (name_in_progress === $lb_screenName) {
-			announcer.announce("Nimimerkki ei muuttunut.");
+			if(announcer != null) {announcer.announce("Nimimerkki ei muuttunut.")};
 			open = false;
 			return;
 		}
-		announcer.announce("Nimimerkki muuttuu seuraavan tallennuksen yhteydessä.");
-		lb_screenName.set(name_in_progress);
-		open = false;
+		try {
+			let resp = await change_name(name_in_progress, $token);
+			if(announcer != null) {announcer.announce(resp.message)};
+			if(resp.success) {
+				lb_screenName.set(name_in_progress);
+				open = false;
+			}
+		}
+		catch(e) {
+			if(announcer != null) {announcer.announce(`Virhe: ${e}`)};
+		}
 	}
 	let names_checked = {};
-	$: if (name_in_progress != null && $auth && $auth.uid) {
+	$: if (name_in_progress != null && $auth && $auth.uid && $token != null) {
 		if (!checking_name) {
 			if (names_checked[name_in_progress] != null) {
 				name_valid = names_checked[name_in_progress];
