@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
-	let data = {};
-	onMount(() => {
-		data = localStorage;
-	});
+	import { storage } from "$lib/stores/storage";
+	let data = $storage;
 
 	let show = false;
 
@@ -30,7 +27,7 @@
 		);
 	}
 
-	let copytext;
+	let copytext: string | null;
 </script>
 
 <main>
@@ -40,6 +37,12 @@
 		<br /><span class="orng">Älä jaa näitä tietoja ulkopuolisille.</span>
 	</p>
 	{#if show}
+		{#if browser && navigator.share}
+			<button on:click={shareData}>Jaa</button>
+		{/if}
+		{#if browser && navigator.clipboard}
+			<button on:click={copy}>{copytext || "Kopioi leikepöydälle"}</button>
+		{/if}
 		{#if data && Object.keys(data).length > 0}
 			<div class="tablec">
 				<table>
@@ -50,19 +53,13 @@
 					{#each Object.keys(data) as i, k}
 						<tr>
 							<td class="key">{i}</td>
-							<td class="value">{data[i]}</td>
+							<td class="value">{JSON.stringify(data[i])}</td>
 						</tr>
 					{/each}
 				</table>
 			</div>
 		{:else}
 			<p>Ei näytettävää dataa.</p>
-		{/if}
-		{#if browser && navigator.share}
-			<button on:click={shareData}>Jaa</button>
-		{/if}
-		{#if browser && navigator.clipboard}
-			<button on:click={copy}>{copytext || "Kopioi leikepöydälle"}</button>
 		{/if}
 		<!-- <button on:click={email}>Lähetä bugi-ilmoitus sähköpostilla.</button> -->
 	{:else}
