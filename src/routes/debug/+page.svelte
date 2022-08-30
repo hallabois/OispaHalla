@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
 	import { storage } from "$lib/stores/storage";
-	let data = $storage;
+	$: data = $storage;
 
 	let show = false;
 
