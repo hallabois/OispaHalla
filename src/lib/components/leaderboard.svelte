@@ -18,6 +18,7 @@
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
 	import { dev } from "$app/environment";
+	import Actions from "./leaderboard/actions.svelte";
 
 	export let GameManagerInstance: GameManager | null = null;
 	let enabled_sizes = [3, 4];
@@ -37,6 +38,11 @@
 				}
 			}
 		}
+	}
+	function startSubmitting(s: number) {
+		console.info(`Starting to submit score ${s}...`);
+		size = s;
+		submitting = true;
 	}
 	function markAsSubmitted(s: number) {
 		$my_top_submitted_scores[s] = $my_top_scores[s] as number;
@@ -113,6 +119,7 @@
 
 	export let announcer: Announcer | null = null;
 	let NameChangerInstance: NameChanger;
+	let ActionsInstance: Actions;
 	let refreshKey = {}; // Every {} is unique
 </script>
 
@@ -227,15 +234,20 @@
 					{/if}
 					<div>
 						{#if $auth}
-							{#if $lb_screenName}
-								<button on:click={editScreenName} class="button action-btn" style="width: 100%;"
-									>Muuta nimimerkkiä "{$lb_screenName}"</button
-								>
-							{:else}
-								<button on:click={editScreenName} class="button action-btn" style="width: 100%;"
-									>Lisää nimimerkki</button
-								>
-							{/if}
+							<div class="actions">
+								{#if $lb_screenName}
+									<button on:click={editScreenName} class="button action-btn" style="flex:1;"
+										>Muuta nimimerkkiä "{$lb_screenName}"</button
+									>
+								{:else}
+									<button on:click={editScreenName} class="button action-btn" style="flex:1;"
+										>Lisää nimimerkki</button
+									>
+								{/if}
+								<button class="button action-btn" on:click={()=>{ActionsInstance.show()}}>
+									⫶
+								</button>
+							</div>
 							<a href="/auth" style="text-align: center;display: block;padding: 0.75em;"
 								>Hallinnoi kirjautumista</a
 							>
@@ -262,6 +274,14 @@
 	</div>
 </Popup>
 <NameChanger bind:this={NameChangerInstance} {announcer} />
+<Actions 
+	bind:this={ActionsInstance} 
+	{announcer} 
+	current_size={size} 
+	markAsSubmitted={(s)=>{markAsSubmitted(s)}} 
+	startSubmitting={(s)=>{startSubmitting(s)}} 
+	sizes={enabled_sizes} 
+/>
 
 <style>
 	.size-selection {
@@ -300,5 +320,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5em;
+	}
+	.actions {
+		display: flex;
+		gap: .25em;
 	}
 </style>
