@@ -30,16 +30,14 @@
 			<p>
 				Projektin perustana toimii <a href="https://kit.svelte.dev/" target="_blank">Sveltekit</a>.
 			</p>
-			<p>
-				Made by <a target="_blank" href="https://hallabois.github.io/invite">Hallabois</a>
-			</p>
 			<!--
                 TODO: lisää lisää
             -->
 		</div>
-		<div>
-			<a href="https://github.com/hallabois/OispaHalla" target="_blank">Lähdekoodi</a>
+		<div class="links">
+			<a href="https://github.com/hallabois" target="_blank">GitHub</a>
 			<a href="https://simpleanalytics.com/oispahalla.com" target="_blank">Simpleanalytics</a>
+			<a href="https://hallabois.github.io/invite" target="_blank">Discord</a>
 		</div>
 	</div>
 </Popup>
@@ -66,5 +64,11 @@
 	}
 	.credits {
 		text-align: center;
+	}
+	.links {
+		text-align: center;
+		display: flex;
+		justify-content: space-evenly;
+		margin-top: 20px;
 	}
 </style>
