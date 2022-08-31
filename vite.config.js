@@ -4,15 +4,9 @@ import topLevelAwait from "vite-plugin-top-level-await";
 
 /** @type {import('vite').UserConfig} */
 const config = {
-	plugins: [
-		sveltekit(),
-		wasm({
-			
-		}),
-    	topLevelAwait()
-	],
+	plugins: [sveltekit(), wasm({}), topLevelAwait()],
 	optimizeDeps: {
-		exclude: ['twothousand-forty-eight']
+		exclude: ["twothousand-forty-eight"]
 	}
 };
 

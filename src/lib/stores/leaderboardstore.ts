@@ -2,7 +2,7 @@ import { type Writable, writable, get } from "svelte/store";
 import { browser, dev } from "$app/environment";
 import { auth } from "$lib/Auth/authstore";
 
-import { setItem, getItem, storage } from "$lib/stores/storage";
+import { setItem, getItem, storage, storage_loaded } from "$lib/stores/storage";
 
 let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
 let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
@@ -290,36 +290,3 @@ export async function change_name(
 		};
 	}
 }
-
-export type Scores = { [key: number]: number };
-export type Histories = { [key: number]: any[] };
-export function get_local_top_scores(): Scores {
-	const scores: Scores = {};
-	for (const size of [3, 4]) {
-		scores[size] = getItem(`HAC_best_score${size}`);
-	}
-	// console.info(scores);
-	return scores;
-}
-export function get_local_top_histories(): Histories {
-	const histories: Histories = {};
-	for (const size of [3, 4]) {
-		histories[size] = getItem(`HAC_best_history${size}`);
-	}
-	// console.info(histories);
-	return histories;
-}
-export function update_my_top_score() {
-	my_top_scores.set(get_local_top_scores());
-	my_top_score_histories.set(get_local_top_histories());
-}
-export let my_top_scores: Writable<Scores> = writable(browser ? get_local_top_scores() : {});
-export let my_top_score_histories: Writable<Histories> = writable(
-	browser ? get_local_top_histories() : {}
-);
-export let my_top_submitted_scores: Writable<Scores> = writable(
-	browser ? getItem("lb_submitted") || {} : {}
-);
-my_top_submitted_scores.subscribe((value) => {
-	setItem("lb_submitted", value);
-});

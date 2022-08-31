@@ -9,9 +9,6 @@
 		check_server_alive,
 		submit_score,
 		get_top_scores,
-		my_top_scores,
-		my_top_submitted_scores,
-		my_top_score_histories,
 		fetchboard,
 		type Score_response
 	} from "$lib/stores/leaderboardstore";
@@ -19,14 +16,15 @@
 	import type GameManager from "$lib/gamelogic/game_manager";
 	import { dev } from "$app/environment";
 	import Actions from "./leaderboard/actions.svelte";
+	import { getItem, setItem, storage, storage_loaded } from "$lib/stores/storage";
 
 	export let GameManagerInstance: GameManager | null = null;
 	let enabled_sizes = [3, 4];
 	function submitUnsubmittedTopScores() {
 		if (GameManagerInstance != null) {
 			for (let s of enabled_sizes) {
-				let top_saved = $my_top_scores[s] || -1;
-				let top_submitted = $my_top_submitted_scores[s] || -1;
+				let top_saved = ($storage.bestScores || {})[s] || -1;
+				let top_submitted = ($storage.lb_submitted || {})[s] || -1;
 				if (GameManagerInstance?.size == s && GameManagerInstance?.score >= top_saved) {
 					// Do nothing, as the top scoring game is not over yet.
 				} else if (top_saved > top_submitted) {
@@ -37,8 +35,7 @@
 					return;
 				}
 			}
-		}
-		else {
+		} else {
 			console.warn("GameManagerInstance is null!");
 		}
 	}
@@ -48,7 +45,10 @@
 		submitting = true;
 	}
 	function markAsSubmitted(s: number) {
-		$my_top_submitted_scores[s] = $my_top_scores[s] as number;
+		setItem("lb_submitted", {
+			...(getItem("lb_submitted") || {}),
+			[s]: (getItem("bestScores") || {})[s]
+		});
 		submitting = false;
 	}
 	function getHACString(run: any[]) {
@@ -62,9 +62,9 @@
 			starting_size,
 			$token,
 			$lb_screenName as string,
-			$my_top_scores[starting_size] as number,
+			(getItem("bestScores") || {})[starting_size] as number,
 			0,
-			getHACString($my_top_score_histories[starting_size])
+			getHACString(getItem(`HAC_best_history${starting_size}`))
 		);
 		submit_in_progress = false;
 		console.info("submit result", result);
@@ -76,6 +76,7 @@
 		if (result.success) {
 			markAsSubmitted(starting_size);
 		}
+		refresh(true);
 	}
 	let is_server_alive: Promise<boolean> | null = null;
 	let was_server_alive: boolean | null = null;
@@ -91,7 +92,7 @@
 			}
 		});
 	}
-	$: if ($my_top_scores && $my_top_submitted_scores) {
+	$: if ($storage_loaded && $storage.bestScores) {
 		submitUnsubmittedTopScoresIfAlive();
 	}
 	let fetchboard_results: { [key: number]: Promise<Score_response> } = {};
@@ -247,7 +248,12 @@
 										>Lisää nimimerkki</button
 									>
 								{/if}
-								<button class="button action-btn" on:click={()=>{ActionsInstance.show()}}>
+								<button
+									class="button action-btn"
+									on:click={() => {
+										ActionsInstance.show();
+									}}
+								>
 									⫶
 								</button>
 							</div>
@@ -277,13 +283,17 @@
 	</div>
 </Popup>
 <NameChanger bind:this={NameChangerInstance} {announcer} />
-<Actions 
-	bind:this={ActionsInstance} 
-	{announcer} 
-	current_size={size} 
-	markAsSubmitted={(s)=>{markAsSubmitted(s)}} 
-	startSubmitting={(s)=>{startSubmitting(s)}} 
-	sizes={enabled_sizes} 
+<Actions
+	bind:this={ActionsInstance}
+	{announcer}
+	current_size={size}
+	markAsSubmitted={(s) => {
+		markAsSubmitted(s);
+	}}
+	startSubmitting={(s) => {
+		startSubmitting(s);
+	}}
+	sizes={enabled_sizes}
 />
 
 <style>
@@ -326,6 +336,6 @@
 	}
 	.actions {
 		display: flex;
-		gap: .25em;
+		gap: 0.25em;
 	}
 </style>

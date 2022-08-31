@@ -11,21 +11,21 @@
 		open = true;
 	}
 
-    function forceSend() {
-        console.info("forcesend");
-        open = false;
-        startSubmitting(current_size);
-    }
+	function forceSend() {
+		console.info("forcesend");
+		open = false;
+		startSubmitting(current_size);
+	}
 
-    function forceForget() {
-        console.info("forceforget");
-        markAsSubmitted(current_size);
-    }
+	function forceForget() {
+		console.info("forceforget");
+		markAsSubmitted(current_size);
+	}
 
-    export let markAsSubmitted = (s: number) => {};
-    export let startSubmitting = (s: number) => {};
-    export let sizes: number[];
-    export let current_size: number;
+	export let markAsSubmitted = (s: number) => {};
+	export let startSubmitting = (s: number) => {};
+	export let sizes: number[];
+	export let current_size: number;
 
 	export let announcer: Announcer | null = null;
 </script>
@@ -33,12 +33,22 @@
 <Popup bind:open>
 	<span slot="title">Lisäasetukset</span>
 	<div slot="content" class="content">
-        <div>
-            <p>Käytä näitä nappeja vain tarvittaessa!</p>
-            <p>Niiden toimintaa ei ole välttämättä tarkastettu läpikotaisin.</p>
-        </div>
-		<button class="button action-btn" on:click={()=>{forceSend()}}>Yrittä pakottaa pisteiden lähettäminen</button>
-		<button class="button action-btn" on:click={()=>{forceForget()}}>Merkitse pisteet lähetetyiksi</button>
+		<div>
+			<p>Käytä näitä nappeja vain tarvittaessa!</p>
+			<p>Niiden toimintaa ei ole välttämättä tarkastettu läpikotaisin.</p>
+		</div>
+		<button
+			class="button action-btn"
+			on:click={() => {
+				forceSend();
+			}}>Yrittä pakottaa pisteiden lähettäminen</button
+		>
+		<button
+			class="button action-btn"
+			on:click={() => {
+				forceForget();
+			}}>Merkitse pisteet lähetetyiksi</button
+		>
 	</div>
 </Popup>
 
@@ -48,7 +58,7 @@
 		flex-direction: column;
 		gap: 0.5em;
 	}
-    p {
-        margin: 0;
-    }
+	p {
+		margin: 0;
+	}
 </style>
