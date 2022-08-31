@@ -8,11 +8,11 @@
 	function shareData() {
 		navigator.share({
 			title: "Oispahalla debug dump",
-			text: JSON.stringify(localStorage)
+			text: JSON.stringify($storage)
 		});
 	}
 	function copy() {
-		navigator.clipboard.writeText(JSON.stringify(data));
+		navigator.clipboard.writeText(JSON.stringify($storage));
 		copytext = "Kopioitu!";
 		setTimeout(() => {
 			copytext = null;
@@ -22,7 +22,7 @@
 		let mail_template = "Kuvaile bugia:\n\nAutomaattiset Virheenkorjaustiedot:\n";
 		window.open(
 			`mailto:bugreports@oispahalla.com?subject=Bugiraportti&body=${mail_template}${JSON.stringify(
-				localStorage
+				$storage
 			)}`
 		);
 	}
