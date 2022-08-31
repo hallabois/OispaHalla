@@ -41,7 +41,7 @@
 			class="button action-btn"
 			on:click={() => {
 				forceSend();
-			}}>Yrittä pakottaa pisteiden lähettäminen</button
+			}}>Yritä pakottaa pisteiden lähettäminen</button
 		>
 		<button
 			class="button action-btn"
