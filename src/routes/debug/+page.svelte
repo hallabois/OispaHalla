@@ -12,7 +12,7 @@
 		});
 	}
 	function copy() {
-		navigator.clipboard.writeText(JSON.stringify(localStorage));
+		navigator.clipboard.writeText(JSON.stringify(data));
 		copytext = "Kopioitu!";
 		setTimeout(() => {
 			copytext = null;
