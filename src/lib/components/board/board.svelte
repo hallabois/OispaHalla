@@ -16,6 +16,7 @@
 	export let enableRng = false;
 	export let documentRoot: HTMLElement | null;
 	export let initComponentsOnMount = true;
+	export let enable_theme_chooser = true;
 
 	export let grid: Grid | null = null;
 
@@ -102,7 +103,7 @@
 
 <main bind:this={board} title={$storage_status}>
 	{#key unique}
-		<Board />
+		<Board {enable_theme_chooser} />
 	{/key}
 </main>
 

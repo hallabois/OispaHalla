@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ThemeChooser from "$lib/components/common/theme-chooser/themeChooser.svelte";
+	export let enable_theme_chooser = true;
 </script>
 
 <div class="game-container">
@@ -45,7 +46,9 @@
 	</div>
 
 	<div class="tile-container" />
-	<ThemeChooser />
+	{#if enable_theme_chooser}
+		<ThemeChooser />
+	{/if}
 </div>
 
 <style>

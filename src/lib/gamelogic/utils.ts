@@ -11,8 +11,8 @@ export function hac_gamestate_to_grid(gamestate: string) {
 	// console.info("ORIGINAL", cells);
 
 	let newcells = cells
-		.filter((t) => t && t.position)
-		.map((t) => new Tile({ y: t.position.x, x: t.position.y }, t.value, t.id))
+		.filter((t) => t && (t.position || (t.x && t.y)))
+		.map((t) => new Tile({ y: t?.position?.x || t.x, x: t?.position?.y || t.y }, t.value, t.id))
 		.filter((t: Tile) => t.x < size && t.y < size);
 
 	// console.info("NEWCELLS", newcells);
