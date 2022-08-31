@@ -38,6 +38,9 @@
 				}
 			}
 		}
+		else {
+			console.warn("GameManagerInstance is null!");
+		}
 	}
 	function startSubmitting(s: number) {
 		console.info(`Starting to submit score ${s}...`);
