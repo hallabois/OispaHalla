@@ -32,10 +32,8 @@
 			if (announcer != null) {
 				announcer.announce(resp.message);
 			}
-			if (resp.success) {
-				lb_screenName.set(name_in_progress);
-				open = false;
-			}
+			lb_screenName.set(name_in_progress);
+			open = false;
 		} catch (e) {
 			if (announcer != null) {
 				announcer.announce(`Virhe: ${e}`);
