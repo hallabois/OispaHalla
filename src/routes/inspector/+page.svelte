@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Board from "$lib/components/board/board.svelte";
 	import type GameManager from "$lib/gamelogic/game_manager";
+import Grid from "$lib/gamelogic/grid";
 	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { onMount } from "svelte";
 	import init, { get_frames, parse } from "twothousand-forty-eight";
@@ -18,7 +19,7 @@
 	let parsed: any;
 	let grid;
 	let err: string | null;
-	$: if (input.length > 0 && selected_frame != null) {
+	$: if (input.length > 0 && selected_frame != null && ready) {
 		try {
 			err = null;
 			parsed = JSON.parse(get_frames(input));
@@ -29,14 +30,24 @@
 	}
 	let err2: string | null;
 	let frame;
-	$: if (parsed != null && selected_frame != null) {
+	$: if (parsed != null && selected_frame != null && ready) {
 		try {
 			err2 = null;
 			frame = parsed[selected_frame];
-			console.log("frame", frame);
-			let transformed = hac_gamestate_to_grid(frame);
+			let parsed_frame = JSON.parse(frame.replace("SCOREHERE", 0));
+			console.log("frame", parsed_frame);
+			let size = parsed_frame.size;
+			let transformed = parsed_frame.grid;
+			// transformed = JSON.parse('{"size":4,"cells":[[null,null,null,null],[null,null,null,null],[{"x":2,"y":0,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null,null,null],[null,null,{"x":3,"y":2,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null]]}');
 			console.log("transformed", transformed);
 			grid = transformed;
+			if(boardInstance && false) {
+				let gameManager = boardInstance.getGameManagerInstance();
+				if(gameManager) {
+					gameManager.grid = grid;
+					gameManager.actuate();
+				}
+			}
 		} catch (e) {
 			console.warn(e);
 			err2 = `${e}`;
@@ -62,19 +73,14 @@
 		{#if err || err2}
 			<p>Virhe: {err || err2}</p>
 		{:else}
-			{#key grid}
-				<Board
-					bind:this={boardInstance}
-					enableKIM={false}
-					enableLSM={false}
-					documentRoot={inputRoot}
-					enable_theme_chooser={false}
-					initComponentsOnMount={false}
-					{grid}
-				/>
-				<p>{JSON.stringify(frame)}</p>
-				<p>{JSON.stringify(grid)}</p>
-			{/key}
+			<Board
+				bind:this={boardInstance}
+				{grid}
+				documentRoot={inputRoot}
+				enable_theme_chooser={false}
+			/>
+			<p>{JSON.stringify(frame)}</p>
+			<p>{JSON.stringify(grid)}</p>
 		{/if}
 	{/if}
 </main>
