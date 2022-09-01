@@ -120,7 +120,9 @@ export type Fetchboard_response = Fetchboard_ok | Score_error;
 export async function fetchboard(
 	size: number,
 	token: string | null,
-	threshold: number
+	threshold: number,
+	rankMinus: number | null,
+	rankPlus: number | null
 ): Promise<Fetchboard_response> {
 	try {
 		const resp = await fetch(
@@ -130,7 +132,13 @@ export async function fetchboard(
 				headers: {
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({ token })
+				body: JSON.stringify({
+					token,
+					...(token ? {
+						rankMinus,
+						rankPlus
+					} : {})
+				})
 			}
 		);
 		if (resp.ok) {

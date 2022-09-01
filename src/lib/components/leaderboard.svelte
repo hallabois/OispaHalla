@@ -101,7 +101,7 @@
 	let fetchboard_results: { [key: number]: Promise<Fetchboard_response> } = {};
 	$: if (refreshKey != null && was_server_alive) {
 		for (let s of enabled_sizes) {
-			fetchboard_results[s] = fetchboard(s, $token, 10);
+			fetchboard_results[s] = fetchboard(s, $token, 10, 1, 1);
 		}
 	}
 	$: if($token != null) {
@@ -192,7 +192,7 @@
 													</tr>
 												{/each}
 											{:then scores}
-												{#if scores && scores.topBoard}
+												{#if scores && "topBoard" in scores}
 													{#each scores.topBoard as score, index}
 														<tr in:scale={{ delay: 100 * index }}>
 															<td>{index + 1}</td>
@@ -215,18 +215,40 @@
 							{#if $token != null}
 								{#if fetchboard_results[size] != null}
 									{#await fetchboard_results[size]}
-										<p>Ladataan tuloksiasi...</p>
+										<p style="font-size: 0.5em;"></p>
+										<p style="text-align:center;">Ladataan tuloksiasi...</p>
+										<p style="font-size: 0.5em;"></p>
 									{:then result}
-										{#if !result.success || !result.score}
+										{#if !result.success || !("score" in result)}
 											<p>Et ole tallentanut yhtäkään tulosta sarjaan "{size}"</p>
 										{:else}
 											<div class="my-results">
 												<table>
-													<tr>
-														<td>{result.rank}.</td>
-														<td>{result.score.score}</td>
-														<td>{result.score.user.screenName}</td>
-													</tr>
+													{#each 
+													[
+														{
+															rank: result?.rank,
+															score: result?.score?.score,
+															name: result?.score?.user?.screenName,
+															me: true
+														},
+														...((Object.keys(result.rivals || {})).map(
+															(r)=> {
+															return {
+																rank: r,
+																score: result?.rivals[r]?.score,
+																name: result?.rivals[r]?.user.screenName,
+																me: false
+															}}
+														))
+													].sort((a, b)=>a.rank-b.rank)
+													as subjectiveResult}
+														<tr class:me={subjectiveResult.me}>
+															<td>{subjectiveResult.rank}.</td>
+															<td>{subjectiveResult.score}</td>
+															<td>{subjectiveResult.name}</td>
+														</tr>
+													{/each}
 												</table>
 											</div>
 										{/if}
@@ -327,6 +349,9 @@
 	}
 	td {
 		border: 1px solid;
+	}
+	tr.me {
+		font-weight: bold;
 	}
 	.content {
 		display: flex;
