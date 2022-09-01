@@ -38,7 +38,7 @@
 		"tslib": "^2.3.1",
 		"twothousand-forty-eight": "^0.5.4",
 		"typescript": "^4.4.3",
-		"vite": "^3.0.0",
+		"vite": "vite@^3.1.0-beta.1",
 		"vite-plugin-top-level-await": "^1.1.1",
 		"vite-plugin-wasm": "^2.1.0"
 	},

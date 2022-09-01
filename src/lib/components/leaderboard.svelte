@@ -144,16 +144,6 @@
 								class="button action-btn"
 								style="width: 100%;">{submit_in_progress ? "Tallennetaan..." : "Tallenna"}</button
 							>
-							{#if dev}
-								<button
-									on:click={() => {
-										markAsSubmitted(size);
-									}}
-									class="button"
-									style="width: 100%;font-weight: normal !important;"
-									>Merkitse tallennetuksi (indev)</button
-								>
-							{/if}
 						{/if}
 						<button
 							on:click={() => {
