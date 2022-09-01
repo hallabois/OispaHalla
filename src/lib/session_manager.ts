@@ -19,6 +19,7 @@ function unregisterTabID() {
 }
 
 if (browser) {
+	console.info("Session manager registered with the tab id", tabID);
 	window.onpagehide = unregisterTabID;
 	window.onbeforeunload = unregisterTabID;
 }

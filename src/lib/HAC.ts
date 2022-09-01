@@ -68,10 +68,11 @@ export class HAC {
 		// HAC_container.title = "Yhteyttä yhteenkään HAC-palvelimeen ei saatu muodostettua.";
 	}
 	recordState(state: string) {
-		let localStorage = get(storage);
-		if (localStorage.lastSession && localStorage.lastSession != tabID) {
+		if (localStorage.lastSession && +localStorage.lastSession != +tabID) {
 			console.log(
-				"MULTIPLE TABS OPEN, HAC HISTORY WILL NOT BE SAVED UNTIL THE CONFLICT IS RESOLVED"
+				"MULTIPLE TABS OPEN, HAC HISTORY WILL NOT BE SAVED UNTIL THE CONFLICT IS RESOLVED",
+				+localStorage.lastSession,
+				+tabID
 			);
 		} else {
 			this.history.push(state);
@@ -81,11 +82,12 @@ export class HAC {
 	}
 	clearHistory() {
 		this.history = [];
-		let localStorage = get(storage);
 		if (browser) {
-			if (localStorage.lastSession && localStorage.lastSession != tabID) {
+			if (localStorage.lastSession && +localStorage.lastSession != +tabID) {
 				console.log(
-					"MULTIPLE TABS OPEN, HAC HISTORY WILL NOT BE CLEARED UNTIL THE CONFLICT IS RESOLVED"
+					"MULTIPLE TABS OPEN, HAC HISTORY WILL NOT BE CLEARED UNTIL THE CONFLICT IS RESOLVED",
+					+localStorage.lastSession,
+					+tabID
 				);
 			} else {
 				setItem("HAC_history", this.history);

@@ -62,7 +62,7 @@
 			starting_size,
 			$token,
 			$lb_screenName as string,
-			(getItem("bestScores") || {})[starting_size] as number,
+			(getItem(`HAC_best_score${starting_size}`) || (getItem(`bestScores`) || {})[starting_size]) as number,
 			0,
 			getHACString(getItem(`HAC_best_history${starting_size}`))
 		);
