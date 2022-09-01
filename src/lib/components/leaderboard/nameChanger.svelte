@@ -41,7 +41,7 @@
 		}
 	}
 	let names_checked = {};
-	$: if (name_in_progress != null && $auth && $auth.uid && $token != null) {
+	$: if (name_in_progress != null && name_in_progress != "null" && $auth && $auth.uid && $token != null) {
 		if (!checking_name) {
 			if (names_checked[name_in_progress] != null) {
 				name_valid = names_checked[name_in_progress];

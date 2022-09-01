@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { auth, token } from "$lib/Auth/authstore";
-	import { lb_screenName, check_name, change_name } from "$lib/stores/leaderboardstore";
+	import { auth } from "$lib/Auth/authstore";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
 	import type Announcer from "$lib/components/tournaments/announcer.svelte";
+	import { setItem, getItem } from "$lib/stores/storage";
 
 	export let open = false;
 
@@ -22,6 +22,33 @@
 		markAsSubmitted(current_size);
 	}
 
+	function forceForgetLocalHAC() {
+		console.info("start resetting local hac score");
+		setItem(`HAC_best_score${current_size}`, 0);
+	}
+
+	function forceForgetLocalScore() {
+		console.info("start resetting local score");
+		if(!confirm("Oletko varma?")) {
+			return;
+		}
+		if(!($auth && prompt("Kopio tähän asetuksista \"uid\"") === $auth.uid)) {
+			return;
+		}
+		setItem(`HAC_best_score${current_size}`, 0);
+		setItem(`bestScores`, {
+			...getItem("bestScores"),
+			[current_size]: 0
+		});
+		console.info("local score reset");
+		alert("Paikalliset pisteet poistettu!");
+		location.reload();
+	}
+
+	function restoreBackup() {
+		console.info("start restoring localstorage");
+	}
+
 	export let markAsSubmitted = (s: number) => {};
 	export let startSubmitting = (s: number) => {};
 	export let sizes: number[];
@@ -36,6 +63,7 @@
 		<div>
 			<p>Käytä näitä nappeja vain tarvittaessa!</p>
 			<p>Niiden toimintaa ei ole välttämättä tarkastettu läpikotaisin.</p>
+			<p>Vaikutat tällä hetkellä koon {current_size} tuloksiin.</p>
 		</div>
 		<button
 			class="button action-btn"
@@ -48,6 +76,12 @@
 			on:click={() => {
 				forceForget();
 			}}>Merkitse pisteet lähetetyiksi</button
+		>
+		<button
+			class="button action-btn"
+			on:click={() => {
+				forceForgetLocalScore();
+			}}>Poista paikalliset pisteet</button
 		>
 	</div>
 </Popup>

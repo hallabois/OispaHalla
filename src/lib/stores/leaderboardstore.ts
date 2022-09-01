@@ -29,13 +29,9 @@ lb_screenName.subscribe((val) => {
 	if (val == "null") {
 		lb_screenName.set(null);
 	}
-	ensure_screenname();
 });
 lb_screenName.subscribe((value) => {
 	setItem("lb_screenName", value);
-});
-auth.subscribe(() => {
-	ensure_screenname();
 });
 
 export async function check_server_alive() {
