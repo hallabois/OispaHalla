@@ -104,15 +104,34 @@ export class Score_ok {
 	createdAt!: string;
 	updatedAt!: string;
 }
+export class Fetchboard_ok {
+	success!: boolean;
+	rank!: number;
+	topBoard!: Score_ok[];
+	score!: Score_ok[];
+}
 export class Score_error {
 	success!: boolean;
 	error_msg!: string;
 }
 export type Score_response = Score_ok | Score_error;
-export async function fetchboard(size: number, token: string): Promise<Score_response> {
+export type Fetchboard_response = Fetchboard_ok | Score_error;
+
+export async function fetchboard(
+	size: number,
+	token: string,
+	threshold: number
+): Promise<Fetchboard_response> {
 	try {
 		const resp = await fetch(
-			`${leaderboard_endpoint}/scores/size/${size}/fetchboard/token/${token}`
+			`${leaderboard_endpoint}/scores/size/${size}/fetchboard/${threshold}/`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ token })
+			}
 		);
 		if (resp.ok) {
 			try {

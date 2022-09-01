@@ -10,7 +10,9 @@
 		submit_score,
 		get_top_scores,
 		fetchboard,
-		type Score_response
+		type Score_response,
+		type Fetchboard_response,
+		Fetchboard_ok
 	} from "$lib/stores/leaderboardstore";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
@@ -62,7 +64,8 @@
 			starting_size,
 			$token,
 			$lb_screenName as string,
-			(getItem(`HAC_best_score${starting_size}`) || (getItem(`bestScores`) || {})[starting_size]) as number,
+			(getItem(`HAC_best_score${starting_size}`) ||
+				(getItem(`bestScores`) || {})[starting_size]) as number,
 			0,
 			getHACString(getItem(`HAC_best_history${starting_size}`))
 		);
@@ -95,10 +98,13 @@
 	$: if ($storage_loaded && $storage.bestScores) {
 		submitUnsubmittedTopScoresIfAlive();
 	}
-	let fetchboard_results: { [key: number]: Promise<Score_response> } = {};
+	let fetchboard_results: { [key: number]: Promise<Fetchboard_response> } = {};
 	$: if (refreshKey != null && $token != null && was_server_alive) {
 		for (let s of enabled_sizes) {
-			fetchboard_results[s] = fetchboard(s, $token);
+			let fetchboard_result = fetchboard(s, $token, 10);
+			if (fetchboard_result instanceof Promise<Fetchboard_ok>) {
+				fetchboard_results[s] = fetchboard_result;
+			}
 		}
 	}
 
@@ -175,8 +181,27 @@
 											<th>Nimi</th>
 										</tr>
 									</thead>
-									{#await get_top_scores(size, 10)}
-										<!-- skeleton -->
+									<tbody>
+										{#await fetchboard_results[size]}
+											{#each new Array(10) as index}
+												<tr>
+													<td>...</td>
+													<td>.....</td>
+													<td>.......</td>
+												</tr>
+											{/each}
+										{:then scores}
+											{#each scores.topBoard as score, index}
+												<tr in:scale={{ delay: 100 * index }}>
+													<td>{index + 1}</td>
+													<td>{score.score}</td>
+													<td>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</td>
+												</tr>
+											{/each}
+										{/await}
+									</tbody>
+									<!-- {#await get_top_scores(size, 10)}
+										<!-- skeleton 
 										<tbody>
 											{#each new Array(10) as index}
 												<tr>
@@ -196,7 +221,7 @@
 												</tr>
 											{/each}
 										</tbody>
-									{/await}
+									{/await} -->
 								</table>
 							</div>
 							<div class="actionbar">
