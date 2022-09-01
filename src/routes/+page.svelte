@@ -80,7 +80,7 @@
 	let load_started = false;
 	$: if (mounted && $storage_loaded && !load_started) {
 		load_started = true;
-		console.info("Starting to load game logic...");
+		console.log("Starting to load game logic...");
 		// inputManager = new KeyboardInputManager(inputRoot);
 		// inputManager.on("move", move);
 		BoardInstance.setDocumentRoot(inputRoot);

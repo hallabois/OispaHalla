@@ -99,10 +99,13 @@
 		submitUnsubmittedTopScoresIfAlive();
 	}
 	let fetchboard_results: { [key: number]: Promise<Fetchboard_response> } = {};
-	$: if (refreshKey != null && $token != null && was_server_alive) {
+	$: if (refreshKey != null && was_server_alive) {
 		for (let s of enabled_sizes) {
 			fetchboard_results[s] = fetchboard(s, $token, 10);
 		}
+	}
+	$: if($token != null) {
+		refresh(true);
 	}
 
 	export let open = false;
@@ -179,23 +182,29 @@
 										</tr>
 									</thead>
 									<tbody>
-										{#await fetchboard_results[size]}
-											{#each new Array(10) as index}
-												<tr>
-													<td>...</td>
-													<td>.....</td>
-													<td>.......</td>
-												</tr>
-											{/each}
-										{:then scores}
-											{#each scores.topBoard as score, index}
-												<tr in:scale={{ delay: 100 * index }}>
-													<td>{index + 1}</td>
-													<td>{score.score}</td>
-													<td>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</td>
-												</tr>
-											{/each}
-										{/await}
+										{#if fetchboard_results[size] != null}
+											{#await fetchboard_results[size]}
+												{#each new Array(10) as index}
+													<tr>
+														<td>...</td>
+														<td>.....</td>
+														<td>.......</td>
+													</tr>
+												{/each}
+											{:then scores}
+												{#if scores && scores.topBoard}
+													{#each scores.topBoard as score, index}
+														<tr in:scale={{ delay: 100 * index }}>
+															<td>{index + 1}</td>
+															<td>{score.score}</td>
+															<td>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</td>
+														</tr>
+													{/each}
+												{:else}
+													<p>Tapahtui virhe. (Tietoja ei saatavilla)</p>
+												{/if}
+											{/await}
+										{/if}
 									</tbody>
 								</table>
 							</div>

@@ -119,7 +119,7 @@ export type Fetchboard_response = Fetchboard_ok | Score_error;
 
 export async function fetchboard(
 	size: number,
-	token: string,
+	token: string | null,
 	threshold: number
 ): Promise<Fetchboard_response> {
 	try {

@@ -1,10 +1,7 @@
 import { browser } from "$app/environment";
 import { tabID } from "$lib/session_manager";
 
-import { storage, getItem, setItem } from "$lib/stores/storage";
-import { get } from "svelte/store";
-
-let HAC_valid = '<img src="img/svg/HAC_small.svg" style="width: 1em;margin: -.1em;">';
+import { getItem, setItem } from "$lib/stores/storage";
 
 export class HAC {
 	enabled: boolean;
@@ -43,7 +40,7 @@ export class HAC {
 			this.enabled = getItem("HAC_dev_enabled");
 		}
 		this.chooseServer();
-		console.log("HAC loaded!");
+		console.info("HAC loaded!");
 	}
 	async chooseServer() {
 		if (!this.enabled) {

@@ -25,14 +25,16 @@
 	$: launched = date.getTime() >= launch || !enable_countdown;
 	$: dateToLaunch = new Date(timeToLaunch).toLocaleTimeString("en-gb");
 
-	$: if (browser) console.log("Time to launch:", timeToLaunch);
+	$: if (browser && enable_countdown) console.log("Time to launch:", timeToLaunch);
 
-	setInterval(() => {
-		if (!launched) {
-			date = new Date();
-		} else {
-		}
-	}, 1000);
+	if(enable_countdown) {
+		setInterval(() => {
+			if (!launched) {
+				date = new Date();
+			} else {
+			}
+		}, 1000);
+	}
 </script>
 
 {#if !launched}

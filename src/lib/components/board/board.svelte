@@ -96,7 +96,7 @@
 	});
 
 	$: if (initComponentsOnMount && mounted && $storage_loaded) {
-		console.info("Starting to load game logic...");
+		console.log("Starting to load game logic...");
 		initcomponents();
 	}
 </script>
