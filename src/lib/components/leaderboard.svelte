@@ -172,7 +172,7 @@
 									>
 								{/each}
 							</div>
-							<div style="height: 300px;overflow-y: scroll;">
+							<div style="height: 350px;overflow-y: scroll;">
 								<table>
 									<thead>
 										<tr>
