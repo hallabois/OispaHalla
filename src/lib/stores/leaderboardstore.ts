@@ -9,22 +9,6 @@ let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localh
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
 export let lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
-function ensure_screenname() {
-	if (get(lb_screenName) == null && browser && auth != null) {
-		let $auth = get(auth);
-		if ($auth != null && $auth.email != null) {
-			// This is a bit cursed but does the job
-			let name = $auth.email
-				.split("@")[0]
-				.split(".")
-				.map((namep, ind) => {
-					return namep.slice(0, Math.min(namep.length, Math.max(20 - ind * 20, 1)));
-				})
-				.join("");
-			lb_screenName.set(name);
-		}
-	}
-}
 lb_screenName.subscribe((val) => {
 	if (val == "null") {
 		lb_screenName.set(null);
@@ -133,6 +117,9 @@ export async function fetchboard(size: number, token: string): Promise<Score_res
 		if (resp.ok) {
 			try {
 				const json_result = await resp.json();
+				if (get(lb_screenName) == null && json_result?.score?.user?.screenName) {
+					lb_screenName.set(json_result?.score?.user?.screenName);
+				}
 				if (json_result.score && json_result.score.size && json_result.score.score) {
 					let existing = getItem("bestScores") || {};
 					setItem("bestScores", {
