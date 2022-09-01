@@ -10,7 +10,6 @@ export function setDefaultTheme(theme: number) {
 export let currentImageThemeVersion = 6;
 
 export let theme_index: Writable<number> = writable(defaultTheme);
-export let theme_loaded = false;
 theme_index.subscribe((themeID) => {
 	if (!get(storage_loaded)) {
 		return; // Overwriting at this point would always cause the default theme to load
@@ -18,11 +17,11 @@ theme_index.subscribe((themeID) => {
 	console.info("theme changed to", themeID);
 	// Save choice to localstorage
 	try {
-		if (theme_loaded) {
-			setItem("imageTheme", themeID);
-			setItem("imageThemeLastVersion", currentImageThemeVersion);
-		}
-	} catch {}
+		setItem("imageTheme", themeID);
+		setItem("imageThemeLastVersion", currentImageThemeVersion);
+	} catch(e) {
+		console.warn("Failed to save theme preference", e);
+	}
 	if (browser) {
 		// Save choice as a cookie
 		try {
@@ -34,7 +33,6 @@ theme_index.subscribe((themeID) => {
 			html.setAttribute("class", "theme-" + themeID);
 		}
 	}
-	theme_loaded = true;
 });
 export let base_path: Writable<string> = writable("");
 
@@ -46,12 +44,14 @@ export function get_base_path(): string {
 storage_loaded.subscribe(($storage_loaded) => {
 	if ($storage_loaded) {
 		console.log("Loading theme...");
-		if (getItem("imageTheme") != null) {
+		let localtheme = getItem("imageTheme");
+		if (localtheme != null) {
+			console.log(`found an existing prefer for theme ${localtheme}`);
 			if (
 				getItem("imageThemeLastVersion") &&
 				getItem("imageThemeLastVersion") == currentImageThemeVersion
 			) {
-				theme_index.set(+getItem("imageTheme"));
+				theme_index.set(+localtheme);
 			} else {
 				theme_index.set(defaultTheme);
 			}
