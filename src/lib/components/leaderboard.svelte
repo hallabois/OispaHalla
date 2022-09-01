@@ -101,10 +101,7 @@
 	let fetchboard_results: { [key: number]: Promise<Fetchboard_response> } = {};
 	$: if (refreshKey != null && $token != null && was_server_alive) {
 		for (let s of enabled_sizes) {
-			let fetchboard_result = fetchboard(s, $token, 10);
-			if (fetchboard_result instanceof Promise<Fetchboard_ok>) {
-				fetchboard_results[s] = fetchboard_result;
-			}
+			fetchboard_results[s] = fetchboard(s, $token, 10);
 		}
 	}
 
@@ -200,28 +197,6 @@
 											{/each}
 										{/await}
 									</tbody>
-									<!-- {#await get_top_scores(size, 10)}
-										<!-- skeleton 
-										<tbody>
-											{#each new Array(10) as index}
-												<tr>
-													<td>...</td>
-													<td>.....</td>
-													<td>.......</td>
-												</tr>
-											{/each}
-										</tbody>
-									{:then top}
-										<tbody>
-											{#each top as entry, index}
-												<tr in:scale={{ delay: 100 * index }}>
-													<td>{index + 1}.</td>
-													<td>{entry.score}</td>
-													<td>{entry.user ? entry.user.screenName : "[Virheellinen nimi]"}</td>
-												</tr>
-											{/each}
-										</tbody>
-									{/await} -->
 								</table>
 							</div>
 							<div class="actionbar">
