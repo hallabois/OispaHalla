@@ -259,7 +259,7 @@ export async function change_name(
 	token: string
 ): Promise<change_name_response> {
 	try {
-		const resp = await fetch(`${leaderboard_endpoint}/meta/changename/${token}`, {
+		const resp = await fetch(`${leaderboard_endpoint}/meta/changename`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
