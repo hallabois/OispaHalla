@@ -19,7 +19,7 @@ export async function POST({ request, getClientAddress }) {
 		let token = body.token;
 
 		try {
-			if (env.ADMIN_TOKEN && token != null) {
+			if (env.ADMIN_TOKEN) {
 				let ip = getClientAddress();
 				if (token === env.ADMIN_TOKEN) {
 					console.info(`ADMIN TOKEN USED BY ${ip}`);
@@ -34,9 +34,6 @@ export async function POST({ request, getClientAddress }) {
 						message: "auth ok",
 						info
 					});
-				}
-				else {
-					console.info(`ADMIN TOKEN TRIED BY ${ip}`);
 				}
 			} else {
 				console.warn("ADMIN_TOKEN not set!");
