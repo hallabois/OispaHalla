@@ -1,9 +1,19 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import { browser } from "$app/environment";
+
+    let mounted = false;
+    onMount(()=>{
+        mounted = true;
+    })
 </script>
 
 {#if browser}
-    <slot />
+    {#if mounted}
+        <slot />
+    {:else}
+        <p>Ladataan niitä näitä...</p>
+    {/if}
 {:else}
-    <p>Ladataan...</p>
+    <p>Ladataan tietoja palvelimelta...</p>
 {/if}

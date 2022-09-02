@@ -36,11 +36,12 @@ import Grid from "$lib/gamelogic/grid";
 			frame = parsed[selected_frame];
 			let parsed_frame = JSON.parse(frame.replace("SCOREHERE", 0));
 			console.log("frame", parsed_frame);
-			let size = parsed_frame.size;
+			let size = parsed_frame.grid.size;
 			let transformed = parsed_frame.grid;
 			// transformed = JSON.parse('{"size":4,"cells":[[null,null,null,null],[null,null,null,null],[{"x":2,"y":0,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null,null,null],[null,null,{"x":3,"y":2,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null]]}');
 			console.log("transformed", transformed);
-			grid = transformed;
+			grid = new Grid(size);
+			grid.cells = transformed.cells;
 			if(boardInstance && false) {
 				let gameManager = boardInstance.getGameManagerInstance();
 				if(gameManager) {
