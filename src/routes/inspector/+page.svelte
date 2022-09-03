@@ -2,7 +2,7 @@
 	import Board from "$lib/components/board/board.svelte";
 	import type GameManager from "$lib/gamelogic/game_manager";
 	import Grid from "$lib/gamelogic/grid";
-import Tile from "$lib/gamelogic/tile";
+	import Tile from "$lib/gamelogic/tile";
 	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { onMount } from "svelte";
 
@@ -11,6 +11,7 @@ import Tile from "$lib/gamelogic/tile";
 	onMount(async () => {
 		console.info("trying to import wasm...");
 		wasm = await import("twothousand-forty-eight");
+		await wasm.default();
 		console.info("wasm imported");
 		console.info("wasm", wasm);
 		ready = true;
@@ -22,17 +23,27 @@ import Tile from "$lib/gamelogic/tile";
 	let grid;
 	let lastGrid;
 	let err: string | null;
+	let validation_result;
+	
+	let last_input = null;
 	$: if (input.length > 0 && ready) {
-		console.info("Trying to parse input...");
-		try {
-			err = null;
-			console.info("wasm atm", wasm);
-			console.info("calling", wasm.get_frames, "with", input);
-			parsed = JSON.parse(wasm.get_frames(input));
-			console.info("input parsed!");
-		} catch (e) {
-			console.warn("Error while parsing:", e);
-			err = `${e}`;
+		if(input !== last_input) {
+			console.info("Trying to parse input...");
+			try {
+				err = null;
+				validation_result = null;
+				console.info("wasm atm", wasm);
+				console.info("calling", wasm.get_frames, "with", input);
+				parsed = JSON.parse(wasm.get_frames(input));
+				console.info("input parsed!");
+
+				console.info("Validating history...");
+				validation_result = JSON.parse(wasm.validate(input));
+			} catch (e) {
+				console.warn("Error while parsing:", e);
+				err = `${e}`;
+			}
+			last_input = input;
 		}
 	}
 
@@ -100,6 +111,7 @@ import Tile from "$lib/gamelogic/tile";
 				{#if parsed != null}
 					<div>
 						<p>Peli sisältää {parsed.length} {parsed.length == 1 ? "siirron" : "siirtoa"}.</p>
+						<p>{JSON.stringify(validation_result)}</p>
 					</div>
 					<input type="range" min=0 max={parsed.length - 1} bind:value={selected_frame} />
 					<input type="number" bind:value={selected_frame} />
@@ -110,7 +122,7 @@ import Tile from "$lib/gamelogic/tile";
 					enableKIM={false}
 					
 					documentRoot={inputRoot}
-					enable_theme_chooser={false}
+					enable_theme_chooser={true}
 				/>
 				<details>
 					<summary>Dataa dataa jesjes</summary>

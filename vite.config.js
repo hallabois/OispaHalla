@@ -11,7 +11,7 @@ const config = {
 	],
 	optimizeDeps: {
 		exclude: [
-			
+			"twothousand-forty-eight"
 		]
 	}
 };
