@@ -11,9 +11,14 @@
 	onMount(async () => {
 		console.info("trying to import wasm...");
 		wasm = await import("twothousand-forty-eight");
-		await wasm.default();
 		console.info("wasm imported");
 		console.info("wasm", wasm);
+		try{
+			await wasm.default();
+		}
+		catch(e) {
+			console.warn("Failed to init wasm manually:", e);
+		}
 		ready = true;
 	});
 
