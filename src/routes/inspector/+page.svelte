@@ -9,12 +9,10 @@ import Tile from "$lib/gamelogic/tile";
 	let ready = false;
 	let wasm;
 	onMount(async () => {
+		console.info("trying to import wasm...");
 		wasm = await import("twothousand-forty-eight");
+		console.info("wasm imported");
 		console.info("wasm", wasm);
-		/* // @ts-ignore
-		wasm.init().then(() => {
-			ready = true;
-		}); */
 		ready = true;
 	});
 
