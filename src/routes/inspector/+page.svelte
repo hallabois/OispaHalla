@@ -25,11 +25,15 @@ import Tile from "$lib/gamelogic/tile";
 	let lastGrid;
 	let err: string | null;
 	$: if (input.length > 0 && ready) {
+		console.info("Trying to parse input...");
 		try {
 			err = null;
+			console.info("wasm atm", wasm);
+			console.info("calling", wasm.get_frames, "with", input);
 			parsed = JSON.parse(wasm.get_frames(input));
+			console.info("input parsed!");
 		} catch (e) {
-			console.warn(e);
+			console.warn("Error while parsing:", e);
 			err = `${e}`;
 		}
 	}
@@ -41,6 +45,7 @@ import Tile from "$lib/gamelogic/tile";
 	let err2: string | null;
 	let frame;
 	$: if (parsed != null && selected_frame != null && ready) {
+		console.info("Trying to render selected frame...");
 		try {
 			err2 = null;
 			frame = parsed[selected_frame];
@@ -62,8 +67,9 @@ import Tile from "$lib/gamelogic/tile";
 					gameManager.actuate();
 				}
 			}
+			console.info("Rendered!");
 		} catch (e) {
-			console.warn(e);
+			console.warn("Error while rendering:", e);
 			err2 = `${e}`;
 		}
 	}
