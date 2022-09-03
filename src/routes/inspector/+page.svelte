@@ -1,33 +1,43 @@
 <script lang="ts">
 	import Board from "$lib/components/board/board.svelte";
 	import type GameManager from "$lib/gamelogic/game_manager";
-import Grid from "$lib/gamelogic/grid";
+	import Grid from "$lib/gamelogic/grid";
+import Tile from "$lib/gamelogic/tile";
 	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { onMount } from "svelte";
-	import init, { get_frames, parse } from "twothousand-forty-eight";
 
 	let ready = false;
-	onMount(() => {
-		// @ts-ignore
-		init().then(() => {
+	let wasm;
+	onMount(async () => {
+		wasm = await import("twothousand-forty-eight");
+		console.info("wasm", wasm);
+		/* // @ts-ignore
+		wasm.init().then(() => {
 			ready = true;
-		});
+		}); */
+		ready = true;
 	});
 
 	let selected_frame = 0;
-	let input = "4x4S0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.2+2,1.2;1";
+	let input = "";
 	let parsed: any;
 	let grid;
+	let lastGrid;
 	let err: string | null;
-	$: if (input.length > 0 && selected_frame != null && ready) {
+	$: if (input.length > 0 && ready) {
 		try {
 			err = null;
-			parsed = JSON.parse(get_frames(input));
+			parsed = JSON.parse(wasm.get_frames(input));
 		} catch (e) {
 			console.warn(e);
 			err = `${e}`;
 		}
 	}
+
+	$: if(parsed != null) {
+		selected_frame = Math.max(0, Math.min(selected_frame, parsed.length));
+	}
+
 	let err2: string | null;
 	let frame;
 	$: if (parsed != null && selected_frame != null && ready) {
@@ -40,9 +50,12 @@ import Grid from "$lib/gamelogic/grid";
 			let transformed = parsed_frame.grid;
 			// transformed = JSON.parse('{"size":4,"cells":[[null,null,null,null],[null,null,null,null],[{"x":2,"y":0,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null,null,null],[null,null,{"x":3,"y":2,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null]]}');
 			console.log("transformed", transformed);
+			lastGrid = {...grid};
 			grid = new Grid(size);
-			grid.cells = transformed.cells;
-			if(boardInstance && false) {
+			let new_cells = transformed.cells.map(col=>col.map(t=>t ? new Tile({x: t.x, y: t.y}, t.value, t.id) : null));
+			grid.cells = new_cells;
+			grid = grid;
+			if(boardInstance) {
 				let gameManager = boardInstance.getGameManagerInstance();
 				if(gameManager) {
 					gameManager.grid = grid;
@@ -70,13 +83,17 @@ import Grid from "$lib/gamelogic/grid";
 	{:else}
 		<p>WASM Ladattu.</p>
 		<input bind:value={input} autofocus />
-		<input type="number" bind:value={selected_frame} />
 		{#if err || err2}
 			<p>Virhe: {err || err2}</p>
 		{:else}
+			{#if parsed != null}
+				<input type="number" bind:value={selected_frame} />
+			{/if}
 			<Board
 				bind:this={boardInstance}
-				{grid}
+				enableLSM={false}
+				enableKIM={false}
+				
 				documentRoot={inputRoot}
 				enable_theme_chooser={false}
 			/>
