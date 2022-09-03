@@ -8,12 +8,4 @@
     })
 </script>
 
-{#if browser}
-    {#if mounted}
-        <slot />
-    {:else}
-        <p>Ladataan niitä näitä...</p>
-    {/if}
-{:else}
-    <p>Ladataan tietoja palvelimelta...</p>
-{/if}
+<slot />
