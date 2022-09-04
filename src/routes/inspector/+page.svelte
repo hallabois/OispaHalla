@@ -29,6 +29,7 @@
 	let lastGrid;
 	let err: string | null;
 	let validation_result;
+	let hash: string | null;
 	
 	let last_input = null;
 	$: if (input.length > 0 && ready) {
@@ -37,8 +38,13 @@
 			try {
 				err = null;
 				validation_result = null;
+				hash = null;
+
 				console.info("wasm atm", wasm);
-				console.info("calling", wasm.get_frames, "with", input);
+
+				console.info("hashing...");
+				hash = JSON.parse(wasm.hash(input));
+
 				parsed = JSON.parse(wasm.get_frames(input));
 				console.info("input parsed!");
 
@@ -58,6 +64,7 @@
 
 	let err2: string | null;
 	let frame;
+	let validation_cache = {};
 	$: if (parsed != null && selected_frame != null && ready) {
 		console.info("Trying to render selected frame...");
 		try {
@@ -82,6 +89,17 @@
 				}
 			}
 			console.info("Rendered!");
+
+			if(selected_frame > 0) {
+				console.info("Analyzing...");
+				let until_now = input.split(":").slice(0, selected_frame).join(":");
+				if(validation_cache[input] == null) {
+					validation_cache[input] = {};
+				}
+				if(validation_cache[input][selected_frame] == null) {
+					validation_cache[input][selected_frame] = JSON.parse(wasm.validate(until_now));
+				}
+			}
 		} catch (e) {
 			console.warn("Error while rendering:", e);
 			err2 = `${e}`;
@@ -96,6 +114,10 @@
 		mounted = true;
 	});
 </script>
+
+<svelte:head>
+	<title>OH Inspector</title>
+</svelte:head>
 
 <main class="blurry-bg">
 	<div class="page">
@@ -113,10 +135,12 @@
 			{#if err || err2}
 				<p>Virhe: {err || err2}</p>
 			{:else}
+				{#if hash != null}
+					<p style="word-break: break-all;">{hash}</p>
+				{/if}
 				{#if parsed != null}
 					<div>
 						<p>Peli sisältää {parsed.length} {parsed.length == 1 ? "siirron" : "siirtoa"}.</p>
-						<p>{JSON.stringify(validation_result)}</p>
 					</div>
 					<input type="range" min=0 max={parsed.length - 1} bind:value={selected_frame} />
 					<input type="number" bind:value={selected_frame} />
@@ -129,6 +153,9 @@
 					documentRoot={inputRoot}
 					enable_theme_chooser={true}
 				/>
+				{#if validation_cache[input] != null && validation_cache[input][selected_frame] != null}
+					<p style="word-break: break-all;">{JSON.stringify(validation_cache[input][selected_frame])}</p>
+				{/if}
 				<details>
 					<summary>Dataa dataa jesjes</summary>
 					<p>{JSON.stringify(frame)}</p>
@@ -146,6 +173,8 @@
 	.page {
 		width: min(500px, 95vw);
 		margin: 0 auto;
+		background: var(--background);
+		padding: 1em;
 	}
 	:global(.tile-new) :global(.tile-inner) {
 		-webkit-animation: none !important;
