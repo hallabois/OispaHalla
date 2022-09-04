@@ -90,19 +90,31 @@
 			}
 			console.info("Rendered!");
 
+			if(validation_cache[input] == null) {
+				validation_cache[input] = {};
+			}
 			if(selected_frame > 0) {
 				console.info("Analyzing...");
 				let until_now = input.split(":").slice(0, selected_frame).join(":");
-				if(validation_cache[input] == null) {
-					validation_cache[input] = {};
-				}
+				
 				if(validation_cache[input][selected_frame] == null) {
 					validation_cache[input][selected_frame] = JSON.parse(wasm.validate(until_now));
 				}
 			}
+			else {
+				validation_cache[input][selected_frame] = null;
+			}
 		} catch (e) {
 			console.warn("Error while rendering:", e);
 			err2 = `${e}`;
+		}
+	}
+
+	function validate_all() {
+		if(wasm != null) {
+			let result = JSON.parse(wasm.validate_all_frames(input));
+			console.info("Validation result", result);
+			validation_cache[input] = result;
 		}
 	}
 
@@ -141,9 +153,11 @@
 				{#if parsed != null}
 					<div>
 						<p>Peli sisältää {parsed.length} {parsed.length == 1 ? "siirron" : "siirtoa"}.</p>
+						<p>{Object.keys(validation_cache[input] || {}).length} / {parsed.length} siirtoa tarkistettu.</p>
 					</div>
 					<input type="range" min=0 max={parsed.length - 1} bind:value={selected_frame} />
 					<input type="number" bind:value={selected_frame} />
+					<button on:click={validate_all}>Tarkista kaikki siirrot</button>
 				{/if}
 				<Board
 					bind:this={boardInstance}
@@ -153,8 +167,10 @@
 					documentRoot={inputRoot}
 					enable_theme_chooser={true}
 				/>
-				{#if validation_cache[input] != null && validation_cache[input][selected_frame] != null}
-					<p style="word-break: break-all;">{JSON.stringify(validation_cache[input][selected_frame])}</p>
+				{#if validation_cache[input] != null}
+					{#if validation_cache[input][selected_frame] != null}
+						<p style="word-break: break-all;">{JSON.stringify(validation_cache[input][selected_frame])}</p>
+					{/if}
 				{/if}
 				<details>
 					<summary>Dataa dataa jesjes</summary>
