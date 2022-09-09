@@ -25,7 +25,7 @@ export async function POST({ request, getClientAddress }) {
 					console.info(`ADMIN TOKEN USED BY ${ip}`);
 					let info = {
 						name: "admin",
-						uid: -1,
+						uid: "-1",
 						email: "admin@oispahalla.com",
 						email_verified: true,
 						picture: ""
