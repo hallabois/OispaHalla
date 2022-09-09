@@ -29,10 +29,10 @@
 
 	function forceForgetLocalScore() {
 		console.info("start resetting local score");
-		if(!confirm("Oletko varma?")) {
+		if (!confirm("Oletko varma?")) {
 			return;
 		}
-		if(!($auth && prompt("Kopio tähän asetuksista \"uid\"") === $auth.uid)) {
+		if (!($auth && prompt('Kopio tähän asetuksista "uid"') === $auth.uid)) {
 			return;
 		}
 		setItem(`HAC_best_score${current_size}`, 0);

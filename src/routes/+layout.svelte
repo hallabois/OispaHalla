@@ -27,7 +27,7 @@
 
 	$: if (browser && enable_countdown) console.log("Time to launch:", timeToLaunch);
 
-	if(enable_countdown) {
+	if (enable_countdown) {
 		setInterval(() => {
 			if (!launched) {
 				date = new Date();

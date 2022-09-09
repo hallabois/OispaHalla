@@ -96,7 +96,6 @@ const createAuth = () => {
 	};
 };
 
-
 export const token: Writable<null | string> = writable(null);
 async function rewrite_token($auth: User) {
 	console.log("Attempting to refresh token...");
@@ -104,17 +103,17 @@ async function rewrite_token($auth: User) {
 		let tk = await $auth.getIdToken();
 		try {
 			let tk_info = await $auth.getIdTokenResult();
-			let time_till_exp = new Date(tk_info.expirationTime).getTime() - new Date(tk_info.authTime).getTime();
+			let time_till_exp =
+				new Date(tk_info.expirationTime).getTime() - new Date(tk_info.authTime).getTime();
 			console.info("time till token expiration", time_till_exp);
-			setTimeout(async ()=>{
+			setTimeout(async () => {
 				let $auth = get(auth);
 				await rewrite_token($auth);
 			}, time_till_exp / 2);
-		}
-		catch(e) {
+		} catch (e) {
 			console.warn("Failed to set up automatic token refresh:", e);
 		}
-		
+
 		token.set(tk);
 	}
 }
