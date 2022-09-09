@@ -50,7 +50,7 @@ export async function POST({ request, getClientAddress }) {
 			console.info("Token valid.");
 			console.info("\tuid", info.uid);
 			console.info("\temail_verified:", info.email_verified);
-			if(result.firebase.sign_in_provider === 'password' && !result.email?.endsWith("@ksyk.fi")) {
+			if (result.firebase.sign_in_provider === "password" && !result.email?.endsWith("@ksyk.fi")) {
 				return json$1(
 					{
 						message: "invalid email"

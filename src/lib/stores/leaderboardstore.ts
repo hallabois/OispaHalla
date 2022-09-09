@@ -134,10 +134,12 @@ export async function fetchboard(
 				},
 				body: JSON.stringify({
 					token,
-					...(token ? {
-						rankMinus,
-						rankPlus
-					} : {})
+					...(token
+						? {
+								rankMinus,
+								rankPlus
+						  }
+						: {})
 				})
 			}
 		);

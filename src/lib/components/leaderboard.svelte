@@ -104,7 +104,7 @@
 			fetchboard_results[s] = fetchboard(s, $token, 10, 1, 1);
 		}
 	}
-	$: if($token != null) {
+	$: if ($token != null) {
 		refresh(true);
 	}
 
@@ -215,34 +215,18 @@
 							{#if $token != null}
 								{#if fetchboard_results[size] != null}
 									{#await fetchboard_results[size]}
-										<p style="font-size: 0.5em;"></p>
+										<p style="font-size: 0.5em;" />
 										<p style="text-align:center;">Ladataan tuloksiasi...</p>
-										<p style="font-size: 0.5em;"></p>
+										<p style="font-size: 0.5em;" />
 									{:then result}
 										{#if !result.success || !("score" in result)}
 											<p>Et ole tallentanut yhtäkään tulosta sarjaan "{size}"</p>
 										{:else}
 											<div class="my-results">
 												<table>
-													{#each 
-													[
-														{
-															rank: result?.rank,
-															score: result?.score?.score,
-															name: result?.score?.user?.screenName,
-															me: true
-														},
-														...((Object.keys(result.rivals || {})).map(
-															(r)=> {
-															return {
-																rank: r,
-																score: result?.rivals[r]?.score,
-																name: result?.rivals[r]?.user.screenName,
-																me: false
-															}}
-														))
-													].sort((a, b)=>a.rank-b.rank)
-													as subjectiveResult}
+													{#each [{ rank: result?.rank, score: result?.score?.score, name: result?.score?.user?.screenName, me: true }, ...Object.keys(result.rivals || {}).map( (r) => {
+																return { rank: r, score: result?.rivals[r]?.score, name: result?.rivals[r]?.user.screenName, me: false };
+															} )].sort((a, b) => a.rank - b.rank) as subjectiveResult}
 														<tr class:me={subjectiveResult.me}>
 															<td>{subjectiveResult.rank}.</td>
 															<td>{subjectiveResult.score}</td>

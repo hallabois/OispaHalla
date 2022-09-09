@@ -19,7 +19,7 @@ theme_index.subscribe((themeID) => {
 	try {
 		setItem("imageTheme", themeID);
 		setItem("imageThemeLastVersion", currentImageThemeVersion);
-	} catch(e) {
+	} catch (e) {
 		console.warn("Failed to save theme preference", e);
 	}
 	if (browser) {
