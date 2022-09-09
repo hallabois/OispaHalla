@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Header from "../header.svelte";
 	import type { PageData } from "./$types";
+	import { auth } from "$lib/Auth/authstore";
 	export let data: PageData;
 	$: ({ leaderboard_data, size } = data);
 	$: scores = leaderboard_data.scores.sort((a, b) => b.score - a.score);
@@ -16,7 +17,7 @@
 		<th>Nimi</th>
 	</tr>
 	{#each scores as score, index}
-		<tr>
+		<tr class:me={$auth && $auth.uid === score.user.uid}>
 			<td>{index + 1}.</td>
 			<td>{score.score}</td>
 			<td>{score.user.screenName}</td>
@@ -42,5 +43,8 @@
 	th {
 		border: 1px solid;
 		padding: 0.25em 0.5em;
+	}
+	tr.me {
+		font-weight: bold;
 	}
 </style>

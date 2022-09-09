@@ -195,7 +195,7 @@
 												{#if scores && "topBoard" in scores}
 													{#each scores.topBoard as score, index}
 														<tr in:scale={{ delay: 100 * index }}>
-															<td>{index + 1}</td>
+															<td>{index + 1}.</td>
 															<td>{score.score}</td>
 															<td>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</td>
 														</tr>
