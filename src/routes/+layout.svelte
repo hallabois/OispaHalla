@@ -45,19 +45,17 @@
 		<h1 class="title" style="color:#e6d2bf">OispaHalla</h1>
 		<span class="countdown">{dateToLaunch}</span>
 	</div>
+{:else if $TAB_BLOCK}
+	<div class="ctmblock-div blurry-bg">
+		<h1>Sulje muut välilehdet</h1>
+		<p style="padding-bottom:1em;">OispaHallaa voi pelata vain yhdessä välilehdessä kerrallaan.</p>
+		<button class="button action-btn" on:click={take_ownership}>Pelaa tässä</button>
+	</div>
 {:else}
-	{#if $TAB_BLOCK}
-		<div class="ctmblock-div blurry-bg">
-			<h1>Sulje muut välilehdet</h1>
-			<p style="padding-bottom:1em;">OispaHallaa voi pelata vain yhdessä välilehdessä kerrallaan.</p>
-			<button class="button action-btn" on:click={take_ownership}>Pelaa tässä</button>
-		</div>
-	{:else}
-		<PopupScrolllock />
-		{#key $storage_version}
-			<slot />
-		{/key}
-	{/if}
+	<PopupScrolllock />
+	{#key $storage_version}
+		<slot />
+	{/key}
 {/if}
 
 <style lang="scss">

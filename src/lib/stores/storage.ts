@@ -1,5 +1,6 @@
 import { type Writable, writable, get } from "svelte/store";
 import { browser } from "$app/environment";
+import { TAB_BLOCK } from "$lib/session_manager";
 import localforage from "localforage";
 
 export async function getWholeLocalForage() {
@@ -83,20 +84,28 @@ storage.subscribe(async (data) => {
 	if (browser) {
 		try {
 			if (data) {
-				if(!get(storage_loaded)) {
+				if (!get(storage_loaded)) {
 					return;
 				}
+				if(get(TAB_BLOCK)) {
+					// alert("Peliä ei tallenneta, kunnes muut välilehdet suljetaan");
+					console.warn("Refusing to write data as multiple tabs are open!");
+				}
 				let local_ts: number = data.__updated_ms || 0;
-				let external_ts: number = await localforage.getItem("__updated_ms") || 0;
-				if(external_ts > local_ts) {
+				let external_ts: number = (await localforage.getItem("__updated_ms")) || 0;
+				if (external_ts > local_ts) {
 					console.warn("refusing to write expired changes to storage.", local_ts, external_ts);
 					return;
 				}
 
-				let localHash = JSON.stringify({...data, "__updated_ms": 0}, null, 4);
-				let externalHash = JSON.stringify({...await getWholeLocalForage(), "__updated_ms": 0}, null, 4);
+				let localHash = JSON.stringify({ ...data, __updated_ms: 0 }, null, 4);
+				let externalHash = JSON.stringify(
+					{ ...(await getWholeLocalForage()), __updated_ms: 0 },
+					null,
+					4
+				);
 
-				if(localHash !== externalHash) {
+				if (localHash !== externalHash) {
 					console.log("Updating storage...");
 					for (let key of Object.keys(data)) {
 						await localforage.setItem(key, data[key]);
@@ -108,7 +117,7 @@ storage.subscribe(async (data) => {
 			console.warn("Couldn't update storage", e);
 		}
 	} else {
-		console.info("Skipping localstorage operations outside browser...");
+		// console.info("Skipping localstorage operations outside browser...");
 	}
 });
 

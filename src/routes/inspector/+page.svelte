@@ -9,7 +9,7 @@
 		"1": "oikealle",
 		"2": "alas",
 		"3": "vasemmalle",
-		"f": "loppuun"
+		f: "loppuun"
 	};
 
 	let ready = false;
@@ -103,7 +103,7 @@
 				validation_cache[usable_input] = {};
 			}
 			if (selected_frame > 0) {
-				setTimeout(()=> {
+				setTimeout(() => {
 					let until_now = usable_input.split(":").slice(0, selected_frame).join(":");
 
 					if (validation_cache[usable_input][selected_frame] == null) {
@@ -115,10 +115,9 @@
 				validation_cache[usable_input][selected_frame] = null;
 			}
 
-			try{
+			try {
 				move_direction = usable_input.split(":")[selected_frame].split(";")[1];
-			}
-			catch(e) {
+			} catch (e) {
 				move_direction = null;
 			}
 		} catch (e) {
@@ -168,10 +167,10 @@
 				}}>Lataa esimerkki</button
 			>
 			<button
-				on:click={()=>{
+				on:click={() => {
 					input = input.replaceAll(":\n", ":");
 					input = input.replaceAll("S\n", "S");
-					
+
 					input = input.split(":").join(":\n");
 					input = input.split("S").join("S\n");
 				}}

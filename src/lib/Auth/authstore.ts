@@ -119,9 +119,9 @@ async function rewrite_token($auth: User) {
 	}
 }
 export const auth = createAuth();
-if(browser) {
+if (browser) {
 	auth.subscribe(async ($auth) => {
-		if(token_refresh_timer != null) {
+		if (token_refresh_timer != null) {
 			clearTimeout(token_refresh_timer);
 		}
 		await rewrite_token($auth);

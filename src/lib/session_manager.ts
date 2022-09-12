@@ -30,31 +30,30 @@ let ctm_channel_sync = "crosstab_management_oh";
 let ctm_close_key = -245;
 
 let nt: BroadcastChannel;
-if(browser) {
+if (browser) {
 	date_registered = new Date().getTime();
 	nt = new BroadcastChannel(ctm_channel_sync);
 	nt.postMessage(date_registered); /* send */
 	nt.onmessage = function (ev) {
-		if(ev.data == ctm_close_key) {
+		if (ev.data == ctm_close_key) {
 			date_registered = new Date().getTime() + 9999999;
 		}
-		if(ev.data != date_registered){
+		if (ev.data != date_registered) {
 			console.log("CTM sync", ev, date_registered);
-			if(date_registered < ev.data) {
+			if (date_registered < ev.data) {
 				console.log("We are the best!");
 				nt.postMessage(date_registered);
 				console.log("Tab lock ought to be removed...");
 				/* if(get(TAB_BLOCK)) {
 					location.reload();
 				} */
-			}
-			else {
+			} else {
 				TAB_BLOCK.set(true);
 				console.log("Blocking this tab...");
 			}
 			oldest_tab = Math.min(oldest_tab, ev.data);
 		}
-	}
+	};
 }
 
 export async function take_ownership() {

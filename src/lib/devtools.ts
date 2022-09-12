@@ -29,7 +29,7 @@ function setTheme(index: number) {
 
 function getHACHistory() {
 	// @ts-ignore
-	let game_manager = window.GameManagerDebugInstance || {size: 4};
+	let game_manager = window.GameManagerDebugInstance || { size: 4 };
 	let size = game_manager.size;
 	let history = getItem("HAC_history");
 	return `${size}x${size}S${history.join(":")}`;
