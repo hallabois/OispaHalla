@@ -86,6 +86,10 @@
 		BoardInstance.setDocumentRoot(inputRoot);
 		BoardInstance.initcomponents();
 		GameManagerInstance = BoardInstance.getGameManagerInstance();
+
+		// @ts-ignore, only for devtools
+		window.GameManagerDebugInstance = GameManagerInstance;
+
 		console.info("Game logic loaded.");
 	}
 

@@ -5,8 +5,11 @@
 	export let data: LayoutData;
 	$: ({ theme_override } = data);
 
+	import { TAB_BLOCK, take_ownership } from "$lib/session_manager";
+
 	import "../app.scss";
 	import PopupScrolllock from "$lib/components/common/popup/popup_scrolllock.svelte";
+	import { storage_version } from "$lib/stores/storage";
 	import { theme_index } from "$lib/stores/themestore";
 	import { enable_countdown } from "../features";
 	import { browser } from "$app/environment";
@@ -43,9 +46,32 @@
 		<span class="countdown">{dateToLaunch}</span>
 	</div>
 {:else}
-	<PopupScrolllock />
-	<slot />
+	{#if $TAB_BLOCK}
+		<div class="ctmblock-div blurry-bg">
+			<h1>Sulje muut välilehdet</h1>
+			<p style="padding-bottom:1em;">OispaHallaa voi pelata vain yhdessä välilehdessä kerrallaan.</p>
+			<button class="button action-btn" on:click={take_ownership}>Pelaa tässä</button>
+		</div>
+	{:else}
+		<PopupScrolllock />
+		{#key $storage_version}
+			<slot />
+		{/key}
+	{/if}
 {/if}
 
-<style lang="scss" global>
+<style lang="scss">
+	.ctmblock-div {
+		min-height: 100vh;
+		background-attachment: fixed;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+
+		* {
+			margin: 0;
+		}
+	}
 </style>

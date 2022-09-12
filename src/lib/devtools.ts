@@ -1,7 +1,8 @@
 import { get } from "svelte/store";
-import { storage, getItem, setItem } from "./stores/storage";
+import { storage, getItem, setItem, getWholeLocalForage } from "./stores/storage";
 import { browser } from "$app/environment";
 import { theme_index } from "./stores/themestore";
+import type GameManager from "./gamelogic/game_manager";
 
 function getAllItems() {
 	return get(storage);
@@ -26,16 +27,27 @@ function setTheme(index: number) {
 	theme_index.set(index);
 }
 
+function getHACHistory() {
+	// @ts-ignore
+	let game_manager = window.GameManagerDebugInstance || {size: 4};
+	let size = game_manager.size;
+	let history = getItem("HAC_history");
+	return `${size}x${size}S${history.join(":")}`;
+}
+
 if (browser) {
 	// @ts-ignore
 	window.devtools = {
 		setItem,
 		getItem,
 		getAllItems,
+		getWholeLocalForage,
 
 		setLocalStorage,
 
 		getTheme,
-		setTheme
+		setTheme,
+
+		getHACHistory
 	};
 }
