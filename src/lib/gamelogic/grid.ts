@@ -107,7 +107,7 @@ export default class Grid {
 		};
 	}
 	serialize_HAC() {
-		var state = [];
+		var state: number[] = [];
 		for (var y = 0; y < this.size; y++) {
 			for (var x = 0; x < this.size; x++) {
 				try {

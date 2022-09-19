@@ -193,7 +193,7 @@
 					</div>
 					<input type="range" min="0" max={parsed.length - 1} bind:value={selected_frame} />
 					<input type="number" bind:value={selected_frame} />
-					<button on:click={validate_all}>Tarkista kaikki siirrot</button>
+					<button on:click={validate_all}>Tarkista kaikki siirrot välimuistiin</button>
 				{/if}
 				<Board
 					bind:this={boardInstance}

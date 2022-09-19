@@ -90,6 +90,7 @@ storage.subscribe(async (data) => {
 				if(get(TAB_BLOCK)) {
 					// alert("Peliä ei tallenneta, kunnes muut välilehdet suljetaan");
 					console.warn("Refusing to write data as multiple tabs are open!");
+					return;
 				}
 				let local_ts: number = data.__updated_ms || 0;
 				let external_ts: number = (await localforage.getItem("__updated_ms")) || 0;

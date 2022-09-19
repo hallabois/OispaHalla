@@ -29,10 +29,15 @@ function setTheme(index: number) {
 
 function getHACHistory() {
 	// @ts-ignore
-	let game_manager = window.GameManagerDebugInstance || { size: 4 };
+	let game_manager = window.GameManagerDebugInstance;
 	let size = game_manager.size;
-	let history = getItem("HAC_history");
+	let history = game_manager.history;
 	return `${size}x${size}S${history.join(":")}`;
+}
+
+function getGameManagerInstance() {
+	// @ts-ignore
+	return window.GameManagerDebugInstance;
 }
 
 if (browser) {
@@ -48,6 +53,7 @@ if (browser) {
 		getTheme,
 		setTheme,
 
-		getHACHistory
+		getHACHistory,
+		getGameManagerInstance
 	};
 }
