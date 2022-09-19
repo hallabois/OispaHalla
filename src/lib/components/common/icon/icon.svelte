@@ -20,7 +20,7 @@
 	{#if d != null}
 		<svg xmlns="http://www.w3.org/2000/svg" height="1em" {viewBox}>
 			<path
-				transition:draw={{ duration: animation_length, easing: quintOut }}
+				transition:draw|local={{ duration: animation_length, easing: quintOut }}
 				{d}
 				{fill}
 				fill-opacity={fill_opacity}
@@ -28,7 +28,7 @@
 			/>
 			{#if show_stroke}
 				<path
-					transition:draw={{ duration: animation_length, easing: quintOut }}
+					transition:draw|local={{ duration: animation_length, easing: quintOut }}
 					{d}
 					fill="none"
 					{stroke}
