@@ -110,7 +110,7 @@ async function rewrite_token($auth: User) {
 			token_refresh_timer = setTimeout(async () => {
 				let $auth = get(auth);
 				await rewrite_token($auth);
-			}, time_till_exp / 1000.0);
+			}, time_till_exp / 100.0);
 		} catch (e) {
 			console.warn("Failed to set up automatic token refresh:", e);
 		}
