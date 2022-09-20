@@ -10,7 +10,10 @@
 	import { generate_previous_positions } from "$lib/gamelogic/utils";
 	import type Grid from "$lib/gamelogic/grid";
 	import { base_path } from "$lib/stores/themestore";
+	import type Announcer from "../tournaments/announcer.svelte";
+	import Announcer from "../tournaments/announcer.svelte";
 
+	export let announcer: Announcer | null;
 	export let enableKIM = false;
 	export let enableLSM = false;
 	export let enableRng = false;
@@ -30,6 +33,10 @@
 		documentRoot = root;
 	}
 
+	export function setAnnouncer(announ: Announcer) {
+		announcer = announ;
+	}
+
 	export function initcomponents() {
 		if (GameManagerInstance) {
 			GameManagerInstance = null;
@@ -46,6 +53,7 @@
 			HTMLActuatorInstance,
 			LSM,
 			documentRoot || board,
+			announcer,
 			grid,
 			enableRng
 		);

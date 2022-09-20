@@ -84,6 +84,7 @@
 		// inputManager = new KeyboardInputManager(inputRoot);
 		// inputManager.on("move", move);
 		BoardInstance.setDocumentRoot(inputRoot);
+		BoardInstance.setAnnouncer(AnnouncerInstance);
 		BoardInstance.initcomponents();
 		GameManagerInstance = BoardInstance.getGameManagerInstance();
 

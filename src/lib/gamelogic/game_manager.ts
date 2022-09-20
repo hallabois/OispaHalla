@@ -8,6 +8,7 @@ import Tile from "./tile";
 import { HAC } from "$lib/HAC";
 
 import { getItem, setItem, storage } from "$lib/stores/storage";
+import type Announcer from "$lib/components/tournaments/announcer.svelte";
 
 export default class GameManager {
 	size: any;
@@ -30,6 +31,7 @@ export default class GameManager {
 	documentRoot: HTMLElement;
 	enable_random: boolean;
 	HallaAntiCheat: HAC;
+	announcer: Announcer | null;
 
 	constructor(
 		size: number,
@@ -37,11 +39,13 @@ export default class GameManager {
 		Actuator: HTMLActuator,
 		StorageManager: LocalStorageManager,
 		documentRoot: HTMLElement,
-		grid = null,
+		announcer: Announcer | null,
+		grid: Grid|null = null,
 		enable_random = true
 	) {
 		this.documentRoot = documentRoot;
 		this.enable_random = enable_random;
+		this.announcer = announcer;
 
 		this.size = size; // Size of the grid
 		this.inputManager = InputManager;
@@ -297,7 +301,7 @@ export default class GameManager {
 
 				// Record end for HAC
 				let state = this.serialize_HAC(HAC_grid, "f", added);
-				this.history.push(state);
+				this.pushToHistory(state);
 
 				this.recordBest();
 
@@ -316,7 +320,7 @@ export default class GameManager {
 			let HAC_direction = moved ? direction : "e";
 			//HAC_grid = this.grid.serialize_HAC();
 			let state = this.serialize_HAC(HAC_grid, HAC_direction, added);
-			this.history.push(state);
+			this.pushToHistory(state);
 
 			this.recordBest();
 		}
@@ -446,6 +450,11 @@ export default class GameManager {
 			let event = new Event("game_ended_with_best_score");
 			window.dispatchEvent(event);
 		}
+	}
+
+	pushToHistory(state: string) {
+		this.history.push(state);
+		this.removeConsecutiveDuplicatesFromHistory();
 	}
 
 	removeConsecutiveDuplicatesFromHistory() {
