@@ -458,9 +458,16 @@ export default class GameManager {
 	}
 
 	removeConsecutiveDuplicatesFromHistory() {
+		// Reverse the array so we keep the last duplicate instead of the first one
+		this.history.reverse();
+
 		// Always keep the 0th element, but remove any other elements that match the previous element
 		this.history = this.history.filter((val, index, array)=>{
-			return index == 0 || val != array[index - 1];
+			// Only compare the tiles within the entries, as a bug causes ghost additions...
+			return index == 0 || val.split("+")[0] != array[index - 1].split("+")[0];
 		});
+
+		// Reverse the array again so that the order of non-duplicated entries are preserved
+		this.history.reverse();
 	}
 }

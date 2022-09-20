@@ -3,6 +3,7 @@
 	import Grid from "$lib/gamelogic/grid";
 	import Tile from "$lib/gamelogic/tile";
 	import { onMount } from "svelte";
+	import { ready, wasm, validation_cache } from "$lib/wasm/twothousand_forty_eight";
 
 	const directions = {
 		"0": "ylös",
@@ -11,21 +12,6 @@
 		"3": "vasemmalle",
 		f: "loppuun"
 	};
-
-	let ready = false;
-	let wasm: any;
-	onMount(async () => {
-		console.info("trying to import wasm...");
-		wasm = await import("twothousand-forty-eight");
-		console.info("wasm imported");
-		console.info("wasm", wasm);
-		try {
-			await wasm.default();
-		} catch (e) {
-			console.warn("Failed to init wasm manually:", e);
-		}
-		ready = true;
-	});
 
 	let selected_frame = 0;
 	let input = "";
@@ -38,7 +24,7 @@
 	let hash: string | null;
 
 	let last_input: string | null = null;
-	$: if (input.length > 0 && ready) {
+	$: if (input.length > 0 && $ready) {
 		if (input !== last_input) {
 			console.info("Trying to parse input...");
 			try {
@@ -71,8 +57,7 @@
 	let err2: string | null;
 	let frame;
 	let move_direction: string | null = null;
-	let validation_cache = {};
-	$: if (parsed != null && selected_frame != null && ready) {
+	$: if (parsed != null && selected_frame != null && $ready) {
 		console.info("Trying to render selected frame...");
 		try {
 			err2 = null;
@@ -149,7 +134,7 @@
 
 <main class="blurry-bg">
 	<div class="page">
-		{#if !ready}
+		{#if !$ready}
 			<p>Ladataan...</p>
 		{:else}
 			<p>WASM Ladattu.</p>
