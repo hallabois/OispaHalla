@@ -1,24 +1,14 @@
 import { browser } from "$app/environment";
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 
 export let ready = writable(false);
-export let wasm;
+export let wasm: Writable<typeof import("twothousand-forty-eight")|null> = writable(null);
 
 export let validation_cache = {};
 
-async function init() {
+export async function init() {
     console.info("trying to import wasm...");
-    wasm = await import("twothousand-forty-eight");
+    wasm.set(await import("twothousand-forty-eight"));
     console.info("wasm imported");
-    console.info("wasm", wasm);
-    try {
-        await wasm.default();
-    } catch (e) {
-        console.warn("Failed to init wasm manually:", e);
-    }
     ready.set(true);
 };
-
-if(browser) {
-    init();
-}

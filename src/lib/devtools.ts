@@ -2,7 +2,7 @@ import { get } from "svelte/store";
 import { storage, getItem, setItem, getWholeLocalForage } from "./stores/storage";
 import { browser } from "$app/environment";
 import { theme_index } from "./stores/themestore";
-import type GameManager from "./gamelogic/game_manager";
+import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
 
 function getAllItems() {
 	return get(storage);
@@ -40,6 +40,41 @@ function getGameManagerInstance() {
 	return window.GameManagerDebugInstance;
 }
 
+async function initWasm() {
+	await init()
+}
+
+function getWasm() {
+	return get(wasm);
+}
+
+function getWasmReady() {
+	return get(ready);
+}
+
+async function getWasmAndSetup() {
+	if(getWasm() == null) {
+		await initWasm();
+	}
+	return getWasm();
+}
+
+async function validateCurrentHistory() {
+	let history = getHACHistory();
+	let wasm = await getWasmAndSetup();
+	let result = wasm?.validate(history);
+	if(result == null) return;
+	return JSON.parse(result);
+}
+
+async function validateCurrentHistoryAllFrames() {
+	let history = getHACHistory();
+	let wasm = await getWasmAndSetup();
+	let result = wasm?.validate_all_frames(history);
+	if(result == null) return;
+	return JSON.parse(result);
+}
+
 if (browser) {
 	// @ts-ignore
 	window.devtools = {
@@ -54,6 +89,17 @@ if (browser) {
 		setTheme,
 
 		getHACHistory,
-		getGameManagerInstance
+		getGameManagerInstance,
+
+		initWasm,
+		getWasm,
+		getWasmReady,
+
+		validateCurrentHistory,
+		validateCurrentHistoryAllFrames,
+
+		stores: {
+			get
+		}
 	};
 }

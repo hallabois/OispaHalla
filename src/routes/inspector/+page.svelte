@@ -3,7 +3,8 @@
 	import Grid from "$lib/gamelogic/grid";
 	import Tile from "$lib/gamelogic/tile";
 	import { onMount } from "svelte";
-	import { ready, wasm, validation_cache } from "$lib/wasm/twothousand_forty_eight";
+	import { ready, wasm, validation_cache, init as initWasm } from "$lib/wasm/twothousand_forty_eight";
+	import { browser } from "$app/environment";
 
 	const directions = {
 		"0": "ylös",
@@ -15,6 +16,7 @@
 
 	let selected_frame = 0;
 	let input = "";
+	let show_additions = true;
 	$: usable_input = input.replaceAll("\n", "");
 	let parsed: any;
 	let grid;
@@ -24,7 +26,7 @@
 	let hash: string | null;
 
 	let last_input: string | null = null;
-	$: if (input.length > 0 && $ready) {
+	$: if (input.length > 0 && $ready && $wasm != null) {
 		if (input !== last_input) {
 			console.info("Trying to parse input...");
 			try {
@@ -32,16 +34,16 @@
 				validation_result = null;
 				hash = null;
 
-				console.info("wasm atm", wasm);
+				console.info("wasm atm", $wasm);
 
 				console.info("hashing...");
-				hash = JSON.parse(wasm.hash(usable_input));
+				hash = JSON.parse($wasm.hash(usable_input));
 
-				parsed = JSON.parse(wasm.get_frames(usable_input));
+				parsed = JSON.parse($wasm.get_frames(usable_input));
 				console.info("input parsed!");
 
 				console.info("Validating history...");
-				validation_result = JSON.parse(wasm.validate(usable_input));
+				validation_result = JSON.parse($wasm.validate(usable_input));
 			} catch (e) {
 				console.warn("Error while parsing:", e);
 				err = `${e}`;
@@ -57,7 +59,7 @@
 	let err2: string | null;
 	let frame;
 	let move_direction: string | null = null;
-	$: if (parsed != null && selected_frame != null && $ready) {
+	$: if (parsed != null && selected_frame != null && $wasm != null) {
 		console.info("Trying to render selected frame...");
 		try {
 			err2 = null;
@@ -73,6 +75,17 @@
 			let new_cells = transformed.cells.map((col) =>
 				col.map((t) => (t ? new Tile({ x: t.x, y: t.y }, t.value, t.id) : null))
 			);
+			if(show_additions) {
+				let now = usable_input.split(":")[selected_frame];
+				let addition = now.split("+")[1].split(";")[0];
+				let coordinates = addition.split(".")[0].split(",");
+				let x = +coordinates[0];
+				let y = +coordinates[1];
+				let value = addition.split(".")[1];
+				let tile = new Tile({x, y}, 1, -1);
+				console.info("Addition: ", tile );
+				new_cells[y][x] = tile;
+			}
 			grid.cells = new_cells;
 			grid = grid;
 			if (boardInstance) {
@@ -91,9 +104,9 @@
 				setTimeout(() => {
 					let until_now = usable_input.split(":").slice(0, selected_frame).join(":");
 
-					if (validation_cache[usable_input][selected_frame] == null) {
+					if (validation_cache[usable_input][selected_frame] == null && $wasm != null) {
 						console.info("Analyzing frame", selected_frame);
-						validation_cache[usable_input][selected_frame] = JSON.parse(wasm.validate(until_now));
+						validation_cache[usable_input][selected_frame] = JSON.parse($wasm.validate(until_now));
 					}
 				}, 100);
 			} else {
@@ -112,8 +125,8 @@
 	}
 
 	async function validate_all() {
-		if (wasm != null) {
-			let result = JSON.parse(wasm.validate_all_frames(usable_input));
+		if ($wasm != null) {
+			let result = JSON.parse($wasm.validate_all_frames(usable_input));
 			console.info("Validation result", result);
 			validation_cache[usable_input] = result;
 		}
@@ -123,6 +136,9 @@
 	let boardInstance: Board;
 	let inputRoot: HTMLElement;
 	onMount(() => {
+		if(browser) {
+			initWasm();
+		}
 		inputRoot = document.querySelector("html") as HTMLElement;
 		mounted = true;
 	});
@@ -178,6 +194,9 @@
 					</div>
 					<input type="range" min="0" max={parsed.length - 1} bind:value={selected_frame} />
 					<input type="number" bind:value={selected_frame} />
+					<br />
+					<label for="show_additions">Näytä lisäykset</label>
+					<input id="show_additions" type="checkbox" bind:checked={show_additions} />
 					<button on:click={validate_all}>Tarkista kaikki siirrot välimuistiin</button>
 				{/if}
 				<Board
