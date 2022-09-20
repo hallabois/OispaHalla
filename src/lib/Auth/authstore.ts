@@ -44,9 +44,9 @@ const createAuth = () => {
 	}
 
 	async function signInWith(name: string) {
-		const { signInWithRedirect } = await import("firebase/auth");
+		const { signInWithPopup } = await import("firebase/auth");
 		const provider = await providerFor(name);
-		await signInWithRedirect(auth, provider);
+		await signInWithPopup(auth, provider);
 	}
 
 	async function sendSignInLink(email: string, origin: string) {
