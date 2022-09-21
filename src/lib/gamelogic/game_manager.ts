@@ -9,6 +9,7 @@ import { HAC } from "$lib/HAC";
 
 import { getItem, setItem, storage } from "$lib/stores/storage";
 import type Announcer from "$lib/components/tournaments/announcer.svelte";
+import { browser } from "$app/environment";
 
 export default class GameManager {
 	size: any;
@@ -452,6 +453,13 @@ export default class GameManager {
 
 	pushToHistory(state: string) {
 		this.history.push(state);
+		if(browser) {
+			window.devtools.validateCurrentHistory().then((result) => {
+				if(!result.valid) {
+					alert("History no longer valid!");
+				}
+			});
+		}
 		// this.removeConsecutiveDuplicatesFromHistory();
 	}
 
