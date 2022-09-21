@@ -405,8 +405,6 @@ export default class GameManager {
 
 	recordBest() {
 		let score = this.score;
-		// Clean up the history in case any anomalies were recorded
-		this.removeConsecutiveDuplicatesFromHistory();
 		
 		let best = getItem("HAC_best_score" + this.size);
 		if (best == null && getItem("HAC_best_score") != null && this.size == 4) {
@@ -454,7 +452,7 @@ export default class GameManager {
 
 	pushToHistory(state: string) {
 		this.history.push(state);
-		this.removeConsecutiveDuplicatesFromHistory();
+		// this.removeConsecutiveDuplicatesFromHistory();
 	}
 
 	removeConsecutiveDuplicatesFromHistory() {
