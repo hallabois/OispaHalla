@@ -455,6 +455,7 @@ export default class GameManager {
 		this.history.push(state);
 		if(browser) {
 			window.devtools.validateCurrentHistory().then((result) => {
+				console.log(result);
 				if(!result.valid) {
 					alert("History no longer valid!");
 				}
