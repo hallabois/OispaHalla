@@ -12,6 +12,12 @@ function unregisterTabID() {
 				if (localStorage.lastSession == tabID) {
 					delete localStorage.lastSession;
 				}
+				if (localStorage.lastSession == date_registered) {
+					delete localStorage.lastSession;
+				}
+				else if (+localStorage.lastSession < date_registered) {
+					delete localStorage.lastSession;
+				}
 			}
 		}
 	}
@@ -32,6 +38,13 @@ let ctm_close_key = -245;
 let nt: BroadcastChannel;
 if (browser) {
 	date_registered = new Date().getTime();
+	let storage_lock = +(localStorage.getItem("lastSession") || "9999999999999999999");
+	if(storage_lock < date_registered) {
+		TAB_BLOCK.set(true);
+	}
+	else {
+		localStorage.setItem("lastSession", date_registered + "");
+	}
 	nt = new BroadcastChannel(ctm_channel_sync);
 	nt.postMessage(date_registered); /* send */
 	nt.onmessage = function (ev) {
@@ -44,6 +57,7 @@ if (browser) {
 				console.log("We are the best!");
 				nt.postMessage(date_registered);
 				console.log("Tab lock ought to be removed...");
+				localStorage.setItem("lastSession", date_registered + "");
 				/* if(get(TAB_BLOCK)) {
 					location.reload();
 				} */

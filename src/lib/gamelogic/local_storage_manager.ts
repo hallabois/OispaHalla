@@ -1,7 +1,4 @@
-import { tabID } from "$lib/session_manager";
-
 import { getItem, setItem } from "$lib/stores/storage";
-import { browser } from "$app/environment";
 
 export default class LocalStorageManager {
 	enabled: boolean;

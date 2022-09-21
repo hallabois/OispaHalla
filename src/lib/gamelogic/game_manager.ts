@@ -10,6 +10,8 @@ import { HAC } from "$lib/HAC";
 import { getItem, setItem, storage } from "$lib/stores/storage";
 import type Announcer from "$lib/components/tournaments/announcer.svelte";
 import { browser } from "$app/environment";
+import { TAB_BLOCK } from "$lib/session_manager";
+import { get } from "svelte/store";
 
 export default class GameManager {
 	size: any;
@@ -405,6 +407,10 @@ export default class GameManager {
 	}
 
 	recordBest() {
+		if(get(TAB_BLOCK)) {
+			return;
+		}
+
 		let score = this.score;
 		
 		let best = getItem("HAC_best_score" + this.size);
