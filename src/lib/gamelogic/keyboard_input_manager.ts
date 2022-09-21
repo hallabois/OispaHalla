@@ -56,7 +56,13 @@ export default class KeyboardInputManager {
 		this.boundKeyDownHandler = this.keydownHandler.bind(this);
 
 		this.addKeydownHandler = () => {
-			document.addEventListener("keydown", this.boundKeyDownHandler);
+			if(typeof window.hasKeyListener === 'undefined' || window.hasKeyListener !== true){
+				document.addEventListener("keydown", this.boundKeyDownHandler);
+				window.hasKeyListener = true;
+			}
+			else {
+				console.warn("A keylistener already exists!");
+			}
 		};
 		this.removeKeydownHandler = () => {
 			document.removeEventListener("keydown", this.boundKeyDownHandler);

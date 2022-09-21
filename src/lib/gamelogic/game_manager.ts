@@ -463,7 +463,7 @@ export default class GameManager {
 			window.devtools.validateCurrentHistory().then((result) => {
 				console.log(result);
 				if(result && !result.valid) {
-					alert("History no longer valid!");
+					alert("Pelin historia on korruptoitunut!\nOta yhteyttä kehittäjiin tai käynnistä peli uudelleen.");
 				}
 			});
 		}
@@ -474,7 +474,7 @@ export default class GameManager {
 		let working_copy = [...this.history]; // Create a copy of the history
 
 		// Reverse the array so we keep the last duplicate instead of the first one
-		working_copy.reverse();
+		// working_copy.reverse();
 
 		// Always keep the 0th element, but remove any other elements that match the previous element
 		working_copy = this.history.filter((val, index, array)=>{
@@ -483,7 +483,7 @@ export default class GameManager {
 		});
 
 		// Reverse the array again so that the order of non-duplicated entries are preserved
-		working_copy.reverse();
+		// working_copy.reverse();
 
 		this.history = working_copy;
 	}
