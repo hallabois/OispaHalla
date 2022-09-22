@@ -56,19 +56,18 @@ export default class KeyboardInputManager {
 		this.boundKeyDownHandler = this.keydownHandler.bind(this);
 
 		this.addKeydownHandler = () => {
-			if(typeof window.hasKeyListener === 'undefined' || window.hasKeyListener !== true){
-				document.addEventListener("keydown", this.boundKeyDownHandler);
-				window.hasKeyListener = true;
-				console.info("Keylistener registered succesfully!");
+			if(typeof document.oh_heylistener !== 'undefined' || document.oh_heylistener != null){
+				console.warn("A keylistener already exists! Trying to remove it...");
+				document.oh_heylistener.removeKeydownHandler();
 			}
-			else {
-				console.warn("A keylistener already exists!");
-			}
+			document.addEventListener("keydown", this.boundKeyDownHandler);
+			document.oh_heylistener = this;
+			console.info("Keylistener registered succesfully!");
 		};
 		this.removeKeydownHandler = () => {
 			document.removeEventListener("keydown", this.boundKeyDownHandler);
-			if(typeof window.hasKeyListener !== 'undefined' || window.hasKeyListener !== false){
-				window.hasKeyListener = false;
+			if(typeof document.oh_heylistener !== 'undefined' || document.oh_heylistener !== null){
+				document.oh_heylistener = null;
 			}
 			console.info("Keylistener removed succesfully!");
 		};
