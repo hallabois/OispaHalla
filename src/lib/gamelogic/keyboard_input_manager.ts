@@ -59,6 +59,7 @@ export default class KeyboardInputManager {
 			if(typeof window.hasKeyListener === 'undefined' || window.hasKeyListener !== true){
 				document.addEventListener("keydown", this.boundKeyDownHandler);
 				window.hasKeyListener = true;
+				console.info("Keylistener registered succesfully!");
 			}
 			else {
 				console.warn("A keylistener already exists!");
@@ -66,6 +67,10 @@ export default class KeyboardInputManager {
 		};
 		this.removeKeydownHandler = () => {
 			document.removeEventListener("keydown", this.boundKeyDownHandler);
+			if(typeof window.hasKeyListener !== 'undefined' || window.hasKeyListener !== false){
+				window.hasKeyListener = false;
+			}
+			console.info("Keylistener removed succesfully!");
 		};
 
 		this.listen();

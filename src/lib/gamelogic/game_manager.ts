@@ -463,7 +463,7 @@ export default class GameManager {
 			window.devtools.validateCurrentHistory().then((result) => {
 				console.log(result);
 				if(result && !result.valid) {
-					alert("Pelin historia on korruptoitunut!\nOta yhteyttä kehittäjiin tai käynnistä peli uudelleen.");
+					alert("Pelin historia on korruptoitunut!\nOta yhteyttä kehittäjiin tai käynnistä peli uudelleen.\n\nKorruptoitunutta peliä ei voi lähettää leaderboardeille.");
 				}
 			});
 		}
