@@ -41,7 +41,7 @@ function getGameManagerInstance() {
 }
 
 async function initWasm() {
-	await init()
+	await init();
 }
 
 function getWasm() {
@@ -53,7 +53,7 @@ function getWasmReady() {
 }
 
 async function getWasmAndSetup() {
-	if(getWasm() == null) {
+	if (getWasm() == null) {
 		await initWasm();
 	}
 	return getWasm();
@@ -63,7 +63,7 @@ async function validateCurrentHistory() {
 	let history = getHACHistory();
 	let wasm = await getWasmAndSetup();
 	let result = wasm?.validate(history);
-	if(result == null) return;
+	if (result == null) return;
 	return JSON.parse(result);
 }
 
@@ -71,7 +71,7 @@ async function validateCurrentHistoryAllFrames() {
 	let history = getHACHistory();
 	let wasm = await getWasmAndSetup();
 	let result = wasm?.validate_all_frames(history);
-	if(result == null) return;
+	if (result == null) return;
 	return JSON.parse(result);
 }
 

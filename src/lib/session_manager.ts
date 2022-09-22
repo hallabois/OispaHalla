@@ -14,8 +14,7 @@ function unregisterTabID() {
 				}
 				if (localStorage.lastSession == date_registered) {
 					delete localStorage.lastSession;
-				}
-				else if (+localStorage.lastSession < date_registered) {
+				} else if (+localStorage.lastSession < date_registered) {
 					delete localStorage.lastSession;
 				}
 			}
@@ -39,10 +38,9 @@ let nt: BroadcastChannel;
 if (browser) {
 	date_registered = new Date().getTime();
 	let storage_lock = +(localStorage.getItem("lastSession") || "9999999999999999999");
-	if(storage_lock < date_registered) {
+	if (storage_lock < date_registered) {
 		TAB_BLOCK.set(true);
-	}
-	else {
+	} else {
 		localStorage.setItem("lastSession", date_registered + "");
 	}
 	nt = new BroadcastChannel(ctm_channel_sync);

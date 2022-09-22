@@ -3,7 +3,12 @@
 	import Grid from "$lib/gamelogic/grid";
 	import Tile from "$lib/gamelogic/tile";
 	import { onMount } from "svelte";
-	import { ready, wasm, validation_cache, init as initWasm } from "$lib/wasm/twothousand_forty_eight";
+	import {
+		ready,
+		wasm,
+		validation_cache,
+		init as initWasm
+	} from "$lib/wasm/twothousand_forty_eight";
 	import { browser } from "$app/environment";
 
 	const directions = {
@@ -75,15 +80,15 @@
 			let new_cells = transformed.cells.map((col) =>
 				col.map((t) => (t ? new Tile({ x: t.x, y: t.y }, t.value, t.id) : null))
 			);
-			if(show_additions) {
+			if (show_additions) {
 				let now = usable_input.split(":")[selected_frame];
 				let addition = now.split("+")[1].split(";")[0];
 				let coordinates = addition.split(".")[0].split(",");
 				let x = +coordinates[0];
 				let y = +coordinates[1];
 				let value = addition.split(".")[1];
-				let tile = new Tile({x, y}, 1, -1);
-				console.info("Addition: ", tile );
+				let tile = new Tile({ x, y }, 1, -1);
+				console.info("Addition: ", tile);
 				new_cells[y][x] = tile;
 			}
 			grid.cells = new_cells;
@@ -136,7 +141,7 @@
 	let boardInstance: Board;
 	let inputRoot: HTMLElement;
 	onMount(() => {
-		if(browser) {
+		if (browser) {
 			initWasm();
 		}
 		inputRoot = document.querySelector("html") as HTMLElement;

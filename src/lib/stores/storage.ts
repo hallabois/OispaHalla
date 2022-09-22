@@ -87,7 +87,7 @@ storage.subscribe(async (data) => {
 				if (!get(storage_loaded)) {
 					return;
 				}
-				if(get(TAB_BLOCK)) {
+				if (get(TAB_BLOCK)) {
 					// alert("Peliä ei tallenneta, kunnes muut välilehdet suljetaan");
 					console.warn("Refusing to write data as multiple tabs are open!");
 					return;

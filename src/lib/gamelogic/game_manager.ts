@@ -43,7 +43,7 @@ export default class GameManager {
 		StorageManager: LocalStorageManager,
 		documentRoot: HTMLElement,
 		announcer: Announcer | null,
-		grid: Grid|null = null,
+		grid: Grid | null = null,
 		enable_random = true
 	) {
 		this.documentRoot = documentRoot;
@@ -216,7 +216,7 @@ export default class GameManager {
 			won: this.won,
 			size: this.size,
 			keepPlaying: this.doKeepPlaying,
-			history: this.history,
+			history: this.history
 		};
 	}
 	// Save all tile positions and remove merger info
@@ -329,7 +329,7 @@ export default class GameManager {
 		}
 	}
 	// Get the vector representing the chosen direction
-	getVector(direction: 0 | 1 | 2 | 3): {x: number, y: number} {
+	getVector(direction: 0 | 1 | 2 | 3): { x: number; y: number } {
 		// Vectors representing tile movement
 		var map = {
 			0: { x: 0, y: -1 },
@@ -341,7 +341,7 @@ export default class GameManager {
 		return map[direction];
 	}
 	// Build a list of positions to traverse in the right order
-	buildTraversals(vector: {x: number, y: number}) {
+	buildTraversals(vector: { x: number; y: number }) {
 		var traversals = { x: [], y: [] };
 
 		for (var pos = 0; pos < this.size; pos++) {
@@ -357,7 +357,7 @@ export default class GameManager {
 
 		return traversals;
 	}
-	findFarthestPosition(cell: any, vector: {x: number, y: number}) {
+	findFarthestPosition(cell: any, vector: { x: number; y: number }) {
 		var previous;
 
 		// Progress towards the vector direction until an obstacle is found
@@ -402,17 +402,17 @@ export default class GameManager {
 
 		return false;
 	}
-	positionsEqual(first: {x: number, y: number}, second: {x: number, y: number}) {
+	positionsEqual(first: { x: number; y: number }, second: { x: number; y: number }) {
 		return first.x === second.x && first.y === second.y;
 	}
 
 	recordBest() {
-		if(get(TAB_BLOCK)) {
+		if (get(TAB_BLOCK)) {
 			return;
 		}
 
 		let score = this.score;
-		
+
 		let best = getItem("HAC_best_score" + this.size);
 		if (best == null && getItem("HAC_best_score") != null && this.size == 4) {
 			best = getItem("HAC_best_score");
@@ -459,11 +459,13 @@ export default class GameManager {
 
 	pushToHistory(state: string) {
 		this.history.push(state);
-		if(browser) {
+		if (browser) {
 			window.devtools.validateCurrentHistory().then((result) => {
 				console.log(result);
-				if(result && !result.valid) {
-					alert("Pelin historia on korruptoitunut!\nOta yhteyttä kehittäjiin tai käynnistä peli uudelleen.\n\nKorruptoitunutta peliä ei voi lähettää leaderboardeille.");
+				if (result && !result.valid) {
+					alert(
+						"Pelin historia on korruptoitunut!\nOta yhteyttä kehittäjiin tai käynnistä peli uudelleen.\n\nKorruptoitunutta peliä ei voi lähettää leaderboardeille."
+					);
 				}
 			});
 		}
@@ -477,7 +479,7 @@ export default class GameManager {
 		// working_copy.reverse();
 
 		// Always keep the 0th element, but remove any other elements that match the previous element
-		working_copy = this.history.filter((val, index, array)=>{
+		working_copy = this.history.filter((val, index, array) => {
 			// Only compare the tiles within the entries, as a bug causes ghost additions...
 			return index == 0 || val.split("+")[0] != array[index - 1].split("+")[0];
 		});

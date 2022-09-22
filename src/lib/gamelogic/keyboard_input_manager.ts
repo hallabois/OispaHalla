@@ -56,7 +56,7 @@ export default class KeyboardInputManager {
 		this.boundKeyDownHandler = this.keydownHandler.bind(this);
 
 		this.addKeydownHandler = () => {
-			if(typeof document.oh_heylistener !== 'undefined' || document.oh_heylistener != null){
+			if (typeof document.oh_heylistener !== "undefined" || document.oh_heylistener != null) {
 				console.warn("A keylistener already exists! Trying to remove it...");
 				document.oh_heylistener.removeKeydownHandler();
 			}
@@ -66,7 +66,7 @@ export default class KeyboardInputManager {
 		};
 		this.removeKeydownHandler = () => {
 			document.removeEventListener("keydown", this.boundKeyDownHandler);
-			if(typeof document.oh_heylistener !== 'undefined' || document.oh_heylistener !== null){
+			if (typeof document.oh_heylistener !== "undefined" || document.oh_heylistener !== null) {
 				document.oh_heylistener = null;
 			}
 			console.info("Keylistener removed succesfully!");

@@ -6,7 +6,7 @@ export default class Tile {
 	mergedFrom: any;
 
 	id: number | null;
-	constructor(position: {x: number, y: number}, value: number, id: number | null = null) {
+	constructor(position: { x: number; y: number }, value: number, id: number | null = null) {
 		this.x = position.x;
 		this.y = position.y;
 		this.value = value || 2;
@@ -18,7 +18,7 @@ export default class Tile {
 	savePosition() {
 		this.previousPosition = { x: this.x, y: this.y };
 	}
-	updatePosition(position: {x: number, y: number}) {
+	updatePosition(position: { x: number; y: number }) {
 		this.x = position.x;
 		this.y = position.y;
 	}
