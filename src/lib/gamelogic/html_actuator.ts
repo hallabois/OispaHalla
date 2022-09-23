@@ -4,7 +4,6 @@ export default class HTMLActuator {
 	html_component: HTMLElement;
 	tileContainer: any;
 	scoreContainer: any;
-	bestContainer: any;
 	messageContainer: any;
 	kurinPalautusViesti: any;
 	kurinPalautusNappi: any;
@@ -20,7 +19,6 @@ export default class HTMLActuator {
 		this.html_component = documentRoot;
 		this.tileContainer = documentRoot.querySelector(".tile-container");
 		this.scoreContainer = documentRoot.querySelector(".score-container");
-		this.bestContainer = documentRoot.querySelector(".best-container");
 		this.messageContainer = documentRoot.querySelector(".game-message");
 
 		this.kurinPalautusViesti = documentRoot.querySelector(".kurin-palautus-viesti");
@@ -177,11 +175,7 @@ export default class HTMLActuator {
 		}
 	}
 	updateBestScore(bestScore) {
-		if (this.bestContainer) {
-			this.bestContainer.textContent = bestScore;
-		} else {
-			console.warn("Bestscorecontainer missing!");
-		}
+		// Depreciated
 	}
 	message(won, kurinPalautukset) {
 		var type = won ? "game-won" : "game-over";

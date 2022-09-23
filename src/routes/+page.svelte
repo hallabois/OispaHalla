@@ -3,7 +3,7 @@
 	import { onMount } from "svelte";
 
 	import { enable_multiplayer, enable_leaderboards, enable_countdown } from "../features";
-	import { storage_loaded } from "$lib/stores/storage";
+	import { storage_loaded, storage } from "$lib/stores/storage";
 
 	import Preloader from "$lib/components/common/image-preloader/Preloader.svelte";
 
@@ -137,7 +137,17 @@
 		</div>
 		<div class="above-game-right">
 			<div class="score-container" style="--c:'{app_name_score}'">0</div>
-			<div class="best-container" style="--c:'{app_name_hiscore}'">0</div>
+			<div
+				class="best-container" 
+				style="--c:'{app_name_hiscore}'"
+				title={Object.keys($storage?.bestScores || {}).map(x => `${x}: ${$storage.bestScores[x]}`).join("\n")}
+			>
+				{#if GameManagerInstance != null && $storage?.bestScores}
+					{$storage?.bestScores[GameManagerInstance.size]}
+				{:else}
+					0
+				{/if}
+			</div>
 			<div
 				class="restart-button button"
 				bind:this={restartbtn}

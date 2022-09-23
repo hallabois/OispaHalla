@@ -134,7 +134,8 @@ export function getItem(key: string): any {
 }
 
 export function clearStorage() {
-	console.info("Clearing storage...");
-	delete localStorage.data;
 	storage.set({});
+	localforage.clear().then(()=>{
+		console.info("Localforage cleared.");
+	});
 }

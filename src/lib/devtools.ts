@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { storage, getItem, setItem, getWholeLocalForage } from "./stores/storage";
+import { storage, getItem, setItem, getWholeLocalForage, clearStorage } from "./stores/storage";
 import { browser } from "$app/environment";
 import { theme_index } from "./stores/themestore";
 import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
@@ -8,15 +8,15 @@ function getAllItems() {
 	return get(storage);
 }
 
-function setLocalStorage(data: string) {
+function setWholeLocalForage(data: string) {
 	let parsed = JSON.parse(data);
-	console.info("Clearing localstorage...");
-	localStorage.clear();
-	console.info("Updating localstorage...");
+	console.info("Clearing storage...");
+	clearStorage();
+	console.info("Updating storage...");
 	for (let k of Object.keys(parsed)) {
-		localStorage.setItem(k, parsed[k]);
+		setItem(k, parsed[k]);
 	}
-	console.info("Localstorage operation ready, have a nice day.");
+	console.info("Storage operation ready, have a nice day.");
 }
 
 function getTheme() {
@@ -83,7 +83,7 @@ if (browser) {
 		getAllItems,
 		getWholeLocalForage,
 
-		setLocalStorage,
+		setWholeLocalForage,
 
 		getTheme,
 		setTheme,
