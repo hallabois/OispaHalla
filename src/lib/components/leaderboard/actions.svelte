@@ -41,7 +41,7 @@
 		setItem(`lb_submitted`, {
 			...(getItem("lb_submitted") || {}),
 			[current_size]: 0
-		})
+		});
 		console.info("local score reset");
 		alert("Paikalliset pisteet poistettu!");
 		location.reload();

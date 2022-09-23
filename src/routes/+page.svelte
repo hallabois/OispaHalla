@@ -138,9 +138,11 @@
 		<div class="above-game-right">
 			<div class="score-container" style="--c:'{app_name_score}'">0</div>
 			<div
-				class="best-container" 
+				class="best-container"
 				style="--c:'{app_name_hiscore}'"
-				title={Object.keys($storage?.bestScores || {}).map(x => `${x}: ${$storage.bestScores[x]}`).join("\n")}
+				title={Object.keys($storage?.bestScores || {})
+					.map((x) => `${x}: ${$storage.bestScores[x]}`)
+					.join("\n")}
 			>
 				{#if GameManagerInstance != null && $storage?.bestScores}
 					{$storage?.bestScores[GameManagerInstance.size]}
