@@ -2,12 +2,38 @@ import * as admin from "firebase-admin";
 
 import { env } from "$env/dynamic/private";
 
-let config = env.OH_FIREBASE_ADMIN_CONFIG;
-if (!config) {
-	throw new Error("Env variable OH_FIREBASE_ADMIN_CONFIG missing!");
+let clientEmail = env.OH_FIREBASE_ADMIN_CLIENT_EMAIL;
+if (!clientEmail) {
+	throw new Error("Env variable OH_FIREBASE_ADMIN_CLIENT_EMAIL missing!");
 }
-var serviceAccount = JSON.parse(config);
+
+let privateKey = env.OH_FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, "\n");
+if (!privateKey) {
+	throw new Error("Env variable OH_FIREBASE_ADMIN_PRIVATE_KEY missing!");
+}
+if (!privateKey.includes("\n")) {
+	console.warn(
+		"Please verify that your private key env variable preservers the original newlines!"
+	);
+}
+
+let projectId = env.OH_FIREBASE_ADMIN_PROJECT_ID;
+if (!projectId) {
+	throw new Error("Env variable OH_FIREBASE_ADMIN_PROJECT_ID missing!");
+}
+
+let databaseURL = env.OH_FIREBASE_ADMIN_DATABASE_URL;
+if (!databaseURL) {
+	throw new Error("Env variable OH_FIREBASE_ADMIN_DATABASE_URL missing!");
+}
 
 export let app = admin.initializeApp({
-	credential: admin.credential.cert(serviceAccount)
+	credential: admin.credential.cert({
+		clientEmail,
+		privateKey,
+		projectId
+	}),
+	databaseURL
 });
+
+console.info("Firebase admin config imported");
