@@ -1,15 +1,17 @@
-import { readable } from "svelte/store";
+import { readable, type Readable } from "svelte/store";
 import { browser } from "$app/environment";
 import type { DocumentReference, DocumentSnapshot } from "firebase/firestore";
 import type { FirebaseApp } from "firebase/app";
 
-let dbs: { [key: string]: object } = {};
+let dbs: { [key: string]: DB } = {};
 
-export const createDB = (
+export type DB = ReturnType<createDB>;
+
+export function createDB(
 	collection: string,
 	document: string,
 	app_config: FirebaseApp | null = null
-) => {
+) {
 	let dbRef: DocumentReference;
 
 	const { subscribe } = readable<DocumentSnapshot | null>(undefined, (set) => {
@@ -41,15 +43,15 @@ export const createDB = (
 		return () => unsubscribe();
 	});
 
-	async function addReadPSA(psa_id: number) {
+	async function uploadStorage(storage: object) {
 		const { getDoc, setDoc } = await import("firebase/firestore");
 		let d = await getDoc(dbRef);
 		let data = d.data() || {};
-		let old_read_psa = data.read_psa || [];
+		let enabled_keys = ["__updated_ms", "read_psa"];
 
 		await setDoc(dbRef, {
 			...data,
-			read_psa: [...old_read_psa, psa_id]
+			storage
 		});
 	}
 
@@ -79,18 +81,22 @@ export const createDB = (
 	return {
 		subscribe,
 		activateAccount,
-		addReadPSA,
+		uploadStorage,
 
 		server_setPSA
 	};
 };
 
-export function get_db(uid: string) {
+export function get_db(uid: string): DB {
+	console.info("DB requested for user ", uid);
 	if (Object.keys(dbs).includes(uid)) {
+		console.info("DB found in cache");
 		return dbs[uid];
 	}
+	console.info("Creating DB...");
 	let userdb = createDB("user", uid);
 	dbs[uid] = userdb;
+	console.info("DB Created", userdb);
 	return userdb;
 }
 

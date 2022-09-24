@@ -9,6 +9,7 @@
 
 	import Settings from "$lib/components/settings.svelte";
 	import Info from "$lib/components/info.svelte";
+	import PSA from "$lib/components/psa.svelte";
 	import Tournaments from "$lib/components/tournaments.svelte";
 	import Leaderboards from "$lib/components/leaderboard.svelte";
 
@@ -105,6 +106,7 @@
 	let TtInstance: Tournaments;
 	let lbInstance: Leaderboards;
 	let InfoInstance: Info;
+	let PSAInstance: PSA;
 	let SettingsInstance: Settings;
 	let AnnouncerInstance: Announcer;
 	let BoardInstance: Board;
@@ -128,6 +130,7 @@
 	<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
 	<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
 	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
+	<PSA bind:this={PSAInstance} announcer={AnnouncerInstance} />
 	<div class="new-above-game">
 		<div class="above-game-left">
 			<a href="https://hallabois.github.io/invite/" target="_blank">
@@ -205,6 +208,15 @@
 					class="button background-none color-button icon-button"
 					on:click={() => {
 						InfoInstance.show();
+					}}
+					title="Info"
+				>
+					<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
+				</button>
+				<button
+					class="button background-none color-button icon-button"
+					on:click={() => {
+						PSAInstance.show();
 					}}
 					title="Info"
 				>

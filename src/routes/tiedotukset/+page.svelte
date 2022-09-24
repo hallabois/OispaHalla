@@ -17,7 +17,8 @@
 <main class="blurry-bg">
 	<div class="paper">
 		<h1 style="text-align: center;">
-			<span class="title" style="float: none;font-size: 45px;">OispaHalla</span>-kehityshistoria
+			<span class="title" style="float: none;font-size: 45px;">OispaHalla</span>-kehityshistoria &
+			tiedotukset
 		</h1>
 		<a href="/">Takaisin OispaHallaan</a>
 		{#if $PSA != null}
