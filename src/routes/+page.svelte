@@ -22,7 +22,9 @@
 		multiplayerIconData,
 		leaderboardIconData,
 		infoIconData,
-		settingsIconData
+		settingsIconData,
+		notificationIconData,
+		activeNotificationIconData
 	} from "$lib/components/common/icon/iconData";
 	import { base_path } from "$lib/stores/themestore";
 	import { browser, dev } from "$app/environment";
@@ -106,6 +108,8 @@
 	let TtInstance: Tournaments;
 	let lbInstance: Leaderboards;
 	let InfoInstance: Info;
+	let has_unread_notifications: boolean | null;
+	let unread_notification_count: string | null;
 	let PSAInstance: PSA;
 	let SettingsInstance: Settings;
 	let AnnouncerInstance: Announcer;
@@ -130,7 +134,12 @@
 	<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
 	<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
 	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
-	<PSA bind:this={PSAInstance} announcer={AnnouncerInstance} />
+	<PSA
+		bind:this={PSAInstance}
+		announcer={AnnouncerInstance}
+		bind:has_unread_notifications
+		bind:unread_notification_count
+	/>
 	<div class="new-above-game">
 		<div class="above-game-left">
 			<a href="https://hallabois.github.io/invite/" target="_blank">
@@ -190,6 +199,7 @@
 			enableRng={true}
 			documentRoot={inputRoot}
 			initComponentsOnMount={false}
+			announcer={AnnouncerInstance}
 			bind:this={BoardInstance}
 		/>
 		<div class="underbar-container">
@@ -215,12 +225,18 @@
 				</button>
 				<button
 					class="button background-none color-button icon-button"
+					class:attention-grabber={has_unread_notifications}
 					on:click={() => {
 						PSAInstance.show();
 					}}
-					title="Info"
+					title="Tiedotukset"
 				>
-					<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
+					<Icon
+						stroke="var(--color)"
+						viewBox="0 0 48 48"
+						d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
+						upper_text={unread_notification_count || null}
+					/>
 				</button>
 			</div>
 			<div class="kurin-palautus-container" style="flex: 1;">

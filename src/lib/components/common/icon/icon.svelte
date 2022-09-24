@@ -12,11 +12,17 @@
 	export let animation_length = 1500;
 	export let viewBox = "0 0 24 24";
 
-	export let text = null;
+	export let text: string | null = null;
 	export let text_id = "";
+
+	export let upper_text: string | null = null;
 </script>
 
-<main style="--duration:{animation_length / 10}ms;--s-width:{stroke_width}px">
+<main
+	style="--duration:{animation_length / 10}ms;--s-width:{stroke_width}px;{upper_text
+		? `--u-text:'${upper_text}';`
+		: ''}"
+>
 	{#if d != null}
 		<svg xmlns="http://www.w3.org/2000/svg" height="1em" {viewBox}>
 			<path
@@ -49,6 +55,17 @@
 		justify-content: center;
 		width: 100%;
 		height: 100%;
+	}
+	main::after {
+		content: var(--u-text);
+		position: absolute;
+		transform: translate(10px, -10px);
+		background: var(--button-background);
+		width: 20px;
+		height: 20px;
+		font-size: 15px;
+		border-radius: 100%;
+		line-height: 20px;
 	}
 	path {
 		transition: fill-opacity var(--duration), stroke-width var(--duration);

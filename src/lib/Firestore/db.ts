@@ -85,7 +85,7 @@ export function createDB(
 
 		server_setPSA
 	};
-};
+}
 
 export function get_db(uid: string): DB {
 	console.info("DB requested for user ", uid);

@@ -285,7 +285,7 @@ export default class GameManager {
 
 						// Update the score
 						self.score += merged.value;
-						if(self.run_best_score != null) {
+						if (self.run_best_score != null) {
 							self.run_best_score = Math.max(self.run_best_score, self.score);
 						}
 
@@ -459,7 +459,7 @@ export default class GameManager {
 		if (score >= best) {
 			setItem("HAC_best_history" + this.size, this.history);
 			setItem("HAC_best_score" + this.size, score);
-			if(this.over) {
+			if (this.over) {
 				// Send an event to open the leaderboard popup
 				let event = new Event("game_ended_with_best_score");
 				window.dispatchEvent(event);

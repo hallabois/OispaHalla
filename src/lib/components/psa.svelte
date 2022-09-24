@@ -17,11 +17,19 @@
 	let psas: object | null;
 	$: psas = $PSA?.data()?.content;
 	$: unread_psas = Object.keys(psas || {}).filter(
-		(psa) => !($storage.read_psas || []).includes(psa) && !(psa.devonly && !dev)
+		(psa) => !($storage.read_psas || []).includes(psa) && !(psas[psa].devonly && !dev)
 	);
+	$: unread_important_psas = unread_psas.filter((psa) => psas[psa].important);
 	$: unread_psas_reverse = [...unread_psas].reverse();
 
-	$: if (browser && $storage_loaded && unread_psas.length > 0) {
+	export let has_unread_notifications: boolean | null = null;
+	export let unread_notification_count: number | null = null;
+	export let has_unread_important_notifications: boolean | null = null;
+	$: has_unread_notifications = unread_psas.length > 0;
+	$: unread_notification_count = unread_psas.length;
+	$: has_unread_important_notifications = unread_important_psas.length > 0;
+
+	$: if (browser && $storage_loaded && has_unread_important_notifications) {
 		show();
 	}
 
