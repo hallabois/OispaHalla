@@ -17,7 +17,7 @@
 	let psas: object | null;
 	$: psas = $PSA?.data()?.content;
 	$: unread_psas = Object.keys(psas || {}).filter(
-		(psa) => !($storage.read_psas || []).includes(psa) && !(psas[psa].devonly && !dev)
+		(psa) => !(($storage.read_psas || []).includes(psa) || (psas[psa].devonly && !dev))
 	);
 	$: unread_important_psas = unread_psas.filter((psa) => psas[psa].important);
 	$: unread_psas_reverse = [...unread_psas].reverse();
