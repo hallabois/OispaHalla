@@ -29,6 +29,7 @@ export default class GameManager {
 	over: boolean = false;
 	won: boolean = false;
 	score: number;
+	run_best_score: number | null; // Keep track of the best score reached during this run, as kurinpalautukset changes the score by -1000
 	doKeepPlaying: boolean | null;
 
 	documentRoot: HTMLElement;
@@ -55,6 +56,7 @@ export default class GameManager {
 		this.storageManager = StorageManager;
 		this.actuator = Actuator;
 		this.score = 0;
+		this.run_best_score = null;
 		this.doKeepPlaying = null;
 
 		this.startTiles = 2;
@@ -165,6 +167,7 @@ export default class GameManager {
 			this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
 			this.size = previousState.grid.size;
 			this.score = previousState.score;
+			this.run_best_score = previousState.run_best_score;
 			this.palautukset = previousState.palautukset == undefined ? 0 : previousState.palautukset;
 			this.over = previousState.over;
 			this.won = previousState.won;
@@ -173,6 +176,7 @@ export default class GameManager {
 		} else {
 			this.grid = new Grid(this.size);
 			this.score = 0;
+			this.run_best_score = 0;
 			this.palautukset = 0;
 			this.over = false;
 			this.won = false;
@@ -211,6 +215,7 @@ export default class GameManager {
 		return {
 			grid: this.grid.serialize(),
 			score: this.score,
+			run_best_score: this.run_best_score,
 			palautukset: this.palautukset,
 			over: this.over,
 			won: this.won,
@@ -280,6 +285,9 @@ export default class GameManager {
 
 						// Update the score
 						self.score += merged.value;
+						if(self.run_best_score != null) {
+							self.run_best_score = Math.max(self.run_best_score, self.score);
+						}
 
 						// The mighty 2048 tile
 						if (merged.value === 2048) self.won = true;
@@ -411,7 +419,7 @@ export default class GameManager {
 			return;
 		}
 
-		let score = this.score;
+		let score = this.run_best_score || this.score;
 
 		let best = getItem("HAC_best_score" + this.size);
 		if (best == null && getItem("HAC_best_score") != null && this.size == 4) {
@@ -451,9 +459,11 @@ export default class GameManager {
 		if (score >= best) {
 			setItem("HAC_best_history" + this.size, this.history);
 			setItem("HAC_best_score" + this.size, score);
-			// Send an event to open the leaderboard popup
-			let event = new Event("game_ended_with_best_score");
-			window.dispatchEvent(event);
+			if(this.over) {
+				// Send an event to open the leaderboard popup
+				let event = new Event("game_ended_with_best_score");
+				window.dispatchEvent(event);
+			}
 		}
 	}
 
