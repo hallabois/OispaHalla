@@ -13,6 +13,7 @@
 		calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) / var(--grid-size)
 	);
 	--tile-border-radius: 3px;
+	--action-btn-color: #f9f6f2;
 
 	--break-button-background-false: #c00;
 	--break-button-color-false: #222;
@@ -1303,7 +1304,7 @@ $t: 0;
 }
 .action-btn {
 	padding: 0.75em;
-	color: #f9f6f2;
+	color: var(--action-btn-color);
 	background: var(--button-background);
 	transition: transform 200ms;
 }
