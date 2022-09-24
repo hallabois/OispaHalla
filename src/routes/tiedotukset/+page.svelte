@@ -16,13 +16,18 @@
 
 <main class="blurry-bg">
 	<div class="paper">
-		<h1 style="text-align: center;">
+		<h1 class="pagetitle">
 			<span class="title" style="float: none;font-size: 45px;">OispaHalla</span>-kehityshistoria &
 			tiedotukset
 		</h1>
 		<a href="/">Takaisin OispaHallaan</a>
 		{#if $PSA != null}
 			{@const content = $PSA.data()?.content || {}}
+			{#if Object.keys(content).length == 0}
+				<div class="psa">
+					<p>Ei tiedotuksia.</p>
+				</div>
+			{/if}
 			{#each Object.keys(content).reverse() as psa_key}
 				{@const psa = content[psa_key]}
 				{#if !(psa.devonly && !dev)}
@@ -36,14 +41,14 @@
 								{@html marked.parseInline(psa.bread, { breaks: true })}
 							</div>
 						{:else}
-							<p>Virheellinen päivitys</p>
+							<p>Virheellinen tiedotus</p>
 						{/if}
 					</div>
 				{/if}
 			{/each}
 		{:else}
 			<div class="psa">
-				<p>Ladataan päivityksiä...</p>
+				<p>Ladataan tiedotuksia...</p>
 			</div>
 		{/if}
 	</div>
@@ -69,6 +74,14 @@
 		border-radius: 0.25rem;
 
 		margin-bottom: 1em;
+	}
+
+	.pagetitle {
+		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-wrap: wrap;
 	}
 
 	h1 {
