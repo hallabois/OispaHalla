@@ -136,7 +136,7 @@
 							}
 							menu_open = !menu_open;
 						}}
-						transition:animate={{ condition: relative, delay: index * 50 }}
+						transition:animate|local={{ condition: relative, delay: index * 50 }}
 					>
 						<img src={theme.icon_url} width="50px" height="50px" alt="" style={theme.style} />
 					</button>
@@ -159,7 +159,7 @@
 					title="Lisää teema"
 					aria-label="Lisää teema"
 					on:click={addCustomTheme}
-					transition:animate={{ condition: relative, delay: available_themes.length * 50 }}
+					transition:animate|local={{ condition: relative, delay: available_themes.length * 50 }}
 					>+</button
 				>
 			{/if}

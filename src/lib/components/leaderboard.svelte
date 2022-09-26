@@ -16,24 +16,34 @@
 	} from "$lib/stores/leaderboardstore";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
-	import { dev } from "$app/environment";
+	import { browser, dev } from "$app/environment";
 	import Actions from "./leaderboard/actions.svelte";
 	import { getItem, setItem, storage, storage_loaded } from "$lib/stores/storage";
 
 	export let GameManagerInstance: GameManager | null = null;
+	function submitUnsubmittedTopScoresForSize(s: number) {
+		let top_saved = ($storage.bestScores || {})[s] || -1;
+		let top_submitted = ($storage.lb_submitted || {})[s] || -1;
+		if (
+			GameManagerInstance?.size == s &&
+			(GameManagerInstance?.run_best_score || GameManagerInstance?.score) >= top_saved &&
+			!GameManagerInstance.over
+		) {
+			// Do nothing, as the top scoring game is not over yet.
+		} else if (top_saved > top_submitted) {
+			console.info(`Please submit score for size ${s}...`);
+			submitting = true;
+			size = s;
+			show();
+			return true;
+		}
+		return false;
+	}
 	let enabled_sizes = [3, 4];
 	function submitUnsubmittedTopScores() {
 		if (GameManagerInstance != null) {
 			for (let s of enabled_sizes) {
-				let top_saved = ($storage.bestScores || {})[s] || -1;
-				let top_submitted = ($storage.lb_submitted || {})[s] || -1;
-				if (GameManagerInstance?.size == s && GameManagerInstance?.score >= top_saved) {
-					// Do nothing, as the top scoring game is not over yet.
-				} else if (top_saved > top_submitted) {
-					console.info(`Please submit score for size ${s}...`);
-					submitting = true;
-					size = s;
-					show();
+				if (submitUnsubmittedTopScoresForSize(s)) {
 					return;
 				}
 			}
@@ -131,6 +141,17 @@
 	let NameChangerInstance: NameChanger;
 	let ActionsInstance: Actions;
 	let refreshKey = {}; // Every {} is unique
+
+	if (browser) {
+		window.addEventListener("game_ended_with_best_score", () => {
+			if (GameManagerInstance != null) {
+				let s = GameManagerInstance.size;
+				submitUnsubmittedTopScoresForSize(s);
+			} else {
+				submitUnsubmittedTopScoresIfAlive(true);
+			}
+		});
+	}
 </script>
 
 <Popup bind:open>

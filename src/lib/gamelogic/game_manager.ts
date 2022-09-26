@@ -7,26 +7,35 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 import { HAC } from "$lib/HAC";
 
-import { storage } from "$lib/stores/storage";
+import { getItem, setItem, storage } from "$lib/stores/storage";
+import type Announcer from "$lib/components/tournaments/announcer.svelte";
+import { browser } from "$app/environment";
+import { TAB_BLOCK } from "$lib/session_manager";
+import { get } from "svelte/store";
 
 export default class GameManager {
 	size: any;
+	//@ts-ignore, make sure it's always initialized
+	history: string[];
 	inputManager: any;
-	storageManager: any;
+	storageManager: LocalStorageManager;
 	actuator: any;
 	startTiles: number;
 	numOfScores: number;
-	popup: Element;
+	popup: Element | null;
 	palautukset: number = 0;
+	//@ts-ignore, make sure it's always initialized
 	grid: Grid;
 	over: boolean = false;
 	won: boolean = false;
 	score: number;
+	run_best_score: number | null; // Keep track of the best score reached during this run, as kurinpalautukset changes the score by -1000
 	doKeepPlaying: boolean | null;
 
 	documentRoot: HTMLElement;
 	enable_random: boolean;
 	HallaAntiCheat: HAC;
+	announcer: Announcer | null;
 
 	constructor(
 		size: number,
@@ -34,17 +43,20 @@ export default class GameManager {
 		Actuator: HTMLActuator,
 		StorageManager: LocalStorageManager,
 		documentRoot: HTMLElement,
-		grid = null,
+		announcer: Announcer | null,
+		grid: Grid | null = null,
 		enable_random = true
 	) {
 		this.documentRoot = documentRoot;
 		this.enable_random = enable_random;
+		this.announcer = announcer;
 
 		this.size = size; // Size of the grid
 		this.inputManager = InputManager;
 		this.storageManager = StorageManager;
 		this.actuator = Actuator;
 		this.score = 0;
+		this.run_best_score = null;
 		this.doKeepPlaying = null;
 
 		this.startTiles = 2;
@@ -54,7 +66,7 @@ export default class GameManager {
 		this.inputManager.on("move", this.move.bind(this));
 		this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
-		this.popup = this.documentRoot.getElementsByClassName("lb-popup")[0];
+		this.popup = this.documentRoot.querySelector(".lb-popup");
 
 		this.HallaAntiCheat = new HAC();
 
@@ -67,12 +79,12 @@ export default class GameManager {
 		}
 	}
 	// Export the current game for later analysis
-	serialize_HAC(gridState, direction, added) {
+	serialize_HAC(gridState: number[], direction: string | number, added: string | undefined) {
 		return gridState.join(".") + "+" + added + ";" + direction;
 	}
 	// Restart the game
 	restart() {
-		this.HallaAntiCheat.recordBest(this.score, true);
+		this.recordBest();
 		this.storageManager.clearGameState();
 		this.actuator.continueGame(); // Clear the game won/lost message
 		//this.size = 4;
@@ -81,7 +93,7 @@ export default class GameManager {
 
 	// Restart the game
 	restartplus(size = 3) {
-		this.HallaAntiCheat.recordBest(this.score, true);
+		this.recordBest();
 		this.storageManager.clearGameState();
 		this.actuator.continueGame(); // Clear the game won/lost message
 		this.size = size;
@@ -116,8 +128,6 @@ export default class GameManager {
 		var previousState = this.storageManager.getGameState();
 		this.loadPreviousState(previousState);
 
-		this.HallaAntiCheat.size = this.size;
-
 		// Analytics
 		try {
 			sa_event("new_game");
@@ -136,7 +146,6 @@ export default class GameManager {
 		for (var i = 0; i < this.startTiles; i++) {
 			this.addRandomTile();
 		}
-		this.HallaAntiCheat.clearHistory();
 	}
 	// Adds a tile in a random position
 	addRandomTile() {
@@ -158,17 +167,21 @@ export default class GameManager {
 			this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
 			this.size = previousState.grid.size;
 			this.score = previousState.score;
+			this.run_best_score = previousState.run_best_score;
 			this.palautukset = previousState.palautukset == undefined ? 0 : previousState.palautukset;
 			this.over = previousState.over;
 			this.won = previousState.won;
 			this.doKeepPlaying = previousState.keepPlaying;
+			this.history = previousState.history || this.HallaAntiCheat.history || [];
 		} else {
 			this.grid = new Grid(this.size);
 			this.score = 0;
+			this.run_best_score = 0;
 			this.palautukset = 0;
 			this.over = false;
 			this.won = false;
 			this.doKeepPlaying = false;
+			this.history = [];
 
 			// Add the initial tiles
 			this.addStartTiles();
@@ -202,16 +215,18 @@ export default class GameManager {
 		return {
 			grid: this.grid.serialize(),
 			score: this.score,
+			run_best_score: this.run_best_score,
 			palautukset: this.palautukset,
 			over: this.over,
 			won: this.won,
 			size: this.size,
-			keepPlaying: this.doKeepPlaying
+			keepPlaying: this.doKeepPlaying,
+			history: this.history
 		};
 	}
 	// Save all tile positions and remove merger info
 	prepareTiles() {
-		this.grid.eachCell(function (x, y, tile) {
+		this.grid.eachCell(function (x: number, y: number, tile: any) {
 			if (tile) {
 				tile.mergedFrom = null;
 				tile.hasBeenMerged = false;
@@ -220,13 +235,13 @@ export default class GameManager {
 		});
 	}
 	// Move a tile and its representation
-	moveTile(tile, cell) {
+	moveTile(tile: Tile, cell: any) {
 		this.grid.cells[tile.x][tile.y] = null;
 		this.grid.cells[cell.x][cell.y] = tile;
 		tile.updatePosition(cell);
 	}
 	// Move tiles on the grid in the specified direction
-	move(direction) {
+	move(direction: 0 | 1 | 2 | 3) {
 		let HAC_grid = this.grid.serialize_HAC();
 
 		// 0: up, 1: right, 2: down, 3: left
@@ -270,6 +285,9 @@ export default class GameManager {
 
 						// Update the score
 						self.score += merged.value;
+						if (self.run_best_score != null) {
+							self.run_best_score = Math.max(self.run_best_score, self.score);
+						}
 
 						// The mighty 2048 tile
 						if (merged.value === 2048) self.won = true;
@@ -285,7 +303,7 @@ export default class GameManager {
 		});
 		let ended = false;
 
-		let added = "";
+		let added: string | undefined = "";
 		if (moved) {
 			added = this.addRandomTile();
 
@@ -294,11 +312,9 @@ export default class GameManager {
 
 				// Record end for HAC
 				let state = this.serialize_HAC(HAC_grid, "f", added);
-				this.HallaAntiCheat.recordState(state);
+				this.pushToHistory(state);
 
-				if (this.size == 4 || this.size == 3) {
-					this.HallaAntiCheat.recordBest(this.score, true);
-				}
+				this.recordBest();
 
 				// Analytics
 				try {
@@ -306,7 +322,6 @@ export default class GameManager {
 				} catch {}
 				//
 
-				this.HallaAntiCheat.clearHistory();
 				ended = true;
 			}
 
@@ -316,15 +331,13 @@ export default class GameManager {
 			let HAC_direction = moved ? direction : "e";
 			//HAC_grid = this.grid.serialize_HAC();
 			let state = this.serialize_HAC(HAC_grid, HAC_direction, added);
-			this.HallaAntiCheat.recordState(state);
+			this.pushToHistory(state);
 
-			if (this.size == 4 || this.size == 3) {
-				this.HallaAntiCheat.recordBest(this.score);
-			}
+			this.recordBest();
 		}
 	}
 	// Get the vector representing the chosen direction
-	getVector(direction) {
+	getVector(direction: 0 | 1 | 2 | 3): { x: number; y: number } {
 		// Vectors representing tile movement
 		var map = {
 			0: { x: 0, y: -1 },
@@ -336,11 +349,13 @@ export default class GameManager {
 		return map[direction];
 	}
 	// Build a list of positions to traverse in the right order
-	buildTraversals(vector) {
+	buildTraversals(vector: { x: number; y: number }) {
 		var traversals = { x: [], y: [] };
 
 		for (var pos = 0; pos < this.size; pos++) {
+			//@ts-ignore
 			traversals.x.push(pos);
+			//@ts-ignore
 			traversals.y.push(pos);
 		}
 
@@ -350,7 +365,7 @@ export default class GameManager {
 
 		return traversals;
 	}
-	findFarthestPosition(cell, vector) {
+	findFarthestPosition(cell: any, vector: { x: number; y: number }) {
 		var previous;
 
 		// Progress towards the vector direction until an obstacle is found
@@ -379,6 +394,7 @@ export default class GameManager {
 
 				if (tile) {
 					for (var direction = 0; direction < 4; direction++) {
+						//@ts-ignore, just make sure direction remains between 0-3
 						var vector = self.getVector(direction);
 						var cell = { x: x + vector.x, y: y + vector.y };
 
@@ -394,7 +410,93 @@ export default class GameManager {
 
 		return false;
 	}
-	positionsEqual(first, second) {
+	positionsEqual(first: { x: number; y: number }, second: { x: number; y: number }) {
 		return first.x === second.x && first.y === second.y;
+	}
+
+	recordBest() {
+		if (get(TAB_BLOCK)) {
+			return;
+		}
+
+		let score = this.run_best_score || this.score;
+
+		let best = getItem("HAC_best_score" + this.size);
+		if (best == null && getItem("HAC_best_score") != null && this.size == 4) {
+			best = getItem("HAC_best_score");
+			setItem("HAC_best_score" + this.size, best);
+		}
+		if (best == null) {
+			best = 0;
+		}
+		let old_best = getItem("HAC_best_score" + this.size) || -1;
+		let best_history = getItem("HAC_best_history" + this.size);
+		if (best_history == null && getItem("HAC_best_history") != null && this.size == 4) {
+			best_history = getItem("HAC_best_history");
+			setItem("HAC_best_history" + this.size, best_history);
+		}
+		if (score < 1) {
+			return;
+		}
+		if (this.history.length == 0) {
+			return;
+		}
+		if (best == null) {
+			if (best_history == null) {
+				best = 0;
+			} else if (old_best != null && old_best < best) {
+				best = 0;
+			} else {
+				best = old_best;
+			}
+		}
+		if (best_history == null || best_history.length == 0) {
+			best = 0;
+		}
+		if (old_best == null) {
+			best = 0;
+		}
+		if (score >= best) {
+			setItem("HAC_best_history" + this.size, this.history);
+			setItem("HAC_best_score" + this.size, score);
+			if (this.over) {
+				// Send an event to open the leaderboard popup
+				let event = new Event("game_ended_with_best_score");
+				window.dispatchEvent(event);
+			}
+		}
+	}
+
+	pushToHistory(state: string) {
+		this.history.push(state);
+		if (browser) {
+			window.devtools.validateCurrentHistory().then((result) => {
+				console.log(result);
+				if (result && !result.valid) {
+					alert(
+						"Pelin historia on korruptoitunut!\nOta yhteyttä kehittäjiin tai käynnistä peli uudelleen.\n\nKorruptoitunutta peliä ei voi lähettää leaderboardeille."
+					);
+				}
+			});
+		}
+		// this.removeConsecutiveDuplicatesFromHistory();
+	}
+
+	removeConsecutiveDuplicatesFromHistory() {
+		let working_copy = [...this.history]; // Create a copy of the history
+
+		// Reverse the array so we keep the last duplicate instead of the first one
+		// working_copy.reverse();
+
+		// Always keep the 0th element, but remove any other elements that match the previous element
+		working_copy = this.history.filter((val, index, array) => {
+			// Only compare the tiles within the entries, as a bug causes ghost additions...
+			return index == 0 || val.split("+")[0] != array[index - 1].split("+")[0];
+		});
+
+		// Reverse the array again so that the order of non-duplicated entries are preserved
+		// working_copy.reverse();
+
+		this.history = working_copy;
 	}
 }

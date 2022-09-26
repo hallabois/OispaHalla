@@ -1,6 +1,6 @@
 import { json as json$1 } from "@sveltejs/kit";
 import { getAuth } from "firebase-admin/auth";
-import { app } from "$lib/Auth_admin/auth";
+import { app } from "$lib/Auth_admin/auth.server";
 import { env } from "$env/dynamic/private";
 
 export async function POST({ request, getClientAddress }) {

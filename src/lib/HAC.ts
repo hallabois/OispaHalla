@@ -1,3 +1,4 @@
+// Depreciated, left only for loading old histories
 import { browser } from "$app/environment";
 import { tabID } from "$lib/session_manager";
 

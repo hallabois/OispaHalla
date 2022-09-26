@@ -30,14 +30,16 @@
 	function forceForgetLocalScore() {
 		console.info("start resetting local score");
 		if (!confirm("Oletko varma?")) {
-			return;
-		}
-		if (!($auth && prompt('Kopio tähän asetuksista "uid"') === $auth.uid)) {
+			alert("Muutoksia ei tehty.");
 			return;
 		}
 		setItem(`HAC_best_score${current_size}`, 0);
 		setItem(`bestScores`, {
-			...getItem("bestScores"),
+			...(getItem("bestScores") || {}),
+			[current_size]: 0
+		});
+		setItem(`lb_submitted`, {
+			...(getItem("lb_submitted") || {}),
 			[current_size]: 0
 		});
 		console.info("local score reset");

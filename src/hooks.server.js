@@ -1,5 +1,3 @@
-/* ~/src/hooks.js */
-
 // This hook "pre-renders" the appropriate theme server-side.
 import { defaultTheme } from "$lib/stores/themestore";
 
@@ -12,6 +10,7 @@ export async function handle({ event, resolve }) {
 	if (cookie) {
 		let matching = cookie.match(/theme=\d{1,5}/) || []; // qualifies theme:[0-99999]
 		if (matching.length > 0) {
+			// @ts-ignore
 			theme = +matching[0].split("=")[1];
 		}
 	}

@@ -2,11 +2,11 @@ export default class Tile {
 	x: number;
 	y: number;
 	value: number;
-	previousPosition: { x: number; y: number };
+	previousPosition: { x: number; y: number } | null;
 	mergedFrom: any;
 
-	id: number;
-	constructor(position, value, id = null) {
+	id: number | null;
+	constructor(position: { x: number; y: number }, value: number, id: number | null = null) {
 		this.x = position.x;
 		this.y = position.y;
 		this.value = value || 2;
@@ -18,7 +18,7 @@ export default class Tile {
 	savePosition() {
 		this.previousPosition = { x: this.x, y: this.y };
 	}
-	updatePosition(position) {
+	updatePosition(position: { x: number; y: number }) {
 		this.x = position.x;
 		this.y = position.y;
 	}

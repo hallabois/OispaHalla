@@ -44,9 +44,9 @@ const createAuth = () => {
 	}
 
 	async function signInWith(name: string) {
-		const { signInWithRedirect } = await import("firebase/auth");
+		const { signInWithPopup } = await import("firebase/auth");
 		const provider = await providerFor(name);
-		await signInWithRedirect(auth, provider);
+		await signInWithPopup(auth, provider);
 	}
 
 	async function sendSignInLink(email: string, origin: string) {
@@ -97,6 +97,7 @@ const createAuth = () => {
 };
 
 export const token: Writable<null | string> = writable(null);
+let token_refresh_timer: NodeJS.Timeout | null;
 async function rewrite_token($auth: User) {
 	console.log("Attempting to refresh token...");
 	if ($auth != null) {
@@ -106,10 +107,10 @@ async function rewrite_token($auth: User) {
 			let time_till_exp =
 				new Date(tk_info.expirationTime).getTime() - new Date(tk_info.authTime).getTime();
 			console.info("time till token expiration", time_till_exp);
-			setTimeout(async () => {
+			token_refresh_timer = setTimeout(async () => {
 				let $auth = get(auth);
 				await rewrite_token($auth);
-			}, time_till_exp / 2);
+			}, time_till_exp / 100.0);
 		} catch (e) {
 			console.warn("Failed to set up automatic token refresh:", e);
 		}
@@ -118,6 +119,11 @@ async function rewrite_token($auth: User) {
 	}
 }
 export const auth = createAuth();
-auth.subscribe(async ($auth) => {
-	await rewrite_token($auth);
-});
+if (browser) {
+	auth.subscribe(async ($auth) => {
+		if (token_refresh_timer != null) {
+			clearTimeout(token_refresh_timer);
+		}
+		await rewrite_token($auth);
+	});
+}
