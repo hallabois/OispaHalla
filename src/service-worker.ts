@@ -58,7 +58,7 @@ worker.addEventListener("fetch", (event) => {
 		event.request.method !== "GET" ||
 		event.request.headers.has("range") ||
 		event.request.url.endsWith("/alive") ||
-		event.request.url.includes("oispahallalb.herokuapp.com")
+		event.request.url.includes("lb.oispahalla.com")
 	) {
 		return;
 	}

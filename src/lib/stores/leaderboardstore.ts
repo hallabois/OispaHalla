@@ -4,7 +4,7 @@ import { auth } from "$lib/Auth/authstore";
 
 import { setItem, getItem, storage, storage_loaded } from "$lib/stores/storage";
 
-let leaderboard_endpoint_prod = "https://oispahallalb.herokuapp.com";
+let leaderboard_endpoint_prod = "https://lb.oispahalla.com";
 let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
