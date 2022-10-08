@@ -108,7 +108,7 @@ export class Fetchboard_ok {
 	success!: boolean;
 	rank!: number;
 	topBoard!: Score_ok[];
-	score!: Score_ok[];
+	score!: Score_ok;
 }
 export class Score_error {
 	success!: boolean;

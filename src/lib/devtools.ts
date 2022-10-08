@@ -1,7 +1,7 @@
 import { get } from "svelte/store";
 import { storage, getItem, setItem, getWholeLocalForage, clearStorage } from "./stores/storage";
 import { browser } from "$app/environment";
-import { theme_index } from "./stores/themestore";
+import { festives_applied, theme_index } from "./stores/themestore";
 import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
 
 function getAllItems() {
@@ -25,6 +25,14 @@ function getTheme() {
 
 function setTheme(index: number) {
 	theme_index.set(index);
+}
+
+function getAppliedFestives() {
+	return get(festives_applied)
+}
+
+function setAppliedFestives(applied: string[]) {
+	festives_applied.set(applied);
 }
 
 function getHACHistory() {
@@ -87,6 +95,8 @@ if (browser) {
 
 		getTheme,
 		setTheme,
+		getAppliedFestives,
+		setAppliedFestives,
 
 		getHACHistory,
 		getGameManagerInstance,

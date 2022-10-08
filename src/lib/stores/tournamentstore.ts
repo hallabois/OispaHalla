@@ -1,6 +1,6 @@
 let tournament_endpoint_dev = true
-	? "https://mp.oispahalla.com/api"
-	: "https://0.0.0.0:9000/ohts/api";
+	? "https://ohts.fly.dev/api"
+	: "https://0.0.0.0:9000/api";
 export let tournament_endpoint = false ? "https://mp.oispahalla.com/api" : tournament_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 
@@ -117,7 +117,7 @@ export async function getPublicTournaments() {
 		return new publicTournamentsResponse(
 			true,
 			0,
-			json.ongoing_games,
+			json.joinable_games,
 			json.active_games,
 			json.past_games
 		);
@@ -216,9 +216,9 @@ export async function poll() {
 
 export async function joinGame(
 	id: number,
-	joinPswd: string | null = null,
+	token: string,
+	join_password: string | null = null,
 	isHost = false,
-	hostPswd: string | null = null
 ) {
 	console.log("Trying to join game id", id, "...");
 	// TODO: Contact server
@@ -230,16 +230,16 @@ export async function joinGame(
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
-			join_password: joinPswd,
-			moves: "[]"
+			join_password,
+			token
 		})
 	});
 	if (resp.ok) {
 		let json = await resp.json();
 		joined_game_id.set(json.game_id);
 		joined_game_user_id.set(json.user_id);
-		if (isHost && hostPswd) {
-			joined_game_host_pswds[id] = hostPswd;
+		if (isHost && join_password) {
+			joined_game_host_pswds[id] = join_password;
 		} else {
 			if (Object.keys(joined_game_host_pswds).includes(id + "")) {
 				isHost = true;

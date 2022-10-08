@@ -12,7 +12,7 @@
 	import { storage_version } from "$lib/stores/storage";
 	import { theme_index } from "$lib/stores/themestore";
 	import { enable_countdown } from "../features";
-	import { browser } from "$app/environment";
+	import { browser, dev } from "$app/environment";
 	//export let theme_override: number | null;
 	if (theme_override != null) {
 		console.info("Found theme override", theme_override);
@@ -41,7 +41,7 @@
 
 	import * as Sentry from "@sentry/svelte";
 	import { BrowserTracing } from "@sentry/tracing";
-	if (browser) {
+	if (browser && !dev) {
 		// Initialize the Sentry SDK here
 		Sentry.init({
 			dsn: "https://b7328d8038d34d72b707bd9b3e98a9e9@o4503924795244544.ingest.sentry.io/4503924806516736",

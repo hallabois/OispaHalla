@@ -1,76 +1,18 @@
 <!-- / -->
 <script lang="ts">
-	import { slide, scale } from "svelte/transition";
-	import { theme_index, base_path } from "$lib/stores/themestore";
+	import { slide, scale, type SlideParams } from "svelte/transition";
+	import { theme_index, base_path, available_themes } from "$lib/stores/themestore";
 
-	import { getItem, storage_loaded } from "$lib/stores/storage";
+	import { storage_loaded } from "$lib/stores/storage";
 
-	const animate = (node, args) => (args.condition ? slide(node, args) : scale(node, args));
+	const animate = (node: Element, args: any) =>
+		args.condition ? slide(node, args) : scale(node, args);
 	import { browser } from "$app/environment";
 	import { enable_custom_themes } from "../../../../features";
-	class theme {
-		name!: string;
-		index!: number;
-		icon_url!: string;
-		style!: string;
-	}
-	class theme_custom {
-		name!: string;
-		index!: number;
-		theme_url!: string;
-		icon_url!: string;
-		style!: string;
-	}
-	let available_themes: theme[] | theme_custom[] = [
-		{
-			name: "OispaHalla",
-			index: 1,
-			icon_url: "/img/raksahalla_192.webp",
-			style: "background: white;"
-		},
-		{
-			name: "OispaHalla (tumma)",
-			index: 0,
-			icon_url: "/img/raksahalla_192.webp",
-			style: "background: black;"
-		}
-	];
 
 	let menu_open = false;
 
-	let classic = {
-		name: "Classic",
-		index: 16,
-		icon_url: "/img/theme-16/2048.webp",
-		style: "background: transparent;"
-	};
-	let kaunis = {
-		name: "Kaunis",
-		index: 5,
-		icon_url: "/img/theme-4/cover.webp",
-		style: "background: #8cc4e3;"
-	};
-	let kaunis_dark = {
-		name: "Kaunis (tumma)",
-		index: 4,
-		icon_url: "/img/theme-4/cover.webp",
-		style: "background: #001522;"
-	};
-	if (true) {
-		available_themes = [kaunis, kaunis_dark, ...available_themes];
-	}
-	$: if (
-		browser &&
-		$storage_loaded &&
-		(getItem("hasWon") ||
-			(getItem("bestScore") != null && +getItem("bestScore") && +getItem("bestScore") > 10000)) &&
-		!available_themes.includes(classic)
-	) {
-		available_themes.push(classic);
-		available_themes = available_themes;
-	}
-
-	async function fetchCustomThemeDetails(url) {
+	async function fetchCustomThemeDetails(url: string) {
 		try {
 			let res = await fetch(`${url}/manifest.json`);
 			if (res.ok) {
@@ -91,22 +33,26 @@
 	}
 	async function addCustomTheme() {
 		let url = prompt("Teeman osoite");
-		let fetch_result = await fetchCustomThemeDetails(url);
-		if (!fetch_result[0]) {
-			alert(`Virhe: ${fetch_result[2]}`);
-			return;
+		if (url) {
+			let fetch_result = await fetchCustomThemeDetails(url);
+			if (!fetch_result[0]) {
+				alert(`Virhe: ${fetch_result[2]}`);
+				return;
+			}
+			let manifest = fetch_result[1];
+			let name = manifest.name;
+			let icon_url = `${url}/theme-0/2048.webp`;
+			available_themes.set([
+				...$available_themes,
+				{
+					name: name,
+					index: 0,
+					theme_url: url,
+					icon_url: icon_url,
+					style: ""
+				}
+			]);
 		}
-		let manifest = fetch_result[1];
-		let name = manifest.name;
-		let icon_url = `${url}/theme-0/2048.png`;
-		available_themes.push({
-			name: name,
-			index: 0,
-			theme_url: url,
-			icon_url: icon_url,
-			style: ""
-		});
-		available_themes = available_themes;
 	}
 
 	export let relative = true;
@@ -116,10 +62,8 @@
 
 <main class:relative class:expandX class:expandY>
 	{#if browser}
-		<!-- svelte-ignore missing-declaration -->
 		{#if $theme_index != null && $storage_loaded}
-			{#each available_themes as theme, index}
-				<!-- svelte-ignore missing-declaration -->
+			{#each $available_themes as theme, index}
 				{#if (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1) || menu_open}
 					<!-- svelte-ignore missing-declaration -->
 					<button
@@ -142,7 +86,7 @@
 					</button>
 				{/if}
 			{/each}
-			{#if available_themes.filter((theme) => (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1)).length < 1}
+			{#if $available_themes.filter((theme) => (theme.theme_url && $base_path === theme.theme_url) || ($theme_index == theme.index && $base_path.length < 1)).length < 1}
 				<button
 					on:click={() => {
 						menu_open = !menu_open;
@@ -159,7 +103,7 @@
 					title="Lisää teema"
 					aria-label="Lisää teema"
 					on:click={addCustomTheme}
-					transition:animate|local={{ condition: relative, delay: available_themes.length * 50 }}
+					transition:animate|local={{ condition: relative, delay: $available_themes.length * 50 }}
 					>+</button
 				>
 			{/if}

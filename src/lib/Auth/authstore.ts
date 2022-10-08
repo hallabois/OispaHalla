@@ -2,6 +2,7 @@ import { get, readable, writable, type Writable } from "svelte/store";
 import { browser } from "$app/environment";
 import type { Auth, User } from "firebase/auth";
 import { generateActionCodeSettings } from "./firebase_config";
+import { info } from "console";
 
 const createAuth = () => {
 	let auth: Auth;
@@ -121,9 +122,20 @@ async function rewrite_token($auth: User) {
 export const auth = createAuth();
 if (browser) {
 	auth.subscribe(async ($auth) => {
-		if (token_refresh_timer != null) {
-			clearTimeout(token_refresh_timer);
+		if($auth) {
+			console.info("user id", $auth.uid);
+			if (token_refresh_timer != null) {
+				clearTimeout(token_refresh_timer);
+			}
+			await rewrite_token($auth);
 		}
-		await rewrite_token($auth);
+		else {
+			if($auth === undefined) {
+				console.info("loading login details...");
+			}
+			else {
+				console.info("not signed in");
+			}
+		}
 	});
 }

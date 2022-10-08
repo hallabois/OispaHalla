@@ -7,6 +7,7 @@
 		joined_game_error,
 		TournamentInfo
 	} from "$lib/stores/tournamentstore";
+	import { token } from "$lib/Auth/authstore";
 
 	let filter: string | null;
 	let chosen_game: number | null;
@@ -30,14 +31,14 @@
 		{#if result.success}
 			<div>
 				<p>
-					Löydettiin {result.ongoing_games.length}
-					{result.ongoing_games.length == 1 ? "julkinen peli" : "julkista peliä"}!
+					Löydettiin {result.joinable_games.length}
+					{result.joinable_games.length == 1 ? "julkinen peli" : "julkista peliä"}!
 				</p>
 				<input class="search" bind:value={filter} placeholder="Hae pelejä nimen perusteella" />
 			</div>
 			<hr />
 			<div class="games">
-				{#each result.ongoing_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index}
+				{#each result.joinable_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index}
 					<div
 						class="game"
 						class:selected={chosen_game == game.id}
@@ -80,7 +81,7 @@
 			<button
 				disabled={!canJoin}
 				on:click={() => {
-					joinGame(chosen_game, passwords[chosen_game]);
+					joinGame(chosen_game, $token, passwords[chosen_game]);
 				}}
 				class="button action-btn fill-w">Liity</button
 			>

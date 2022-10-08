@@ -8,11 +8,8 @@
 		lb_screenName,
 		check_server_alive,
 		submit_score,
-		get_top_scores,
 		fetchboard,
-		type Score_response,
-		type Fetchboard_response,
-		Fetchboard_ok
+		type Fetchboard_response
 	} from "$lib/stores/leaderboardstore";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
