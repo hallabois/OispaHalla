@@ -86,7 +86,7 @@
 			<div class="section">
 				<p>
 					Aiemmat tiedotukset löydät osoitteesta
-					<a style="white-space: nowrap;" href={PSA_URL}>{PSA_URL}</a>
+					<a href={PSA_URL}>{PSA_URL}</a>
 				</p>
 			</div>
 		{:else}

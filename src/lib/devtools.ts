@@ -1,7 +1,7 @@
 import { get } from "svelte/store";
 import { storage, getItem, setItem, getWholeLocalForage, clearStorage } from "./stores/storage";
 import { browser } from "$app/environment";
-import { festives_applied, theme_index } from "./stores/themestore";
+import { available_themes, festives_applied, theme_index } from "./stores/themestore";
 import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
 
 function getAllItems() {
@@ -21,6 +21,10 @@ function setWholeLocalForage(data: string) {
 
 function getTheme() {
 	return get(theme_index);
+}
+
+function getAvailableThemes() {
+	return get(available_themes);
 }
 
 function setTheme(index: number) {
@@ -94,6 +98,7 @@ if (browser) {
 		setWholeLocalForage,
 
 		getTheme,
+		getAvailableThemes,
 		setTheme,
 		getAppliedFestives,
 		setAppliedFestives,

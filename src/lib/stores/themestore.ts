@@ -10,6 +10,7 @@ export function setDefaultTheme(theme: number) {
 export let currentImageThemeVersion = 6;
 
 export let theme_index: Writable<number> = writable(defaultTheme);
+export let theme_loaded: Writable<boolean> = writable(false);
 export let festives_applied: Writable<string[]> = writable([]);
 theme_index.subscribe((themeID) => {
 	if (!get(storage_loaded)) {
@@ -78,6 +79,7 @@ storage_loaded.subscribe(($storage_loaded) => {
 		else {
 			festives_applied.set([]);
 		}
+		theme_loaded.set(true);
 	}
 });
 
@@ -160,7 +162,7 @@ class Holiday {
 let spooktober: Holiday = {
 	min: {
 		month: 10,
-		date: 8
+		date: 10
 	},
 	max: {
 		month: 10,
@@ -198,23 +200,27 @@ function removeHolidayThemeFromUse(t: theme) {
 	}
 }
 
-let now = new Date();
-let year = now.getFullYear();
-let month = now.getMonth() + 1;
-let day = now.getDate();
-for (let holiday of holidays) {
-	let festive_hash = `${holiday.theme.index}_${year}`;
-	if (month > holiday.min.month || (month == holiday.min.month && day >= holiday.min.date)) {
-		if (month < holiday.max.month || (month == holiday.max.month && day <= holiday.max.date)) {
-			available_themes.set([...get(available_themes), holiday.theme]);
-			if (!get(festives_applied).includes(festive_hash)) {
-				theme_index.set(holiday.theme.index);
-				festives_applied.set([...get(festives_applied), festive_hash]);
+theme_loaded.subscribe(($theme_loaded) => {
+	if($theme_loaded) {
+		let now = new Date();
+		let year = now.getFullYear();
+		let month = now.getMonth() + 1;
+		let day = now.getDate();
+		for (let holiday of holidays) {
+			let festive_hash = `${holiday.theme.index}_${year}`;
+			if (month > holiday.min.month || (month == holiday.min.month && day >= holiday.min.date)) {
+				if (month < holiday.max.month || (month == holiday.max.month && day <= holiday.max.date)) {
+					available_themes.set([...get(available_themes), holiday.theme]);
+					if (!get(festives_applied).includes(festive_hash)) {
+						theme_index.set(holiday.theme.index);
+						festives_applied.set([...get(festives_applied), festive_hash]);
+					}
+				} else {
+					removeHolidayThemeFromUse(holiday.theme);
+				}
+			} else {
+				removeHolidayThemeFromUse(holiday.theme);
 			}
-		} else {
-			removeHolidayThemeFromUse(holiday.theme);
 		}
-	} else {
-		removeHolidayThemeFromUse(holiday.theme);
 	}
-}
+});
