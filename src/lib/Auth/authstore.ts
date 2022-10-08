@@ -122,18 +122,16 @@ async function rewrite_token($auth: User) {
 export const auth = createAuth();
 if (browser) {
 	auth.subscribe(async ($auth) => {
-		if($auth) {
+		if ($auth) {
 			console.info("user id", $auth.uid);
 			if (token_refresh_timer != null) {
 				clearTimeout(token_refresh_timer);
 			}
 			await rewrite_token($auth);
-		}
-		else {
-			if($auth === undefined) {
+		} else {
+			if ($auth === undefined) {
 				console.info("loading login details...");
-			}
-			else {
+			} else {
 				console.info("not signed in");
 			}
 		}

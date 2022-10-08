@@ -32,7 +32,7 @@ function setTheme(index: number) {
 }
 
 function getAppliedFestives() {
-	return get(festives_applied)
+	return get(festives_applied);
 }
 
 function setAppliedFestives(applied: string[]) {

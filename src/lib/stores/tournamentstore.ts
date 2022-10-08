@@ -1,6 +1,4 @@
-let tournament_endpoint_dev = true
-	? "https://ohts.fly.dev/api"
-	: "https://0.0.0.0:9000/api";
+let tournament_endpoint_dev = true ? "https://ohts.fly.dev/api" : "https://0.0.0.0:9000/api";
 export let tournament_endpoint = false ? "https://mp.oispahalla.com/api" : tournament_endpoint_dev;
 import { type Writable, writable, get } from "svelte/store";
 
@@ -218,7 +216,7 @@ export async function joinGame(
 	id: number,
 	token: string,
 	join_password: string | null = null,
-	isHost = false,
+	isHost = false
 ) {
 	console.log("Trying to join game id", id, "...");
 	// TODO: Contact server

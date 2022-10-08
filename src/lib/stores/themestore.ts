@@ -73,16 +73,14 @@ storage_loaded.subscribe(($storage_loaded) => {
 		console.info(`Loaded theme ${get(theme_index)}.`);
 
 		let festives = getItem("festives_applied");
-		if(festives != null) {
+		if (festives != null) {
 			festives_applied.set(festives);
-		}
-		else {
+		} else {
 			festives_applied.set([]);
 		}
 		theme_loaded.set(true);
 	}
 });
-
 
 class theme {
 	name!: string;
@@ -135,7 +133,7 @@ if (true) {
 	available_themes.set([kaunis, kaunis_dark, ...get(available_themes)]);
 }
 
-storage_loaded.subscribe(($storage_loaded)=>{
+storage_loaded.subscribe(($storage_loaded) => {
 	if (
 		browser &&
 		$storage_loaded &&
@@ -143,7 +141,7 @@ storage_loaded.subscribe(($storage_loaded)=>{
 			(getItem("bestScore") != null && +getItem("bestScore") && +getItem("bestScore") > 10000)) &&
 		!get(available_themes).includes(classic)
 	) {
-		available_themes.set([...get(available_themes), classic])
+		available_themes.set([...get(available_themes), classic]);
 	}
 });
 
@@ -201,7 +199,7 @@ function removeHolidayThemeFromUse(t: theme) {
 }
 
 theme_loaded.subscribe(($theme_loaded) => {
-	if($theme_loaded) {
+	if ($theme_loaded) {
 		let now = new Date();
 		let year = now.getFullYear();
 		let month = now.getMonth() + 1;

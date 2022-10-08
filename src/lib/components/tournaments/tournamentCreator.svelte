@@ -43,71 +43,75 @@
 </script>
 
 <main>
-	{#if createRequest}
-		{#await createRequest}
-			<p>Luodaan peliä...</p>
-		{:then data}
-			<p>DEBUG: {data.status_code}</p>
-			{#if data.success}
-				<p>Peli luotu!</p>
-				<p>ID: {data.tournament_id}</p>
-				{#await joinGame(data.tournament_id, data.join_password, true, data.edit_key)}
-					<p>Liitytään peliin...</p>
-				{:then result}
-					<p>{JSON.stringify(result)}</p>
-				{/await}
-			{:else if data.status_code == 1}
-				<p>Nimi on jo käytössä</p>
-			{:else}
-				<p>Peliä luodessa sattui virhe.</p>
-			{/if}
-		{/await}
-	{:else}
-		<div class="creator">
-			<h4>Asetukset</h4>
-			<div class="input-section">
-				<label for="ispublic">Julkinen</label>
-				<input type="checkbox" id="ispublic" bind:checked={create_public} />
-			</div>
-			{#if create_public}
+	{#if $token}
+		{#if createRequest}
+			{#await createRequest}
+				<p>Luodaan peliä...</p>
+			{:then data}
+				<p>DEBUG: {data.status_code}</p>
+				{#if data.success}
+					<p>Peli luotu!</p>
+					<p>ID: {data.tournament_id}</p>
+					{#await joinGame(data.tournament_id, $token, data.join_password, true)}
+						<p>Liitytään peliin...</p>
+					{:then result}
+						<p>{JSON.stringify(result)}</p>
+					{/await}
+				{:else if data.status_code == 1}
+					<p>Nimi on jo käytössä</p>
+				{:else}
+					<p>Peliä luodessa sattui virhe.</p>
+				{/if}
+			{/await}
+		{:else}
+			<div class="creator">
+				<h4>Asetukset</h4>
 				<div class="input-section">
-					<label type="text" for="name">Pelin Nimi</label>
-					<input id="name" bind:value={name} />
+					<label for="ispublic">Julkinen</label>
+					<input type="checkbox" id="ispublic" bind:checked={create_public} />
 				</div>
-			{/if}
-			<div class="input-section">
-				<label for="max_clients">Pelaajien enimmäismäärä</label>
-				<input type="number" id="max_clients" bind:value={max_clients} />
-			</div>
-			<div class="input-section">
-				<label for="pswd">Salasana</label>
-				<input
-					type="password"
-					id="pswd"
-					bind:value={password}
-					placeholder="Voit jättää salasanan tyhjäksi"
-				/>
-			</div>
-			<h4>Säännöt</h4>
-			<div class="input-section">
-				<label for="gamemode">Pelimuoto</label>
-				<select id="gamemode" bind:value={gamemode}>
-					<option value={0}>Ensimmäinen maalissa</option>
-					<option value={null} disabled>Coming Soon™</option>
-				</select>
-			</div>
-			{#if gamemode == 0}
+				{#if create_public}
+					<div class="input-section">
+						<label type="text" for="name">Pelin Nimi</label>
+						<input id="name" bind:value={name} />
+					</div>
+				{/if}
 				<div class="input-section">
-					<label for="goal">Maali</label>
-					<select id="goal" bind:value={gamemode_0_goal}>
-						{#each gamemode_0_goals as num}
-							<option value={num}>{gamemode_0_names[num]}</option>
-						{/each}
+					<label for="max_clients">Pelaajien enimmäismäärä</label>
+					<input type="number" id="max_clients" bind:value={max_clients} />
+				</div>
+				<div class="input-section">
+					<label for="pswd">Salasana</label>
+					<input
+						type="password"
+						id="pswd"
+						bind:value={password}
+						placeholder="Voit jättää salasanan tyhjäksi"
+					/>
+				</div>
+				<h4>Säännöt</h4>
+				<div class="input-section">
+					<label for="gamemode">Pelimuoto</label>
+					<select id="gamemode" bind:value={gamemode}>
+						<option value={0}>Ensimmäinen maalissa</option>
+						<option value={null} disabled>Coming Soon™</option>
 					</select>
 				</div>
-			{/if}
-			<button disabled={!t_valid} on:click={createT} class="button action-btn">Luo</button>
-		</div>
+				{#if gamemode == 0}
+					<div class="input-section">
+						<label for="goal">Maali</label>
+						<select id="goal" bind:value={gamemode_0_goal}>
+							{#each gamemode_0_goals as num}
+								<option value={num}>{gamemode_0_names[num]}</option>
+							{/each}
+						</select>
+					</div>
+				{/if}
+				<button disabled={!t_valid} on:click={createT} class="button action-btn">Luo</button>
+			</div>
+		{/if}
+	{:else}
+		<p>Ladataan kirjautumistietoja...</p>
 	{/if}
 </main>
 

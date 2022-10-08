@@ -16,7 +16,7 @@ You can run a development server with `yarn dev`.
 
 ### Env variables
 
-If you want to use the authentication backend locally, populate the environment variables ```OH_FIREBASE_ADMIN_CLIENT_EMAIL```, ```OH_FIREBASE_ADMIN_PRIVATE_KEY```, ```OH_FIREBASE_ADMIN_PROJECT_ID``` and ```OH_FIREBASE_ADMIN_DATABASE_URL``` with the respective firebase service account details (download the private key from firebase admin panel and copy & paste the variables from that file into env variables).
+If you want to use the authentication backend locally, populate the environment variables `OH_FIREBASE_ADMIN_CLIENT_EMAIL`, `OH_FIREBASE_ADMIN_PRIVATE_KEY`, `OH_FIREBASE_ADMIN_PROJECT_ID` and `OH_FIREBASE_ADMIN_DATABASE_URL` with the respective firebase service account details (download the private key from firebase admin panel and copy & paste the variables from that file into env variables).
 
 ### Preferred language
 
