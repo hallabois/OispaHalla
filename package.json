@@ -14,6 +14,8 @@
 		"format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
 	},
 	"devDependencies": {
+		"@sentry/svelte": "^7.14.1",
+		"@sentry/tracing": "^7.14.1",
 		"@sveltejs/adapter-auto": "^1.0.0-next.50",
 		"@sveltejs/adapter-node": "^1.0.0-next.87",
 		"@sveltejs/kit": "^1.0.0-next.350",
@@ -40,11 +42,8 @@
 		"typescript": "^4.4.3",
 		"vite": "^3.0.0",
 		"vite-plugin-top-level-await": "^1.1.1",
-		"vite-plugin-wasm": "^2.1.0",
-		"@sentry/svelte": "^7.14.1",
-		"@sentry/tracing": "^7.14.1"
+		"vite-plugin-wasm": "^2.1.0"
 	},
 	"type": "module",
-	"dependencies": {
-	}
+	"dependencies": {}
 }
