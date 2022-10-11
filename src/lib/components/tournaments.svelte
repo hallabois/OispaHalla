@@ -10,7 +10,6 @@
 		joined_game_error,
 		poll_success,
 		poll_game,
-		joined_game_user_id,
 		joined_game_am_host,
 		joined_game_host_pswds,
 		refreshGameData
@@ -39,7 +38,6 @@
 		console.log("Moving to multiplayer...");
 		let data = {
 			game_id: $joined_game_id,
-			user_id: $joined_game_user_id,
 			am_host: $joined_game_am_host,
 			host_pswd: joined_game_host_pswds[$joined_game_id]
 		};
@@ -92,7 +90,6 @@
 					console.log("READ MP_DATA", data);
 
 					joined_game_id.set(data.game_id);
-					joined_game_user_id.set(data.user_id);
 					joined_game_am_host.set(data.am_host);
 					joined_game_host_pswds[data.game_id] = data.host_pswd;
 					refreshGameData();

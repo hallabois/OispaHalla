@@ -48,19 +48,21 @@
 			{#await createRequest}
 				<p>Luodaan peliä...</p>
 			{:then data}
-				<p>DEBUG: {data.status_code}</p>
-				{#if data.success}
+				<p>DEBUG: {data.error_code}</p>
+				{#if data.error_code}
+					{#if data.error_code == 1}
+						<p>Nimi on jo käytössä</p>
+					{:else}
+						<p>Tuntematon virhe.</p>
+					{/if}
+				{:else}
 					<p>Peli luotu!</p>
 					<p>ID: {data.tournament_id}</p>
-					{#await joinGame(data.tournament_id, $token, data.join_password, true)}
+					{#await joinGame(data.tournament_id, $token, password, true)}
 						<p>Liitytään peliin...</p>
 					{:then result}
 						<p>{JSON.stringify(result)}</p>
 					{/await}
-				{:else if data.status_code == 1}
-					<p>Nimi on jo käytössä</p>
-				{:else}
-					<p>Peliä luodessa sattui virhe.</p>
 				{/if}
 			{/await}
 		{:else}

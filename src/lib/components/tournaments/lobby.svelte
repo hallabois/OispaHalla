@@ -14,7 +14,8 @@
 		refreshGameData
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
-	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import { token } from "$lib/Auth/authstore";
 	import type Announcer from "./announcer.svelte";
 
 	export let announcer: Announcer | null = null;
@@ -37,101 +38,124 @@
 </script>
 
 <main>
-	{#if $joined_game_error}
-		<p>Virhe pelin tietoja haettaessa: {$joined_game_error}</p>
-		<button on:click={refreshGameData}>Yritä Uudelleen</button>
-		<button on:click={leaveGame}>Anna Olla</button>
-	{:else}
-		<div class="top">
-			<button class="" on:click={leaveGame}>Poistu Pelistä</button>
-			{#if $joined_game_am_host}
-				Järjestäjä 👑
-				<button class="" on:click={host_deleteGame}> Poista Peli </button>
-			{/if}
-		</div>
-		<hr />
-		{#if $joined_game_data}
-			<p>Liitytty peliin "{$joined_game_data.name}"</p>
-			<p>
-				Liittymiskoodi: <code>{$joined_game_id}</code>
-				{#if navigator.clipboard}
-					<button on:click={copyGameID}>Kopioi linkki</button>
+	{#if $token}
+		{#if $joined_game_error}
+			<p>Virhe pelin tietoja haettaessa: {$joined_game_error}</p>
+			<button on:click={refreshGameData}>Yritä Uudelleen</button>
+			<button
+				on:click={() => {
+					leaveGame($token);
+				}}>Anna Olla</button
+			>
+		{:else}
+			<div class="top">
+				<button
+					class=""
+					on:click={() => {
+						leaveGame($token);
+					}}>Poistu Pelistä</button
+				>
+				{#if $joined_game_am_host}
+					Järjestäjä 👑
+					<button
+						class=""
+						on:click={() => {
+							host_deleteGame($token);
+						}}
+					>
+						Poista Peli
+					</button>
 				{/if}
-				{#if navigator.share}
-					<button on:click={shareGameID}>Jaa kutsu</button>
-				{/if}
-			</p>
-			{#if $joined_game_data.gamemode == 0}
-				<p style="max-width:430px;">
-					Pelaaja joka saavuttaa ensimmäisenä laatan <b style="white-space: nowrap;"
-						>{$joined_game_data.gamemode_goal} ({gamemode_0_names[
-							+$joined_game_data.gamemode_goal
-						]})</b
-					> voittaa.
+			</div>
+			<hr />
+			{#if $joined_game_data}
+				<p>Liitytty peliin "{$joined_game_data.name}"</p>
+				<p>
+					Liittymiskoodi: <code>{$joined_game_id}</code>
+					{#if navigator.clipboard}
+						<button on:click={copyGameID}>Kopioi linkki</button>
+					{/if}
+					{#if navigator.share}
+						<button on:click={shareGameID}>Jaa kutsu</button>
+					{/if}
 				</p>
-			{/if}
-			<div class="data">
-				<div>
-					<h3>Aloitustilanne</h3>
-					<div class="game-preview">
-						<Board grid={hac_gamestate_to_grid($joined_game_data.starting_state)} />
+				{#if $joined_game_data.gamemode == 0}
+					<p style="max-width:430px;">
+						Pelaaja joka saavuttaa ensimmäisenä laatan <b style="white-space: nowrap;"
+							>{$joined_game_data.gamemode_goal} ({gamemode_0_names[
+								+$joined_game_data.gamemode_goal
+							]})</b
+						> voittaa.
+					</p>
+				{/if}
+				<div class="data">
+					<div>
+						<h3>Aloitustilanne</h3>
+						<div class="game-preview">
+							<Board
+								enableLSM={false}
+								grid={ohts_gamestate_to_grid($joined_game_data.starting_state)}
+							/>
+						</div>
+					</div>
+					<div>
+						{#if $poll_success}
+							<h4>{$poll_game.clients} {$poll_game.clients == 1 ? "pelaaja" : "pelaajaa"}</h4>
+							<div style="max-height:300px;overflow-y: auto;">
+								{#each $poll_game.client_aliases as player_name, index}
+									<p>
+										{player_name}
+										{#if index == $poll_id_index}
+											(sinä)
+										{/if}
+									</p>
+								{/each}
+							</div>
+						{/if}
 					</div>
 				</div>
-				<div>
-					{#if $poll_success}
-						<h4>{$poll_game.clients} {$poll_game.clients == 1 ? "pelaaja" : "pelaajaa"}</h4>
-						<div style="max-height:300px;overflow-y: auto;">
-							{#each $poll_game.client_aliases as player_name, index}
-								<p>
-									{player_name}
-									{#if index == $poll_id_index}
-										(sinä)
-									{/if}
-								</p>
-							{/each}
-						</div>
-					{/if}
+			{:else}
+				<p>Ladataan pelin tietoja...</p>
+				<div class="data">
+					<div>
+						<h3>...</h3>
+						<div class="game-preview" />
+					</div>
+					<div>
+						<h3>...</h3>
+					</div>
 				</div>
-			</div>
-		{:else}
-			<p>Ladataan pelin tietoja...</p>
-			<div class="data">
-				<div>
-					<h3>...</h3>
-					<div class="game-preview" />
+			{/if}
+			{#if $joined_game_am_host && $poll_success}
+				<div class="start">
+					<button
+						style="width:100%;"
+						class="button action-btn"
+						on:click={host_startGame}
+						disabled={$poll_game.active || $poll_game.ended}
+					>
+						{$poll_game.ended
+							? "Peli on päättynyt!"
+							: $poll_game.active
+							? "Peli on alkanut!"
+							: "Aloita Peli"}
+					</button>
 				</div>
-				<div>
-					<h3>...</h3>
+			{/if}
+			{#if !$joined_game_am_host && $poll_success}
+				<div class="start">
+					<p style="width: 100%;text-align:center;">
+						{$poll_game.ended
+							? "Peli on päättynyt!"
+							: $poll_game.active
+							? "Peli on alkanut!"
+							: "Odotetaan pelin alkua..."}
+					</p>
 				</div>
-			</div>
+			{/if}
 		{/if}
-		{#if $joined_game_am_host && $poll_success}
-			<div class="start">
-				<button
-					style="width:100%;"
-					class="button action-btn"
-					on:click={host_startGame}
-					disabled={$poll_game.active || $poll_game.ended}
-				>
-					{$poll_game.ended
-						? "Peli on päättynyt!"
-						: $poll_game.active
-						? "Peli on alkanut!"
-						: "Aloita Peli"}
-				</button>
-			</div>
-		{/if}
-		{#if !$joined_game_am_host && $poll_success}
-			<div class="start">
-				<p style="width: 100%;text-align:center;">
-					{$poll_game.ended
-						? "Peli on päättynyt!"
-						: $poll_game.active
-						? "Peli on alkanut!"
-						: "Odotetaan pelin alkua..."}
-				</p>
-			</div>
-		{/if}
+	{:else}
+		<p>Ladataan kirjautumistietoja...</p>
 	{/if}
 </main>
 

@@ -35,14 +35,14 @@
 	$: if ($poll_board_string) {
 		grid = hac_gamestate_to_grid($poll_board_string);
 	} else if ($joined_game_data) {
-		grid = hac_gamestate_to_grid($joined_game_data.starting_state);
+		// grid = hac_gamestate_to_grid($joined_game_data.starting_state);
 	} else {
 		// enableKIM = false;
 	}
 
-	function move(direction: number) {
+	function move(direction: 0 | 1 | 2 | 3) {
 		if ($poll_game && $poll_game.active && !$poll_game.ended) {
-			BoardInstance.getGameManagerInstance().move(direction);
+			BoardInstance?.getGameManagerInstance()?.move(direction);
 			console.log("server-side move called with the value", direction);
 			poll_send_moves.push(direction);
 			// console.info(JSON.stringify(poll_send_moves));
@@ -73,9 +73,6 @@
 
 	let inputManager: KeyboardInputManager | null = null;
 	let inputRoot: HTMLElement;
-	onMount(() => {
-		onInitDone();
-	});
 	let TtInstance: Tournaments;
 	let AnnouncerInstance: Announcer;
 	let BoardInstance: Board;
@@ -105,7 +102,7 @@
 	<div class="board-container">
 		<div style="display: flex;justify-content:space-between;width:var(--field-width);">
 			<div style="display: flex;align-items: end;">
-				<a sveltekit:reload href="/">Takaisin yksinpeliin</a>
+				<a data-sveltekit-reload href="/">Takaisin yksinpeliin</a>
 			</div>
 			{#if $poll_success}
 				<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
@@ -136,10 +133,6 @@
 		{/if}
 	</div>
 </main>
-<div class="patches">
-	<script src="/js/application.js"></script>
-	<div class="preload-container" />
-</div>
 
 <style>
 	main {

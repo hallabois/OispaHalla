@@ -1,18 +1,11 @@
-let tournament_endpoint_dev = true ? "https://ohts.fly.dev/api" : "https://0.0.0.0:9000/api";
+let tournament_endpoint_dev = false ? "https://ohts.fly.dev/api" : "http://localhost:9000/api";
 export let tournament_endpoint = false ? "https://mp.oispahalla.com/api" : tournament_endpoint_dev;
+import { token } from "$lib/Auth/authstore";
 import { type Writable, writable, get } from "svelte/store";
 
 export class createResponse {
-	success: boolean;
-	edit_key!: string;
-	join_password!: string;
-	tournament_id: number;
-	status_code: number;
-	constructor(success: boolean, tournament_id: number, status_code: number) {
-		this.success = success;
-		this.tournament_id = tournament_id;
-		this.status_code = status_code;
-	}
+	tournament_id!: number;
+	error_code!: number | null;
 }
 
 export let gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
@@ -63,12 +56,13 @@ export async function createTournament(
 	if (resp.ok) {
 		let json = await resp.json();
 		console.log("tournament data:", json);
+		joined_game_host_pswds[json.tournament_id] = "lmao";
 		return json as createResponse;
 	}
 	if (resp.status == 409) {
-		return new createResponse(false, 0, 1); // Name already in use
+		return {tournament_id: 0, error_code: 1}; // Name already in use
 	}
-	return new createResponse(false, 0, -1); // Fetch failed
+	return {tournament_id: 0, error_code: -1}; // Fetch failed
 }
 
 export class TournamentInfo {
@@ -160,7 +154,6 @@ export async function checkAlive(): Promise<boolean> {
 }
 
 export let joined_game_id: Writable<number | null> = writable(null);
-export let joined_game_user_id: Writable<string | null> = writable(null);
 export let joined_game_am_host: Writable<boolean | null> = writable(false);
 export let joined_game_host_pswds: { [key: number]: string } = {};
 export let joined_game_data: Writable<TournamentInfo | null> = writable(null);
@@ -188,7 +181,8 @@ export async function refreshGameData() {
 	}
 }
 
-export async function poll() {
+export async function poll(token: string) {
+	return null;
 	let moves = poll_send_moves;
 	moves = moves.filter((i, idx) => poll_send_moves[idx - 1] !== i); // Remove adjacent duplicates, as they do not affect the game
 	poll_send_moves = [];
@@ -200,8 +194,8 @@ export async function poll() {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
-			user_id: get(joined_game_user_id),
-			moves: moves
+			moves: moves,
+			token
 		})
 	});
 	if (resp.ok) {
@@ -233,9 +227,7 @@ export async function joinGame(
 		})
 	});
 	if (resp.ok) {
-		let json = await resp.json();
-		joined_game_id.set(json.game_id);
-		joined_game_user_id.set(json.user_id);
+		joined_game_id.set(id);
 		if (isHost && join_password) {
 			joined_game_host_pswds[id] = join_password;
 		} else {
@@ -259,7 +251,7 @@ export async function joinGame(
 	//
 }
 
-export async function leaveGame(informServer = true) {
+export async function leaveGame(token: string, informServer = true) {
 	console.log("Leaving the current game...");
 
 	if (informServer) {
@@ -271,7 +263,7 @@ export async function leaveGame(informServer = true) {
 				"Content-Type": "application/json"
 			},
 			body: JSON.stringify({
-				user_id: get(joined_game_user_id)
+				token
 			})
 		});
 		if (resp.ok) {
@@ -293,7 +285,7 @@ class startResponse {
 	msg!: string;
 }
 
-export async function host_startGame(): Promise<startResponse> {
+export async function host_startGame(token: string): Promise<startResponse> {
 	let id = get(joined_game_id);
 	let resp = await fetch(`${tournament_endpoint}/games/${id}/start`, {
 		method: "POST",
@@ -303,7 +295,7 @@ export async function host_startGame(): Promise<startResponse> {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
-			edit_key: joined_game_host_pswds[id]
+			token
 		})
 	});
 	if (resp.ok) {
@@ -317,7 +309,7 @@ class deleteResponse {
 	success!: boolean;
 }
 
-export async function host_deleteGame(): Promise<deleteResponse> {
+export async function host_deleteGame(token: string): Promise<deleteResponse> {
 	let id = get(joined_game_id);
 	let resp = await fetch(`${tournament_endpoint}/games/${id}/delete`, {
 		method: "POST",
@@ -327,11 +319,11 @@ export async function host_deleteGame(): Promise<deleteResponse> {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({
-			edit_key: joined_game_host_pswds[id]
+			token
 		})
 	});
 	if (resp.ok) {
-		leaveGame(false);
+		leaveGame(token, false);
 		joined_game_host_pswds[id] = null;
 		return { success: true };
 	}
@@ -346,15 +338,36 @@ class PollData {
 	id_index: number;
 }
 // Polling
-export let poll_success: Writable<boolean> = writable(null);
-export let poll_board_string: Writable<string> = writable(null);
-export let poll_other_boards_string: Writable<string[]> = writable(null);
-export let poll_game: Writable<TournamentInfo> = writable(null);
-export let poll_index: Writable<number> = writable(null);
-export let poll_id_index: Writable<number> = writable(null);
+export let poll_success: Writable<boolean | null> = writable(null);
+export let poll_board_string: Writable<string | null> = writable(null);
+export let poll_other_boards_string: Writable<string[] | null> = writable(null);
+export let poll_game: Writable<TournamentInfo | null> = writable(null);
+export let poll_index: Writable<number | null> = writable(null);
+export let poll_id_index: Writable<number | null> = writable(null);
 
 export let poll_send_moves: number[] = [];
+
+let socket: WebSocket | null = null;
+joined_game_id.subscribe(($joined_game_id)=>{
+	if(!socket) {
+		if($joined_game_id != null) {
+			socket = new WebSocket(`ws://localhost:9000/ws/${$joined_game_id}?token=${get(token)}`);
+			socket.addEventListener('open', (event) => {
+				if(socket){
+					socket.send('speak:I am.');
+				}
+			});
+		}
+	}
+	else {
+		if($joined_game_id == null) {
+			socket.close();
+			socket = null;
+		}
+	}
+});
 setInterval(() => {
+	return;
 	if (get(joined_game_id) != null) {
 		poll().then((polldata) => {
 			if (polldata != null) {

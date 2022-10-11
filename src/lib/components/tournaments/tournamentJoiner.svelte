@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fade } from "svelte/transition";
 	import { joinGame, getGameData, joined_game_error } from "$lib/stores/tournamentstore";
+	import { token } from "$lib/Auth/authstore";
 
 	export let chosen_game: string | number | any[] | null = null;
 	let requires_password = false;
@@ -52,7 +53,7 @@
 	<button
 		disabled={!canJoin}
 		on:click={() => {
-			joinGame(chosen_game, password);
+			joinGame(chosen_game, $token, password);
 		}}
 		class="button action-btn fill-w">Liity</button
 	>
