@@ -469,7 +469,7 @@ export default class GameManager {
 
 	pushToHistory(state: string) {
 		this.history.push(state);
-		if (browser) {
+		/* if (browser) {
 			window.devtools.validateCurrentHistory().then((result) => {
 				console.log(result);
 				if (result && !result.valid) {
@@ -478,7 +478,7 @@ export default class GameManager {
 					);
 				}
 			});
-		}
+		} */
 		// this.removeConsecutiveDuplicatesFromHistory();
 	}
 
