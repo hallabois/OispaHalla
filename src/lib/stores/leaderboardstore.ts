@@ -230,8 +230,9 @@ export async function submit_score(
 				json: await resp.json()
 			};
 		} else {
-			console.warn(resp);
+			console.error(resp);
 			let json = await resp.json();
+			console.error("resp json:", json);
 			return {
 				success: false,
 				message: json.message || "Tuntematon virhe",
@@ -239,10 +240,10 @@ export async function submit_score(
 			};
 		}
 	} catch (e) {
-		console.warn(e);
+		console.error(e);
 		return {
 			success: false,
-			message: "Error contacting server.",
+			message: "Verkkovirhe.",
 			json: null
 		};
 	}
