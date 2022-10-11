@@ -25,14 +25,11 @@
 	function forceForgetLocalHAC() {
 		console.info("start resetting local hac score");
 		setItem(`HAC_best_score${current_size}`, 0);
+		console.info("hac score reset");
 	}
 
 	function forceForgetLocalScore() {
 		console.info("start resetting local score");
-		if (!confirm("Oletko varma?")) {
-			alert("Muutoksia ei tehty.");
-			return;
-		}
 		setItem(`HAC_best_score${current_size}`, 0);
 		setItem(`bestScores`, {
 			...(getItem("bestScores") || {}),
@@ -51,6 +48,15 @@
 		console.info("start restoring localstorage");
 	}
 
+	function forgetAllScores() {
+		if (!confirm("Oletko varma?")) {
+			alert("Muutoksia ei tehty.");
+			return;
+		}
+		forceForgetLocalScore();
+		forceForgetLocalHAC();
+	}
+
 	export let markAsSubmitted = (s: number) => {};
 	export let startSubmitting = (s: number) => {};
 	export let sizes: number[];
@@ -65,7 +71,7 @@
 		<div>
 			<p>Käytä näitä nappeja vain tarvittaessa!</p>
 			<p>Niiden toimintaa ei ole välttämättä tarkastettu läpikotaisin.</p>
-			<p>Vaikutat tällä hetkellä koon {current_size} tuloksiin.</p>
+			<p><b>Vaikutat tällä hetkellä koon {current_size} tuloksiin.</b></p>
 		</div>
 		<button
 			class="button action-btn"
@@ -82,7 +88,7 @@
 		<button
 			class="button action-btn"
 			on:click={() => {
-				forceForgetLocalScore();
+				forgetAllScores();
 			}}>Poista paikalliset pisteet</button
 		>
 	</div>
