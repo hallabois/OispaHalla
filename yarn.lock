@@ -3633,10 +3633,10 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-twothousand-forty-eight@^0.7.0:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/twothousand-forty-eight/-/twothousand-forty-eight-0.7.2.tgz#4e03663ac966c5475b75212c1f925236757e3374"
-  integrity sha512-s/GSX6sw2cMP2HVedTXfokFlNEy8NQNOno0bIX+JuQabZBV3dJglpmMYvojp3NI2gYl/RzdNl1mcDn5uZJw8qw==
+twothousand-forty-eight@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/twothousand-forty-eight/-/twothousand-forty-eight-0.10.0.tgz#7c174b0f819dff72192265b0ef617ffd3fedcfad"
+  integrity sha512-mgaVZq2EWMxYQfFF1nq58YabdAXAr9gt7f1bnUeoNUs18j9m4nyTBp3qhiMbkpzmg2Y/I+b1aIyN7BrdI3kwDg==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

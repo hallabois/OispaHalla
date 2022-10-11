@@ -4,7 +4,9 @@
 	$: preloadImageUrls = [
 		...[...Array(12).keys()].map((x) => `${base}/${2 ** (x + 1)}.webp`),
 		`${base}/OispaHallaTausta.webp`,
-		"/img/parinkulautus.webp"
+		"/img/parinkulautus.webp",
+		"/img/ABC/blur_night.webp",
+		"/img/ABC/blur.webp"
 	];
 </script>
 
