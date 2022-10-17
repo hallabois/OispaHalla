@@ -67,6 +67,9 @@
 	async function submit() {
 		submit_in_progress = true;
 		let starting_size = size;
+		if (announcer) {
+			announcer.announce("Lähetetään tulosta...");
+		}
 		let result = await submit_score(
 			starting_size,
 			$token,

@@ -5,13 +5,12 @@ import type HTMLActuator from "./html_actuator";
 import type KeyboardInputManager from "./keyboard_input_manager";
 import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
-import { HAC } from "$lib/HAC";
 
-import { getItem, setItem, storage } from "$lib/stores/storage";
+import { getItem, setItem } from "$lib/stores/storage";
 import type Announcer from "$lib/components/tournaments/announcer.svelte";
-import { browser } from "$app/environment";
 import { TAB_BLOCK } from "$lib/session_manager";
 import { get } from "svelte/store";
+import { browser, dev } from "$app/environment";
 
 export default class GameManager {
 	size: any;
@@ -34,7 +33,6 @@ export default class GameManager {
 
 	documentRoot: HTMLElement;
 	enable_random: boolean;
-	HallaAntiCheat: HAC;
 	announcer: Announcer | null;
 
 	constructor(
@@ -67,8 +65,6 @@ export default class GameManager {
 		this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
 		this.popup = this.documentRoot.querySelector(".lb-popup");
-
-		this.HallaAntiCheat = new HAC();
 
 		if (typeof grid !== "undefined" && grid) {
 			this.grid = grid;
@@ -172,7 +168,7 @@ export default class GameManager {
 			this.over = previousState.over;
 			this.won = previousState.won;
 			this.doKeepPlaying = previousState.keepPlaying;
-			this.history = previousState.history || this.HallaAntiCheat.history || [];
+			this.history = previousState.history || [];
 		} else {
 			this.grid = new Grid(this.size);
 			this.score = 0;
@@ -469,7 +465,8 @@ export default class GameManager {
 
 	pushToHistory(state: string) {
 		this.history.push(state);
-		if (browser) {
+		if (browser && dev) {
+			//@ts-ignore
 			window.devtools.validateCurrentHistory().then((result) => {
 				console.log(result);
 				if (result && !result.valid) {

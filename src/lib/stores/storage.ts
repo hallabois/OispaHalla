@@ -42,7 +42,7 @@ async function update_storage_from_localstorage() {
 			try {
 				parsed = JSON.parse(oregano);
 			} catch (e) {
-				console.warn(e);
+				console.error(e);
 			}
 			data[k] = parsed;
 		}
@@ -89,13 +89,13 @@ storage.subscribe(async (data) => {
 				}
 				if (get(TAB_BLOCK)) {
 					// alert("Peliä ei tallenneta, kunnes muut välilehdet suljetaan");
-					console.warn("Refusing to write data as multiple tabs are open!");
+					console.error("Refusing to write data as multiple tabs are open!");
 					return;
 				}
 				let local_ts: number = data.__updated_ms || 0;
 				let external_ts: number = (await localforage.getItem("__updated_ms")) || 0;
 				if (external_ts > local_ts) {
-					console.warn("refusing to write expired changes to storage.", local_ts, external_ts);
+					console.error("refusing to write expired changes to storage.", local_ts, external_ts);
 					return;
 				}
 
@@ -107,15 +107,13 @@ storage.subscribe(async (data) => {
 				);
 
 				if (localHash !== externalHash) {
-					console.log("Updating storage...");
 					for (let key of Object.keys(data)) {
 						await localforage.setItem(key, data[key]);
 					}
-					console.log("Storage updated.");
 				}
 			}
 		} catch (e) {
-			console.warn("Couldn't update storage", e);
+			console.error("Couldn't update storage", e);
 		}
 	} else {
 		// console.info("Skipping localstorage operations outside browser...");

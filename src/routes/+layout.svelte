@@ -9,6 +9,7 @@
 
 	import "../app.scss";
 	import PopupScrolllock from "$lib/components/common/popup/popup_scrolllock.svelte";
+	import LoadingIndicator from "$lib/components/common/loading-indicator/LoadingIndicator.svelte";
 	import { storage_version } from "$lib/stores/storage";
 	import { theme_index } from "$lib/stores/themestore";
 	import { enable_countdown } from "../features";
@@ -41,6 +42,7 @@
 
 	import * as Sentry from "@sentry/svelte";
 	import { BrowserTracing } from "@sentry/tracing";
+	import Preloader from "$lib/components/common/image-preloader/Preloader.svelte";
 	if (browser && !dev) {
 		// Initialize the Sentry SDK here
 		Sentry.init({
@@ -50,6 +52,8 @@
 		});
 	}
 </script>
+
+<LoadingIndicator />
 
 {#if !launched}
 	<div class="countdown-div">
