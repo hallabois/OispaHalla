@@ -12,8 +12,6 @@
 		open = true;
 	}
 
-	export let announcer: Announcer | null = null;
-
 	let psas: object | null;
 	$: psas = $PSA?.data()?.content;
 	$: unread_psas = Object.keys(psas || {}).filter(
@@ -98,14 +96,6 @@
 </Popup>
 
 <style>
-	h3 {
-		display: inline;
-		margin: 0;
-		border-bottom: 1px solid var(--color);
-	}
-	hr {
-		margin-block: 0.5em;
-	}
 	a,
 	p {
 		margin: 0;

@@ -1,24 +1,13 @@
 <script lang="ts">
-	import {
-		gamemode_0_names,
-		host_deleteGame,
-		host_startGame,
-		joined_game_am_host,
-		joined_game_data,
-		joined_game_error,
-		joined_game_id,
-		leaveGame,
-		poll_game,
-		poll_id_index,
-		poll_success,
-		refreshGameData
-	} from "$lib/stores/tournamentstore";
+	import {} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
 	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { token } from "$lib/Auth/authstore";
 	import type Announcer from "./announcer.svelte";
 
 	export let announcer: Announcer | null = null;
+
+	let message_input: string;
 
 	function shareGameID() {
 		navigator.share({
@@ -112,6 +101,17 @@
 								{/each}
 							</div>
 						{/if}
+						<input bind:value={message_input} /><button
+							on:click={() => {
+								sendMessage(message_input);
+							}}>lähetä</button
+						>
+						<p>viestejä</p>
+						<div class="messages">
+							{#each $chat as message}
+								<p>{message[0].substring(0, 5)}: {message[1]}</p>
+							{/each}
+						</div>
 					</div>
 				</div>
 			{:else}

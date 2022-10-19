@@ -1,24 +1,27 @@
 <script lang="ts">
-	import { tournament_endpoint } from "$lib/stores/tournamentstore";
+	import {
+		connected,
+		connect_with_token,
+		game_index,
+		request_index,
+		try_admin,
+		try_autoconnect
+	} from "$lib/stores/tournamentstore";
+	try_autoconnect.set(false);
+	try_admin.set(true);
 	let refreshKey = {};
 	let admin_token: string;
-	let admin_token_checking = false;
-	let admin_token_valid = false;
-	$: {
-		if (admin_token != null && admin_token != "" && admin_token.length > 2) {
-			admin_token_checking = true;
-			testAdminToken().then((v) => {
-				admin_token_valid = v;
-				admin_token_checking = false;
-			});
-		} else {
-			admin_token_valid = false;
-			admin_token_checking = false;
+	let checking_admin_token = false;
+
+	$: if (admin_token != null && !checking_admin_token) {
+		checking_admin_token = true;
+		try {
+			connect_with_token(admin_token);
+			checking_admin_token = false;
+		} catch (err) {
+			console.info("ws err", err);
+			checking_admin_token = false;
 		}
-	}
-	$: if (!admin_token_valid) {
-		selected_game = null;
-		action_status = null;
 	}
 
 	let action_status: null | boolean = null; // Null: Clear, true: OK, false: Error
@@ -26,65 +29,6 @@
 	function confirm_action() {
 		let answer = prompt("Please retype the admin token");
 		return answer === admin_token;
-	}
-
-	async function testAdminToken() {
-		let result = await fetch(`${tournament_endpoint}/admin/games/0/${admin_token}`);
-		return result.ok || result.status != 401;
-	}
-
-	async function getGames() {
-		return fetch(`${tournament_endpoint}/admin/games/${admin_token}`);
-	}
-
-	async function getGameDetails(game_id: string) {
-		return fetch(`${tournament_endpoint}/admin/games/${game_id}/${admin_token}`);
-	}
-
-	async function deleteAllGames() {
-		if (confirm_action()) {
-			console.log("Confirmation received, deleting all games...");
-			let result = await fetch(`${tournament_endpoint}/admin/clean/${admin_token}`, {
-				method: "DELETE"
-			});
-			console.log("Deletion request result:", result);
-			action_status = result.ok;
-			refreshKey = {};
-		}
-	}
-	async function deleteGame(game_id: string) {
-		if (confirm_action()) {
-			console.log(`Confirmation received, deleting game ${game_id}...`);
-			let result = await fetch(`${tournament_endpoint}/games/${game_id}/delete`, {
-				method: "POST",
-				body: JSON.stringify({
-					edit_key: admin_token
-				}),
-				headers: {
-					"Content-Type": "application/json"
-				}
-			});
-			console.log("Deletion request result:", result);
-			action_status = result.ok;
-			refreshKey = {};
-		}
-	}
-	async function startGame(game_id: string) {
-		if (confirm_action()) {
-			console.log(`Confirmation received, starting game ${game_id}...`);
-			let result = await fetch(`${tournament_endpoint}/games/${game_id}/start`, {
-				method: "POST",
-				body: JSON.stringify({
-					edit_key: admin_token
-				}),
-				headers: {
-					"Content-Type": "application/json"
-				}
-			});
-			console.log("Activation request result:", result);
-			action_status = result.ok;
-			refreshKey = {};
-		}
 	}
 
 	let selected_game: string | null;
@@ -113,9 +57,9 @@
 		<div class="header-bar">
 			<h1>OispaHalla™ Multiplayer Admin Panel</h1>
 		</div>
-		{#if admin_token_valid}
+		{#if $connected}
 			<div class="actions">
-				<button on:click={deleteAllGames}>Delete ALL Games</button>
+				<button on:click={() => {}}>Delete ALL Games</button>
 				<button
 					on:click={() => {
 						admin_token = "";
@@ -130,116 +74,106 @@
 		{/if}
 		<hr />
 	</div>
-	{#if admin_token_valid}
+	{#if $connected}
 		{#key refreshKey}
-			{#await getGames()}
-				<div class="content">
-					<p>Loading games</p>
-				</div>
-			{:then resp}
-				{#if resp.ok}
-					{#await resp.json()}
-						<div class="content">
-							<p>Parsing JSON</p>
-						</div>
-					{:then data}
-						{#if data.ongoing_games && data.ongoing_games.length > 0}
-							<div class="data-view">
-								<div class="games">
-									<table>
-										<thead>
-											<tr class="head">
-												{#each Object.keys(data.ongoing_games[0]) as key}
-													<th>{key}</th>
-												{/each}
-											</tr>
-										</thead>
-										<tbody>
-											{#each data.ongoing_games as game}
-												<tr
-													class="game"
-													on:click={() => {
-														selected_game = game.id;
-													}}
-													class:selected={selected_game === game.id}
-												>
-													{#each Object.keys(game) as key}
-														<td>{game[key]}</td>
-													{/each}
-												</tr>
+			{#if $game_index}
+				{@const data = $game_index}
+				{#if data.joinable_games && data.joinable_games.length > 0}
+					{@const games = data.joinable_games}
+					<div class="data-view">
+						<div class="games">
+							<table>
+								<thead>
+									<tr class="head">
+										{#each Object.keys(games[0]) as key}
+											<th>{key}</th>
+										{/each}
+									</tr>
+								</thead>
+								<tbody>
+									{#each games as game}
+										<tr
+											class="game"
+											on:click={() => {
+												selected_game = game.id;
+											}}
+											class:selected={selected_game === game.id}
+										>
+											{#each Object.keys(game) as key}
+												<td>{game[key]}</td>
 											{/each}
-										</tbody>
-									</table>
-								</div>
-								{#if selected_game != null}
-									<div class="game-inspector">
-										{#await getGameDetails(selected_game)}
-											<p class="message">Loading game {selected_game}</p>
-										{:then response}
-											{#if response.ok}
-												{#await response.json()}
-													<p class="message">Parsing JSON</p>
-												{:then json}
-													{#if json.data}
-														{@const game_data = JSON.parse(json.data)}
-														<div style="display: flex;gap: .5em;align-items: center;">
-															<button
-																on:click={() => {
-																	selected_game = null;
-																}}>×</button
-															>
-															<h3>Game {selected_game}: "{game_data.name}"</h3>
-														</div>
-														<div>
-															<button
-																on:click={() => {
-																	deleteGame(selected_game || "");
-																}}>Delete</button
-															>
-															{#if !game_data.active}
-																<button
-																	on:click={() => {
-																		startGame(selected_game || "");
-																	}}>Start</button
-																>
-															{/if}
-														</div>
-														<table>
-															{#each Object.keys(game_data) as game_key}
-																<tr>
-																	<td>{game_key}</td>
-																	<td>{game_data[game_key]}</td>
-																</tr>
-															{/each}
-														</table>
-													{:else}
-														<p class="message">Invalid data</p>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+						{#if selected_game != null}
+							<div class="game-inspector">
+								{#await getGameDetails(selected_game)}
+									<p class="message">Loading game {selected_game}</p>
+								{:then response}
+									{#if response.ok}
+										{#await response.json()}
+											<p class="message">Parsing JSON</p>
+										{:then json}
+											{#if json.data}
+												{@const game_data = JSON.parse(json.data)}
+												<div style="display: flex;gap: .5em;align-items: center;">
+													<button
+														on:click={() => {
+															selected_game = null;
+														}}>×</button
+													>
+													<h3>Game {selected_game}: "{game_data.name}"</h3>
+												</div>
+												<div>
+													<button
+														on:click={() => {
+															deleteGame(selected_game || "");
+														}}>Delete</button
+													>
+													{#if !game_data.active}
+														<button
+															on:click={() => {
+																startGame(selected_game || "");
+															}}>Start</button
+														>
 													{/if}
-												{/await}
+												</div>
+												<table>
+													{#each Object.keys(game_data) as game_key}
+														<tr>
+															<td>{game_key}</td>
+															<td>{JSON.stringify(game_data[game_key])}</td>
+														</tr>
+													{/each}
+												</table>
 											{:else}
-												<p class="message">Error fetching game details: {response.statusText}</p>
+												<p class="message">Invalid data</p>
 											{/if}
 										{/await}
-									</div>
-								{/if}
-							</div>
-						{:else}
-							<div class="content">
-								<p>No games atm</p>
+									{:else}
+										<p class="message">Error fetching game details: {response.statusText}</p>
+									{/if}
+								{/await}
 							</div>
 						{/if}
-					{/await}
+					</div>
 				{:else}
-					<p>Failed to get games: {resp.statusText}</p>
+					<div class="content">
+						<p>No games atm</p>
+					</div>
 				{/if}
-			{/await}
+			{:else}
+				{@const _ = request_index()}
+			{/if}
 		{/key}
 	{:else}
 		<div class="content sign-in">
 			<label for="admin_token">Please input the admin token</label>
 			<!-- svelte-ignore a11y-autofocus -->
 			<input id="admin_token" type="password" bind:value={admin_token} autofocus />
-			{#if admin_token_checking}
+			{#if checking_admin_token}
 				<p>checking...</p>
 			{:else}
 				<p style="visibility: hidden;">.</p>
@@ -361,6 +295,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+
+		border-top: 1px solid;
 	}
 
 	h1,

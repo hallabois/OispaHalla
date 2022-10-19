@@ -142,7 +142,7 @@
 	/>
 	<div class="new-above-game">
 		<div class="above-game-left">
-			<a href="https://hallabois.github.io/invite/" target="_blank">
+			<a href="https://hallabois.github.io/invite/" target="_blank" rel="noreferrer">
 				<h1 class="title">{app_name}</h1>
 			</a>
 			{@html marked.parse(app_description)}
@@ -172,6 +172,9 @@
 						restartbtn.classList.remove("open");
 					}
 				}}
+				on:keydown={() => {}}
+				on:keyup={() => {}}
+				on:keypress={() => {}}
 			>
 				<div class="uusi-jakso">{app_name_newgame}</div>
 				<div class="size-selector">
@@ -191,6 +194,11 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="disclaimer">
+		<p>
+			{@html marked.parse(app_notice)}
+		</p>
 	</div>
 	<div class="board-container">
 		<Board
@@ -284,11 +292,6 @@
 		<button class="pwa-add-button" style="display: none;border: none;margin: .5em;cursor: pointer;"
 			>Asenna sovelluksena</button
 		>
-	</div>
-	<div class="disclaimer">
-		<p>
-			{@html marked.parse(app_notice)}
-		</p>
 	</div>
 </div>
 <div class="patches">

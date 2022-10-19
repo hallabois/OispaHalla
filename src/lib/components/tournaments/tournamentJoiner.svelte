@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade } from "svelte/transition";
-	import { joinGame, getGameData, joined_game_error } from "$lib/stores/tournamentstore";
+	import {} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 
 	export let chosen_game: string | number | any[] | null = null;

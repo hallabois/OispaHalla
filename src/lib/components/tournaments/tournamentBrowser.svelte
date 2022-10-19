@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { fade, slide } from "svelte/transition";
-	import {
-		getPublicTournaments,
-		joined_game_host_pswds,
-		joinGame,
-		joined_game_error,
-		TournamentInfo
-	} from "$lib/stores/tournamentstore";
+	import { connected, game_index, request_index } from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
+
+	$: if (connected && $game_index == null) {
+		request_index();
+	}
 
 	let filter: string | null;
 	let chosen_game: number | null;
@@ -17,76 +15,56 @@
 		chosen_game != null &&
 		!(game_requires_password && (passwords[chosen_game] == null || passwords[chosen_game] == ""));
 
-	function selectGame(game: TournamentInfo) {
+	function selectGame(game: any) {
 		chosen_game = game.id;
 		game_requires_password = game.requires_password;
 	}
 </script>
 
 <main>
-	{#await getPublicTournaments()}
+	{#if !$game_index}
 		<p>Haetaan pelejä...</p>
-	{:then result}
-		<p>DEBUG: {result.status_code}</p>
-		{#if result.success}
-			<div>
-				<p>
-					Löydettiin {result.joinable_games.length}
-					{result.joinable_games.length == 1 ? "julkinen peli" : "julkista peliä"}!
-				</p>
-				<input class="search" bind:value={filter} placeholder="Hae pelejä nimen perusteella" />
-			</div>
-			<hr />
-			<div class="games">
-				{#each result.joinable_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index}
-					<div
-						class="game"
-						class:selected={chosen_game == game.id}
-						on:click={() => {
-							selectGame(game);
-						}}
-						title={game.id + ""}
-					>
-						<p>{game.name}</p>
-						<spacer />
-						{#if Object.keys(joined_game_host_pswds).includes(game.id + "")}
-							<p title="Olet tämän pelin luoja">👑</p>
-						{/if}
-						{#if game.requires_password}
-							<p title="Tähän peliin liittyminen vaatii salasanan">🔐</p>
-						{/if}
-						<p>{game.clients}/{game.max_clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
-					</div>
-					{#if game.requires_password && chosen_game == game.id}
-						<div>
-							<label for="pswd">Salasana:</label>
-							<!-- svelte-ignore a11y-autofocus -->
-							<input bind:value={passwords[game.id]} autofocus />
-						</div>
-					{/if}
-				{/each}
-			</div>
-			<hr />
-			{#if $joined_game_error}
-				<div class="err" transition:fade|local>
-					<p>Virhe: {$joined_game_error}</p>
+	{:else}
+		<div>
+			<p>
+				Löydettiin {$game_index.joinable_games.length}
+				{$game_index.joinable_games.length == 1 ? "julkinen peli" : "julkista peliä"}!
+			</p>
+			<input class="search" bind:value={filter} placeholder="Hae pelejä nimen perusteella" />
+		</div>
+		<hr />
+		<div class="games">
+			{#each $game_index.joinable_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index}
+				<div
+					class="game"
+					class:selected={chosen_game == game.id}
+					on:click={() => {
+						selectGame(game);
+					}}
+					title={game.id + ""}
+				>
+					<p>{game.name}</p>
 					<spacer />
-					<button
-						on:click={() => {
-							joined_game_error.set(null);
-						}}>×</button
-					>
+					{#if false}
+						<p title="Olet tämän pelin luoja">👑</p>
+					{/if}
+					{#if game.requires_password}
+						<p title="Tähän peliin liittyminen vaatii salasanan">🔐</p>
+					{/if}
+					<p>{game.clients}/{game.max_clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
 				</div>
-			{/if}
-			<button
-				disabled={!canJoin}
-				on:click={() => {
-					joinGame(chosen_game, $token, passwords[chosen_game]);
-				}}
-				class="button action-btn fill-w">Liity</button
-			>
-		{/if}
-	{/await}
+				{#if game.requires_password && chosen_game == game.id}
+					<div>
+						<label for="pswd">Salasana:</label>
+						<!-- svelte-ignore a11y-autofocus -->
+						<input bind:value={passwords[game.id]} autofocus />
+					</div>
+				{/if}
+			{/each}
+		</div>
+		<hr />
+		<button disabled={!canJoin} on:click={() => {}} class="button action-btn fill-w">Liity</button>
+	{/if}
 </main>
 
 <style>
