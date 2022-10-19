@@ -24,11 +24,50 @@ export class createTournamentGamemodeOptions {
 	goal!: number;
 }
 
+
 let socket: WebSocket | null = null;
-export let connected: Writable<boolean | null> = writable(null);
-export let game_index: Writable<Object | null> = writable(null);
-export let try_admin: Writable<boolean> = writable(false);
+export type UserDetails = {
+	user_id: string,
+	name: string,
+	admin: boolean
+};
+export type GameDetails = {
+	id: number,
+	creator_id: string,
+	gamemode: number,
+	gamemode_goal: number,
+	name: string,
+	public: boolean,
+	max_clients: number,
+	requires_password: boolean,
+	started: boolean,
+	ended: boolean,
+	winner_id: string | null,
+	clients: string[],
+	starting_state: Object
+};
+export type GameIndex = {
+	id: string,
+	name: string,
+	clients: number,
+	max_clients: 4,
+	requires_password: boolean
+};
+export type Index = {
+	joinable_games: GameIndex[],
+	all_games: number[],
+	active_games: number[],
+	ended_games: number[]
+};
+
 export let try_autoconnect: Writable<boolean> = writable(true);
+
+export let connected: Writable<boolean | null> = writable(null);
+export let connection_error: Writable<boolean | null> = writable(null);
+export let errors: Writable<Error[]> = writable([]);
+export let user_details: Writable<UserDetails | null> = writable(null);
+export let game_details: Writable<{[key: number]: GameDetails}> = writable({});
+export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
 
 function socket_processor(message: any) {
@@ -39,32 +78,60 @@ function socket_processor(message: any) {
 		if(event.data.Index) {
 			game_index.set(event.data.Index);
 		}
+		if(event.data.UserDetails) {
+			user_details.set(event.data.UserDetails);
+		}
+		if(event.data.GameDetails) {
+			game_details.set({
+				...get(game_details),
+				[event.data.GameDetails.id]: event.data.GameDetails
+			})
+		}
 	}
 }
-
+function socket_error_processor(err: any) {
+	errors.set([...get(errors), err]);
+}
 
 export function connect_with_token(token: string | null) {
-	if(!socket) {
-		let connection_string = `ws://${tournament_endpoint}/ws?token=${token}`;
-		if(get(try_admin)) {
-			connection_string = `${connection_string}&admin=true`;
-		}
-		socket = new WebSocket(connection_string);
-		socket.addEventListener('open', (event) => {
-			connected.set(true);
-			if(socket){
-				socket.send('say|>Hello world!');
-			}
-		});
-		socket.addEventListener('close', (event) => {
-			connected.set(false);
-		});
-		socket.addEventListener('message', socket_processor);
-		socket.addEventListener('error', (err)=>{console.error("ws err", err)});
+	if(socket) {
+		disconnect();
 	}
+	let connection_string = `ws://${tournament_endpoint}/ws?token=${token}`;
+	socket = new WebSocket(connection_string);
+	socket.addEventListener('open', (event) => {
+		connection_error.set(false);
+		connected.set(true);
+		errors.set([]);
+		if(socket){
+			socket.send('udetails');
+		}
+		console.log('ws connected');
+	});
+	socket.addEventListener('close', (event) => {
+		connected.set(false);
+
+		socket = null;
+		if(event.code == 3001) {
+			// User decision
+			connection_error.set(null);
+			console.log('ws disconnected');
+		}
+		else {
+			connection_error.set(true);
+			console.log('ws connection error');
+		}
+	});
+	socket.addEventListener('message', socket_processor);
+	socket.addEventListener('error', socket_error_processor);
 }
 export function connect() {
 	connect_with_token(get(token));
+}
+export function disconnect() {
+	if(socket) {
+		socket.close(3001);
+	}
 }
 
 export function request_index() {
@@ -73,6 +140,14 @@ export function request_index() {
 	}
 	else {
 		throw new Error("not connected! can't get index.");
+	}
+}
+export function request_game_details(game_id: number) {
+	if(socket) {
+		socket.send(`gdetails|>${game_id}`);
+	}
+	else {
+		throw new Error("not connected! can't get game details.");
 	}
 }
 

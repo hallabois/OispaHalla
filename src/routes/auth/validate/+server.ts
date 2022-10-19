@@ -3,8 +3,17 @@ import { getAuth } from "firebase-admin/auth";
 import { app } from "$lib/Auth_admin/auth.server";
 import { env } from "$env/dynamic/private";
 
+function get_admins() {
+	if(env.OH_ADMIN_EMAIL_LIST) {
+		let emails = env.OH_ADMIN_EMAIL_LIST.split(";");
+		return emails;
+	}
+	return [];
+}
+
 export async function POST({ request, getClientAddress }) {
 	console.info("Validating token...");
+	let admin_emails = get_admins();
 	let body = await request.json();
 	if (body.token == null) {
 		return json$1(
@@ -25,9 +34,10 @@ export async function POST({ request, getClientAddress }) {
 					console.info(`ADMIN TOKEN USED BY ${ip}`);
 					let info = {
 						name: "admin",
-						uid: "-1",
+						uid: "::admin::",
 						email: "admin@oispahalla.com",
 						email_verified: true,
+						admin: true,
 						picture: ""
 					};
 					return json$1({
@@ -40,12 +50,14 @@ export async function POST({ request, getClientAddress }) {
 			}
 
 			let result = await getAuth(app).verifyIdToken(token);
+			let verified_email = result.email_verified ? (result.email || "no-email") : "unverified-email";
 			let info = {
 				name: result.name,
 				uid: result.uid,
 				email: result.email,
 				email_verified: result.email_verified,
-				picture: result.picture
+				picture: result.picture,
+				admin: admin_emails.includes(verified_email)
 			};
 			console.info("Token valid.");
 			console.info("\tuid", info.uid);

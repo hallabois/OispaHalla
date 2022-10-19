@@ -1,37 +1,28 @@
 <script lang="ts">
 	import {
 		connected,
+		user_details,
 		connect_with_token,
+		disconnect,
 		game_index,
 		request_index,
-		try_admin,
-		try_autoconnect
+		try_autoconnect,
+		game_details,
+		request_game_details
 	} from "$lib/stores/tournamentstore";
+	import { token } from "$lib/Auth/authstore";
 	try_autoconnect.set(false);
-	try_admin.set(true);
 	let refreshKey = {};
 	let admin_token: string;
-	let checking_admin_token = false;
-
-	$: if (admin_token != null && !checking_admin_token) {
-		checking_admin_token = true;
-		try {
-			connect_with_token(admin_token);
-			checking_admin_token = false;
-		} catch (err) {
-			console.info("ws err", err);
-			checking_admin_token = false;
-		}
-	}
 
 	let action_status: null | boolean = null; // Null: Clear, true: OK, false: Error
 
 	function confirm_action() {
-		let answer = prompt("Please retype the admin token");
+		let answer = prompt("Please retype your token");
 		return answer === admin_token;
 	}
 
-	let selected_game: string | null;
+	let selected_game: number | null;
 </script>
 
 <svelte:head>
@@ -40,6 +31,7 @@
 
 <main>
 	{#if action_status != null}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
 			class="action"
 			on:click={() => {
@@ -59,17 +51,23 @@
 		</div>
 		{#if $connected}
 			<div class="actions">
-				<button on:click={() => {}}>Delete ALL Games</button>
-				<button
-					on:click={() => {
-						admin_token = "";
-					}}>Log Out</button
-				>
-				<button
-					on:click={() => {
-						refreshKey = {};
-					}}>Refresh data</button
-				>
+				{#if $user_details}
+					<p>Logged in as <b>{$user_details.name}</b></p>
+					{#if $user_details.admin}
+						<button on:click={() => {}}>Delete ALL Games</button>
+					{/if}
+					<button
+						on:click={() => {
+							admin_token = "";
+							disconnect();
+						}}>Log Out</button
+					>
+					<button
+						on:click={() => {
+							refreshKey = {};
+						}}>Refresh data</button
+					>
+				{/if}
 			</div>
 		{/if}
 		<hr />
@@ -109,53 +107,42 @@
 						</div>
 						{#if selected_game != null}
 							<div class="game-inspector">
-								{#await getGameDetails(selected_game)}
+								{#if $game_details[selected_game] == null}
 									<p class="message">Loading game {selected_game}</p>
-								{:then response}
-									{#if response.ok}
-										{#await response.json()}
-											<p class="message">Parsing JSON</p>
-										{:then json}
-											{#if json.data}
-												{@const game_data = JSON.parse(json.data)}
-												<div style="display: flex;gap: .5em;align-items: center;">
-													<button
-														on:click={() => {
-															selected_game = null;
-														}}>×</button
-													>
-													<h3>Game {selected_game}: "{game_data.name}"</h3>
-												</div>
-												<div>
-													<button
-														on:click={() => {
-															deleteGame(selected_game || "");
-														}}>Delete</button
-													>
-													{#if !game_data.active}
-														<button
-															on:click={() => {
-																startGame(selected_game || "");
-															}}>Start</button
-														>
-													{/if}
-												</div>
-												<table>
-													{#each Object.keys(game_data) as game_key}
-														<tr>
-															<td>{game_key}</td>
-															<td>{JSON.stringify(game_data[game_key])}</td>
-														</tr>
-													{/each}
-												</table>
-											{:else}
-												<p class="message">Invalid data</p>
-											{/if}
-										{/await}
-									{:else}
-										<p class="message">Error fetching game details: {response.statusText}</p>
-									{/if}
-								{/await}
+									{@const _ = request_game_details(selected_game)}
+								{:else}
+									{@const game_data = $game_details[selected_game]}
+									<div style="display: flex;gap: .5em;align-items: center;">
+										<button
+											on:click={() => {
+												selected_game = null;
+											}}>×</button
+										>
+										<h3>Game {selected_game}: "{game_data.name}"</h3>
+									</div>
+									<div>
+										<button
+											on:click={() => {
+												deleteGame(selected_game || "");
+											}}>Delete</button
+										>
+										{#if !game_data.active}
+											<button
+												on:click={() => {
+													startGame(selected_game || "");
+												}}>Start</button
+											>
+										{/if}
+									</div>
+									<table>
+										{#each Object.keys(game_data) as game_key}
+											<tr>
+												<td>{game_key}</td>
+												<td>{JSON.stringify(game_data[game_key])}</td>
+											</tr>
+										{/each}
+									</table>
+								{/if}
 							</div>
 						{/if}
 					</div>
@@ -170,14 +157,27 @@
 		{/key}
 	{:else}
 		<div class="content sign-in">
-			<label for="admin_token">Please input the admin token</label>
+			<label for="admin_token">Please sign in</label>
 			<!-- svelte-ignore a11y-autofocus -->
 			<input id="admin_token" type="password" bind:value={admin_token} autofocus />
-			{#if checking_admin_token}
-				<p>checking...</p>
-			{:else}
-				<p style="visibility: hidden;">.</p>
-			{/if}
+			<div>
+				{#if token}
+					<button
+						on:click={() => {
+							admin_token = $token;
+						}}
+					>
+						Use your own token
+					</button>
+				{/if}
+				<button
+					on:click={() => {
+						connect_with_token(admin_token);
+					}}
+				>
+					Connect
+				</button>
+			</div>
 		</div>
 	{/if}
 </main>
@@ -225,6 +225,10 @@
 	.actions {
 		margin: 0.5em;
 		margin-top: 0;
+
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
 	}
 	.content {
 		flex: 1;
@@ -285,6 +289,8 @@
 		/* flex-wrap: wrap; */
 
 		overflow-y: scroll;
+
+		border-top: 1px solid;
 	}
 	.game-inspector p.message {
 		flex: 1;
