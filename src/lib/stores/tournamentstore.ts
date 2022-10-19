@@ -3,6 +3,7 @@ export let tournament_endpoint = false ? "mp.oispahalla.com" : tournament_endpoi
 import { browser } from "$app/environment";
 import { token } from "$lib/Auth/authstore";
 import { type Writable, writable, get } from "svelte/store";
+import { getItem, setItem, storage_loaded } from "./storage";
 
 export let gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
 export let gamemode_0_names: { [key: number]: string } = {
@@ -69,6 +70,12 @@ export let user_details: Writable<UserDetails | null> = writable(null);
 export let game_details: Writable<{[key: number]: GameDetails}> = writable({});
 export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
+let joined_game_id_ready = false;
+joined_game_id.subscribe(($joined_game_id)=>{
+	if(joined_game_id_ready) {
+		setItem("joined_game_id", $joined_game_id);
+	}
+});
 
 function socket_processor(message: any) {
 	let json = message.data;
@@ -223,6 +230,15 @@ export function create(options: CreateOptions) {
 }
 
 if(browser) {
+	storage_loaded.subscribe(($storage_loaded)=>{
+		if($storage_loaded) {
+			let id = getItem("joined_game_id")
+			if(id && !get(joined_game_id)) {
+				joined_game_id.set(id);
+			}
+			joined_game_id_ready = true;
+		}
+	});
 	token.subscribe(($token) => {
 		if($token != null && get(try_autoconnect)) {
 			connect();

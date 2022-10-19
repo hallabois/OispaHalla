@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
-	import Tournaments from "$lib/components/tournaments.svelte";
+	import MultiplayerMenu from "$lib/components/tournaments/menu.svelte";
 	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/tournaments/announcer.svelte";
 	import { connect, connection_error } from "$lib/stores/tournamentstore";
@@ -63,7 +63,6 @@
 
 	let inputManager: KeyboardInputManager | null = null;
 	let inputRoot: HTMLElement;
-	let TtInstance: Tournaments;
 	let AnnouncerInstance: Announcer;
 	let BoardInstance: Board;
 
@@ -80,7 +79,6 @@
 </script>
 
 <main bind:this={inputRoot}>
-	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
 	<Announcer bind:this={AnnouncerInstance} />
 	{#if $connection_error}
 		<p class="err">
@@ -91,30 +89,37 @@
 			>
 		</p>
 	{/if}
-	<div class="board-container">
-		<div style="display: flex;justify-content:space-between;width:var(--field-width);">
-			<div style="display: flex;align-items: end;">
-				<a data-sveltekit-reload href="/">Takaisin yksinpeliin</a>
-			</div>
-			<!-- {#if $poll_success}
-				<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
-			{/if} -->
-			<div style="display: flex;align-items: end;">
-				<label for="monkey">Enable monkey</label>
-				<input id="monkey" type="checkbox" bind:checked={enableMonkey} />
+	{#if true}
+		<div class="blurry-bg menu-bg">
+			<div class="menu">
+				<MultiplayerMenu announcer={AnnouncerInstance} />
 			</div>
 		</div>
-		<Board {enableKIM} {grid} bind:this={BoardInstance} />
-		<button
-			class="button background-none color-button"
-			on:click={() => {
-				TtInstance.show();
-			}}
-			title="Tournament Mode"
-		>
-			⚔
-		</button>
-		<!-- {#if $poll_success}
+	{:else}
+		<div class="board-container">
+			<div style="display: flex;justify-content:space-between;width:var(--field-width);">
+				<div style="display: flex;align-items: end;">
+					<a data-sveltekit-reload href="/">Takaisin yksinpeliin</a>
+				</div>
+				<!-- {#if $poll_success}
+				<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
+			{/if} -->
+				<div style="display: flex;align-items: end;">
+					<label for="monkey">Enable monkey</label>
+					<input id="monkey" type="checkbox" bind:checked={enableMonkey} />
+				</div>
+			</div>
+			<Board {enableKIM} {grid} bind:this={BoardInstance} />
+			<button
+				class="button background-none color-button"
+				on:click={() => {
+					TtInstance.show();
+				}}
+				title="Tournament Mode"
+			>
+				⚔
+			</button>
+			<!-- {#if $poll_success}
 			<div class="mini-container">
 				{#each $poll_other_boards_string as board_string, index}
 					<div class="mini-grid">
@@ -123,7 +128,8 @@
 				{/each}
 			</div>
 		{/if} -->
-	</div>
+		</div>
+	{/if}
 </main>
 
 <style>
@@ -143,6 +149,17 @@
 		top: 0;
 		left: 0;
 		right: 0;
+	}
+	.menu-bg {
+		width: 100%;
+		height: 100%;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.menu {
+		min-width: min(90vw, 500px);
 	}
 	.board-container {
 		display: grid;
@@ -168,9 +185,5 @@
 		animation: none !important;
 		-moz-animation: none !important;
 		-webkit-animation: none !important;
-	}
-	.patches {
-		height: 0;
-		width: 0;
 	}
 </style>
