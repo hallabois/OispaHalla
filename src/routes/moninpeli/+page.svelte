@@ -4,7 +4,7 @@
 	import Tournaments from "$lib/components/tournaments.svelte";
 	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/tournaments/announcer.svelte";
-	import {} from "$lib/stores/tournamentstore";
+	import { connect, connection_error } from "$lib/stores/tournamentstore";
 	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
 	import type Grid from "$lib/gamelogic/grid";
@@ -22,25 +22,25 @@
 
 	let grid: Grid | null = null;
 
-	$: if ($poll_board_string) {
+	/* $: if ($poll_board_string) {
 		grid = hac_gamestate_to_grid($poll_board_string);
 	} else if ($joined_game_data) {
 		// grid = hac_gamestate_to_grid($joined_game_data.starting_state);
 	} else {
 		// enableKIM = false;
-	}
+	} */
 
 	function move(direction: 0 | 1 | 2 | 3) {
-		if ($poll_game && $poll_game.active && !$poll_game.ended) {
+		if (true) {
 			BoardInstance?.getGameManagerInstance()?.move(direction);
 			console.log("server-side move called with the value", direction);
-			poll_send_moves.push(direction);
+			// poll_send_moves.push(direction);
 			// console.info(JSON.stringify(poll_send_moves));
 		} else {
 			console.warn("Tried to move when the game hadn't started yet");
 		}
 	}
-	$: if ($poll_success && $poll_game.active) {
+	$: if (false) {
 		window.onbeforeunload = function (e) {
 			return "Oletko varma että haluat jättää pelin kesken?";
 		};
@@ -71,6 +71,7 @@
 	let monkeyInterval: NodeJS.Timer | undefined;
 	$: if (enableMonkey) {
 		monkeyInterval = setInterval(() => {
+			//@ts-ignore, we modulo integers by 4 so it's good.
 			move(Math.round(Math.random() * 400) % 4);
 		}, 500);
 	} else {
@@ -81,12 +82,13 @@
 <main bind:this={inputRoot}>
 	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
 	<Announcer bind:this={AnnouncerInstance} />
-	{#if $poll_success == false}
-		<p class="err">Virhe pelitietoja haettaessa!</p>
-	{/if}
-	{#if $server_status == false}
+	{#if $connection_error}
 		<p class="err">
-			Palvelimeen ei saada yhteyttä. <button on:click={checkAlive}>Yritä uudelleen</button>
+			Palvelimeen ei saada yhteyttä. <button
+				on:click={() => {
+					connect();
+				}}>Yritä uudelleen</button
+			>
 		</p>
 	{/if}
 	<div class="board-container">
@@ -94,9 +96,9 @@
 			<div style="display: flex;align-items: end;">
 				<a data-sveltekit-reload href="/">Takaisin yksinpeliin</a>
 			</div>
-			{#if $poll_success}
+			<!-- {#if $poll_success}
 				<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
-			{/if}
+			{/if} -->
 			<div style="display: flex;align-items: end;">
 				<label for="monkey">Enable monkey</label>
 				<input id="monkey" type="checkbox" bind:checked={enableMonkey} />
@@ -112,7 +114,7 @@
 		>
 			⚔
 		</button>
-		{#if $poll_success}
+		<!-- {#if $poll_success}
 			<div class="mini-container">
 				{#each $poll_other_boards_string as board_string, index}
 					<div class="mini-grid">
@@ -120,7 +122,7 @@
 					</div>
 				{/each}
 			</div>
-		{/if}
+		{/if} -->
 	</div>
 </main>
 

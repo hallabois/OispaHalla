@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade, slide } from "svelte/transition";
-	import { connected, game_index, request_index } from "$lib/stores/tournamentstore";
+	import { connected, game_index, request_index, request_join } from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 
 	$: if (connected && $game_index == null) {
@@ -63,7 +63,13 @@
 			{/each}
 		</div>
 		<hr />
-		<button disabled={!canJoin} on:click={() => {}} class="button action-btn fill-w">Liity</button>
+		<button
+			disabled={!canJoin}
+			on:click={() => {
+				if (chosen_game) request_join(chosen_game, passwords[chosen_game]);
+			}}
+			class="button action-btn fill-w">Liity</button
+		>
 	{/if}
 </main>
 

@@ -47,7 +47,7 @@ export type GameDetails = {
 	starting_state: Object
 };
 export type GameIndex = {
-	id: string,
+	id: number,
 	name: string,
 	clients: number,
 	max_clients: 4,
@@ -86,6 +86,28 @@ function socket_processor(message: any) {
 				...get(game_details),
 				[event.data.GameDetails.id]: event.data.GameDetails
 			})
+		}
+		if(event.data.GameCreated) {
+			request_join(event.data.GameCreated, null);
+		}
+		if(event.data.GameDeleted) {
+			if(get(joined_game_id)==event.data.GameDeleted) {
+				joined_game_id.set(null);
+			}
+			if(get(game_index) != null) {
+				request_index();
+			}
+		}
+		if(event.data.GameJoined) {
+			joined_game_id.set(event.data.GameJoined);
+		}
+		if(event.data.GameLeft) {
+			if(event.data.GameLeft == get(joined_game_id)) {
+				joined_game_id.set(null);
+			}
+			if(get(game_index) != null) {
+				request_index();
+			}
 		}
 	}
 }
@@ -148,6 +170,35 @@ export function request_game_details(game_id: number) {
 	}
 	else {
 		throw new Error("not connected! can't get game details.");
+	}
+}
+export function request_deletion(game_id: number) {
+	if(socket) {
+		socket.send(`delete|>${game_id}`);
+	}
+	else {
+		throw new Error("not connected! can't delete game.");
+	}
+}
+export function request_join(game_id: number, password: string | null) {
+	if(socket) {
+		let str = `join|>${game_id}`;
+		if(password != null && password.length > 0) {
+			str = `${str}|>${password}`;
+		}
+		socket.send(str);
+	}
+	else {
+		throw new Error("not connected! can't join game.");
+	}
+}
+export function request_leave(game_id: number) {
+	if(socket) {
+		socket.send(`leave|>${game_id}`);
+	}
+	else {
+		console.warn("left game without connection");
+		joined_game_id.set(null);
 	}
 }
 

@@ -8,7 +8,8 @@
 		request_index,
 		try_autoconnect,
 		game_details,
-		request_game_details
+		request_game_details,
+		request_deletion
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 	try_autoconnect.set(false);
@@ -121,17 +122,19 @@
 										<h3>Game {selected_game}: "{game_data.name}"</h3>
 									</div>
 									<div>
-										<button
-											on:click={() => {
-												deleteGame(selected_game || "");
-											}}>Delete</button
-										>
-										{#if !game_data.active}
+										{#if game_data.creator_id === $user_details.id || $user_details.admin}
 											<button
 												on:click={() => {
-													startGame(selected_game || "");
-												}}>Start</button
+													if (selected_game != null) request_deletion(selected_game);
+												}}>Delete</button
 											>
+											{#if !game_data.active}
+												<button
+													on:click={() => {
+														startGame(selected_game || "");
+													}}>Start</button
+												>
+											{/if}
 										{/if}
 									</div>
 									<table>
@@ -161,15 +164,16 @@
 			<!-- svelte-ignore a11y-autofocus -->
 			<input id="admin_token" type="password" bind:value={admin_token} autofocus />
 			<div>
-				{#if token}
-					<button
-						on:click={() => {
+				<button
+					on:click={() => {
+						if ($token) {
 							admin_token = $token;
-						}}
-					>
-						Use your own token
-					</button>
-				{/if}
+						}
+					}}
+					disabled={$token == null}
+				>
+					Use your own token
+				</button>
 				<button
 					on:click={() => {
 						connect_with_token(admin_token);

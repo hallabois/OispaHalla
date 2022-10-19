@@ -1,9 +1,18 @@
 <script lang="ts">
-	import {} from "$lib/stores/tournamentstore";
+	import {
+		joined_game_id,
+		request_deletion,
+		request_leave,
+		user_details,
+		game_details,
+		gamemode_0_names,
+		request_game_details
+	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
 	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { token } from "$lib/Auth/authstore";
 	import type Announcer from "./announcer.svelte";
+	import { browser } from "$app/environment";
 
 	export let announcer: Announcer | null = null;
 
@@ -27,29 +36,26 @@
 </script>
 
 <main>
-	{#if $token}
-		{#if $joined_game_error}
-			<p>Virhe pelin tietoja haettaessa: {$joined_game_error}</p>
-			<button on:click={refreshGameData}>Yritä Uudelleen</button>
-			<button
-				on:click={() => {
-					leaveGame($token);
-				}}>Anna Olla</button
-			>
+	{#if $joined_game_id && $user_details}
+		{@const game_data = $game_details[$joined_game_id]}
+		{#if !game_data}
+			{@const _ = request_game_details($joined_game_id)}
+			<p>Ladataan pelin tietoja...</p>
 		{:else}
+			{@const am_host = $user_details.admin || $user_details.user_id == game_data.creator_id}
 			<div class="top">
 				<button
 					class=""
 					on:click={() => {
-						leaveGame($token);
+						if ($joined_game_id) request_leave($joined_game_id);
 					}}>Poistu Pelistä</button
 				>
-				{#if $joined_game_am_host}
+				{#if am_host}
 					Järjestäjä 👑
 					<button
 						class=""
 						on:click={() => {
-							host_deleteGame($token);
+							if ($joined_game_id) request_deletion($joined_game_id);
 						}}
 					>
 						Poista Peli
@@ -57,23 +63,21 @@
 				{/if}
 			</div>
 			<hr />
-			{#if $joined_game_data}
-				<p>Liitytty peliin "{$joined_game_data.name}"</p>
+			{#if game_data}
+				<p>Liitytty peliin "{game_data.name}"</p>
 				<p>
 					Liittymiskoodi: <code>{$joined_game_id}</code>
 					{#if navigator.clipboard}
 						<button on:click={copyGameID}>Kopioi linkki</button>
 					{/if}
-					{#if navigator.share}
+					{#if browser && navigator.share}
 						<button on:click={shareGameID}>Jaa kutsu</button>
 					{/if}
 				</p>
-				{#if $joined_game_data.gamemode == 0}
+				{#if game_data.gamemode == 0}
 					<p style="max-width:430px;">
 						Pelaaja joka saavuttaa ensimmäisenä laatan <b style="white-space: nowrap;"
-							>{$joined_game_data.gamemode_goal} ({gamemode_0_names[
-								+$joined_game_data.gamemode_goal
-							]})</b
+							>{game_data.gamemode_goal} ({gamemode_0_names[+game_data.gamemode_goal]})</b
 						> voittaa.
 					</p>
 				{/if}
@@ -81,34 +85,32 @@
 					<div>
 						<h3>Aloitustilanne</h3>
 						<div class="game-preview">
-							<Board
-								enableLSM={false}
-								grid={ohts_gamestate_to_grid($joined_game_data.starting_state)}
-							/>
+							<Board enableLSM={false} grid={ohts_gamestate_to_grid(game_data.starting_state)} />
 						</div>
 					</div>
 					<div>
-						{#if $poll_success}
-							<h4>{$poll_game.clients} {$poll_game.clients == 1 ? "pelaaja" : "pelaajaa"}</h4>
-							<div style="max-height:300px;overflow-y: auto;">
-								{#each $poll_game.client_aliases as player_name, index}
-									<p>
-										{player_name}
-										{#if index == $poll_id_index}
-											(sinä)
-										{/if}
-									</p>
-								{/each}
-							</div>
-						{/if}
+						<h4>
+							{game_data.clients.length}
+							{game_data.clients.length == 1 ? "pelaaja" : "pelaajaa"}
+						</h4>
+						<div style="max-height:300px;overflow-y: auto;">
+							{#each game_data.clients as player_id}
+								<p title={player_id}>
+									{player_id.substring(0, 5)}
+									{#if player_id === $user_details.user_id}
+										(sinä)
+									{/if}
+								</p>
+							{/each}
+						</div>
 						<input bind:value={message_input} /><button
 							on:click={() => {
-								sendMessage(message_input);
+								// Send msg
 							}}>lähetä</button
 						>
 						<p>viestejä</p>
 						<div class="messages">
-							{#each $chat as message}
+							{#each [] as message}
 								<p>{message[0].substring(0, 5)}: {message[1]}</p>
 							{/each}
 						</div>
@@ -126,28 +128,29 @@
 					</div>
 				</div>
 			{/if}
-			{#if $joined_game_am_host && $poll_success}
+			{#if am_host}
 				<div class="start">
 					<button
 						style="width:100%;"
 						class="button action-btn"
-						on:click={host_startGame}
-						disabled={$poll_game.active || $poll_game.ended}
+						on:click={() => {
+							// Start
+						}}
+						disabled={game_data.started || game_data.ended}
 					>
-						{$poll_game.ended
+						{game_data.ended
 							? "Peli on päättynyt!"
-							: $poll_game.active
+							: game_data.started
 							? "Peli on alkanut!"
 							: "Aloita Peli"}
 					</button>
 				</div>
-			{/if}
-			{#if !$joined_game_am_host && $poll_success}
+			{:else}
 				<div class="start">
 					<p style="width: 100%;text-align:center;">
-						{$poll_game.ended
+						{game_data.ended
 							? "Peli on päättynyt!"
-							: $poll_game.active
+							: game_data.started
 							? "Peli on alkanut!"
 							: "Odotetaan pelin alkua..."}
 					</p>

@@ -1,29 +1,22 @@
 <script lang="ts">
 	import { fade } from "svelte/transition";
-	import {} from "$lib/stores/tournamentstore";
+	import { game_details, request_game_details, request_join } from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 
-	export let chosen_game: string | number | any[] | null = null;
+	export let chosen_game: number | null = null;
 	let requires_password = false;
-	let password;
+	let password: string | null;
 	let canJoin = false;
-	$: game_id_valid =
-		chosen_game != null &&
-		chosen_game.length > 0 &&
-		!isNaN(chosen_game) &&
-		!isNaN(parseFloat(chosen_game));
+	$: game_id_valid = chosen_game != null && !isNaN(chosen_game);
 	$: if (chosen_game && game_id_valid) {
-		let data = getGameData(chosen_game).then((data) => {
-			if (data) {
-				requires_password = data.requires_password;
-				if (!requires_password) {
-					canJoin = true;
-				}
-			} else {
-				canJoin = false;
-				requires_password = false;
+		if ($game_details[chosen_game]) {
+			requires_password = $game_details[chosen_game].requires_password;
+			if (!requires_password) {
+				canJoin = true;
 			}
-		});
+		} else {
+			request_game_details(chosen_game);
+		}
 	} else {
 		canJoin = false;
 		requires_password = false;
@@ -39,13 +32,13 @@
 	{#if requires_password}
 		<input bind:value={password} placeholder="Peli vaatii salasanan" />
 	{/if}
-	{#if $joined_game_error}
+	{#if false}
 		<div class="err" transition:fade|local>
-			<p>Virhe: {$joined_game_error}</p>
+			<p>Virhe: (err)</p>
 			<spacer />
 			<button
 				on:click={() => {
-					joined_game_error.set(null);
+					// Clear error
 				}}>×</button
 			>
 		</div>
@@ -53,7 +46,9 @@
 	<button
 		disabled={!canJoin}
 		on:click={() => {
-			joinGame(chosen_game, $token, password);
+			if (chosen_game) {
+				request_join(chosen_game, password);
+			}
 		}}
 		class="button action-btn fill-w">Liity</button
 	>
