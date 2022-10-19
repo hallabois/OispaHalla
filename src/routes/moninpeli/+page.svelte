@@ -157,6 +157,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+
+		background-attachment: fixed;
 	}
 	.menu {
 		min-width: min(90vw, 500px);
