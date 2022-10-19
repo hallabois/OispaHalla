@@ -25,40 +25,39 @@ export class createTournamentGamemodeOptions {
 	goal!: number;
 }
 
-
 let socket: WebSocket | null = null;
 export type UserDetails = {
-	user_id: string,
-	name: string,
-	admin: boolean
+	user_id: string;
+	name: string;
+	admin: boolean;
 };
 export type GameDetails = {
-	id: number,
-	creator_id: string,
-	gamemode: number,
-	gamemode_goal: number,
-	name: string,
-	public: boolean,
-	max_clients: number,
-	requires_password: boolean,
-	started: boolean,
-	ended: boolean,
-	winner_id: string | null,
-	clients: string[],
-	starting_state: Object
+	id: number;
+	creator_id: string;
+	gamemode: number;
+	gamemode_goal: number;
+	name: string;
+	public: boolean;
+	max_clients: number;
+	requires_password: boolean;
+	started: boolean;
+	ended: boolean;
+	winner_id: string | null;
+	clients: string[];
+	starting_state: Object;
 };
 export type GameIndex = {
-	id: number,
-	name: string,
-	clients: number,
-	max_clients: 4,
-	requires_password: boolean
+	id: number;
+	name: string;
+	clients: number;
+	max_clients: 4;
+	requires_password: boolean;
 };
 export type Index = {
-	joinable_games: GameIndex[],
-	all_games: number[],
-	active_games: number[],
-	ended_games: number[]
+	joinable_games: GameIndex[];
+	all_games: number[];
+	active_games: number[];
+	ended_games: number[];
 };
 
 export let try_autoconnect: Writable<boolean> = writable(true);
@@ -67,12 +66,12 @@ export let connected: Writable<boolean | null> = writable(null);
 export let connection_error: Writable<boolean | null> = writable(null);
 export let errors: Writable<Error[]> = writable([]);
 export let user_details: Writable<UserDetails | null> = writable(null);
-export let game_details: Writable<{[key: number]: GameDetails}> = writable({});
+export let game_details: Writable<{ [key: number]: GameDetails }> = writable({});
 export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
 let joined_game_id_ready = false;
-joined_game_id.subscribe(($joined_game_id)=>{
-	if(joined_game_id_ready) {
+joined_game_id.subscribe(($joined_game_id) => {
+	if (joined_game_id_ready) {
 		setItem("joined_game_id", $joined_game_id);
 	}
 });
@@ -81,38 +80,38 @@ function socket_processor(message: any) {
 	let json = message.data;
 	let event = JSON.parse(json);
 	console.info("socket ev", event);
-	if(event.data) {
-		if(event.data.Index) {
+	if (event.data) {
+		if (event.data.Index) {
 			game_index.set(event.data.Index);
 		}
-		if(event.data.UserDetails) {
+		if (event.data.UserDetails) {
 			user_details.set(event.data.UserDetails);
 		}
-		if(event.data.GameDetails) {
+		if (event.data.GameDetails) {
 			game_details.set({
 				...get(game_details),
 				[event.data.GameDetails.id]: event.data.GameDetails
-			})
+			});
 		}
-		if(event.data.GameCreated) {
+		if (event.data.GameCreated) {
 			request_join(event.data.GameCreated, null);
 		}
-		if(event.data.GameDeleted) {
-			if(get(joined_game_id)==event.data.GameDeleted) {
+		if (event.data.GameDeleted) {
+			if (get(joined_game_id) == event.data.GameDeleted) {
 				joined_game_id.set(null);
 			}
-			if(get(game_index) != null) {
+			if (get(game_index) != null) {
 				request_index();
 			}
 		}
-		if(event.data.GameJoined) {
+		if (event.data.GameJoined) {
 			joined_game_id.set(event.data.GameJoined);
 		}
-		if(event.data.GameLeft) {
-			if(event.data.GameLeft == get(joined_game_id)) {
+		if (event.data.GameLeft) {
+			if (event.data.GameLeft == get(joined_game_id)) {
 				joined_game_id.set(null);
 			}
-			if(get(game_index) != null) {
+			if (get(game_index) != null) {
 				request_index();
 			}
 		}
@@ -123,124 +122,117 @@ function socket_error_processor(err: any) {
 }
 
 export function connect_with_token(token: string | null) {
-	if(socket) {
+	if (socket) {
 		disconnect();
 	}
 	let connection_string = `ws://${tournament_endpoint}/ws?token=${token}`;
 	socket = new WebSocket(connection_string);
-	socket.addEventListener('open', (event) => {
+	socket.addEventListener("open", (event) => {
 		connection_error.set(false);
 		connected.set(true);
 		errors.set([]);
-		if(socket){
-			socket.send('udetails');
+		if (socket) {
+			socket.send("udetails");
 		}
-		console.log('ws connected');
+		console.log("ws connected");
 	});
-	socket.addEventListener('close', (event) => {
+	socket.addEventListener("close", (event) => {
 		connected.set(false);
 
 		socket = null;
-		if(event.code == 3001) {
+		if (event.code == 3001) {
 			// User decision
 			connection_error.set(null);
-			console.log('ws disconnected');
-		}
-		else {
+			console.log("ws disconnected");
+		} else {
 			connection_error.set(true);
-			console.log('ws connection error');
+			console.log("ws connection error");
 		}
 	});
-	socket.addEventListener('message', socket_processor);
-	socket.addEventListener('error', socket_error_processor);
+	socket.addEventListener("message", socket_processor);
+	socket.addEventListener("error", socket_error_processor);
 }
 export function connect() {
 	connect_with_token(get(token));
 }
 export function disconnect() {
-	if(socket) {
+	if (socket) {
 		socket.close(3001);
 	}
 }
 
 export function request_index() {
-	if(socket) {
+	if (socket) {
 		socket.send("index");
-	}
-	else {
+	} else {
 		throw new Error("not connected! can't get index.");
 	}
 }
 export function request_game_details(game_id: number) {
-	if(socket) {
+	if (socket) {
 		socket.send(`gdetails|>${game_id}`);
-	}
-	else {
+	} else {
 		throw new Error("not connected! can't get game details.");
 	}
 }
 export function request_deletion(game_id: number) {
-	if(socket) {
+	if (socket) {
 		socket.send(`delete|>${game_id}`);
-	}
-	else {
+	} else {
 		throw new Error("not connected! can't delete game.");
 	}
 }
 export function request_join(game_id: number, password: string | null) {
-	if(socket) {
+	if (socket) {
 		let str = `join|>${game_id}`;
-		if(password != null && password.length > 0) {
+		if (password != null && password.length > 0) {
 			str = `${str}|>${password}`;
 		}
 		socket.send(str);
-	}
-	else {
+	} else {
 		throw new Error("not connected! can't join game.");
 	}
 }
 export function request_leave(game_id: number) {
-	if(socket) {
+	if (socket) {
 		socket.send(`leave|>${game_id}`);
-	}
-	else {
+	} else {
 		console.warn("left game without connection");
 		joined_game_id.set(null);
 	}
 }
 
 export type CreateOptions = {
-	name: string,
+	name: string;
 	gamemode: {
-		mode: number,
-		goal: number
-	},
-	public: boolean,
-	maxclients: number,
-	joinpassword: string | null
+		mode: number;
+		goal: number;
+	};
+	public: boolean;
+	maxclients: number;
+	joinpassword: string | null;
 };
 export function create(options: CreateOptions) {
 	let $token = get(token);
-	if(socket) {
+	if (socket) {
 		socket.send(`create|>${JSON.stringify(options)}`);
-	}
-	else {
+	} else {
 		throw new Error("not connected! can't create game.");
 	}
 }
 
-if(browser) {
-	storage_loaded.subscribe(($storage_loaded)=>{
-		if($storage_loaded) {
-			let id = getItem("joined_game_id")
-			if(id && !get(joined_game_id)) {
+if (browser) {
+	storage_loaded.subscribe(($storage_loaded) => {
+		if ($storage_loaded) {
+			let id = getItem("joined_game_id");
+			if (id && !get(joined_game_id)) {
 				joined_game_id.set(id);
 			}
 			joined_game_id_ready = true;
 		}
 	});
 	token.subscribe(($token) => {
-		if($token != null && get(try_autoconnect)) {
+		if ($token != null && get(try_autoconnect)) {
 			connect();
 		}
 	});

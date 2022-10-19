@@ -42,21 +42,20 @@ export function generate_previous_positions(grid: Grid, previous: Grid) {
 	return grid;
 }
 
-
 type ohts_grid_row = Tile[];
 type ohts_gamestate = {
-	width: number,
-	height: number,
-	tiles: ohts_grid_row[]
+	width: number;
+	height: number;
+	tiles: ohts_grid_row[];
 };
 
-export function ohts_gamestate_to_grid(gamestate: ohts_gamestate){
+export function ohts_gamestate_to_grid(gamestate: ohts_gamestate) {
 	console.info("gamestate", gamestate);
 	let grid = new Grid(gamestate.width);
-	for(let row of gamestate.tiles) {
-		for(let tile of row) {
-			if(tile && tile.value > 0) {
-				let t = new Tile({x: tile.x, y: tile.y}, tile.value);
+	for (let row of gamestate.tiles) {
+		for (let tile of row) {
+			if (tile && tile.value > 0) {
+				let t = new Tile({ x: tile.x, y: tile.y }, tile.value);
 				t.id = tile.id;
 				grid.cells[tile.y][tile.x] = t;
 			}
