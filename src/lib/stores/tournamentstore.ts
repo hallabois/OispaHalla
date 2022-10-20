@@ -1,6 +1,6 @@
 import { browser, dev } from "$app/environment";
-let tournament_endpoint_dev = false ? "ohts.fly.dev" : "localhost:9000";
-export let tournament_endpoint = dev ? tournament_endpoint_dev : "mp.oispahalla.com";
+let tournament_endpoint_dev = false ? "wss://ohts.fly.dev" : "ws://localhost:9000";
+export let tournament_endpoint = dev ? tournament_endpoint_dev : "wss://mp.oispahalla.com";
 import { token } from "$lib/Auth/authstore";
 import { type Writable, writable, get } from "svelte/store";
 import { getItem, setItem, storage_loaded } from "./storage";
@@ -125,7 +125,7 @@ export function connect_with_token(token: string | null) {
 	if (socket) {
 		disconnect();
 	}
-	let connection_string = `ws://${tournament_endpoint}/ws?token=${token}`;
+	let connection_string = `${tournament_endpoint}/ws?token=${token}`;
 	socket = new WebSocket(connection_string);
 	socket.addEventListener("open", (event) => {
 		connection_error.set(false);
