@@ -83,7 +83,7 @@
 					<TournamentBrowser />
 				{/if}
 			{/if}
-		{:else if connected == null}
+		{:else if $connected == null}
 			<h3>Otetaan yhteyttä palvelimeen...</h3>
 		{:else}
 			<h3>Palvelimeen ei saatu yhteyttä.</h3>
