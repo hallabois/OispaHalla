@@ -35,8 +35,8 @@
 {#if mounted}
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
-		{#if connected}
-			{#if connection_error}
+		{#if $connected}
+			{#if $connection_error}
 				<p style="text-align: center;display: block;padding: 0.75em;">
 					Virhe otettaessa yhteyttä palvelimeen.
 				</p>
