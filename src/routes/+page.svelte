@@ -285,14 +285,14 @@
 			</div>
 		</div>
 	</div>
-	<div
+	<!-- <div
 		class="pwa-container"
 		style="width: 100%;z-index: 500;display: flex;justify-content: center;margin-top: 30px;margin-bottom: -50px;"
 	>
 		<button class="pwa-add-button" style="display: none;border: none;margin: .5em;cursor: pointer;"
 			>Asenna sovelluksena</button
 		>
-	</div>
+	</div> -->
 </div>
 <div class="patches">
 	<!-- <script src="/js/application.js"></script>

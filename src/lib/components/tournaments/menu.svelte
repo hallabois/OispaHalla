@@ -4,7 +4,12 @@
 	import { auth } from "$lib/Auth/authstore";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
-	import { connected, connect, joined_game_id } from "$lib/stores/tournamentstore";
+	import {
+		connected,
+		connect,
+		joined_game_id,
+		connection_error
+	} from "$lib/stores/tournamentstore";
 	import TournamentCreator from "$lib/components/tournaments/tournamentCreator.svelte";
 	import TournamentBrowser from "$lib/components/tournaments/tournamentBrowser.svelte";
 	import Lobby from "$lib/components/tournaments/lobby.svelte";
@@ -31,7 +36,11 @@
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
 		{#if connected}
-			{#if $joined_game_id != null}
+			{#if connection_error}
+				<p style="text-align: center;display: block;padding: 0.75em;">
+					Virhe otettaessa yhteyttä palvelimeen.
+				</p>
+			{:else if $joined_game_id != null}
 				<Lobby {announcer} />
 			{:else if !activeTab || activeTab == 0}
 				<div class="action-chooser">

@@ -1,6 +1,6 @@
+import { browser, dev } from "$app/environment";
 let tournament_endpoint_dev = false ? "ohts.fly.dev" : "localhost:9000";
-export let tournament_endpoint = false ? "mp.oispahalla.com" : tournament_endpoint_dev;
-import { browser } from "$app/environment";
+export let tournament_endpoint = dev ? tournament_endpoint_dev : "mp.oispahalla.com";
 import { token } from "$lib/Auth/authstore";
 import { type Writable, writable, get } from "svelte/store";
 import { getItem, setItem, storage_loaded } from "./storage";
