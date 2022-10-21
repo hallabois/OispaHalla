@@ -30,6 +30,7 @@ export type UserDetails = {
 	user_id: string;
 	name: string;
 	admin: boolean;
+	current_games: number[];
 };
 export type GameDetails = {
 	id: number;
@@ -69,12 +70,6 @@ export let user_details: Writable<UserDetails | null> = writable(null);
 export let game_details: Writable<{ [key: number]: GameDetails }> = writable({});
 export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
-let joined_game_id_ready = false;
-joined_game_id.subscribe(($joined_game_id) => {
-	if (joined_game_id_ready) {
-		setItem("joined_game_id", $joined_game_id);
-	}
-});
 
 function socket_processor(message: any) {
 	let json = message.data;
@@ -85,7 +80,13 @@ function socket_processor(message: any) {
 			game_index.set(event.data.Index);
 		}
 		if (event.data.UserDetails) {
-			user_details.set(event.data.UserDetails);
+			let details = event.data.UserDetails as UserDetails;
+			user_details.set(details);
+			if (details.current_games.length > 0) {
+				if (get(joined_game_id) == null) {
+					joined_game_id.set(details.current_games[0]);
+				}
+			}
 		}
 		if (event.data.GameDetails) {
 			game_details.set({
@@ -222,18 +223,15 @@ export function create(options: CreateOptions) {
 }
 
 if (browser) {
-	storage_loaded.subscribe(($storage_loaded) => {
-		if ($storage_loaded) {
-			let id = getItem("joined_game_id");
-			if (id && !get(joined_game_id)) {
-				joined_game_id.set(id);
-			}
-			joined_game_id_ready = true;
-		}
-	});
 	token.subscribe(($token) => {
 		if ($token != null && get(try_autoconnect)) {
 			connect();
 		}
 	});
+	// Keep websocket connections alive by pinging the connection every 30s.
+	setInterval(() => {
+		if (socket) {
+			socket.send("\x70");
+		}
+	}, 30_000);
 }
