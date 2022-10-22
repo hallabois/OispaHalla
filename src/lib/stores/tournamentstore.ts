@@ -60,6 +60,10 @@ export type Index = {
 	active_games: number[];
 	ended_games: number[];
 };
+export type Message = {
+	sender: string;
+	message: string;
+}
 
 export let try_autoconnect: Writable<boolean> = writable(true);
 
@@ -70,6 +74,12 @@ export let user_details: Writable<UserDetails | null> = writable(null);
 export let game_details: Writable<{ [key: number]: GameDetails }> = writable({});
 export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
+export let chat: Writable<Message[]> = writable([]);
+joined_game_id.subscribe(($joined_game_id) => {
+	if($joined_game_id == null) {
+		chat.set([]);
+	}
+});
 
 function socket_processor(message: any) {
 	let json = message.data;
@@ -115,6 +125,9 @@ function socket_processor(message: any) {
 			if (get(game_index) != null) {
 				request_index();
 			}
+		}
+		if (event.data.Chat) {
+			chat.set([...get(chat), event.data.Chat]);
 		}
 	}
 }
@@ -200,6 +213,13 @@ export function request_leave(game_id: number) {
 	} else {
 		console.warn("left game without connection");
 		joined_game_id.set(null);
+	}
+}
+export function send_message(message: string) {
+	if (socket) {
+		socket.send(`say|>${message}`);
+	} else {
+		throw new Error("not connected! can't send message.");
 	}
 }
 

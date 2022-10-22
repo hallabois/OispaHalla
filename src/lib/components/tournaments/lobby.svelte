@@ -6,7 +6,9 @@
 		user_details,
 		game_details,
 		gamemode_0_names,
-		request_game_details
+		request_game_details,
+		send_message,
+		chat
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
 	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
@@ -93,26 +95,27 @@
 							{game_data.clients.length}
 							{game_data.clients.length == 1 ? "pelaaja" : "pelaajaa"}
 						</h4>
-						<div style="max-height:300px;overflow-y: auto;">
-							{#each game_data.clients as player_id}
-								<p title={player_id}>
-									{player_id.substring(0, 5)}
-									{#if player_id === $user_details.user_id}
-										(sinä)
-									{/if}
-								</p>
-							{/each}
-						</div>
-						<input bind:value={message_input} /><button
-							on:click={() => {
-								// Send msg
-							}}>lähetä</button
-						>
-						<p>viestejä</p>
-						<div class="messages">
-							{#each [] as message}
-								<p>{message[0].substring(0, 5)}: {message[1]}</p>
-							{/each}
+						<div class="chat-window">
+							<div style="max-height:300px;overflow-y: auto;">
+								{#each game_data.clients as player_id}
+									<p title={player_id}>
+										{player_id.substring(0, 5)}
+										{#if player_id === $user_details.user_id}
+											(sinä)
+										{/if}
+									</p>
+								{/each}
+							</div>
+							<input bind:value={message_input} placeholder="Kirjoita viesti" /><button
+								on:click={() => {
+									send_message(message_input);
+								}}>lähetä</button
+							>
+							<div class="messages">
+								{#each $chat as msg}
+									<p>{msg.sender.substring(0, 5)}: {msg.message}</p>
+								{/each}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -183,6 +186,17 @@
 		width: 300px;
 		height: 300px;
 		border-radius: 6px;
+	}
+	.chat-window {
+		max-height: 300px;
+		display: flex;
+		flex-direction: column;
+	}
+	.messages {
+		overflow-y: scroll;
+	}
+	.messages p {
+		margin: 0;
 	}
 	.start {
 		margin-top: 1em;
