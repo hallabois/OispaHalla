@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { fade } from "svelte/transition";
 	import { game_details, request_game_details, request_join } from "$lib/stores/tournamentstore";
-	import { token } from "$lib/Auth/authstore";
 
 	export let chosen_game: number | null = null;
 	let requires_password = false;
@@ -28,9 +27,14 @@
 
 <main>
 	<!-- svelte-ignore a11y-autofocus -->
-	<input bind:value={chosen_game} placeholder="Kirjoita liittymiskoodi tähän" autofocus />
+	<input
+		bind:value={chosen_game}
+		placeholder="Kirjoita liittymiskoodi tähän"
+		autofocus={!requires_password}
+	/>
 	{#if requires_password}
-		<input bind:value={password} placeholder="Peli vaatii salasanan" />
+		<!-- svelte-ignore a11y-autofocus -->
+		<input bind:value={password} placeholder="Peli vaatii salasanan" autofocus />
 	{/if}
 	{#if false}
 		<div class="err" transition:fade|local>

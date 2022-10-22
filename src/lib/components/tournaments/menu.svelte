@@ -15,13 +15,20 @@
 	import Lobby from "$lib/components/tournaments/lobby.svelte";
 	import TournamentJoiner from "$lib/components/tournaments/tournamentJoiner.svelte";
 	import type Announcer from "$lib/components/tournaments/announcer.svelte";
+	import { browser } from "$app/environment";
 
 	export let announcer: Announcer | null = null;
-	let chosen_game: string | null | undefined = null;
+	let chosen_game: number | null | undefined = null;
 
-	$: if ($joined_game_id != null && !window.location.href.endsWith("/moninpeli")) {
-		console.log("Moving to multiplayer...");
-		window.location.href = `/moninpeli`;
+	$: if (browser && chosen_game == null && window.location.href.includes("?")) {
+		let params = new URLSearchParams(window.location.href.split("?")[1]);
+		let game_id = params.get("game_id");
+		if (game_id) {
+			console.log("read game_id", game_id);
+			chosen_game = +game_id;
+			activeTab = 2;
+			history.replaceState(null, "Oispa Halla", "moninpeli");
+		}
 	}
 
 	let mounted = false;

@@ -20,7 +20,6 @@
 	}
 
 	export let announcer: Announcer | null = null;
-	let chosen_game: string | null | undefined = null;
 
 	$: if ($joined_game_id != null && !window.location.href.endsWith("/moninpeli")) {
 		console.log("Moving to multiplayer...");
