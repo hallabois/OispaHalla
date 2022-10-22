@@ -96,7 +96,7 @@
 							{game_data.clients.length == 1 ? "pelaaja" : "pelaajaa"}
 						</h4>
 						<div class="chat-window">
-							<div style="max-height:300px;overflow-y: auto;">
+							<!-- <div style="max-height:300px;overflow-y: auto;">
 								{#each game_data.clients as player_id}
 									<p title={player_id}>
 										{player_id.substring(0, 5)}
@@ -105,14 +105,15 @@
 										{/if}
 									</p>
 								{/each}
-							</div>
+							</div> -->
 							<input bind:value={message_input} placeholder="Kirjoita viesti" /><button
 								on:click={() => {
 									send_message(message_input);
+									message_input
 								}}>lähetä</button
 							>
 							<div class="messages">
-								{#each $chat as msg}
+								{#each [...$chat].reverse() as msg}
 									<p>{msg.sender.substring(0, 5)}: {msg.message}</p>
 								{/each}
 							</div>
@@ -196,6 +197,7 @@
 		overflow-y: scroll;
 	}
 	.messages p {
+		max-width: 10em;
 		margin: 0;
 	}
 	.start {
