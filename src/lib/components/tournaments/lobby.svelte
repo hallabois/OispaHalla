@@ -109,7 +109,7 @@
 							<input bind:value={message_input} placeholder="Kirjoita viesti" /><button
 								on:click={() => {
 									send_message(message_input);
-									message_input;
+									message_input = "";
 								}}
 								disabled={message_input == null || message_input.length < 1}>lähetä</button
 							>
