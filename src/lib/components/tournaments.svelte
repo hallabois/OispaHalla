@@ -1,17 +1,10 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-
-	import { auth } from "$lib/Auth/authstore";
-
 	import Popup from "$lib/components/common/popup/popup.svelte";
 
 	import Content from "$lib/components/tournaments/menu.svelte";
 
-	import { connected, connect, joined_game_id } from "$lib/stores/tournamentstore";
-	import TournamentCreator from "./tournaments/tournamentCreator.svelte";
-	import TournamentBrowser from "./tournaments/tournamentBrowser.svelte";
-	import Lobby from "./tournaments/lobby.svelte";
-	import TournamentJoiner from "./tournaments/tournamentJoiner.svelte";
+	import { joined_game_id, tournament_announcer } from "$lib/stores/tournamentstore";
 	import type Announcer from "./tournaments/announcer.svelte";
 
 	export let open = false;
@@ -25,6 +18,11 @@
 		console.log("Moving to multiplayer...");
 		window.location.href = `/moninpeli`;
 	}
+	onMount(() => {
+		if (announcer) {
+			$tournament_announcer = announcer;
+		}
+	});
 
 	let activeTab = 0;
 </script>

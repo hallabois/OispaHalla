@@ -2,6 +2,7 @@ import { browser, dev } from "$app/environment";
 let tournament_endpoint_dev = false ? "wss://ohts.fly.dev" : "ws://localhost:9000";
 export let tournament_endpoint = dev ? tournament_endpoint_dev : "wss://mp.oispahalla.com";
 import { token } from "$lib/Auth/authstore";
+import type Announcer from "$lib/components/tournaments/announcer.svelte";
 import { type Writable, writable, get } from "svelte/store";
 import { getItem, setItem, storage_loaded } from "./storage";
 
@@ -80,6 +81,7 @@ joined_game_id.subscribe(($joined_game_id) => {
 		chat.set([]);
 	}
 });
+export let tournament_announcer: Writable<Announcer | null> = writable(null);
 
 function socket_processor(message: any) {
 	let json = message.data;
@@ -128,6 +130,12 @@ function socket_processor(message: any) {
 		}
 		if (event.data.Chat) {
 			chat.set([...get(chat), event.data.Chat]);
+		}
+		if (event.data.GenericError) {
+			let announcer = get(tournament_announcer);
+			if(announcer) {
+				announcer.announce(`Virhe: ${event.data.GenericError}`);
+			}
 		}
 	}
 }
@@ -215,9 +223,9 @@ export function request_leave(game_id: number) {
 		joined_game_id.set(null);
 	}
 }
-export function send_message(message: string) {
+export function send_message(message: string | null) {
 	if (socket) {
-		socket.send(`say|>${message}`);
+		if(message) socket.send(`say|>${message}`);
 	} else {
 		throw new Error("not connected! can't send message.");
 	}
