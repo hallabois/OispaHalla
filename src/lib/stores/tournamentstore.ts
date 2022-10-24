@@ -61,9 +61,10 @@ export type Index = {
 	active_games: number[];
 	ended_games: number[];
 };
-export type Message = {
-	sender: string;
-	message: string;
+export type ChatMessage = {
+	game_id: number;
+	user_id: string;
+	content: string;
 }
 
 export let try_autoconnect: Writable<boolean> = writable(true);
@@ -75,10 +76,20 @@ export let user_details: Writable<UserDetails | null> = writable(null);
 export let game_details: Writable<{ [key: number]: GameDetails }> = writable({});
 export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
-export let chat: Writable<Message[]> = writable([]);
+export let chat: Writable<ChatMessage[] | null> = writable(null);
+export let name_cache: Writable<{[key: string]: string} | null> = writable(null);
 joined_game_id.subscribe(($joined_game_id) => {
 	if($joined_game_id == null) {
-		chat.set([]);
+		chat.set(null);
+		name_cache.set(null);
+	}
+	else {
+		if(get(chat) == null) {
+			request_game_chat();
+		}
+		if(get(game_details)[$joined_game_id] == null) {
+			request_game_details($joined_game_id);
+		}
 	}
 });
 export let tournament_announcer: Writable<Announcer | null> = writable(null);
@@ -129,7 +140,10 @@ function socket_processor(message: any) {
 			}
 		}
 		if (event.data.Chat) {
-			chat.set([...get(chat), event.data.Chat]);
+			chat.set([...(get(chat) || []), event.data.Chat]);
+		}
+		if (event.data.ChatLog) {
+			chat.set(event.data.ChatLog);
 		}
 		if (event.data.GenericError) {
 			let announcer = get(tournament_announcer);
@@ -228,6 +242,13 @@ export function send_message(message: string | null) {
 		if(message) socket.send(`say|>${message}`);
 	} else {
 		throw new Error("not connected! can't send message.");
+	}
+}
+export function request_game_chat() {
+	if (socket) {
+		socket.send(`chat`);
+	} else {
+		throw new Error("not connected! can't get chat.");
 	}
 }
 

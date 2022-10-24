@@ -15,10 +15,13 @@
 	import { token } from "$lib/Auth/authstore";
 	import type Announcer from "./announcer.svelte";
 	import { browser } from "$app/environment";
+	import Popup from "../common/popup/popup.svelte";
+	import { prevent_default } from "svelte/internal";
 
 	export let announcer: Announcer | null = null;
 
 	let message_input: string;
+	let player_list_open = false;
 
 	function shareGameID() {
 		navigator.share({
@@ -41,7 +44,6 @@
 	{#if $joined_game_id && $user_details}
 		{@const game_data = $game_details[$joined_game_id]}
 		{#if !game_data}
-			{@const _ = request_game_details($joined_game_id)}
 			<p>Ladataan pelin tietoja...</p>
 		{:else}
 			{@const am_host = $user_details.admin || $user_details.user_id == game_data.creator_id}
@@ -91,32 +93,35 @@
 						</div>
 					</div>
 					<div>
-						<h4>
+						<button
+							class="button action-btn players"
+							on:click={() => {
+								player_list_open = true;
+							}}
+						>
 							{game_data.clients.length}
 							{game_data.clients.length == 1 ? "pelaaja" : "pelaajaa"}
-						</h4>
+						</button>
 						<div class="chat-window">
-							<!-- <div style="max-height:300px;overflow-y: auto;">
-								{#each game_data.clients as player_id}
-									<p title={player_id}>
-										{player_id.substring(0, 5)}
-										{#if player_id === $user_details.user_id}
-											(sinä)
-										{/if}
-									</p>
-								{/each}
-							</div> -->
-							<input bind:value={message_input} placeholder="Kirjoita viesti" /><button
-								on:click={() => {
+							<form
+								on:submit|preventDefault={() => {
 									send_message(message_input);
 									message_input = "";
 								}}
-								disabled={message_input == null || message_input.length < 1}>lähetä</button
 							>
+								<input bind:value={message_input} placeholder="Kirjoita viesti" /><input
+									type="submit"
+									disabled={message_input == null || message_input.length < 1}
+								/>
+							</form>
 							<div class="messages">
-								{#each [...$chat].reverse() as msg}
-									<p>{msg.sender.substring(0, 5)}: {msg.message}</p>
-								{/each}
+								{#if $chat}
+									{#each [...$chat].reverse() as msg}
+										<p>{msg.user_id.substring(0, 5)}: {msg.content}</p>
+									{/each}
+								{:else}
+									<p>...</p>
+								{/if}
 							</div>
 						</div>
 					</div>
@@ -161,6 +166,20 @@
 					</p>
 				</div>
 			{/if}
+
+			<Popup bind:open={player_list_open}>
+				<span slot="title">Liittyneet pelaajat</span>
+				<div slot="content" class="player-list">
+					{#each game_data.clients as player_id}
+						<p title={player_id}>
+							{player_id.substring(0, 5)}
+							{#if player_id === $user_details.user_id}
+								(sinä)
+							{/if}
+						</p>
+					{/each}
+				</div>
+			</Popup>
 		{/if}
 	{:else}
 		<p>Ladataan kirjautumistietoja...</p>
@@ -194,6 +213,9 @@
 		display: flex;
 		flex-direction: column;
 	}
+	.players {
+		margin-block: 0.5em;
+	}
 	.messages {
 		overflow-y: scroll;
 	}
@@ -203,6 +225,11 @@
 	}
 	.start {
 		margin-top: 1em;
+	}
+	.player-list {
+	}
+	.player-list p {
+		margin: 0;
 	}
 	hr {
 		margin-block: 0.25em;
