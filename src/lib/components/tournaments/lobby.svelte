@@ -6,7 +6,7 @@
 		user_details,
 		game_details,
 		gamemode_0_names,
-		request_game_details,
+		name_cache,
 		send_message,
 		chat
 	} from "$lib/stores/tournamentstore";
@@ -115,9 +115,16 @@
 								/>
 							</form>
 							<div class="messages">
+								{#if $name_cache == null}
+									<p>Ladataan nimiä....</p>
+								{/if}
 								{#if $chat}
 									{#each [...$chat].reverse() as msg}
-										<p>{msg.user_id.substring(0, 5)}: {msg.content}</p>
+										{@const cached_name = ($name_cache || {})[msg.user_id]}
+										{@const name = cached_name
+											? cached_name.split(" ")[0]
+											: msg.user_id.substring(0, 5)}
+										<p>{name}: {msg.content}</p>
 									{/each}
 								{:else}
 									<p>...</p>
@@ -171,13 +178,20 @@
 				<span slot="title">Liittyneet pelaajat</span>
 				<div slot="content" class="player-list">
 					{#each game_data.clients as player_id}
+						{@const cached_name = ($name_cache || {})[player_id]}
+						{@const name = cached_name || player_id}
 						<p title={player_id}>
-							{player_id.substring(0, 5)}
+							{name}
 							{#if player_id === $user_details.user_id}
 								(sinä)
 							{/if}
 						</p>
 					{/each}
+					{#if $name_cache == null}
+						<p class="status">Ladataan nimiä...</p>
+					{:else}
+						<p class="status">Nimet ladattu.</p>
+					{/if}
 				</div>
 			</Popup>
 		{/if}
@@ -227,9 +241,25 @@
 		margin-top: 1em;
 	}
 	.player-list {
+		min-height: 300px;
+		display: flex;
+		gap: 0.5em;
+		flex-wrap: wrap;
+		align-items: start;
+		flex-direction: column;
+		max-height: 75vh;
 	}
 	.player-list p {
 		margin: 0;
+	}
+	.player-list .status {
+		opacity: 0.75;
+		place-self: end;
+
+		flex: 1;
+		display: flex;
+		justify-content: end;
+		align-items: end;
 	}
 	hr {
 		margin-block: 0.25em;

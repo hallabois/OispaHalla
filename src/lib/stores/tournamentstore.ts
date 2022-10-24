@@ -87,6 +87,9 @@ joined_game_id.subscribe(($joined_game_id) => {
 		if(get(chat) == null) {
 			request_game_chat();
 		}
+		if(get(name_cache) == null) {
+			request_game_names();
+		}
 		if(get(game_details)[$joined_game_id] == null) {
 			request_game_details($joined_game_id);
 		}
@@ -144,6 +147,9 @@ function socket_processor(message: any) {
 		}
 		if (event.data.ChatLog) {
 			chat.set(event.data.ChatLog);
+		}
+		if (event.data.ParticipantDetails) {
+			name_cache.set(event.data.ParticipantDetails.names);
 		}
 		if (event.data.GenericError) {
 			let announcer = get(tournament_announcer);
@@ -249,6 +255,13 @@ export function request_game_chat() {
 		socket.send(`chat`);
 	} else {
 		throw new Error("not connected! can't get chat.");
+	}
+}
+export function request_game_names() {
+	if (socket) {
+		socket.send(`names`);
+	} else {
+		throw new Error("not connected! can't get names.");
 	}
 }
 
