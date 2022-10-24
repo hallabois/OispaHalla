@@ -51,6 +51,7 @@ export type GameDetails = {
 export type GameIndex = {
 	id: number;
 	name: string;
+	creator: string;
 	clients: number;
 	max_clients: 4;
 	requires_password: boolean;
