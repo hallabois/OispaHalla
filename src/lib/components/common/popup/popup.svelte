@@ -22,8 +22,8 @@
 		mounted = true;
 	});
 	onDestroy(() => {
-		if (!$open_popups.includes(my_key)) {
-			open_popups.set([...$open_popups, my_key]);
+		if ($open_popups.includes(my_key)) {
+			open_popups.set($open_popups.filter((x) => x !== my_key));
 		}
 	});
 </script>

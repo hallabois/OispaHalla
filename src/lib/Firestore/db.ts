@@ -2,6 +2,7 @@ import { readable, type Readable } from "svelte/store";
 import { browser } from "$app/environment";
 import type { DocumentReference, DocumentSnapshot } from "firebase/firestore";
 import type { FirebaseApp } from "firebase/app";
+import { synced_variables } from "../../features";
 
 let dbs: { [key: string]: DB } = {};
 
@@ -43,16 +44,26 @@ export function createDB(
 		return () => unsubscribe();
 	});
 
-	async function uploadStorage(storage: object) {
+	async function uploadStorage(storage: Object) {
 		const { getDoc, setDoc } = await import("firebase/firestore");
 		let d = await getDoc(dbRef);
-		let data = d.data() || {};
-		let enabled_keys = ["__updated_ms", "read_psa"];
+		let old_data = d.data() || {};
 
-		await setDoc(dbRef, {
-			...data,
-			storage
-		});
+		let enabled_keys = synced_variables;
+		let data = {};
+		for(let k of Object.keys(storage)) {
+			if(enabled_keys.includes(k)) {
+				if(storage[k] != null) {
+					data[k] = JSON.stringify(storage[k]);
+				}
+			}
+		}
+
+		if(JSON.stringify(old_data) !== JSON.stringify(data)) {
+			await setDoc(dbRef, {
+				...data
+			});
+		}
 	}
 
 	async function activateAccount() {
