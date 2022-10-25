@@ -160,6 +160,7 @@
 			<p>Ladataan...</p>
 		{:else}
 			<p>WASM Ladattu.</p>
+			<!-- svelte-ignore a11y-autofocus -->
 			<textarea bind:value={input} autofocus />
 			<br />
 			<button

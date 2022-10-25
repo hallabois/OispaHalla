@@ -230,7 +230,15 @@
 								</table>
 							</div>
 							<div class="actionbar">
-								<a href="javascript:;" on:click={refresh}> Päivitä </a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a
+									href="javascript:void(0);"
+									on:click={() => {
+										refresh();
+									}}
+								>
+									Päivitä
+								</a>
 								<a href="/leaderboards/{size}"> Näytä kaikki </a>
 							</div>
 							{#if $token != null}

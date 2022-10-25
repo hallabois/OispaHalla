@@ -12,6 +12,7 @@
 		request_deletion
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
+	import { browser } from "$app/environment";
 	try_autoconnect.set(false);
 	let refreshKey = {};
 	let admin_token: string;
@@ -156,6 +157,9 @@
 				{/if}
 			{:else}
 				{@const _ = request_index()}
+				<div class="content">
+					<p>Loading games...</p>
+				</div>
 			{/if}
 		{/key}
 	{:else}
@@ -170,7 +174,7 @@
 							admin_token = $token;
 						}
 					}}
-					disabled={$token == null}
+					disabled={$token == null || !browser}
 				>
 					Use your own token
 				</button>

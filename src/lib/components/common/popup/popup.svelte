@@ -29,6 +29,7 @@
 </script>
 
 {#if open}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<main
 		class="lb-popup"
 		on:click={() => {
@@ -36,6 +37,7 @@
 		}}
 		out:fade
 	>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
 			class="lb-popup-container"
 			on:click={(e) => {

@@ -59,10 +59,9 @@
 
 	export let markAsSubmitted = (s: number) => {};
 	export let startSubmitting = (s: number) => {};
-	export let sizes: number[];
 	export let current_size: number;
 
-	export let announcer: Announcer | null = null;
+	export const announcer: Announcer | null = null;
 </script>
 
 <Popup bind:open>

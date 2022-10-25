@@ -41,6 +41,7 @@
 			<div class="games">
 				{#each $game_index.joinable_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index}
 					{@const am_host = $user_details.admin || $user_details.user_id == game.creator}
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<div
 						class="game"
 						class:selected={chosen_game == game.id}
@@ -122,10 +123,5 @@
 	}
 	hr {
 		margin-block: 0.5em;
-	}
-	.err {
-		color: red;
-		display: flex;
-		align-items: baseline;
 	}
 </style>

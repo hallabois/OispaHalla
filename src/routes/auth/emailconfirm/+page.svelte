@@ -68,9 +68,4 @@
 
 		min-height: 100vh;
 	}
-	.discouradge {
-		color: var(--button-background);
-		background: var(--background);
-		border: 1px solid var(--button-background);
-	}
 </style>

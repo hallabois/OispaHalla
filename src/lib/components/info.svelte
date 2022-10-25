@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Popup from "./common/popup/popup.svelte";
-	import type Announcer from "./tournaments/announcer.svelte";
+	// import type Announcer from "./tournaments/announcer.svelte";
 
 	let open = false;
 	export function show() {
 		open = true;
 	}
 
-	export let announcer: Announcer | null = null;
+	// export let announcer: Announcer | null = null;
 </script>
 
 <Popup bind:open>
@@ -22,35 +22,38 @@
 		</div>
 		<div class="section credits">
 			<p>
-				Alkuperäisen projektin <a href="https://github.com/gabrielecirulli/2048" target="_blank"
-					>2048</a
+				Alkuperäisen projektin <a
+					href="https://github.com/gabrielecirulli/2048"
+					target="_blank"
+					rel="noreferrer">2048</a
 				>
-				on tehnyt <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
+				on tehnyt
+				<a href="http://gabrielecirulli.com" target="_blank" rel="noreferrer">Gabriele Cirulli.</a>
 			</p>
 			<p>
-				Projektin perustana toimii <a href="https://kit.svelte.dev/" target="_blank">Sveltekit</a>.
+				Projektin perustana toimii <a
+					href="https://kit.svelte.dev/"
+					target="_blank"
+					rel="noreferrer">Sveltekit</a
+				>.
 			</p>
 			<!--
                 TODO: lisää lisää
             -->
 		</div>
 		<div class="links">
-			<a href="https://github.com/hallabois" target="_blank">GitHub</a>
-			<a href="https://simpleanalytics.com/oispahalla.com" target="_blank">Simpleanalytics</a>
-			<a href="https://hallabois.github.io/invite" target="_blank">Discord</a>
+			<a href="https://github.com/hallabois/OispaHalla" target="_blank" rel="noreferrer"
+				>Lähdekoodi</a
+			>
+			<a href="https://simpleanalytics.com/oispahalla.com" target="_blank" rel="noreferrer"
+				>Simpleanalytics</a
+			>
+			<a href="https://hallabois.github.io/invite" target="_blank" rel="noreferrer">Discord</a>
 		</div>
 	</div>
 </Popup>
 
 <style>
-	h3 {
-		display: inline;
-		margin: 0;
-		border-bottom: 1px solid var(--color);
-	}
-	hr {
-		margin-block: 0.5em;
-	}
 	a,
 	p {
 		margin: 0;
