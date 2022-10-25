@@ -89,7 +89,11 @@
 					<div>
 						<h3>Aloitustilanne</h3>
 						<div class="game-preview">
-							<Board enableLSM={false} grid={ohts_gamestate_to_grid(game_data.starting_state)} />
+							<Board
+								enableLSM={false}
+								grid={ohts_gamestate_to_grid(game_data.starting_state)}
+								enable_theme_chooser={false}
+							/>
 						</div>
 					</div>
 					<div>

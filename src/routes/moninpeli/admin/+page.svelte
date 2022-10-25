@@ -13,6 +13,9 @@
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
+	import Popup from "$lib/components/common/popup/popup.svelte";
+	import Board from "$lib/components/board/board.svelte";
+	import { ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 	try_autoconnect.set(false);
 	let refreshKey = {};
 	let admin_token: string;
@@ -25,6 +28,7 @@
 	}
 
 	let selected_game: number | null;
+	let board_popups_open = {};
 </script>
 
 <svelte:head>
@@ -67,6 +71,8 @@
 					<button
 						on:click={() => {
 							refreshKey = {};
+							$game_index = null;
+							$game_details = {};
 						}}>Refresh data</button
 					>
 				{/if}
@@ -100,7 +106,8 @@
 											class:selected={selected_game === game.id}
 										>
 											{#each Object.keys(game) as key}
-												<td>{game[key]}</td>
+												{@const val = game[key]}
+												<td>{val}</td>
 											{/each}
 										</tr>
 									{/each}
@@ -140,9 +147,31 @@
 									</div>
 									<table>
 										{#each Object.keys(game_data) as game_key}
+											{@const val = game_data[game_key]}
 											<tr>
-												<td>{game_key}</td>
-												<td>{JSON.stringify(game_data[game_key])}</td>
+												<td
+													>{game_key}
+													{#if val != null && Object.keys(val).includes("width") && Object.keys(val).includes("height") && Object.keys(val).includes("tiles")}
+														<button
+															on:click={() => {
+																board_popups_open[val] = true;
+															}}>Show Board</button
+														>
+														<Popup bind:open={board_popups_open[val]}>
+															<span slot="title">Board</span>
+															<div slot="content">
+																<Board
+																	enableLSM={false}
+																	grid={ohts_gamestate_to_grid(val)}
+																	enable_theme_chooser={false}
+																/>
+															</div>
+														</Popup>
+													{/if}
+												</td>
+												<td>
+													{JSON.stringify(val)}
+												</td>
 											</tr>
 										{/each}
 									</table>

@@ -116,13 +116,16 @@ h1.title.dark {
 @keyframes darken {
 	from {
 		opacity: 0;
+		backdrop-filter: blur(0px);
 	}
 	to {
 		opacity: 1;
+		backdrop-filter: blur(2px);
 	}
 }
 
 .lb-popup {
+	backdrop-filter: blur(2px);
 	background-color: rgba(0, 0, 0, 0.4);
 	z-index: 200;
 	position: fixed;

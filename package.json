@@ -25,8 +25,6 @@
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^3.2.1",
-		"firebase": "^9.9.1",
-		"firebase-admin": "^11.0.0",
 		"localforage": "^1.10.0",
 		"marked": "^4.0.10",
 		"prettier": "^2.4.1",
@@ -45,5 +43,8 @@
 		"vite-plugin-wasm": "^2.1.0"
 	},
 	"type": "module",
-	"dependencies": {}
+	"dependencies": {
+		"firebase": "^9.9.1",
+		"firebase-admin": "^11.0.0"
+	}
 }

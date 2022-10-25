@@ -11,7 +11,6 @@
 	import type Grid from "$lib/gamelogic/grid";
 	import { base_path } from "$lib/stores/themestore";
 	import type Announcer from "../tournaments/announcer.svelte";
-	import Announcer from "../tournaments/announcer.svelte";
 
 	export let announcer: Announcer | null;
 	export let enableKIM = false;
