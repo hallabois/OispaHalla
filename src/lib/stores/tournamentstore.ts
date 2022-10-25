@@ -152,6 +152,15 @@ function socket_processor(message: any) {
 		if (event.data.ParticipantDetails) {
 			name_cache.set(event.data.ParticipantDetails.names);
 		}
+		if(event.data.ServerMessage) {
+			let msg = event.data.ServerMessage;
+			console.info("Server message:", msg);
+			let announcer = get(tournament_announcer);
+			if(announcer) {
+				announcer.announce(`${msg.title}: ${msg.message}`);
+			}
+		}
+
 		if (event.data.GenericError) {
 			let announcer = get(tournament_announcer);
 			if(announcer) {
@@ -249,6 +258,13 @@ export function send_message(message: string | null) {
 		if(message) socket.send(`say|>${message}`);
 	} else {
 		throw new Error("not connected! can't send message.");
+	}
+}
+export function admin_announce(message: string | null) {
+	if (socket) {
+		if(message) socket.send(`announce|>${message}`);
+	} else {
+		throw new Error("not connected! can't announce.");
 	}
 }
 export function request_game_chat() {

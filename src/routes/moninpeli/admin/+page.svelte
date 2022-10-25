@@ -9,13 +9,15 @@
 		try_autoconnect,
 		game_details,
 		request_game_details,
-		request_deletion
+		request_deletion,
+		admin_announce
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
 	import Popup from "$lib/components/common/popup/popup.svelte";
 	import Board from "$lib/components/board/board.svelte";
 	import { ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import { onDestroy } from "svelte";
 	try_autoconnect.set(false);
 	let refreshKey = {};
 	let admin_token: string;
@@ -27,7 +29,12 @@
 		return answer === admin_token;
 	}
 
+	onDestroy(() => {
+		disconnect();
+	});
+
 	let selected_game: number | null;
+	let announce_content: string = "";
 	let board_popups_open = {};
 </script>
 
@@ -75,6 +82,17 @@
 							$game_details = {};
 						}}>Refresh data</button
 					>
+					<form
+						on:submit|preventDefault={() => {
+							if (announce_content.length > 0) {
+								admin_announce(announce_content);
+								announce_content = "";
+							}
+						}}
+					>
+						<input bind:value={announce_content} placeholder="Write a message" />
+						<input type="submit" value="Announce" />
+					</form>
 				{/if}
 			</div>
 		{/if}

@@ -3,12 +3,12 @@
 
 	import { auth } from "$lib/Auth/authstore";
 
-	import Popup from "$lib/components/common/popup/popup.svelte";
 	import {
 		connected,
 		connect,
 		joined_game_id,
-		connection_error
+		connection_error,
+		tournament_announcer
 	} from "$lib/stores/tournamentstore";
 	import TournamentCreator from "$lib/components/tournaments/tournamentCreator.svelte";
 	import TournamentBrowser from "$lib/components/tournaments/tournamentBrowser.svelte";
@@ -18,6 +18,7 @@
 	import { browser } from "$app/environment";
 
 	export let announcer: Announcer | null = null;
+	$: $tournament_announcer = announcer;
 	let chosen_game: number | null | undefined = null;
 
 	$: if (browser && chosen_game == null && window.location.href.includes("?")) {
