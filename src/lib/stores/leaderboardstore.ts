@@ -274,6 +274,7 @@ export async function change_name(
 	token: string
 ): Promise<change_name_response> {
 	try {
+		let connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
 		const resp = await fetch(`${leaderboard_endpoint}/meta/changename`, {
 			method: "POST",
 			headers: {
@@ -281,7 +282,8 @@ export async function change_name(
 			},
 			body: JSON.stringify({
 				token: token,
-				name
+				name,
+				connected_accounts
 			})
 		});
 		if (resp.ok) {
