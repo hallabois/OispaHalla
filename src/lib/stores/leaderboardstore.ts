@@ -92,6 +92,7 @@ export async function get_top_scores(size: number, threshold: number): Promise<s
 export class User {
 	_id!: string;
 	screenName!: string;
+	uid!: string;
 }
 export class Score {}
 export class Score_ok {

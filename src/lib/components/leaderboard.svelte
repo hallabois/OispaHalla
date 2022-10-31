@@ -218,7 +218,11 @@
 														<tr in:scale={{ delay: 100 * index }}>
 															<td>{index + 1}.</td>
 															<td>{score.score}</td>
-															<td>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</td>
+															<td
+																><a href={`/user/${score.user.uid}?size=${size}`}
+																	>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</a
+																></td
+															>
 														</tr>
 													{/each}
 												{:else}

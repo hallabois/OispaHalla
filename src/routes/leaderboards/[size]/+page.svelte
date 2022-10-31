@@ -20,7 +20,7 @@
 		<tr class:me={$auth && $auth.uid === score.user.uid}>
 			<td>{index + 1}.</td>
 			<td>{score.score}</td>
-			<td>{score.user.screenName}</td>
+			<td><a href={`/user/${score.user.uid}?size=${size}`}>{score.user.screenName}</a></td>
 		</tr>
 	{/each}
 </table>

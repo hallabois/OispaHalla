@@ -1,21 +1,20 @@
-import { leaderboard_endpoint } from "$lib/stores/leaderboardstore";
+import { getLeaderBoardData } from "./util";
 import { env } from "$env/dynamic/private";
 
-async function getLeaderBoardData(uid: string): Promise<Response> {
-    // ADMIN_TOKEN must match the ADMIN_TOKEN that of the lb backend
-    let url = `${leaderboard_endpoint}/admin/scores/uid/${uid}?token=${env.ADMIN_TOKEN}`;
-    console.log("getting lb data", url);
-    return await fetch(url);
-}
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ request, setHeaders, params }) {
+export async function load({ request, setHeaders, params, url }) {
 	let uid = params.uid;
 
-	let resp = await getLeaderBoardData(uid);
-    console.log(resp);
+	let resp = await getLeaderBoardData(uid, env.ADMIN_TOKEN);
+    let size = null;
+    if(url.searchParams) {
+        size = url.searchParams.get("size");
+    }
 
 	return {
-		uid
+		uid,
+        resp,
+        size
 	};
 }
