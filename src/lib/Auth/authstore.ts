@@ -2,7 +2,7 @@ import { get, readable, writable, type Writable } from "svelte/store";
 import { browser } from "$app/environment";
 import type { Auth, User } from "firebase/auth";
 import { generateActionCodeSettings } from "./firebase_config";
-import { info } from "console";
+import { getItem, setItem, storage_loaded } from "$lib/stores/storage";
 
 const createAuth = () => {
 	let auth: Auth;
@@ -128,6 +128,15 @@ if (browser) {
 				clearTimeout(token_refresh_timer);
 			}
 			await rewrite_token($auth);
+			if(storage_loaded && $auth.uid) {
+				let connected_accounts = getItem("connected_accounts") || [];
+				if(!(connected_accounts.includes($auth.uid))){
+					setItem("connected_accounts", [
+						...connected_accounts,
+						$auth.uid
+					]);
+				}
+			}
 		} else {
 			if ($auth === undefined) {
 				console.info("loading login details...");

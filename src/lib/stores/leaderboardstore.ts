@@ -207,6 +207,7 @@ export async function submit_score(
 	run_breaks: number,
 	run_history: string
 ): Promise<submit_response> {
+	let connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
 	try {
 		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}`, {
 			method: "POST",
@@ -216,7 +217,8 @@ export async function submit_score(
 			body: JSON.stringify({
 				user: {
 					token: token,
-					screenName: user_screenName
+					screenName: user_screenName,
+					connected_accounts
 				},
 				score: run_score,
 				breaks: run_breaks,
@@ -272,6 +274,7 @@ export async function change_name(
 	token: string
 ): Promise<change_name_response> {
 	try {
+		let connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
 		const resp = await fetch(`${leaderboard_endpoint}/meta/changename`, {
 			method: "POST",
 			headers: {
@@ -279,7 +282,8 @@ export async function change_name(
 			},
 			body: JSON.stringify({
 				token: token,
-				name
+				name,
+				connected_accounts
 			})
 		});
 		if (resp.ok) {
