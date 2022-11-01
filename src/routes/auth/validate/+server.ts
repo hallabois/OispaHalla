@@ -27,6 +27,7 @@ export async function POST({ request, getClientAddress }) {
 	} else {
 		let token = body.token;
 
+		console.info("token validation request headers:", request.headers);
 		try {
 			if (env.ADMIN_TOKEN) {
 				let ip = getClientAddress();
