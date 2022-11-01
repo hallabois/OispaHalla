@@ -48,8 +48,8 @@
 				let x = ind % size;
 				let y = Math.floor(ind / size);
 				grid.cells[y][x] = new Tile({ x, y }, +val);
-				ind += 1;
 			}
+			ind += 1;
 		}
 		return grid;
 	}
