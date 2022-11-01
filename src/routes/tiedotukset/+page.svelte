@@ -12,6 +12,10 @@
 		userdata = $user_db.data();
 		console.log("userdata:", userdata);
 	}
+
+	import type { PageData } from "./$types";
+	export let data: PageData;
+	$: content = data.content;
 </script>
 
 <main class="blurry-bg">
@@ -21,8 +25,7 @@
 			tiedotukset
 		</h1>
 		<a href="/">Takaisin OispaHallaan</a>
-		{#if $PSA != null}
-			{@const content = $PSA.data()?.content || {}}
+		{#if content != null}
 			{#if Object.keys(content).length == 0}
 				<div class="psa">
 					<p>Ei tiedotuksia.</p>
@@ -48,7 +51,7 @@
 			{/each}
 		{:else}
 			<div class="psa">
-				<p>Ladataan tiedotuksia...</p>
+				<p>Virhe tiedotuksia haettaessa.</p>
 			</div>
 		{/if}
 	</div>

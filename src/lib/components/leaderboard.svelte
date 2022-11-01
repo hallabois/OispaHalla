@@ -219,7 +219,7 @@
 															<td>{index + 1}.</td>
 															<td>{score.score}</td>
 															<td
-																><a href={`/user/${score.user.uid}?size=${size}`}
+																><a class="player" href={`/user/${score.user.uid}?size=${size}`}
 																	>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</a
 																></td
 															>
@@ -257,13 +257,19 @@
 										{:else}
 											<div class="my-results">
 												<table>
-													{#each [{ rank: result?.rank, score: result?.score?.score, name: result?.score?.user?.screenName, me: true }, ...Object.keys(result.rivals || {}).map( (r) => {
-																return { rank: r, score: result?.rivals[r]?.score, name: result?.rivals[r]?.user.screenName, me: false };
+													{#each [{ rank: result?.rank, score: result?.score?.score, name: result?.score?.user?.screenName, me: true, uid: result?.score?.user?.uid }, ...Object.keys(result.rivals || {}).map( (r) => {
+																return { rank: r, score: result?.rivals[r]?.score, name: result?.rivals[r]?.user.screenName, me: false, uid: result?.rivals[r]?.user.uid };
 															} )].sort((a, b) => a.rank - b.rank) as subjectiveResult}
 														<tr class:me={subjectiveResult.me}>
 															<td>{subjectiveResult.rank}.</td>
 															<td>{subjectiveResult.score}</td>
-															<td>{subjectiveResult.name}</td>
+															<td
+																><a
+																	class="player"
+																	href={`/user/${subjectiveResult.uid}?size=${size}`}
+																	>{subjectiveResult.name}</a
+																></td
+															>
 														</tr>
 													{/each}
 												</table>
@@ -378,5 +384,10 @@
 	.actions {
 		display: flex;
 		gap: 0.25em;
+	}
+	.player {
+		font-weight: inherit;
+		color: inherit;
+		text-decoration: inherit;
 	}
 </style>

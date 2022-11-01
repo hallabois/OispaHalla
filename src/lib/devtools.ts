@@ -4,6 +4,7 @@ import { browser } from "$app/environment";
 import { available_themes, festives_applied, theme_index } from "./stores/themestore";
 import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
 import { open_popups } from "$lib/stores/popupstore";
+import { auth } from "./Auth/authstore";
 
 function isStorageLoaded() {
 	return get(storage_loaded);
@@ -100,6 +101,10 @@ function getOpenPopups() {
 	return get(open_popups);
 }
 
+function getAuth() {
+	return get(auth);
+}
+
 if (browser) {
 	// @ts-ignore
 	window.devtools = {
@@ -132,6 +137,8 @@ if (browser) {
 		stores: {
 			get
 		},
-		getOpenPopups
+		getOpenPopups,
+
+		getAuth
 	};
 }

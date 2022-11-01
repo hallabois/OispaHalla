@@ -3,9 +3,10 @@ import { browser, dev } from "$app/environment";
 import { auth } from "$lib/Auth/authstore";
 
 import { setItem, getItem, storage, storage_loaded } from "$lib/stores/storage";
+import { lb_test_prod_endpoint } from "../../features";
 
 let leaderboard_endpoint_prod = "https://lb.oispahalla.com";
-let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
+let leaderboard_endpoint_dev = lb_test_prod_endpoint ? leaderboard_endpoint_prod : "http://localhost:5000";
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
 export let lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
