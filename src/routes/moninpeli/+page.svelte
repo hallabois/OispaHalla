@@ -4,11 +4,23 @@
 	import MultiplayerMenu from "$lib/components/tournaments/menu.svelte";
 	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/tournaments/announcer.svelte";
-	import { connect, connection_error } from "$lib/stores/tournamentstore";
-	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import {
+		connect,
+		connection_error,
+		game_details,
+		joined_game_id,
+		request_move,
+		state
+	} from "$lib/stores/tournamentstore";
+	import {
+		generate_previous_positions,
+		hac_gamestate_to_grid,
+		ohts_gamestate_to_grid
+	} from "$lib/gamelogic/utils";
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
-	import type Grid from "$lib/gamelogic/grid";
+	import Grid from "$lib/gamelogic/grid";
 	import { browser } from "$app/environment";
+	import Tournaments from "$lib/components/tournaments.svelte";
 
 	let app_name = "Oispa Halla";
 	let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
@@ -20,8 +32,6 @@
 
 	let enableKIM = false;
 
-	let grid: Grid | null = null;
-
 	/* $: if ($poll_board_string) {
 		grid = hac_gamestate_to_grid($poll_board_string);
 	} else if ($joined_game_data) {
@@ -32,18 +42,19 @@
 
 	function move(direction: 0 | 1 | 2 | 3) {
 		if (true) {
-			BoardInstance?.getGameManagerInstance()?.move(direction);
+			// BoardInstance?.getGameManagerInstance()?.move(direction);
 			console.log("server-side move called with the value", direction);
+			request_move(direction);
 			// poll_send_moves.push(direction);
 			// console.info(JSON.stringify(poll_send_moves));
 		} else {
 			console.warn("Tried to move when the game hadn't started yet");
 		}
 	}
-	$: if (false) {
-		window.onbeforeunload = function (e) {
-			return "Oletko varma että haluat jättää pelin kesken?";
-		};
+	$: if ($joined_game_id) {
+		//window.onbeforeunload = function (e) {
+		//	return "Oletko varma että haluat jättää pelin kesken?";
+		//};
 		if (inputManager == null) {
 			console.log("Creating server-side inputmanager...");
 			inputManager = new KeyboardInputManager(inputRoot);
@@ -65,6 +76,7 @@
 	let inputRoot: HTMLElement;
 	let AnnouncerInstance: Announcer;
 	let BoardInstance: Board;
+	let TtInstance: Tournaments;
 
 	let enableMonkey = false;
 	let monkeyInterval: NodeJS.Timer | undefined;
@@ -75,6 +87,16 @@
 		}, 500);
 	} else {
 		clearInterval(monkeyInterval);
+	}
+
+	let last_grid: Grid | null = null;
+	function processGrid(inp: Object) {
+		let translated = ohts_gamestate_to_grid(inp);
+		if (last_grid) {
+			translated = generate_previous_positions(translated, last_grid);
+		}
+		last_grid = translated;
+		return translated;
 	}
 </script>
 
@@ -89,27 +111,27 @@
 			>
 		</p>
 	{/if}
-	{#if true}
-		<div class="blurry-bg menu-bg">
-			<div class="menu">
-				<MultiplayerMenu announcer={AnnouncerInstance} />
-			</div>
-		</div>
-	{:else}
+	{#if $joined_game_id && $game_details[$joined_game_id]?.started && $state[$joined_game_id]}
+		{@const gamestate = $state[$joined_game_id]}
+		{@const game = $game_details[$joined_game_id]}
+		{@const grid_o = gamestate.board}
+		{@const grid = processGrid(grid_o)}
 		<div class="board-container">
 			<div style="display: flex;justify-content:space-between;width:var(--field-width);">
 				<div style="display: flex;align-items: end;">
 					<a data-sveltekit-reload href="/">Takaisin yksinpeliin</a>
 				</div>
 				<!-- {#if $poll_success}
-				<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
-			{/if} -->
+			<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
+		{/if} -->
 				<div style="display: flex;align-items: end;">
 					<label for="monkey">Enable monkey</label>
 					<input id="monkey" type="checkbox" bind:checked={enableMonkey} />
 				</div>
 			</div>
-			<Board {enableKIM} {grid} bind:this={BoardInstance} />
+			{#key grid}
+				<Board {enableKIM} enableLSM={false} {grid} bind:this={BoardInstance} />
+			{/key}
 			<button
 				class="button background-none color-button"
 				on:click={() => {
@@ -120,14 +142,21 @@
 				⚔
 			</button>
 			<!-- {#if $poll_success}
-			<div class="mini-container">
-				{#each $poll_other_boards_string as board_string, index}
-					<div class="mini-grid">
-						<Board grid={hac_gamestate_to_grid(board_string)} />
-					</div>
-				{/each}
+		<div class="mini-container">
+			{#each $poll_other_boards_string as board_string, index}
+				<div class="mini-grid">
+					<Board grid={hac_gamestate_to_grid(board_string)} />
+				</div>
+			{/each}
+		</div>
+	{/if} -->
+		</div>
+		<Tournaments bind:this={TtInstance} />
+	{:else}
+		<div class="blurry-bg menu-bg">
+			<div class="menu">
+				<MultiplayerMenu announcer={AnnouncerInstance} />
 			</div>
-		{/if} -->
 		</div>
 	{/if}
 </main>

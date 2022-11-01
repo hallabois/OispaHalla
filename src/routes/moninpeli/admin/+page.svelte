@@ -10,7 +10,9 @@
 		game_details,
 		request_game_details,
 		request_deletion,
-		admin_announce
+		admin_announce,
+		request_start,
+		request_stop
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
@@ -154,11 +156,17 @@
 													if (selected_game != null) request_deletion(selected_game);
 												}}>Delete</button
 											>
-											{#if !game_data.active}
+											{#if !game_data.started}
 												<button
 													on:click={() => {
-														startGame(selected_game || "");
+														if (selected_game != null) request_start(selected_game);
 													}}>Start</button
+												>
+											{:else}
+												<button
+													on:click={() => {
+														if (selected_game != null) request_stop(selected_game);
+													}}>Stop</button
 												>
 											{/if}
 										{/if}

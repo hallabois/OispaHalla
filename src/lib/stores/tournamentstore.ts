@@ -28,7 +28,7 @@ export class createTournamentGamemodeOptions {
 
 let socket: WebSocket | null = null;
 export type UserDetails = {
-	user_id: string;
+	id: string;
 	name: string;
 	admin: boolean;
 	current_games: number[];
@@ -67,6 +67,10 @@ export type ChatMessage = {
 	user_id: string;
 	content: string;
 }
+export type GameState = {
+	score: number;
+	board: Object;
+}
 
 export let try_autoconnect: Writable<boolean> = writable(true);
 
@@ -79,6 +83,7 @@ export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
 export let chat: Writable<ChatMessage[] | null> = writable(null);
 export let name_cache: Writable<{[key: string]: string} | null> = writable(null);
+export let state: Writable<{[key: number]: GameState }> = writable({});
 joined_game_id.subscribe(($joined_game_id) => {
 	if($joined_game_id == null) {
 		chat.set(null);
@@ -91,6 +96,9 @@ joined_game_id.subscribe(($joined_game_id) => {
 		if(get(name_cache) == null) {
 			request_game_names();
 		}
+		if(get(state)[$joined_game_id] == null) {
+			request_game_state();
+		}
 		if(get(game_details)[$joined_game_id] == null) {
 			request_game_details($joined_game_id);
 		}
@@ -100,11 +108,20 @@ export let tournament_announcer: Writable<Announcer | null> = writable(null);
 
 function socket_processor(message: any) {
 	let json = message.data;
+	if(json === "o") {
+		return;
+	}
 	let event = JSON.parse(json);
 	console.info("socket ev", event);
 	if (event.data) {
 		if (event.data.Index) {
 			game_index.set(event.data.Index);
+		}
+		if (event.data.GameStarted || event.data.GameStopped || event.data.GameDeleted) {
+			if (get(game_index) != null) {
+				request_index();
+			}
+			game_details.set({});
 		}
 		if (event.data.UserDetails) {
 			let details = event.data.UserDetails as UserDetails;
@@ -119,6 +136,12 @@ function socket_processor(message: any) {
 			game_details.set({
 				...get(game_details),
 				[event.data.GameDetails.id]: event.data.GameDetails
+			});
+		}
+		if (event.data.GameState) {
+			state.set({
+				...get(state),
+				[event.data.GameState.id]: event.data.GameState
 			});
 		}
 		if (event.data.GameCreated) {
@@ -234,6 +257,20 @@ export function request_deletion(game_id: number) {
 		throw new Error("not connected! can't delete game.");
 	}
 }
+export function request_start(game_id: number) {
+	if (socket) {
+		socket.send(`start|>${game_id}`);
+	} else {
+		throw new Error("not connected! can't start game.");
+	}
+}
+export function request_stop(game_id: number) {
+	if (socket) {
+		socket.send(`stop|>${game_id}`);
+	} else {
+		throw new Error("not connected! can't stop game.");
+	}
+}
 export function request_join(game_id: number, password: string | null) {
 	if (socket) {
 		let str = `join|>${game_id}`;
@@ -279,6 +316,20 @@ export function request_game_names() {
 		socket.send(`names`);
 	} else {
 		throw new Error("not connected! can't get names.");
+	}
+}
+export function request_game_state() {
+	if (socket) {
+		socket.send(`state`);
+	} else {
+		throw new Error("not connected! can't get state.");
+	}
+}
+export function request_move(direction: number) {
+	if (socket) {
+		socket.send(`move|>${direction}`);
+	} else {
+		throw new Error("not connected! can't move.");
 	}
 }
 

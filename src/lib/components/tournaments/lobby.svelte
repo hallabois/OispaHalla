@@ -8,7 +8,8 @@
 		gamemode_0_names,
 		name_cache,
 		send_message,
-		chat
+		chat,
+		request_start
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
 	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
@@ -46,7 +47,7 @@
 		{#if !game_data}
 			<p>Ladataan pelin tietoja...</p>
 		{:else}
-			{@const am_host = $user_details.admin || $user_details.user_id == game_data.creator_id}
+			{@const am_host = $user_details.admin || $user_details.id === game_data.creator_id}
 			<div class="top">
 				<button
 					class=""
@@ -115,6 +116,7 @@
 							>
 								<input bind:value={message_input} placeholder="Kirjoita viesti" /><input
 									type="submit"
+									value="Lähetä"
 									disabled={message_input == null || message_input.length < 1}
 								/>
 							</form>
@@ -155,7 +157,7 @@
 						style="width:100%;"
 						class="button action-btn"
 						on:click={() => {
-							// Start
+							request_start(game_data.id);
 						}}
 						disabled={game_data.started || game_data.ended}
 					>
@@ -186,7 +188,7 @@
 						{@const name = cached_name || player_id}
 						<p title={player_id}>
 							{name}
-							{#if player_id === $user_details.user_id}
+							{#if player_id === $user_details.id}
 								(sinä)
 							{/if}
 						</p>

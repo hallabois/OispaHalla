@@ -35,7 +35,7 @@
 		on:click={() => {
 			open = false;
 		}}
-		out:fade
+		out:fade|local
 	>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div

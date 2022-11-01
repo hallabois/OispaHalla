@@ -34,6 +34,17 @@ export function generate_previous_positions(grid: Grid, previous: Grid) {
 			if (t) {
 				let prev = previous.cells.flat().find((t2) => t2 && t.id == t2.id);
 				t.previousPosition = prev ? { x: prev.x, y: prev.y } : null;
+				if(t.mergedFromRS) {
+					t.mergedFrom = t.mergedFromRS.map((id)=>{
+						let found = previous.cells.flat().find((t2)=> t2 && t2.id == id);
+						if(found) {
+							found.x = t.x;
+							found.y = t.y;
+						}
+							return found;
+						}
+					);
+				}
 				newcells[colc][tindex] = t;
 			}
 		}
@@ -57,6 +68,7 @@ export function ohts_gamestate_to_grid(gamestate: ohts_gamestate) {
 			if (tile && tile.value > 0) {
 				let t = new Tile({ x: tile.x, y: tile.y }, tile.value);
 				t.id = tile.id;
+				t.mergedFromRS = tile.merged_from;
 				grid.cells[tile.y][tile.x] = t;
 			}
 		}

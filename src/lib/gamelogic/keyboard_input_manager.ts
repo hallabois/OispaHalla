@@ -116,6 +116,8 @@ export default class KeyboardInputManager {
 		var touchStartClientX, touchStartClientY;
 		var gameContainer = this.documentRoot.getElementsByClassName("game-container")[0];
 
+		if(gameContainer) {
+
 		gameContainer.addEventListener(this.eventTouchstart, function (event: TouchEvent) {
 			if (event.touches.length > 1 || event.targetTouches.length > 1) {
 				return; // Ignore if touching with more than 1 finger
@@ -152,6 +154,7 @@ export default class KeyboardInputManager {
 				self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : dy > 0 ? 2 : 0);
 			}
 		});
+	}
 	}
 	keydownHandler(event) {
 		if (!this.enabled || get(open_popups).length > 0) {
