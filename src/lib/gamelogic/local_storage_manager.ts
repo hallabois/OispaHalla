@@ -2,21 +2,14 @@ import { getItem, setItem } from "$lib/stores/storage";
 
 export default class LocalStorageManager {
 	enabled: boolean;
-	bestScoreKey: string;
 	gameStateKey: string;
 	constructor(enabled: boolean = true) {
 		this.enabled = enabled;
-		this.bestScoreKey = "bestScore";
 		this.gameStateKey = "gameState";
 		if (!this.enabled) {
 			return;
 		}
 
-		if (getItem("bestScore") && getItem("bestScores") == null) {
-			setItem("bestScores", {
-				"4": getItem("bestScore")
-			});
-		}
 		if (getItem("bestScores") == null) {
 			setItem("bestScores", {
 				"3": 0,

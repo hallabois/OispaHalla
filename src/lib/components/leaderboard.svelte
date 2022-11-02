@@ -17,6 +17,8 @@
 	import Actions from "./leaderboard/actions.svelte";
 	import { getItem, setItem, storage, storage_loaded } from "$lib/stores/storage";
 
+	$: can_submit_now = $token != null && $lb_screenName != null;
+
 	export let GameManagerInstance: GameManager | null = null;
 	function submitUnsubmittedTopScoresForSize(s: number) {
 		let top_saved = ($storage.bestScores || {})[s] || -1;
@@ -29,9 +31,13 @@
 			// Do nothing, as the top scoring game is not over yet.
 		} else if (top_saved > top_submitted) {
 			console.info(`Please submit score for size ${s}...`);
-			submitting = true;
 			size = s;
-			show();
+			if (can_submit_now) {
+				submit();
+			} else {
+				submitting = true;
+				show();
+			}
 			return true;
 		}
 		return false;
@@ -68,7 +74,7 @@
 		submit_in_progress = true;
 		let starting_size = size;
 		if (announcer) {
-			announcer.announce("Lähetetään tulosta...");
+			announcer.announce(`Lähetetään tulosta koolle ${size}x${size}...`);
 		}
 		let result = await submit_score(
 			starting_size,
@@ -164,7 +170,7 @@
 				{#if alive}
 					{#if submitting}
 						<p>Tallennetaas sun tulos!</p>
-						{#if $lb_screenName != null}
+						{#if can_submit_now}
 							<button
 								disabled={submit_in_progress}
 								on:click={submit}

@@ -134,13 +134,7 @@ if (true) {
 }
 
 storage_loaded.subscribe(($storage_loaded) => {
-	if (
-		browser &&
-		$storage_loaded &&
-		(getItem("hasWon") ||
-			(getItem("bestScore") != null && +getItem("bestScore") && +getItem("bestScore") > 10000)) &&
-		!get(available_themes).includes(classic)
-	) {
+	if (browser && $storage_loaded && getItem("hasWon") && !get(available_themes).includes(classic)) {
 		available_themes.set([...get(available_themes), classic]);
 	}
 });
