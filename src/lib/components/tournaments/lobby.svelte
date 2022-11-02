@@ -13,13 +13,12 @@
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
 	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
-	import { token } from "$lib/Auth/authstore";
 	import type Announcer from "./announcer.svelte";
 	import { browser } from "$app/environment";
 	import Popup from "../common/popup/popup.svelte";
-	import { prevent_default } from "svelte/internal";
 
 	export let announcer: Announcer | null = null;
+	let inputRoot: HTMLElement;
 
 	let message_input: string;
 	let player_list_open = false;
@@ -41,7 +40,7 @@
 	}
 </script>
 
-<main>
+<main bind:this={inputRoot}>
 	{#if $joined_game_id && $user_details}
 		{@const game_data = $game_details[$joined_game_id]}
 		{#if !game_data}
@@ -93,6 +92,7 @@
 							<Board
 								enableLSM={false}
 								grid={ohts_gamestate_to_grid(game_data.starting_state)}
+								documentRoot={inputRoot}
 								enable_theme_chooser={false}
 							/>
 						</div>

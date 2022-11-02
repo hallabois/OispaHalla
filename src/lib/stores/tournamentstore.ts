@@ -16,6 +16,7 @@ export let gamemode_0_names: { [key: number]: string } = {
 	1024: "EHy",
 	2048: "LHa"
 };
+export let enabled_sizes = [2, 3, 4, 5];
 
 export enum createTournamentGamemode {
 	FirstPastThePost = 0
@@ -68,6 +69,8 @@ export type ChatMessage = {
 	content: string;
 }
 export type GameState = {
+	game_id: number;
+	user_id: string;
 	score: number;
 	board: Object;
 }
@@ -83,7 +86,7 @@ export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
 export let chat: Writable<ChatMessage[] | null> = writable(null);
 export let name_cache: Writable<{[key: string]: string} | null> = writable(null);
-export let state: Writable<{[key: number]: GameState }> = writable({});
+export let state: Writable<{[key: number]: GameState[] }> = writable({});
 joined_game_id.subscribe(($joined_game_id) => {
 	if($joined_game_id == null) {
 		chat.set(null);
@@ -139,10 +142,15 @@ function socket_processor(message: any) {
 			});
 		}
 		if (event.data.GameState) {
-			state.set({
-				...get(state),
-				[event.data.GameState.id]: event.data.GameState
-			});
+
+			if(event.data.GameState.length > 0) {
+				let states: GameState[] = event.data.GameState;
+				let game_id = states[0].game_id;
+				state.set({
+					...get(state),
+					[game_id]: event.data.GameState
+				});
+			}
 		}
 		if (event.data.GameCreated) {
 			request_join(event.data.GameCreated, null);
@@ -335,6 +343,7 @@ export function request_move(direction: number) {
 
 export type CreateOptions = {
 	name: string;
+	size: number;
 	gamemode: {
 		mode: number;
 		goal: number;

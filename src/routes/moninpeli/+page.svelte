@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-
 	import MultiplayerMenu from "$lib/components/tournaments/menu.svelte";
 	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/tournaments/announcer.svelte";
@@ -9,8 +7,10 @@
 		connection_error,
 		game_details,
 		joined_game_id,
+		name_cache,
 		request_move,
-		state
+		state,
+		user_details
 	} from "$lib/stores/tournamentstore";
 	import {
 		generate_previous_positions,
@@ -18,7 +18,7 @@
 		ohts_gamestate_to_grid
 	} from "$lib/gamelogic/utils";
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
-	import Grid from "$lib/gamelogic/grid";
+	import type Grid from "$lib/gamelogic/grid";
 	import { browser } from "$app/environment";
 	import Tournaments from "$lib/components/tournaments.svelte";
 
@@ -111,15 +111,27 @@
 			>
 		</p>
 	{/if}
-	{#if $joined_game_id && $game_details[$joined_game_id]?.started && $state[$joined_game_id]}
-		{@const gamestate = $state[$joined_game_id]}
+	{#if $joined_game_id && $game_details[$joined_game_id]?.started && $state[$joined_game_id] && $user_details != null}
+		{@const gamestates = $state[$joined_game_id]}
+		{@const gamestate = gamestates.find((s) => s.user_id === $user_details.id)}
 		{@const game = $game_details[$joined_game_id]}
 		{@const grid_o = gamestate.board}
 		{@const grid = processGrid(grid_o)}
+		<p>{gamestate.score}</p>
 		<div class="board-container">
-			<div style="display: flex;justify-content:space-between;width:var(--field-width);">
+			<div
+				style="display: flex;justify-content:space-between;width:var(--field-width);margin-bottom: 8px;"
+			>
 				<div style="display: flex;align-items: end;">
-					<a data-sveltekit-reload href="/">Takaisin yksinpeliin</a>
+					<button
+						class="button color-button"
+						on:click={() => {
+							TtInstance.show();
+						}}
+						title="Tournament Mode"
+					>
+						Valikko
+					</button>
 				</div>
 				<!-- {#if $poll_success}
 			<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
@@ -130,26 +142,32 @@
 				</div>
 			</div>
 			{#key grid}
-				<Board {enableKIM} enableLSM={false} {grid} bind:this={BoardInstance} />
+				<Board
+					{enableKIM}
+					enableLSM={false}
+					{grid}
+					documentRoot={inputRoot}
+					announcer={AnnouncerInstance}
+					bind:this={BoardInstance}
+				/>
 			{/key}
-			<button
-				class="button background-none color-button"
-				on:click={() => {
-					TtInstance.show();
-				}}
-				title="Tournament Mode"
-			>
-				⚔
-			</button>
-			<!-- {#if $poll_success}
-		<div class="mini-container">
-			{#each $poll_other_boards_string as board_string, index}
-				<div class="mini-grid">
-					<Board grid={hac_gamestate_to_grid(board_string)} />
-				</div>
-			{/each}
-		</div>
-	{/if} -->
+			<div class="mini-container">
+				{#each gamestates as gstate, index}
+					{@const board = ohts_gamestate_to_grid(gstate.board)}
+					{@const cached_name = ($name_cache || {})[gstate.user_id]}
+					<div class="mini">
+						<div class="mini-grid">
+							{#key board}
+								<Board {enableKIM} enableLSM={false} grid={board} />
+							{/key}
+						</div>
+						<div class="mini-details">
+							<p>{cached_name}</p>
+							<p>{gstate.score}</p>
+						</div>
+					</div>
+				{/each}
+			</div>
 		</div>
 		<Tournaments bind:this={TtInstance} />
 	{:else}
@@ -167,6 +185,11 @@
 
 		display: grid;
 		place-items: center;
+
+		--tile-size: calc(
+			calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) /
+				var(--grid-size)
+		);
 	}
 	.err {
 		z-index: 217;
@@ -206,6 +229,9 @@
 
 		display: flex;
 		gap: 0.5em;
+	}
+	.mini {
+		display: flex;
 	}
 	.mini-grid {
 		width: var(--field-width);

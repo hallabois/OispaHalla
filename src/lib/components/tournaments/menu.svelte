@@ -40,6 +40,7 @@
 	let activeTab = 0;
 </script>
 
+<a href="/" data-sveltekit-reload>Takaisin yksinpeliin</a>
 {#if mounted}
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>

@@ -1,18 +1,25 @@
 <script lang="ts">
 	import { token } from "$lib/Auth/authstore";
 
-	import { gamemode_0_goals, gamemode_0_names, create } from "$lib/stores/tournamentstore";
+	import {
+		gamemode_0_goals,
+		gamemode_0_names,
+		create,
+		enabled_sizes
+	} from "$lib/stores/tournamentstore";
 	let name: string;
 	let create_public = true;
+	let size: number = 3;
 	let max_clients = 4;
 	let password: string | null;
 	let gamemode: number;
 
-	let gamemode_0_goal: number = 256;
+	let gamemode_0_goal: number = 128;
 
 	$: t_valid =
 		create_public != null &&
-		(!create_public || (name != null && name.length > 0)) &&
+		name != null &&
+		name.length > 0 &&
 		max_clients != null &&
 		max_clients > 0;
 
@@ -23,6 +30,7 @@
 		}
 		create({
 			name,
+			size,
 			gamemode: {
 				mode: gamemode,
 				goal: gamemode_0_goal
@@ -42,12 +50,18 @@
 				<label for="ispublic">Julkinen</label>
 				<input type="checkbox" id="ispublic" bind:checked={create_public} />
 			</div>
-			{#if create_public}
-				<div class="input-section">
-					<label type="text" for="name">Pelin Nimi</label>
-					<input id="name" bind:value={name} />
-				</div>
-			{/if}
+			<div class="input-section">
+				<label type="text" for="name">Pelin nimi</label>
+				<input id="name" bind:value={name} />
+			</div>
+			<div class="input-section">
+				<label type="text" for="size">Pelin koko</label>
+				<select id="size" bind:value={size}>
+					{#each enabled_sizes as size}
+						<option>{size}</option>
+					{/each}
+				</select>
+			</div>
 			<div class="input-section">
 				<label for="max_clients">Pelaajien enimmäismäärä</label>
 				<input type="number" id="max_clients" bind:value={max_clients} />
