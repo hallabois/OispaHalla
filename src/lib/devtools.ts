@@ -1,5 +1,13 @@
 import { get } from "svelte/store";
-import { storage, getItem, setItem, getWholeLocalForage, clearStorage, storage_loaded, storage_status } from "./stores/storage";
+import {
+	storage,
+	getItem,
+	setItem,
+	getWholeLocalForage,
+	clearStorage,
+	storage_loaded,
+	storage_status
+} from "./stores/storage";
 import { browser } from "$app/environment";
 import { available_themes, festives_applied, theme_index } from "./stores/themestore";
 import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";

@@ -34,16 +34,15 @@ export function generate_previous_positions(grid: Grid, previous: Grid) {
 			if (t) {
 				let prev = previous.cells.flat().find((t2) => t2 && t.id == t2.id);
 				t.previousPosition = prev ? { x: prev.x, y: prev.y } : null;
-				if(t.mergedFromRS) {
-					t.mergedFrom = t.mergedFromRS.map((id)=>{
-						let found = previous.cells.flat().find((t2)=> t2 && t2.id == id);
-						if(found) {
+				if (t.mergedFromRS) {
+					t.mergedFrom = t.mergedFromRS.map((id) => {
+						let found = previous.cells.flat().find((t2) => t2 && t2.id == id);
+						if (found) {
 							found.x = t.x;
 							found.y = t.y;
 						}
-							return found;
-						}
-					);
+						return found;
+					});
 				}
 				newcells[colc][tindex] = t;
 			}

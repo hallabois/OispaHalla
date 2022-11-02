@@ -67,13 +67,13 @@ export type ChatMessage = {
 	game_id: number;
 	user_id: string;
 	content: string;
-}
+};
 export type GameState = {
 	game_id: number;
 	user_id: string;
 	score: number;
 	board: Object;
-}
+};
 
 export let try_autoconnect: Writable<boolean> = writable(true);
 
@@ -85,24 +85,23 @@ export let game_details: Writable<{ [key: number]: GameDetails }> = writable({})
 export let game_index: Writable<Index | null> = writable(null);
 export let joined_game_id: Writable<number | null> = writable(null);
 export let chat: Writable<ChatMessage[] | null> = writable(null);
-export let name_cache: Writable<{[key: string]: string} | null> = writable(null);
-export let state: Writable<{[key: number]: GameState[] }> = writable({});
+export let name_cache: Writable<{ [key: string]: string } | null> = writable(null);
+export let state: Writable<{ [key: number]: GameState[] }> = writable({});
 joined_game_id.subscribe(($joined_game_id) => {
-	if($joined_game_id == null) {
+	if ($joined_game_id == null) {
 		chat.set(null);
 		name_cache.set(null);
-	}
-	else {
-		if(get(chat) == null) {
+	} else {
+		if (get(chat) == null) {
 			request_game_chat();
 		}
-		if(get(name_cache) == null) {
+		if (get(name_cache) == null) {
 			request_game_names();
 		}
-		if(get(state)[$joined_game_id] == null) {
+		if (get(state)[$joined_game_id] == null) {
 			request_game_state();
 		}
-		if(get(game_details)[$joined_game_id] == null) {
+		if (get(game_details)[$joined_game_id] == null) {
 			request_game_details($joined_game_id);
 		}
 	}
@@ -111,7 +110,7 @@ export let tournament_announcer: Writable<Announcer | null> = writable(null);
 
 function socket_processor(message: any) {
 	let json = message.data;
-	if(json === "o") {
+	if (json === "o") {
 		return;
 	}
 	let event = JSON.parse(json);
@@ -142,8 +141,7 @@ function socket_processor(message: any) {
 			});
 		}
 		if (event.data.GameState) {
-
-			if(event.data.GameState.length > 0) {
+			if (event.data.GameState.length > 0) {
 				let states: GameState[] = event.data.GameState;
 				let game_id = states[0].game_id;
 				state.set({
@@ -183,18 +181,18 @@ function socket_processor(message: any) {
 		if (event.data.ParticipantDetails) {
 			name_cache.set(event.data.ParticipantDetails.names);
 		}
-		if(event.data.ServerMessage) {
+		if (event.data.ServerMessage) {
 			let msg = event.data.ServerMessage;
 			console.info("Server message:", msg);
 			let announcer = get(tournament_announcer);
-			if(announcer) {
+			if (announcer) {
 				announcer.announce(`${msg.title}: ${msg.message}`);
 			}
 		}
 
 		if (event.data.GenericError) {
 			let announcer = get(tournament_announcer);
-			if(announcer) {
+			if (announcer) {
 				announcer.announce(`Virhe: ${event.data.GenericError}`);
 			}
 		}
@@ -300,14 +298,14 @@ export function request_leave(game_id: number) {
 }
 export function send_message(message: string | null) {
 	if (socket) {
-		if(message) socket.send(`say|>${message}`);
+		if (message) socket.send(`say|>${message}`);
 	} else {
 		throw new Error("not connected! can't send message.");
 	}
 }
 export function admin_announce(message: string | null) {
 	if (socket) {
-		if(message) socket.send(`announce|>${message}`);
+		if (message) socket.send(`announce|>${message}`);
 	} else {
 		throw new Error("not connected! can't announce.");
 	}

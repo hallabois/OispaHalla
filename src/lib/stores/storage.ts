@@ -116,12 +116,11 @@ storage.subscribe(async (data) => {
 				}
 			}
 
-			
-			if(data && enable_sync) {
+			if (data && enable_sync) {
 				let $auth = get(auth);
-				if($auth != null) {
+				if ($auth != null) {
 					let db = get_db($auth.uid);
-					if(get(db)) {
+					if (get(db)) {
 						db.uploadStorage(data);
 					}
 				}

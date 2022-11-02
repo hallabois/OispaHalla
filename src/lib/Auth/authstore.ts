@@ -128,13 +128,10 @@ if (browser) {
 				clearTimeout(token_refresh_timer);
 			}
 			await rewrite_token($auth);
-			if(storage_loaded && $auth.uid) {
+			if (storage_loaded && $auth.uid) {
 				let connected_accounts = getItem("connected_accounts") || [];
-				if(!(connected_accounts.includes($auth.uid))){
-					setItem("connected_accounts", [
-						...connected_accounts,
-						$auth.uid
-					]);
+				if (!connected_accounts.includes($auth.uid)) {
+					setItem("connected_accounts", [...connected_accounts, $auth.uid]);
 				}
 			}
 		} else {

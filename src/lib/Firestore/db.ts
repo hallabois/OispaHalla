@@ -51,15 +51,15 @@ export function createDB(
 
 		let enabled_keys = synced_variables;
 		let data = {};
-		for(let k of Object.keys(storage)) {
-			if(enabled_keys.includes(k)) {
-				if(storage[k] != null) {
+		for (let k of Object.keys(storage)) {
+			if (enabled_keys.includes(k)) {
+				if (storage[k] != null) {
 					data[k] = JSON.stringify(storage[k]);
 				}
 			}
 		}
 
-		if(JSON.stringify(old_data) !== JSON.stringify(data)) {
+		if (JSON.stringify(old_data) !== JSON.stringify(data)) {
 			await setDoc(dbRef, {
 				...data
 			});
