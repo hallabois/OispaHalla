@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Board from "$lib/components/board/board.svelte";
-	import { ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import { generate_previous_positions, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { numberWithSpaces, type Score } from "./util";
 	import type { PageData } from "./$types";
 	import Grid from "$lib/gamelogic/grid";
@@ -58,10 +58,25 @@
 		ready,
 		wasm,
 		validation_cache,
-		init as initWasm
+		init as initWasm,
+		validation_cache
 	} from "$lib/wasm/twothousand_forty_eight";
 	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
+
+	let board_cache: { [key: number]: null | any[] } = {};
+	$: if (
+		$wasm &&
+		selected_score_data &&
+		selected_score_size &&
+		board_cache[selected_score_size] == null
+	) {
+		console.log(`caching history for size ${selected_score_size}...`);
+		let i = JSON.parse($wasm.get_frames(selected_score_data?.history));
+		board_cache[selected_score_size] = i;
+		console.log("cache complete.");
+	}
+
 	let selected_frames: { [key: number]: number } = {};
 	let grids: { [key: number]: { [key: number]: Grid } } = {};
 	$: if (selected_score_size && selected_score_data && selected_score_frames) {
@@ -77,22 +92,60 @@
 			if (grids[selected_score_size] == null) {
 				grids[selected_score_size] = {};
 			}
-			grids[selected_score_size][selected_frames[selected_score_size]] = parse_frame_grid(
-				frame,
-				selected_score_size
-			);
+			if (
+				selected_frames[selected_score_size] != null &&
+				board_cache[selected_score_size] &&
+				board_cache[selected_score_size][selected_frames[selected_score_size]]
+			) {
+				let b = board_cache[selected_score_size][selected_frames[selected_score_size]];
+
+				grids[selected_score_size][selected_frames[selected_score_size]] = processGrid(b);
+			} else {
+				grids[selected_score_size][selected_frames[selected_score_size]] = parse_frame_grid(
+					frame,
+					selected_score_size
+				);
+			}
 		}
 	}
 
 	let inputRoot: HTMLElement;
+	let boardInstance: Board;
 	let mounted = false;
-	onMount(() => {
+	onMount(async () => {
 		if (browser) {
-			initWasm();
+			await initWasm();
 		}
 		inputRoot = document.querySelector("html") as HTMLElement;
 		mounted = true;
 	});
+
+	$: grid =
+		grids[selected_score_size][selected_frames[selected_score_size]] || selected_score_last_grid;
+	$: if (grid && boardInstance) {
+		let gameManager = boardInstance.getGameManagerInstance();
+		if (gameManager) {
+			gameManager.grid = grid;
+			gameManager.actuate();
+		}
+	}
+
+	let last_grid: Grid | null = null;
+	function processGrid(inp: Object) {
+		let translated = ohts_gamestate_to_grid(inp);
+		if (last_grid) {
+			translated = generate_previous_positions(translated, last_grid);
+		}
+		last_grid = translated;
+		console.log(
+			"ids",
+			translated.cells
+				.flat()
+				.filter((t) => t && t.value)
+				.map((t) => t.id)
+		);
+		return translated;
+	}
 </script>
 
 <svelte:head>
@@ -123,9 +176,6 @@
 				{/each}
 			</div>
 			{#if selected_score_data != null}
-				{@const grid =
-					grids[selected_score_size][selected_frames[selected_score_size]] ||
-					selected_score_last_grid}
 				<h2>{numberWithSpaces(selected_score_data.score)} pistettä</h2>
 				<h3>
 					{selected_score_frames?.length} siirtoa,
@@ -136,15 +186,14 @@
 				<hr />
 				{#if grid}
 					<div class="game-preview">
-						{#key grid}
-							<Board
-								enableLSM={false}
-								documentRoot={inputRoot}
-								enableKIM={false}
-								{grid}
-								enable_theme_chooser={false}
-							/>
-						{/key}
+						<Board
+							announcer={null}
+							bind:this={boardInstance}
+							enableLSM={false}
+							documentRoot={inputRoot}
+							enableKIM={false}
+							enable_theme_chooser={false}
+						/>
 					</div>
 				{/if}
 				<div class="playback-controls">
@@ -246,9 +295,9 @@
 	}
 
 	/* Prevent tile animations */
-	:global(.tile-new) :global(.tile-inner) {
+	/* :global(.tile-new) :global(.tile-inner) {
 		-webkit-animation: none !important;
 		-moz-animation: none !important;
 		animation: none !important;
-	}
+	} */
 </style>

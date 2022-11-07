@@ -38,7 +38,7 @@
 		"svelte-preprocess": "^4.9.4",
 		"svelte2tsx": "^0.4.14",
 		"tslib": "^2.3.1",
-		"twothousand-forty-eight": "^0.10.0",
+		"twothousand-forty-eight": "^0.15.0",
 		"typescript": "^4.4.3",
 		"vite": "^3.0.0",
 		"vite-plugin-top-level-await": "^1.1.1",

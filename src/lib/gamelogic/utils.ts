@@ -43,6 +43,11 @@ export function generate_previous_positions(grid: Grid, previous: Grid) {
 						}
 						return found;
 					});
+					for(let f of t.mergedFrom) {
+						if(!f) {
+							t.mergedFrom = null;
+						}
+					}
 				}
 				newcells[colc][tindex] = t;
 			}

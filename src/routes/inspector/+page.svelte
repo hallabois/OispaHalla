@@ -11,6 +11,7 @@
 		init as initWasm
 	} from "$lib/wasm/twothousand_forty_eight";
 	import { browser } from "$app/environment";
+	import { generate_previous_positions, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 
 	const directions = {
 		"0": "ylös",
@@ -70,17 +71,19 @@
 		try {
 			err2 = null;
 			frame = parsed[selected_frame];
-			let parsed_frame = JSON.parse(frame.replace("SCOREHERE", 0));
+			let parsed_frame = ohts_gamestate_to_grid(frame);
+			if (selected_frame > 0) {
+				let last_frame = parsed[selected_frame - 1];
+				parsed_frame = generate_previous_positions(
+					parsed_frame,
+					ohts_gamestate_to_grid(last_frame)
+				);
+			}
 			console.log("frame", parsed_frame);
-			let size = parsed_frame.grid.size;
-			let transformed = parsed_frame.grid;
-			// transformed = JSON.parse('{"size":4,"cells":[[null,null,null,null],[null,null,null,null],[{"x":2,"y":0,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null,null,null],[null,null,{"x":3,"y":2,"value":2,"id":null,"previousPosition":null,"mergedFrom":null},null]]}');
-			console.log("transformed", transformed);
 			lastGrid = { ...grid };
-			grid = new Grid(size);
-			let new_cells = transformed.cells.map((col) =>
-				col.map((t) => (t ? new Tile({ x: t.x, y: t.y }, t.value, t.id) : null))
-			);
+			grid = parsed_frame;
+
+			let new_cells = parsed_frame.cells;
 			if (show_additions) {
 				let now = usable_input.split(":")[selected_frame];
 				let addition = now.split("+")[1].split(";")[0];
@@ -107,14 +110,12 @@
 				validation_cache[usable_input] = {};
 			}
 			if (selected_frame > 0) {
-				setTimeout(() => {
-					let until_now = usable_input.split(":").slice(0, selected_frame).join(":");
+				let until_now = usable_input.split(":").slice(0, selected_frame).join(":");
 
-					if (validation_cache[usable_input][selected_frame] == null && $wasm != null) {
-						console.info("Analyzing frame", selected_frame);
-						validation_cache[usable_input][selected_frame] = JSON.parse($wasm.validate(until_now));
-					}
-				}, 100);
+				if (validation_cache[usable_input][selected_frame] == null && $wasm != null) {
+					console.info("Analyzing frame", selected_frame);
+					validation_cache[usable_input][selected_frame] = JSON.parse($wasm.validate(until_now));
+				}
 			} else {
 				validation_cache[usable_input][selected_frame] = null;
 			}
@@ -247,11 +248,5 @@
 		width: 100%;
 		resize: vertical;
 		min-height: 150px;
-	}
-	/* Prevent tile animations */
-	:global(.tile-new) :global(.tile-inner) {
-		-webkit-animation: none !important;
-		-moz-animation: none !important;
-		animation: none !important;
 	}
 </style>
