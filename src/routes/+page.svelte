@@ -121,8 +121,9 @@
 		GameManagerInstance.restartplus(size);
 	}
 	function paritaKuli() {
-		let GameManagerInstance = BoardInstance.getGameManagerInstance();
-		GameManagerInstance.paritaKuli();
+		if (GameManagerInstance != null && confirm("Haluatko käyttää kurinpalautuksen?")) {
+			GameManagerInstance.paritaKuli();
+		}
 	}
 </script>
 
@@ -142,7 +143,7 @@
 	/>
 	<div class="new-above-game">
 		<div class="above-game-left">
-			<a href="https://hallabois.github.io/invite/" target="_blank">
+			<a href="https://hallabois.github.io/invite/" target="_blank" rel="noreferrer">
 				<h1 class="title">{app_name}</h1>
 			</a>
 			{@html marked.parse(app_description)}
@@ -172,6 +173,9 @@
 						restartbtn.classList.remove("open");
 					}
 				}}
+				on:keydown={() => {}}
+				on:keyup={() => {}}
+				on:keypress={() => {}}
 			>
 				<div class="uusi-jakso">{app_name_newgame}</div>
 				<div class="size-selector">
@@ -191,6 +195,11 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="disclaimer">
+		<p>
+			{@html marked.parse(app_notice)}
+		</p>
 	</div>
 	<div class="board-container">
 		<Board
@@ -244,7 +253,7 @@
 					<span
 						class="parin-kulautus"
 						title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
-						>KURINPALAUTUS</span
+						>kurinpalautus {GameManagerInstance?.palautukset ?? "?"}/3</span
 					>
 				</button>
 			</div>
@@ -277,19 +286,14 @@
 			</div>
 		</div>
 	</div>
-	<div
+	<!-- <div
 		class="pwa-container"
 		style="width: 100%;z-index: 500;display: flex;justify-content: center;margin-top: 30px;margin-bottom: -50px;"
 	>
 		<button class="pwa-add-button" style="display: none;border: none;margin: .5em;cursor: pointer;"
 			>Asenna sovelluksena</button
 		>
-	</div>
-	<div class="disclaimer">
-		<p>
-			{@html marked.parse(app_notice)}
-		</p>
-	</div>
+	</div> -->
 </div>
 <div class="patches">
 	<!-- <script src="/js/application.js"></script>
