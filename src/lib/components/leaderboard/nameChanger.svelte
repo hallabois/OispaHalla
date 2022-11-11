@@ -72,11 +72,20 @@
 	<span slot="title">Muuta nimimerkkiä</span>
 	<div slot="content" class="content">
 		{#if $auth && $auth.uid}
+			<p>Tahalteen muita loukkaavien nimimerkkien käyttö johtaa porttikieltoon.</p>
 			<input bind:value={name_in_progress} autofocus />
 			<p>{status || ""}</p>
-			<button disabled={checking_name || !name_valid} class="button action-btn" on:click={save}
-				>Tallenna</button
-			>
+			<div class="buttons">
+				<button
+					class="button action-btn"
+					on:click={() => {
+						open = false;
+					}}>Peruuta</button
+				>
+				<button disabled={checking_name || !name_valid} class="button action-btn" on:click={save}
+					>Tallenna</button
+				>
+			</div>
 		{:else}
 			<p>Ladataan tietoja....</p>
 		{/if}
@@ -89,8 +98,19 @@
 		flex-direction: column;
 		gap: 0.5em;
 	}
+	.buttons {
+		display: flex;
+		gap: 1em;
+		flex-wrap: wrap;
+	}
+	.buttons * {
+		flex: 1;
+	}
 	input {
 		width: 100%;
 		font-size: 1em;
+	}
+	p {
+		margin: 0;
 	}
 </style>
