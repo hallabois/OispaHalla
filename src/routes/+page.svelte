@@ -121,8 +121,9 @@
 		GameManagerInstance.restartplus(size);
 	}
 	function paritaKuli() {
-		let GameManagerInstance = BoardInstance.getGameManagerInstance();
-		GameManagerInstance.paritaKuli();
+		if (GameManagerInstance != null && confirm("Haluatko käyttää kurinpalautuksen?")) {
+			GameManagerInstance.paritaKuli();
+		}
 	}
 </script>
 
@@ -252,7 +253,7 @@
 					<span
 						class="parin-kulautus"
 						title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
-						>KURINPALAUTUS</span
+						>kurinpalautus {GameManagerInstance?.palautukset ?? "?"}/3</span
 					>
 				</button>
 			</div>
