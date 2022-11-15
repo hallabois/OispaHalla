@@ -73,6 +73,7 @@
 		board_cache[selected_score_size] == null
 	) {
 		console.log(`caching history for size ${selected_score_size}...`);
+		console.info("wasm atm", $wasm);
 		let i = JSON.parse($wasm.get_frames(selected_score_data?.history));
 		board_cache[selected_score_size] = i;
 		console.log("cache complete.");
