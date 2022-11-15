@@ -70,6 +70,16 @@ body {
 .noscript {
 	background-color: #8f7a66;
 	color: #faf8ef;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+
+	p {
+		margin: 0;
+	}
 }
 
 .heading {
