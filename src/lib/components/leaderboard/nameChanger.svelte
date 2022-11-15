@@ -3,7 +3,7 @@
 	import { lb_screenName, check_name, change_name } from "$lib/stores/leaderboardstore";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
-	import type Announcer from "$lib/components/tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 
 	export let open = false;
 	let name_in_progress: string | null;

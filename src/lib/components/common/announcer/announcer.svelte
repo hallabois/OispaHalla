@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { slide, fade } from "svelte/transition";
+	import Message from "./announcerMessage.svelte";
 
 	class announcement {
 		msg!: string;
@@ -17,31 +17,26 @@
 		setTimeout(() => {
 			announcements.shift();
 			announcements = announcements;
-		}, 2000);
+		}, 2050);
 	}
 </script>
 
 <main>
-	{#each announcements as announcement, index}
-		<p in:slide out:fade={{ duration: 2000 }}>{announcement.msg}</p>
+	{#each announcements as announcement (announcement.time)}
+		<Message {...announcement} />
 	{/each}
 </main>
 
 <style>
 	main {
 		z-index: 217;
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
 		right: 0;
 
 		display: flex;
+		gap: 0.1em;
 		flex-direction: column;
-	}
-	main p {
-		text-align: center;
-		background-color: var(--container-background);
-		color: var(--color);
-		margin: 0;
 	}
 </style>

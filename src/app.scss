@@ -116,16 +116,16 @@ h1.title.dark {
 @keyframes darken {
 	from {
 		opacity: 0;
-		backdrop-filter: blur(0px);
+		/* backdrop-filter: blur(0px); */
 	}
 	to {
 		opacity: 1;
-		backdrop-filter: blur(2px);
+		/* backdrop-filter: blur(2px); */
 	}
 }
 
 .lb-popup {
-	backdrop-filter: blur(2px);
+	/* backdrop-filter: blur(2px); */
 	background-color: rgba(0, 0, 0, 0.4);
 	z-index: 200;
 	position: fixed;
@@ -280,22 +280,13 @@ h1.title.dark {
 	display: flex;
 	width: 100%;
 
-	> * {
-		margin-top: 15px;
-	}
+	margin-top: .5em;
+
+	gap: 1em;
 
 	.button-container {
 		display: flex;
-		> * {
-			width: 50%;
-
-			img {
-				width: 25px;
-			}
-		}
-		:not(:first-child) {
-			margin-left: 10px;
-		}
+		gap: .5em;
 	}
 }
 
@@ -1042,6 +1033,10 @@ $i: 2;
 		& img {
 			width: 170px;
 		}
+	}
+
+	.underbar-container .button-container {
+		gap: .2em;
 	}
 }
 

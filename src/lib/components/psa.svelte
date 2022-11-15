@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Popup from "./common/popup/popup.svelte";
-	import type Announcer from "./tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { PSA } from "$lib/Firestore/db";
 	import { slide } from "svelte/transition";
 	import { browser, dev } from "$app/environment";

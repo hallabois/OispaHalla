@@ -14,7 +14,7 @@
 	import Leaderboards from "$lib/components/leaderboard.svelte";
 
 	import Board from "$lib/components/board/board.svelte";
-	import Announcer from "$lib/components/tournaments/announcer.svelte";
+	import Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import type KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
 	import type GameManager from "$lib/gamelogic/game_manager";
 	import Icon from "$lib/components/common/icon/icon.svelte";
@@ -306,9 +306,6 @@
 		margin-top: 40px;
 		display: grid;
 		place-items: center;
-	}
-	.underbar-container {
-		margin-top: 15px;
 	}
 	.kurin-palautus-container {
 		margin-top: 0 !important;

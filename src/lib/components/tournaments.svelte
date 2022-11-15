@@ -5,7 +5,7 @@
 	import Content from "$lib/components/tournaments/menu.svelte";
 
 	import { joined_game_id, tournament_announcer } from "$lib/stores/tournamentstore";
-	import type Announcer from "./tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 
 	export let open = false;
 	export function show() {

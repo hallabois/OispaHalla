@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MultiplayerMenu from "$lib/components/tournaments/menu.svelte";
 	import Board from "$lib/components/board/board.svelte";
-	import Announcer from "$lib/components/tournaments/announcer.svelte";
+	import Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import {
 		connect,
 		connection_error,

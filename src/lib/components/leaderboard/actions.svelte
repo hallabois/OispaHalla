@@ -2,7 +2,7 @@
 	import { auth } from "$lib/Auth/authstore";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
-	import type Announcer from "$lib/components/tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { setItem, getItem } from "$lib/stores/storage";
 
 	export let open = false;

@@ -14,7 +14,7 @@
 	import TournamentBrowser from "$lib/components/tournaments/tournamentBrowser.svelte";
 	import Lobby from "$lib/components/tournaments/lobby.svelte";
 	import TournamentJoiner from "$lib/components/tournaments/tournamentJoiner.svelte";
-	import type Announcer from "$lib/components/tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser } from "$app/environment";
 
 	export let announcer: Announcer | null = null;

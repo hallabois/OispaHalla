@@ -10,7 +10,7 @@
 	import { generate_previous_positions } from "$lib/gamelogic/utils";
 	import type Grid from "$lib/gamelogic/grid";
 	import { base_path } from "$lib/stores/themestore";
-	import type Announcer from "../tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 
 	export let announcer: Announcer | null;
 	export let enableKIM = false;

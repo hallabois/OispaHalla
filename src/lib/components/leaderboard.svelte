@@ -3,7 +3,7 @@
 
 	import Popup from "./common/popup/popup.svelte";
 	import NameChanger from "./leaderboard/nameChanger.svelte";
-	import type Announcer from "./tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import {
 		lb_screenName,
 		check_server_alive,
@@ -16,6 +16,8 @@
 	import { browser, dev } from "$app/environment";
 	import Actions from "./leaderboard/actions.svelte";
 	import { getItem, setItem, storage, storage_loaded } from "$lib/stores/storage";
+	import Icon from "./common/icon/icon.svelte";
+	import { shareIconData } from "./common/icon/iconData";
 
 	$: can_submit_now = $token != null && $lb_screenName != null;
 
@@ -143,6 +145,25 @@
 		refreshKey = {};
 	}
 
+	$: share_enabled = browser && (navigator.share || navigator.clipboard);
+	async function shareScore() {
+		if (!share_enabled) {
+			return;
+		}
+		let link = `${window.location.origin}/user/${$auth.uid}?size=${size}`;
+		let share_data: ShareData = {
+			url: link
+		};
+		if (navigator.share && navigator.canShare(share_data)) {
+			await navigator.share(share_data);
+		} else if (navigator.clipboard) {
+			await navigator.clipboard.writeText(link);
+			if (announcer) {
+				announcer.announce("Linkki kopioitu leikepöydälle!");
+			}
+		}
+	}
+
 	export let announcer: Announcer | null = null;
 	let NameChangerInstance: NameChanger;
 	let ActionsInstance: Actions;
@@ -214,8 +235,8 @@
 												{#each new Array(10) as index}
 													<tr>
 														<td>...</td>
-														<td>.....</td>
-														<td>.......</td>
+														<td>......</td>
+														<td>..............</td>
 													</tr>
 												{/each}
 											{:then scores}
@@ -289,6 +310,14 @@
 					<div>
 						{#if $auth}
 							<div class="actions">
+								<button
+									class="button action-btn"
+									on:click={() => {
+										ActionsInstance.show();
+									}}
+								>
+									⫶
+								</button>
 								{#if $lb_screenName}
 									<button on:click={editScreenName} class="button action-btn" style="flex:1;"
 										>Muuta nimimerkkiä "{$lb_screenName}"</button
@@ -298,14 +327,16 @@
 										>Lisää nimimerkki</button
 									>
 								{/if}
-								<button
-									class="button action-btn"
-									on:click={() => {
-										ActionsInstance.show();
-									}}
-								>
-									⫶
-								</button>
+								{#if share_enabled}
+									<button
+										class="button action-btn"
+										on:click={() => {
+											shareScore();
+										}}
+									>
+										<Icon fill="var(--action-btn-color)" viewBox="0 0 48 48" d={shareIconData} />
+									</button>
+								{/if}
 							</div>
 							<a href="/auth" style="text-align: center;display: block;padding: 0.75em;"
 								>Hallinnoi kirjautumista</a
@@ -385,7 +416,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5em;
+		gap: 0.25em;
 	}
 	.actions {
 		display: flex;

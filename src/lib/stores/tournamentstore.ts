@@ -2,7 +2,7 @@ import { browser, dev } from "$app/environment";
 let tournament_endpoint_dev = false ? "wss://ohts.fly.dev" : "ws://localhost:9000";
 export let tournament_endpoint = dev ? tournament_endpoint_dev : "wss://mp.oispahalla.com";
 import { token } from "$lib/Auth/authstore";
-import type Announcer from "$lib/components/tournaments/announcer.svelte";
+import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 import { type Writable, writable, get } from "svelte/store";
 import { getItem, setItem, storage_loaded } from "./storage";
 

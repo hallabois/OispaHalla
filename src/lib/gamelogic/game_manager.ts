@@ -7,7 +7,7 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 
 import { getItem, setItem } from "$lib/stores/storage";
-import type Announcer from "$lib/components/tournaments/announcer.svelte";
+import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 import { TAB_BLOCK } from "$lib/session_manager";
 import { get } from "svelte/store";
 import { browser, dev } from "$app/environment";
