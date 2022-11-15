@@ -67,6 +67,7 @@
 	let board_cache: { [key: number]: null | any[] } = {};
 	$: if (
 		$wasm &&
+		$ready &&
 		selected_score_data &&
 		selected_score_size &&
 		board_cache[selected_score_size] == null
@@ -97,8 +98,13 @@
 				board_cache[selected_score_size] &&
 				board_cache[selected_score_size][selected_frames[selected_score_size]]
 			) {
+				if (selected_frames[selected_score_size]) {
+					let last_b = board_cache[selected_score_size][selected_frames[selected_score_size] - 1];
+					if (last_b) {
+						last_grid = processGrid(last_b, false);
+					}
+				}
 				let b = board_cache[selected_score_size][selected_frames[selected_score_size]];
-
 				grids[selected_score_size][selected_frames[selected_score_size]] = processGrid(b);
 			} else {
 				grids[selected_score_size][selected_frames[selected_score_size]] = parse_frame_grid(
@@ -131,9 +137,9 @@
 	}
 
 	let last_grid: Grid | null = null;
-	function processGrid(inp: Object) {
+	function processGrid(inp: Object, with_last_positions = true) {
 		let translated = ohts_gamestate_to_grid(inp);
-		if (last_grid) {
+		if (last_grid && with_last_positions) {
 			translated = generate_previous_positions(translated, last_grid);
 		}
 		last_grid = translated;
