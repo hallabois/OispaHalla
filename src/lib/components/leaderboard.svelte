@@ -380,7 +380,7 @@
 <style>
 	.size-selection {
 		display: flex;
-		gap: 0.5em;
+		gap: 0.2em;
 		flex-wrap: wrap;
 	}
 	.size-selection * {

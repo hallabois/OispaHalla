@@ -290,13 +290,13 @@ h1.title.dark {
 	display: flex;
 	width: 100%;
 
-	margin-top: .5em;
+	margin-top: 0.5em;
 
 	gap: 1em;
 
 	.button-container {
 		display: flex;
-		gap: .5em;
+		gap: 0.5em;
 	}
 }
 
@@ -1046,7 +1046,7 @@ $i: 2;
 	}
 
 	.underbar-container .button-container {
-		gap: .2em;
+		gap: 0.2em;
 	}
 }
 

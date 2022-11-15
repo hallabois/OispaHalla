@@ -112,10 +112,12 @@ export class Fetchboard_ok {
 	success!: boolean;
 	rank!: number;
 	topBoard!: Score_ok[];
-	rivals!: {
-		score: number,
-		user: User
-	}[] | null;
+	rivals!:
+		| {
+				score: number;
+				user: User;
+		  }[]
+		| null;
 	score!: Score_ok;
 }
 export class Score_error {

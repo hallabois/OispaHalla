@@ -90,6 +90,9 @@
 		BoardInstance.setAnnouncer(AnnouncerInstance);
 		BoardInstance.initcomponents();
 		GameManagerInstance = BoardInstance.getGameManagerInstance();
+		GameManagerInstance.subscribe(() => {
+			GameManagerInstance = BoardInstance.getGameManagerInstance();
+		});
 
 		// @ts-ignore, only for devtools
 		window.GameManagerDebugInstance = GameManagerInstance;
