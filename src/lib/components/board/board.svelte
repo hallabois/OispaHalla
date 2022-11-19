@@ -56,6 +56,7 @@
 			grid,
 			enableRng
 		);
+		onComponentsInitialized();
 	}
 
 	export function getGameManagerInstance() {
@@ -106,6 +107,8 @@
 		console.log("Starting to load game logic...");
 		initcomponents();
 	}
+
+	export let onComponentsInitialized = () => {};
 </script>
 
 <main bind:this={board} title={$storage_status}>

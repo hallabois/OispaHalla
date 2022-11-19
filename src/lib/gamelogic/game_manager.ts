@@ -41,7 +41,7 @@ export default class GameManager {
 		this.subscribers = [...this.subscribers, listener];
 	}
 	update_subscribers() {
-		for(let subscriber of this.subscribers) {
+		for (let subscriber of this.subscribers) {
 			subscriber();
 		}
 	}

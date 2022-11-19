@@ -11,7 +11,7 @@
 </script>
 
 <Popup bind:open>
-	<span slot="title">OispaHallasta</span>
+	<span slot="title">OispaHalla <span class="version">{__APP_VERSION__}</span></span>
 	<div slot="content" class="content">
 		<div class="section notice">
 			<p>
@@ -73,5 +73,8 @@
 		display: flex;
 		justify-content: space-evenly;
 		margin-top: 20px;
+	}
+	.version {
+		opacity: 0.25;
 	}
 </style>

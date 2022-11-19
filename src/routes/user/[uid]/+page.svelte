@@ -24,6 +24,13 @@
 	let selected_score_framecount: number | null;
 	let selected_score_last_grid: Grid | null;
 	$: if (user_data && user_data.data && selected_score_size) {
+		update_score_data();
+	}
+	$: if (boardInstance && selected_score_data) {
+		update_grid_raw();
+	}
+
+	function update_score_data() {
 		selected_score_data = user_data.data.scores[selected_score_size];
 		if (selected_score_data) {
 			let record = selected_score_data.history;
@@ -34,6 +41,11 @@
 
 			selected_score_last_grid = parse_frame_grid(last_frame, selected_score_size);
 		}
+	}
+
+	function update_grid_raw() {
+		console.log("updating grid...");
+		grid = selected_score_last_grid;
 	}
 
 	function parse_frame_grid(frame: string, size: number): Grid {
@@ -63,6 +75,7 @@
 	} from "$lib/wasm/twothousand_forty_eight";
 	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
+	import { enable_user_page_wasm } from "../../../features";
 
 	let board_cache: { [key: number]: null | any[] } = {};
 	$: if (
@@ -81,7 +94,7 @@
 
 	let selected_frames: { [key: number]: number } = {};
 	let grids: { [key: number]: { [key: number]: Grid } } = {};
-	$: if (selected_score_size && selected_score_data && selected_score_frames) {
+	$: if (selected_score_size && selected_score_data && selected_score_frames && false) {
 		if (selected_frames[selected_score_size] == null) {
 			selected_frames[selected_score_size] = selected_score_frames.length - 1;
 		}
@@ -120,20 +133,39 @@
 	let boardInstance: Board;
 	let mounted = false;
 	onMount(async () => {
-		if (browser) {
+		if (browser && enable_user_page_wasm) {
 			await initWasm();
+		} else {
 		}
 		inputRoot = document.querySelector("html") as HTMLElement;
 		mounted = true;
 	});
 
-	$: grid =
-		grids[selected_score_size][selected_frames[selected_score_size]] || selected_score_last_grid;
-	$: if (grid && boardInstance) {
+	let grid = null;
+	function updateGrid() {
+		if (boardInstance) {
+			grid =
+				// grids[selected_score_size][selected_frames[selected_score_size]] ||
+				selected_score_last_grid;
+		} /* else {
+			grid = new Grid(selected_score_size);
+		} */
+	}
+	/* $: if (
+		// grids[selected_score_size][selected_frames[selected_score_size]] ||
+		selected_score_last_grid
+	) {
+		updateGrid();
+	} else if (boardInstance) {
+		update_grid_raw();
+	} */
+	$: if (boardInstance) {
 		let gameManager = boardInstance.getGameManagerInstance();
 		if (gameManager) {
+			console.log("Applying grid update...");
 			gameManager.grid = grid;
 			gameManager.actuate();
+		} else {
 		}
 	}
 
@@ -191,56 +223,57 @@
 				</h3>
 				<h3>Saavutettu {new Date(selected_score_data.updatedAt).toLocaleString()}</h3>
 				<hr />
-				{#if grid}
-					<div class="game-preview">
-						<Board
-							announcer={null}
-							bind:this={boardInstance}
-							enableLSM={false}
-							documentRoot={inputRoot}
-							enableKIM={false}
-							enable_theme_chooser={false}
-						/>
+				<div class="game-preview">
+					<Board
+						announcer={null}
+						bind:this={boardInstance}
+						enableLSM={false}
+						documentRoot={inputRoot}
+						enableKIM={false}
+						enable_theme_chooser={false}
+						onComponentsInitialized={update_grid_raw}
+					/>
+				</div>
+				{#if enable_user_page_wasm}
+					<div class="playback-controls">
+						{#if !$ready}
+							<progress />
+						{:else if selected_score_framecount != null}
+							{@const selected_frame = selected_frames[selected_score_size]}
+							{@const frame_count = selected_score_framecount - 1}
+							<p>
+								<code
+									>{(selected_frame + "").padStart(
+										(frame_count + "").length,
+										"0"
+									)}/{frame_count}</code
+								>
+							</p>
+							<input
+								type="range"
+								min="0"
+								max={frame_count}
+								bind:value={selected_frames[selected_score_size]}
+							/>
+							<div>
+								<button
+									disabled={selected_frame == 0}
+									on:click={() => {
+										selected_frames[selected_score_size] = (selected_frame || 0) - 1;
+									}}>&lt;</button
+								>
+								<button
+									disabled={selected_frame == frame_count}
+									on:click={() => {
+										selected_frames[selected_score_size] = (selected_frame || 0) + 1;
+									}}>&gt;</button
+								>
+							</div>
+						{:else}
+							<p>Tulkitaan peliä...</p>
+						{/if}
 					</div>
 				{/if}
-				<div class="playback-controls">
-					{#if !$ready}
-						<progress />
-					{:else if selected_score_framecount != null}
-						{@const selected_frame = selected_frames[selected_score_size]}
-						{@const frame_count = selected_score_framecount - 1}
-						<p>
-							<code
-								>{(selected_frame + "").padStart(
-									(frame_count + "").length,
-									"0"
-								)}/{frame_count}</code
-							>
-						</p>
-						<input
-							type="range"
-							min="0"
-							max={frame_count}
-							bind:value={selected_frames[selected_score_size]}
-						/>
-						<div>
-							<button
-								disabled={selected_frame == 0}
-								on:click={() => {
-									selected_frames[selected_score_size] = (selected_frame || 0) - 1;
-								}}>&lt;</button
-							>
-							<button
-								disabled={selected_frame == frame_count}
-								on:click={() => {
-									selected_frames[selected_score_size] = (selected_frame || 0) + 1;
-								}}>&gt;</button
-							>
-						</div>
-					{:else}
-						<p>Tulkitaan peliä...</p>
-					{/if}
-				</div>
 			{/if}
 		{:else}
 			<p>Virhe: {user_data.err}</p>

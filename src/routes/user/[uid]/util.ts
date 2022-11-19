@@ -1,4 +1,5 @@
 import { leaderboard_endpoint } from "$lib/stores/leaderboardstore";
+import { json_headers } from "$lib/utils";
 
 export type Score = {
 	_id: string;
@@ -36,7 +37,9 @@ export async function getLeaderBoardData(
 		admin_token
 	)}`;
 	console.log("getting lb user data for user", uid);
-	let resp = await fetch(url);
+	let resp = await fetch(url, {
+		headers: json_headers
+	});
 	if (resp.ok) {
 		let json = await resp.json();
 		return { data: json, err: null };
