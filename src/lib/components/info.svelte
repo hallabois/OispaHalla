@@ -1,4 +1,5 @@
 <script lang="ts">
+	import {dev} from "$app/environment";
 	import Popup from "./common/popup/popup.svelte";
 	// import type Announcer from "./tournaments/announcer.svelte";
 
@@ -11,7 +12,11 @@
 </script>
 
 <Popup bind:open>
-	<span slot="title">OispaHalla <span class="version">{__APP_VERSION__}</span></span>
+	<span slot="title" class="title">OispaHalla <span class="version">v.{__APP_VERSION__}</span>
+		{#if dev}
+			<span class="label">dev</span>
+		{/if}
+	</span>
 	<div slot="content" class="content">
 		<div class="section notice">
 			<p>
@@ -54,6 +59,12 @@
 </Popup>
 
 <style>
+	.title {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: .2em;
+	}
 	a,
 	p {
 		margin: 0;
@@ -75,6 +86,14 @@
 		margin-top: 20px;
 	}
 	.version {
-		opacity: 0.25;
+		opacity: 0.5;
+	}
+	.label {
+		font-size: .75em;
+		border-radius: 999px;
+		border: 1px solid var(--color);
+		background: var(--color);
+		color: var(--container-background, var(--background));
+		padding-inline: 1em;
 	}
 </style>
