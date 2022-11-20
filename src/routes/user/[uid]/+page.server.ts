@@ -1,4 +1,4 @@
-import { getLeaderBoardData } from "./util";
+import { getLeaderBoardData } from "$lib/server/leaderboards";
 import { env } from "$env/dynamic/private";
 
 /** @type {import('./$types').PageServerLoad} */

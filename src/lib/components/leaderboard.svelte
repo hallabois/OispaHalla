@@ -220,7 +220,7 @@
 									>
 								{/each}
 							</div>
-							<div style="overflow-y: scroll;">
+							<div>
 								<table>
 									<thead>
 										<tr>
