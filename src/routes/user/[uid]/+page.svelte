@@ -1,7 +1,8 @@
 <script lang="ts">
 	import Board from "$lib/components/board/board.svelte";
 	import { generate_previous_positions, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
-	import { numberWithSpaces, type Score } from "./util";
+	import type { Score } from "$lib/server/leaderboards";
+	import { numberWithSpaces } from "$lib/utils";
 	import type { PageData } from "./$types";
 	import Grid from "$lib/gamelogic/grid";
 	import Tile from "$lib/gamelogic/tile";

@@ -47,7 +47,3 @@ export async function getLeaderBoardData(
 	console.warn("lb user data err", resp);
 	return { err: resp.statusText, data: null };
 }
-
-export function numberWithSpaces(x: number): string {
-	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-}
