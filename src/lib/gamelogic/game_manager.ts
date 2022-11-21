@@ -11,6 +11,7 @@ import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 import { TAB_BLOCK } from "$lib/session_manager";
 import { get } from "svelte/store";
 import { browser, dev } from "$app/environment";
+import { recordGame } from "$lib/stores/analytics";
 
 export default class GameManager {
 	size: any;
@@ -331,6 +332,7 @@ export default class GameManager {
 				this.recordBest();
 
 				// Analytics
+				recordGame(this.size + "x" + this.size + "S" + this.history.join(":"), this.score);
 				try {
 					sa_event("game_failed");
 				} catch {}
