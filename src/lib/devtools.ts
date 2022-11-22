@@ -109,6 +109,12 @@ function getOpenPopups() {
 	return get(open_popups);
 }
 
+function toggleZenMode() {
+	const currentMode: boolean = getItem("zen_mode");
+	setItem("zen_mode", !currentMode);
+	console.log(`Toggled zen mode, new value: ${!currentMode}`);
+}
+
 function getAuth() {
 	return get(auth);
 }
@@ -146,6 +152,8 @@ if (browser) {
 			get
 		},
 		getOpenPopups,
+
+		toggleZenMode,
 
 		getAuth
 	};

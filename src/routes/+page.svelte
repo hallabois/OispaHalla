@@ -247,7 +247,7 @@
 						stroke="var(--color)"
 						viewBox="0 0 48 48"
 						d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
-						upper_text={unread_notification_count || null}
+						upper_text={has_unread_notifications ? unread_notification_count || null : null}
 					/>
 				</button>
 			</div>

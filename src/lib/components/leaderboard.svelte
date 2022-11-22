@@ -26,9 +26,10 @@
 		let top_saved = ($storage.bestScores || {})[s] || -1;
 		let top_submitted = ($storage.lb_submitted || {})[s] || -1;
 		if (
-			GameManagerInstance?.size == s &&
+			(GameManagerInstance?.size == s &&
 			(GameManagerInstance?.run_best_score || GameManagerInstance?.score) >= top_saved &&
-			!GameManagerInstance.over
+			!GameManagerInstance.over) ||
+			getItem("zen_mode")
 		) {
 			// Do nothing, as the top scoring game is not over yet.
 		} else if (top_saved > top_submitted) {
