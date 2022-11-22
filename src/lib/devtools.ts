@@ -1,8 +1,26 @@
 import { get } from "svelte/store";
-import { storage, getItem, setItem, getWholeLocalForage, clearStorage } from "./stores/storage";
+import {
+	storage,
+	getItem,
+	setItem,
+	getWholeLocalForage,
+	clearStorage,
+	storage_loaded,
+	storage_status
+} from "./stores/storage";
 import { browser } from "$app/environment";
 import { available_themes, festives_applied, theme_index } from "./stores/themestore";
 import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
+import { open_popups } from "$lib/stores/popupstore";
+import { auth } from "./Auth/authstore";
+
+function isStorageLoaded() {
+	return get(storage_loaded);
+}
+
+function getStorageStatus() {
+	return get(storage_status);
+}
 
 function getAllItems() {
 	return get(storage);
@@ -87,6 +105,14 @@ async function validateCurrentHistoryAllFrames() {
 	return JSON.parse(result);
 }
 
+function getOpenPopups() {
+	return get(open_popups);
+}
+
+function getAuth() {
+	return get(auth);
+}
+
 if (browser) {
 	// @ts-ignore
 	window.devtools = {
@@ -94,6 +120,9 @@ if (browser) {
 		getItem,
 		getAllItems,
 		getWholeLocalForage,
+
+		isStorageLoaded,
+		getStorageStatus,
 
 		setWholeLocalForage,
 
@@ -115,6 +144,9 @@ if (browser) {
 
 		stores: {
 			get
-		}
+		},
+		getOpenPopups,
+
+		getAuth
 	};
 }

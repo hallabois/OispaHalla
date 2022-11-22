@@ -82,11 +82,20 @@ storage_loaded.subscribe(($storage_loaded) => {
 	}
 });
 
+class theme_manifest {
+	name!: string;
+	description!: string;
+}
+let default_manifest: theme_manifest = {
+	name: "Oispa Halla",
+	description: "Yhdistä opettajat ja saavuta **Halla!**"
+}
 class theme {
 	name!: string;
 	index!: number;
 	icon_url!: string;
 	style!: string;
+	manifest!: theme_manifest;
 }
 class theme_custom {
 	name!: string;
@@ -94,56 +103,52 @@ class theme_custom {
 	theme_url!: string;
 	icon_url!: string;
 	style!: string;
+	manifest!: theme_manifest;
 }
 export type Theme = theme | theme_custom;
+let classic = {
+	name: "Classic",
+	index: 16,
+	icon_url: "/img/theme-16/2048.webp",
+	style: "background: transparent;",
+	manifest: default_manifest
+};
 export let available_themes: Writable<Array<Theme>> = writable([
 	{
 		name: "OispaHalla",
 		index: 1,
 		icon_url: "/img/raksahalla_192.webp",
-		style: "background: white;"
+		style: "background: white;",
+		manifest: default_manifest
 	},
 	{
 		name: "OispaHalla (tumma)",
 		index: 0,
 		icon_url: "/img/raksahalla_192.webp",
-		style: "background: black;"
-	}
+		style: "background: black;",
+		manifest: default_manifest
+	},
+	classic
 ]);
 
-let classic = {
-	name: "Classic",
-	index: 16,
-	icon_url: "/img/theme-16/2048.webp",
-	style: "background: transparent;"
-};
+
 let kaunis = {
 	name: "Kaunis",
 	index: 5,
 	icon_url: "/img/theme-4/cover.webp",
-	style: "background: #8cc4e3;"
+	style: "background: #8cc4e3;",
+	manifest: default_manifest
 };
 let kaunis_dark = {
 	name: "Kaunis (tumma)",
 	index: 4,
 	icon_url: "/img/theme-4/cover.webp",
-	style: "background: #001522;"
+	style: "background: #001522;",
+	manifest: default_manifest
 };
 if (true) {
 	available_themes.set([kaunis, kaunis_dark, ...get(available_themes)]);
 }
-
-storage_loaded.subscribe(($storage_loaded) => {
-	if (
-		browser &&
-		$storage_loaded &&
-		(getItem("hasWon") ||
-			(getItem("bestScore") != null && +getItem("bestScore") && +getItem("bestScore") > 10000)) &&
-		!get(available_themes).includes(classic)
-	) {
-		available_themes.set([...get(available_themes), classic]);
-	}
-});
 
 // Check for holidays
 class Holiday {

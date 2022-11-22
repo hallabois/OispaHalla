@@ -70,6 +70,16 @@ body {
 .noscript {
 	background-color: #8f7a66;
 	color: #faf8ef;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+
+	p {
+		margin: 0;
+	}
 }
 
 .heading {
@@ -116,13 +126,16 @@ h1.title.dark {
 @keyframes darken {
 	from {
 		opacity: 0;
+		/* backdrop-filter: blur(0px); */
 	}
 	to {
 		opacity: 1;
+		/* backdrop-filter: blur(2px); */
 	}
 }
 
 .lb-popup {
+	/* backdrop-filter: blur(2px); */
 	background-color: rgba(0, 0, 0, 0.4);
 	z-index: 200;
 	position: fixed;
@@ -277,22 +290,13 @@ h1.title.dark {
 	display: flex;
 	width: 100%;
 
-	> * {
-		margin-top: 15px;
-	}
+	margin-top: 0.5em;
+
+	gap: 1em;
 
 	.button-container {
 		display: flex;
-		> * {
-			width: 50%;
-
-			img {
-				width: 25px;
-			}
-		}
-		:not(:first-child) {
-			margin-left: 10px;
-		}
+		gap: 0.5em;
 	}
 }
 
@@ -1040,6 +1044,10 @@ $i: 2;
 			width: 170px;
 		}
 	}
+
+	.underbar-container .button-container {
+		gap: 0.2em;
+	}
 }
 
 .theme-0 .color-button img {
@@ -1098,6 +1106,20 @@ $colors: (
 	"4-break-button-color-false": #ddd,
 	"4-break-button-background-true": #49a636,
 	"4-break-button-color-true": #dfdfdf,
+
+	"6-color-scheme": "dark",
+	"6-text-color": #eee,
+	"6-game-background": #202614,
+	"6-game-background-inverted": #e9e7e8,
+	//käytetään kurinpalautusnapin hoverausefektille
+	"6-game-container-background": #3e3933,
+	"6-title-color": #e6d2bf,
+	"6-button-color": #365ca6,
+	"6-break-button-background-false": #a63636,
+	//kurinpalautus!
+	"6-break-button-color-false": #ddd,
+	"6-break-button-background-true": #49a636,
+	"6-break-button-color-true": #dfdfdf,
 
 	"14-color-scheme": "dark",
 	"14-text-color": #eee,

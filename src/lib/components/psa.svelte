@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Popup from "./common/popup/popup.svelte";
-	import type Announcer from "./tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { PSA } from "$lib/Firestore/db";
 	import { slide } from "svelte/transition";
 	import { browser, dev } from "$app/environment";
@@ -11,8 +11,6 @@
 	export function show() {
 		open = true;
 	}
-
-	export let announcer: Announcer | null = null;
 
 	let psas: object | null;
 	$: psas = $PSA?.data()?.content;
@@ -98,14 +96,6 @@
 </Popup>
 
 <style>
-	h3 {
-		display: inline;
-		margin: 0;
-		border-bottom: 1px solid var(--color);
-	}
-	hr {
-		margin-block: 0.5em;
-	}
 	a,
 	p {
 		margin: 0;

@@ -4,7 +4,7 @@ import { app } from "$lib/Auth_admin/auth.server";
 import { env } from "$env/dynamic/private";
 
 function get_admins() {
-	if(env.OH_ADMIN_EMAIL_LIST) {
+	if (env.OH_ADMIN_EMAIL_LIST) {
 		let emails = env.OH_ADMIN_EMAIL_LIST.split(";");
 		return emails;
 	}
@@ -27,6 +27,7 @@ export async function POST({ request, getClientAddress }) {
 	} else {
 		let token = body.token;
 
+		console.info("token validation request headers:", request.headers);
 		try {
 			if (env.ADMIN_TOKEN) {
 				let ip = getClientAddress();
@@ -50,7 +51,7 @@ export async function POST({ request, getClientAddress }) {
 			}
 
 			let result = await getAuth(app).verifyIdToken(token);
-			let verified_email = result.email_verified ? (result.email || "no-email") : "unverified-email";
+			let verified_email = result.email_verified ? result.email || "no-email" : "unverified-email";
 			let info = {
 				name: result.name,
 				uid: result.uid,

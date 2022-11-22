@@ -7,10 +7,11 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 
 import { getItem, setItem } from "$lib/stores/storage";
-import type Announcer from "$lib/components/tournaments/announcer.svelte";
+import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 import { TAB_BLOCK } from "$lib/session_manager";
 import { get } from "svelte/store";
 import { browser, dev } from "$app/environment";
+import { recordGame } from "$lib/stores/analytics";
 
 export default class GameManager {
 	size: any;
@@ -34,6 +35,17 @@ export default class GameManager {
 	documentRoot: HTMLElement;
 	enable_random: boolean;
 	announcer: Announcer | null;
+
+	subscribers: Function[];
+
+	subscribe(listener: Function) {
+		this.subscribers = [...this.subscribers, listener];
+	}
+	update_subscribers() {
+		for (let subscriber of this.subscribers) {
+			subscriber();
+		}
+	}
 
 	constructor(
 		size: number,
@@ -65,6 +77,7 @@ export default class GameManager {
 		this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
 		this.popup = this.documentRoot.querySelector(".lb-popup");
+		this.subscribers = [];
 
 		if (typeof grid !== "undefined" && grid) {
 			this.grid = grid;
@@ -85,6 +98,7 @@ export default class GameManager {
 		this.actuator.continueGame(); // Clear the game won/lost message
 		//this.size = 4;
 		this.setup();
+		this.update_subscribers();
 	}
 
 	// Restart the game
@@ -94,6 +108,7 @@ export default class GameManager {
 		this.actuator.continueGame(); // Clear the game won/lost message
 		this.size = size;
 		this.setup();
+		this.update_subscribers();
 	}
 	// Keep playing after winning (allows going over 2048)
 	keepPlaying() {
@@ -113,6 +128,7 @@ export default class GameManager {
 				} else alert("Olet lahjonut opettajia liikaa! Halla on pettynyt sinuun.");
 			} else alert("Et ole tarpeeksi suosittu opettajien keskuudessa lahjomaan heitä!");
 		}
+		this.update_subscribers();
 	}
 	// Return true if the game is lost, or has won and the user hasn't kept playing
 	isGameTerminated() {
@@ -155,6 +171,7 @@ export default class GameManager {
 			this.grid.insertTile(tile);
 			return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
 		}
+		this.update_subscribers();
 	}
 
 	loadPreviousState(previousState: any) {
@@ -182,6 +199,7 @@ export default class GameManager {
 			// Add the initial tiles
 			this.addStartTiles();
 		}
+		this.update_subscribers();
 	}
 
 	// Sends the updated grid to the actuator
@@ -205,6 +223,7 @@ export default class GameManager {
 			bestScore: this.storageManager.getBestScorePlus(this.size),
 			terminated: this.isGameTerminated()
 		});
+		this.update_subscribers();
 	}
 	// Represent the current game as an object
 	serialize() {
@@ -313,6 +332,7 @@ export default class GameManager {
 				this.recordBest();
 
 				// Analytics
+				recordGame(this.size + "x" + this.size + "S" + this.history.join(":"), this.score);
 				try {
 					sa_event("game_failed");
 				} catch {}
@@ -331,6 +351,7 @@ export default class GameManager {
 
 			this.recordBest();
 		}
+		this.update_subscribers();
 	}
 	// Get the vector representing the chosen direction
 	getVector(direction: 0 | 1 | 2 | 3): { x: number; y: number } {

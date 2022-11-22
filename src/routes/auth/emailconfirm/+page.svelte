@@ -30,7 +30,7 @@
 	}
 </script>
 
-<main>
+<main class="blurry-bg">
 	{#if browser || loadingResults}
 		<h1 class="title">
 			<a href="/" target="_blank" style="text-decoration: none;" title="avautuu uuteen välilehteen"
@@ -57,7 +57,7 @@
 
 <style>
 	main {
-		background: var(--background);
+		background-attachment: fixed;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -67,10 +67,5 @@
 		padding-inline: 0.5em;
 
 		min-height: 100vh;
-	}
-	.discouradge {
-		color: var(--button-background);
-		background: var(--background);
-		border: 1px solid var(--button-background);
 	}
 </style>

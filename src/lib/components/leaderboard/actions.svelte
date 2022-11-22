@@ -2,7 +2,7 @@
 	import { auth } from "$lib/Auth/authstore";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
-	import type Announcer from "$lib/components/tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { setItem, getItem } from "$lib/stores/storage";
 
 	export let open = false;
@@ -59,10 +59,9 @@
 
 	export let markAsSubmitted = (s: number) => {};
 	export let startSubmitting = (s: number) => {};
-	export let sizes: number[];
 	export let current_size: number;
 
-	export let announcer: Announcer | null = null;
+	export const announcer: Announcer | null = null;
 </script>
 
 <Popup bind:open>

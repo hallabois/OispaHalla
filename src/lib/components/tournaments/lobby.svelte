@@ -1,23 +1,27 @@
 <script lang="ts">
 	import {
-		gamemode_0_names,
-		host_deleteGame,
-		host_startGame,
-		joined_game_am_host,
-		joined_game_data,
-		joined_game_error,
 		joined_game_id,
-		leaveGame,
-		poll_game,
-		poll_id_index,
-		poll_success,
-		refreshGameData
+		request_deletion,
+		request_leave,
+		user_details,
+		game_details,
+		gamemode_0_names,
+		name_cache,
+		send_message,
+		chat,
+		request_start
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
-	import { hac_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import type Announcer from "./announcer.svelte";
+	import { browser } from "$app/environment";
+	import Popup from "../common/popup/popup.svelte";
 
 	export let announcer: Announcer | null = null;
+	let inputRoot: HTMLElement;
+
+	let message_input: string;
+	let player_list_open = false;
 
 	function shareGameID() {
 		navigator.share({
@@ -36,102 +40,169 @@
 	}
 </script>
 
-<main>
-	{#if $joined_game_error}
-		<p>Virhe pelin tietoja haettaessa: {$joined_game_error}</p>
-		<button on:click={refreshGameData}>Yritä Uudelleen</button>
-		<button on:click={leaveGame}>Anna Olla</button>
-	{:else}
-		<div class="top">
-			<button class="" on:click={leaveGame}>Poistu Pelistä</button>
-			{#if $joined_game_am_host}
-				Järjestäjä 👑
-				<button class="" on:click={host_deleteGame}> Poista Peli </button>
-			{/if}
-		</div>
-		<hr />
-		{#if $joined_game_data}
-			<p>Liitytty peliin "{$joined_game_data.name}"</p>
-			<p>
-				Liittymiskoodi: <code>{$joined_game_id}</code>
-				{#if navigator.clipboard}
-					<button on:click={copyGameID}>Kopioi linkki</button>
+<main bind:this={inputRoot}>
+	{#if $joined_game_id && $user_details}
+		{@const game_data = $game_details[$joined_game_id]}
+		{#if !game_data}
+			<p>Ladataan pelin tietoja...</p>
+		{:else}
+			{@const am_host = $user_details.admin || $user_details.id === game_data.creator_id}
+			<div class="top">
+				<button
+					class=""
+					on:click={() => {
+						if ($joined_game_id) request_leave($joined_game_id);
+					}}>Poistu Pelistä</button
+				>
+				{#if am_host}
+					Järjestäjä 👑
+					<button
+						class=""
+						on:click={() => {
+							if ($joined_game_id) request_deletion($joined_game_id);
+						}}
+					>
+						Poista Peli
+					</button>
 				{/if}
-				{#if navigator.share}
-					<button on:click={shareGameID}>Jaa kutsu</button>
-				{/if}
-			</p>
-			{#if $joined_game_data.gamemode == 0}
-				<p style="max-width:430px;">
-					Pelaaja joka saavuttaa ensimmäisenä laatan <b style="white-space: nowrap;"
-						>{$joined_game_data.gamemode_goal} ({gamemode_0_names[
-							+$joined_game_data.gamemode_goal
-						]})</b
-					> voittaa.
+			</div>
+			<hr />
+			{#if game_data}
+				<p>Liitytty peliin "{game_data.name}"</p>
+				<p>
+					Liittymiskoodi: <code>{$joined_game_id}</code>
+					{#if navigator.clipboard}
+						<button on:click={copyGameID}>Kopioi linkki</button>
+					{/if}
+					{#if browser && navigator.share}
+						<button on:click={shareGameID}>Jaa kutsu</button>
+					{/if}
 				</p>
-			{/if}
-			<div class="data">
-				<div>
-					<h3>Aloitustilanne</h3>
-					<div class="game-preview">
-						<Board grid={hac_gamestate_to_grid($joined_game_data.starting_state)} />
+				{#if game_data.gamemode == 0}
+					<p style="max-width:430px;">
+						Pelaaja joka saavuttaa ensimmäisenä laatan <b style="white-space: nowrap;"
+							>{game_data.gamemode_goal} ({gamemode_0_names[+game_data.gamemode_goal]})</b
+						> voittaa.
+					</p>
+				{/if}
+				<div class="data">
+					<div>
+						<h3>Aloitustilanne</h3>
+						<div class="game-preview">
+							<Board
+								enableLSM={false}
+								grid={ohts_gamestate_to_grid(game_data.starting_state)}
+								documentRoot={inputRoot}
+								enable_theme_chooser={false}
+							/>
+						</div>
+					</div>
+					<div>
+						<button
+							class="button action-btn players"
+							on:click={() => {
+								player_list_open = true;
+							}}
+						>
+							{game_data.clients.length}
+							{game_data.clients.length == 1 ? "pelaaja" : "pelaajaa"}
+						</button>
+						<div class="chat-window">
+							<form
+								on:submit|preventDefault={() => {
+									send_message(message_input);
+									message_input = "";
+								}}
+							>
+								<input bind:value={message_input} placeholder="Kirjoita viesti" /><input
+									type="submit"
+									value="Lähetä"
+									disabled={message_input == null || message_input.length < 1}
+								/>
+							</form>
+							<div class="messages">
+								{#if $name_cache == null}
+									<p>Ladataan nimiä....</p>
+								{/if}
+								{#if $chat}
+									{#each [...$chat].reverse() as msg}
+										{@const cached_name = ($name_cache || {})[msg.user_id]}
+										{@const name = cached_name
+											? cached_name.split(" ")[0]
+											: msg.user_id.substring(0, 5)}
+										<p>{name}: {msg.content}</p>
+									{/each}
+								{:else}
+									<p>...</p>
+								{/if}
+							</div>
+						</div>
 					</div>
 				</div>
-				<div>
-					{#if $poll_success}
-						<h4>{$poll_game.clients} {$poll_game.clients == 1 ? "pelaaja" : "pelaajaa"}</h4>
-						<div style="max-height:300px;overflow-y: auto;">
-							{#each $poll_game.client_aliases as player_name, index}
-								<p>
-									{player_name}
-									{#if index == $poll_id_index}
-										(sinä)
-									{/if}
-								</p>
-							{/each}
-						</div>
+			{:else}
+				<p>Ladataan pelin tietoja...</p>
+				<div class="data">
+					<div>
+						<h3>...</h3>
+						<div class="game-preview" />
+					</div>
+					<div>
+						<h3>...</h3>
+					</div>
+				</div>
+			{/if}
+			{#if am_host}
+				<div class="start">
+					<button
+						style="width:100%;"
+						class="button action-btn"
+						on:click={() => {
+							request_start(game_data.id);
+						}}
+						disabled={game_data.started || game_data.ended}
+					>
+						{game_data.ended
+							? "Peli on päättynyt!"
+							: game_data.started
+							? "Peli on alkanut!"
+							: "Aloita Peli"}
+					</button>
+				</div>
+			{:else}
+				<div class="start">
+					<p style="width: 100%;text-align:center;">
+						{game_data.ended
+							? "Peli on päättynyt!"
+							: game_data.started
+							? "Peli on alkanut!"
+							: "Odotetaan pelin alkua..."}
+					</p>
+				</div>
+			{/if}
+
+			<Popup bind:open={player_list_open}>
+				<span slot="title">Liittyneet pelaajat</span>
+				<div slot="content" class="player-list">
+					{#each game_data.clients as player_id}
+						{@const cached_name = ($name_cache || {})[player_id]}
+						{@const name = cached_name || player_id}
+						<p title={player_id}>
+							{name}
+							{#if player_id === $user_details.id}
+								(sinä)
+							{/if}
+						</p>
+					{/each}
+					{#if $name_cache == null}
+						<p class="status">Ladataan nimiä...</p>
+					{:else}
+						<p class="status">Nimet ladattu.</p>
 					{/if}
 				</div>
-			</div>
-		{:else}
-			<p>Ladataan pelin tietoja...</p>
-			<div class="data">
-				<div>
-					<h3>...</h3>
-					<div class="game-preview" />
-				</div>
-				<div>
-					<h3>...</h3>
-				</div>
-			</div>
+			</Popup>
 		{/if}
-		{#if $joined_game_am_host && $poll_success}
-			<div class="start">
-				<button
-					style="width:100%;"
-					class="button action-btn"
-					on:click={host_startGame}
-					disabled={$poll_game.active || $poll_game.ended}
-				>
-					{$poll_game.ended
-						? "Peli on päättynyt!"
-						: $poll_game.active
-						? "Peli on alkanut!"
-						: "Aloita Peli"}
-				</button>
-			</div>
-		{/if}
-		{#if !$joined_game_am_host && $poll_success}
-			<div class="start">
-				<p style="width: 100%;text-align:center;">
-					{$poll_game.ended
-						? "Peli on päättynyt!"
-						: $poll_game.active
-						? "Peli on alkanut!"
-						: "Odotetaan pelin alkua..."}
-				</p>
-			</div>
-		{/if}
+	{:else}
+		<p>Ladataan kirjautumistietoja...</p>
 	{/if}
 </main>
 
@@ -157,8 +228,44 @@
 		height: 300px;
 		border-radius: 6px;
 	}
+	.chat-window {
+		max-height: 300px;
+		display: flex;
+		flex-direction: column;
+	}
+	.players {
+		margin-block: 0.5em;
+	}
+	.messages {
+		overflow-y: scroll;
+	}
+	.messages p {
+		max-width: 10em;
+		margin: 0;
+	}
 	.start {
 		margin-top: 1em;
+	}
+	.player-list {
+		min-height: 300px;
+		display: flex;
+		gap: 0.5em;
+		flex-wrap: wrap;
+		align-items: start;
+		flex-direction: column;
+		max-height: 75vh;
+	}
+	.player-list p {
+		margin: 0;
+	}
+	.player-list .status {
+		opacity: 0.75;
+		place-self: end;
+
+		flex: 1;
+		display: flex;
+		justify-content: end;
+		align-items: end;
 	}
 	hr {
 		margin-block: 0.25em;

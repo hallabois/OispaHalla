@@ -1,30 +1,9 @@
-<!-- Explain what global variables are to typescript -->
-<script context="module" lang="ts">
-	declare var GameManagerInstance: any;
-	declare var base_path: string;
-</script>
-
-<!-- / -->
 <script lang="ts">
 	import { browser } from "$app/environment";
 	import { open_popups } from "$lib/stores/popupstore";
-	import { onMount } from "svelte";
+	import { onMount, onDestroy } from "svelte";
 	import { fade } from "svelte/transition";
 	export let open = false;
-
-	let input_enabled = true; // tän vois siirtää inputManageriin
-	$: if (mounted && window != null && open != null) {
-		(window as any).isLeaderboardOpen = open;
-		if (typeof GameManagerInstance !== "undefined" && GameManagerInstance != null) {
-			if (open && input_enabled == true) {
-				GameManagerInstance.inputManager.removeKeydownHandler();
-				input_enabled = false;
-			} else if (!open && input_enabled == false) {
-				GameManagerInstance.inputManager.addKeydownHandler();
-				input_enabled = true;
-			}
-		}
-	}
 
 	let my_key = {}; // All objects are unique
 	$: if (open && browser) {
@@ -39,18 +18,26 @@
 
 	let mounted = false;
 	onMount(() => {
+		false;
 		mounted = true;
+	});
+	onDestroy(() => {
+		if ($open_popups.includes(my_key)) {
+			open_popups.set($open_popups.filter((x) => x !== my_key));
+		}
 	});
 </script>
 
 {#if open}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<main
 		class="lb-popup"
 		on:click={() => {
 			open = false;
 		}}
-		out:fade
+		out:fade|local
 	>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div
 			class="lb-popup-container"
 			on:click={(e) => {

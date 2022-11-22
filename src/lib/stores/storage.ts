@@ -2,6 +2,9 @@ import { type Writable, writable, get } from "svelte/store";
 import { browser } from "$app/environment";
 import { TAB_BLOCK } from "$lib/session_manager";
 import localforage from "localforage";
+import { get_db } from "$lib/Firestore/db";
+import { auth } from "$lib/Auth/authstore";
+import { enable_sync } from "../../features";
 
 export async function getWholeLocalForage() {
 	let composite = {};
@@ -109,6 +112,16 @@ storage.subscribe(async (data) => {
 				if (localHash !== externalHash) {
 					for (let key of Object.keys(data)) {
 						await localforage.setItem(key, data[key]);
+					}
+				}
+			}
+
+			if (data && enable_sync) {
+				let $auth = get(auth);
+				if ($auth != null) {
+					let db = get_db($auth.uid);
+					if (get(db)) {
+						db.uploadStorage(data);
 					}
 				}
 			}

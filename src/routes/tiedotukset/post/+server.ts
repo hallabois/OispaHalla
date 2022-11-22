@@ -47,7 +47,7 @@ async function handle(body: object, request) {
 							}
 						);
 					}
-					console.info("Aquiring db...");
+					console.info("Acquiring db...");
 					let db = getFirestore(app);
 					console.info("getting dbRef...");
 					let ref = db.doc("global/PSA");

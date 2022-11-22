@@ -3,9 +3,13 @@ import { browser, dev } from "$app/environment";
 import { auth } from "$lib/Auth/authstore";
 
 import { setItem, getItem, storage, storage_loaded } from "$lib/stores/storage";
+import { lb_test_prod_endpoint } from "../../features";
+import { json_headers } from "$lib/utils";
 
 let leaderboard_endpoint_prod = "https://lb.oispahalla.com";
-let leaderboard_endpoint_dev = true ? leaderboard_endpoint_prod : "http://localhost:5000";
+let leaderboard_endpoint_dev = lb_test_prod_endpoint
+	? leaderboard_endpoint_prod
+	: "http://localhost:5000";
 export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
 export let lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
@@ -20,7 +24,9 @@ lb_screenName.subscribe((value) => {
 
 export async function check_server_alive() {
 	try {
-		const resp = await fetch(`${leaderboard_endpoint}/alive`);
+		const resp = await fetch(`${leaderboard_endpoint}/alive`, {
+			headers: json_headers
+		});
 		return resp.ok;
 	} catch (e) {
 		console.warn(e);
@@ -37,7 +43,9 @@ export class scores_error {
 export type scores_response = scores_ok | scores_error;
 export async function get_all_scores(size: number): Promise<scores_response> {
 	try {
-		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/`);
+		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/`, {
+			headers: json_headers
+		});
 		if (resp.ok) {
 			try {
 				const json_result = await resp.json();
@@ -64,7 +72,9 @@ export async function get_all_scores(size: number): Promise<scores_response> {
 
 export async function get_top_scores(size: number, threshold: number): Promise<scores_response> {
 	try {
-		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/${threshold}`);
+		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/${threshold}`, {
+			headers: json_headers
+		});
 		if (resp.ok) {
 			try {
 				const json_result = await resp.json();
@@ -92,6 +102,7 @@ export async function get_top_scores(size: number, threshold: number): Promise<s
 export class User {
 	_id!: string;
 	screenName!: string;
+	uid!: string;
 }
 export class Score {}
 export class Score_ok {
@@ -108,6 +119,12 @@ export class Fetchboard_ok {
 	success!: boolean;
 	rank!: number;
 	topBoard!: Score_ok[];
+	rivals!:
+		| {
+				score: number;
+				user: User;
+		  }[]
+		| null;
 	score!: Score_ok;
 }
 export class Score_error {
@@ -129,9 +146,7 @@ export async function fetchboard(
 			`${leaderboard_endpoint}/scores/size/${size}/fetchboard/${threshold}/`,
 			{
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
+				headers: json_headers,
 				body: JSON.stringify({
 					token,
 					...(token
@@ -211,9 +226,7 @@ export async function submit_score(
 	try {
 		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers: json_headers,
 			body: JSON.stringify({
 				user: {
 					token: token,
@@ -277,9 +290,7 @@ export async function change_name(
 		let connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
 		const resp = await fetch(`${leaderboard_endpoint}/meta/changename`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
+			headers: json_headers,
 			body: JSON.stringify({
 				token: token,
 				name,

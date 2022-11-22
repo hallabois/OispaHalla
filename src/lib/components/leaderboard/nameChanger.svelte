@@ -3,7 +3,7 @@
 	import { lb_screenName, check_name, change_name } from "$lib/stores/leaderboardstore";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
-	import type Announcer from "$lib/components/tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 
 	export let open = false;
 	let name_in_progress: string | null;
@@ -73,6 +73,8 @@
 	<div slot="content" class="content">
 		{#if $auth && $auth.uid}
 			<p>Tahalteen muita loukkaavien nimimerkkien käyttö johtaa porttikieltoon.</p>
+
+			<!-- svelte-ignore a11y-autofocus -->
 			<input bind:value={name_in_progress} autofocus />
 			<p>{status || ""}</p>
 			<div class="buttons">

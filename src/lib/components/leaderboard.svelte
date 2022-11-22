@@ -3,7 +3,7 @@
 
 	import Popup from "./common/popup/popup.svelte";
 	import NameChanger from "./leaderboard/nameChanger.svelte";
-	import type Announcer from "./tournaments/announcer.svelte";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import {
 		lb_screenName,
 		check_server_alive,
@@ -16,6 +16,10 @@
 	import { browser, dev } from "$app/environment";
 	import Actions from "./leaderboard/actions.svelte";
 	import { getItem, setItem, storage, storage_loaded } from "$lib/stores/storage";
+	import Icon from "./common/icon/icon.svelte";
+	import { shareIconData } from "./common/icon/iconData";
+
+	$: can_submit_now = $token != null && $lb_screenName != null;
 
 	export let GameManagerInstance: GameManager | null = null;
 	function submitUnsubmittedTopScoresForSize(s: number) {
@@ -29,9 +33,13 @@
 			// Do nothing, as the top scoring game is not over yet.
 		} else if (top_saved > top_submitted) {
 			console.info(`Please submit score for size ${s}...`);
-			submitting = true;
 			size = s;
-			show();
+			if (can_submit_now) {
+				submit();
+			} else {
+				submitting = true;
+				show();
+			}
 			return true;
 		}
 		return false;
@@ -68,7 +76,7 @@
 		submit_in_progress = true;
 		let starting_size = size;
 		if (announcer) {
-			announcer.announce("Lähetetään tulosta...");
+			announcer.announce(`Lähetetään tulosta koolle ${size}x${size}...`);
 		}
 		let result = await submit_score(
 			starting_size,
@@ -137,6 +145,25 @@
 		refreshKey = {};
 	}
 
+	$: share_enabled = browser && (navigator.share || navigator.clipboard);
+	async function shareScore() {
+		if (!share_enabled) {
+			return;
+		}
+		let link = `${window.location.origin}/user/${$auth.uid}?size=${size}`;
+		let share_data: ShareData = {
+			url: link
+		};
+		if (navigator.share && navigator.canShare(share_data)) {
+			await navigator.share(share_data);
+		} else if (navigator.clipboard) {
+			await navigator.clipboard.writeText(link);
+			if (announcer) {
+				announcer.announce("Linkki kopioitu leikepöydälle!");
+			}
+		}
+	}
+
 	export let announcer: Announcer | null = null;
 	let NameChangerInstance: NameChanger;
 	let ActionsInstance: Actions;
@@ -164,7 +191,7 @@
 				{#if alive}
 					{#if submitting}
 						<p>Tallennetaas sun tulos!</p>
-						{#if $lb_screenName != null}
+						{#if can_submit_now}
 							<button
 								disabled={submit_in_progress}
 								on:click={submit}
@@ -193,7 +220,7 @@
 									>
 								{/each}
 							</div>
-							<div style="overflow-y: scroll;">
+							<div>
 								<table>
 									<thead>
 										<tr>
@@ -208,8 +235,8 @@
 												{#each new Array(10) as index}
 													<tr>
 														<td>...</td>
-														<td>.....</td>
-														<td>.......</td>
+														<td>......</td>
+														<td>..............</td>
 													</tr>
 												{/each}
 											{:then scores}
@@ -218,7 +245,11 @@
 														<tr in:scale={{ delay: 100 * index }}>
 															<td>{index + 1}.</td>
 															<td>{score.score}</td>
-															<td>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</td>
+															<td
+																><a class="player" href={`/user/${score.user.uid}?size=${size}`}
+																	>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</a
+																></td
+															>
 														</tr>
 													{/each}
 												{:else}
@@ -230,7 +261,15 @@
 								</table>
 							</div>
 							<div class="actionbar">
-								<a href="javascript:;" on:click={refresh}> Päivitä </a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a
+									href="javascript:void(0);"
+									on:click={() => {
+										refresh();
+									}}
+								>
+									Päivitä
+								</a>
 								<a href="/leaderboards/{size}"> Näytä kaikki </a>
 							</div>
 							{#if $token != null}
@@ -245,13 +284,19 @@
 										{:else}
 											<div class="my-results">
 												<table>
-													{#each [{ rank: result?.rank, score: result?.score?.score, name: result?.score?.user?.screenName, me: true }, ...Object.keys(result.rivals || {}).map( (r) => {
-																return { rank: r, score: result?.rivals[r]?.score, name: result?.rivals[r]?.user.screenName, me: false };
+													{#each [{ rank: result?.rank, score: result?.score?.score, name: result?.score?.user?.screenName, me: true, uid: result?.score?.user?.uid }, ...Object.keys(result.rivals || {}).map( (r) => {
+																return { rank: r, score: result?.rivals[r]?.score, name: result?.rivals[r]?.user.screenName, me: false, uid: result?.rivals[r]?.user.uid };
 															} )].sort((a, b) => a.rank - b.rank) as subjectiveResult}
 														<tr class:me={subjectiveResult.me}>
 															<td>{subjectiveResult.rank}.</td>
 															<td>{subjectiveResult.score}</td>
-															<td>{subjectiveResult.name}</td>
+															<td
+																><a
+																	class="player"
+																	href={`/user/${subjectiveResult.uid}?size=${size}`}
+																	>{subjectiveResult.name}</a
+																></td
+															>
 														</tr>
 													{/each}
 												</table>
@@ -265,6 +310,14 @@
 					<div>
 						{#if $auth}
 							<div class="actions">
+								<button
+									class="button action-btn"
+									on:click={() => {
+										ActionsInstance.show();
+									}}
+								>
+									⫶
+								</button>
 								{#if $lb_screenName}
 									<button on:click={editScreenName} class="button action-btn" style="flex:1;"
 										>Muuta nimimerkkiä "{$lb_screenName}"</button
@@ -274,14 +327,16 @@
 										>Lisää nimimerkki</button
 									>
 								{/if}
-								<button
-									class="button action-btn"
-									on:click={() => {
-										ActionsInstance.show();
-									}}
-								>
-									⫶
-								</button>
+								{#if share_enabled}
+									<button
+										class="button action-btn"
+										on:click={() => {
+											shareScore();
+										}}
+									>
+										<Icon fill="var(--action-btn-color)" viewBox="0 0 48 48" d={shareIconData} />
+									</button>
+								{/if}
 							</div>
 							<a href="/auth" style="text-align: center;display: block;padding: 0.75em;"
 								>Hallinnoi kirjautumista</a
@@ -325,7 +380,7 @@
 <style>
 	.size-selection {
 		display: flex;
-		gap: 0.5em;
+		gap: 0.2em;
 		flex-wrap: wrap;
 	}
 	.size-selection * {
@@ -361,10 +416,15 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5em;
+		gap: 0.25em;
 	}
 	.actions {
 		display: flex;
 		gap: 0.25em;
+	}
+	.player {
+		font-weight: inherit;
+		color: inherit;
+		text-decoration: inherit;
 	}
 </style>

@@ -1,17 +1,22 @@
 <script lang="ts">
+	import {dev} from "$app/environment";
 	import Popup from "./common/popup/popup.svelte";
-	import type Announcer from "./tournaments/announcer.svelte";
+	// import type Announcer from "./tournaments/announcer.svelte";
 
 	let open = false;
 	export function show() {
 		open = true;
 	}
 
-	export let announcer: Announcer | null = null;
+	// export let announcer: Announcer | null = null;
 </script>
 
 <Popup bind:open>
-	<span slot="title">OispaHallasta</span>
+	<span slot="title" class="title">OispaHalla <span class="version">v.{__APP_VERSION__}</span>
+		{#if dev}
+			<span class="label">dev</span>
+		{/if}
+	</span>
 	<div slot="content" class="content">
 		<div class="section notice">
 			<p>
@@ -22,34 +27,43 @@
 		</div>
 		<div class="section credits">
 			<p>
-				Alkuperäisen projektin <a href="https://github.com/gabrielecirulli/2048" target="_blank"
-					>2048</a
+				Alkuperäisen projektin <a
+					href="https://github.com/gabrielecirulli/2048"
+					target="_blank"
+					rel="noreferrer">2048</a
 				>
-				on tehnyt <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
+				on tehnyt
+				<a href="http://gabrielecirulli.com" target="_blank" rel="noreferrer">Gabriele Cirulli.</a>
 			</p>
 			<p>
-				Projektin perustana toimii <a href="https://kit.svelte.dev/" target="_blank">Sveltekit</a>.
+				Projektin perustana toimii <a
+					href="https://kit.svelte.dev/"
+					target="_blank"
+					rel="noreferrer">Sveltekit</a
+				>.
 			</p>
 			<!--
                 TODO: lisää lisää
             -->
 		</div>
 		<div class="links">
-			<a href="https://github.com/hallabois" target="_blank">GitHub</a>
-			<a href="https://simpleanalytics.com/oispahalla.com" target="_blank">Simpleanalytics</a>
-			<a href="https://hallabois.github.io/invite" target="_blank">Discord</a>
+			<a href="https://github.com/hallabois/OispaHalla" target="_blank" rel="noreferrer"
+				>Lähdekoodi</a
+			>
+			<a href="https://simpleanalytics.com/oispahalla.com" target="_blank" rel="noreferrer"
+				>Simpleanalytics</a
+			>
+			<a href="https://hallabois.github.io/invite" target="_blank" rel="noreferrer">Discord</a>
 		</div>
 	</div>
 </Popup>
 
 <style>
-	h3 {
-		display: inline;
-		margin: 0;
-		border-bottom: 1px solid var(--color);
-	}
-	hr {
-		margin-block: 0.5em;
+	.title {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: .2em;
 	}
 	a,
 	p {
@@ -70,5 +84,16 @@
 		display: flex;
 		justify-content: space-evenly;
 		margin-top: 20px;
+	}
+	.version {
+		opacity: 0.5;
+	}
+	.label {
+		font-size: .75em;
+		border-radius: 999px;
+		border: 1px solid var(--color);
+		background: var(--color);
+		color: var(--container-background, var(--background));
+		padding-inline: 1em;
 	}
 </style>
