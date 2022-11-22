@@ -6,7 +6,8 @@
 	<slot />
 {:else}
 	<div class="blurry-bg coming-soon">
-		<p>Tulossa pian™</p>
+		<img src="lmao.png" />
+		<p>Isoja Juttuja Tulossa™</p>
 	</div>
 {/if}
 
@@ -15,6 +16,7 @@
 		min-height: 100vh;
 
 		display: flex;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 	}
