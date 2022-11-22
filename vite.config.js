@@ -6,7 +6,7 @@ import topLevelAwait from "vite-plugin-top-level-await";
 import child_process from "child_process";
 const commitHash = child_process.execSync("git rev-parse --short HEAD").toString().trim();
 console.log("Latest commit:", commitHash);
-const branch = child_process.execSync("git symbolic-ref --short HEAD").toString().trim();
+const branch = child_process.execSync("git rev-parse --symbolic-full-name --abbrev-ref HEAD").toString().trim();
 console.log("Branch:", branch);
 
 /** @type {import('vite').UserConfig} */
