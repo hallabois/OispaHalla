@@ -5,7 +5,7 @@
 	import { slide } from "svelte/transition";
 	import { browser, dev } from "$app/environment";
 	import { marked } from "marked";
-	import { storage, storage_loaded, setItem } from "$lib/stores/storage";
+	import { storage, storage_loaded, getItem, setItem } from "$lib/stores/storage";
 
 	let open = false;
 	export function show() {
@@ -23,11 +23,11 @@
 	export let has_unread_notifications: boolean | null = null;
 	export let unread_notification_count: number | null = null;
 	export let has_unread_important_notifications: boolean | null = null;
-	$: has_unread_notifications = unread_psas.length > 0;
+	$: has_unread_notifications = getItem("zen_mode") ? false : unread_psas.length > 0;
 	$: unread_notification_count = unread_psas.length;
 	$: has_unread_important_notifications = unread_important_psas.length > 0;
 
-	$: if (browser && $storage_loaded && has_unread_important_notifications) {
+	$: if (browser && $storage_loaded && has_unread_important_notifications && !getItem("zen_mode")) {
 		show();
 	}
 
