@@ -5,6 +5,7 @@ import topLevelAwait from "vite-plugin-top-level-await";
 // Expose git version to the app
 import child_process from "child_process";
 const commitHash = child_process.execSync("git rev-parse --short HEAD").toString().trim();
+const branch = child_process.execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
 
 /** @type {import('vite').UserConfig} */
 const config = {
@@ -14,7 +15,8 @@ const config = {
 	},
 
 	define: {
-		__APP_VERSION__: JSON.stringify(commitHash)
+		__APP_VERSION__: JSON.stringify(commitHash),
+		__APP_BRANCH__: JSON.stringify(branch)
 	}
 };
 
