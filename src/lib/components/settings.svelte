@@ -125,7 +125,12 @@
 									class="button action-btn"
 									on:click={() => {
 										download();
-									}}><Icon d={downloadIconData} viewBox="0 0 48 48" /></button
+									}}
+									><Icon
+										d={downloadIconData}
+										viewBox="0 0 48 48"
+										fill="var(--action-btn-color)"
+									/></button
 								>
 							{/if}
 						</div>
