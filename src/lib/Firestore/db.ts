@@ -66,6 +66,32 @@ export function createDB(
 		}
 	}
 
+	async function uploadGame(gamestate: Object) {
+		console.info("trying to upload gamestate...");
+		const { getDoc, setDoc } = await import("firebase/firestore");
+		let d = await getDoc(dbRef);
+		let old_data = d.data() || {};
+		let old_gamedata = old_data.gamestate;
+		if (old_gamedata) {
+			throw new Error("Tried to upload gamestate, but old data was found!");
+		}
+		await setDoc(dbRef, {
+			...old_data,
+			gamestate: JSON.stringify(gamestate),
+			__updated_ms: new Date().getTime()
+		});
+		console.info("gamestate uploaded!");
+	}
+
+	async function clearGame() {
+		console.info("clearing remote gamestate...");
+		const { updateDoc, deleteField } = await import("firebase/firestore");
+		await updateDoc(dbRef, {
+			gamestate: deleteField()
+		});
+		console.info("remote gamestate cleared!");
+	}
+
 	async function activateAccount() {
 		console.info("Activating account...");
 		const { getDoc, setDoc } = await import("firebase/firestore");
@@ -93,21 +119,19 @@ export function createDB(
 		subscribe,
 		activateAccount,
 		uploadStorage,
+		uploadGame,
+		clearGame,
 
 		server_setPSA
 	};
 }
 
-export function get_db(uid: string): DB {
-	console.info("DB requested for user ", uid);
+export function get_user_db(uid: string): DB {
 	if (Object.keys(dbs).includes(uid)) {
-		console.info("DB found in cache");
 		return dbs[uid];
 	}
-	console.info("Creating DB...");
 	let userdb = createDB("user", uid);
 	dbs[uid] = userdb;
-	console.info("DB Created", userdb);
 	return userdb;
 }
 
