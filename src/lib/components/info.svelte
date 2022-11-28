@@ -15,7 +15,7 @@
 	<span slot="title" class="title"
 		>OispaHalla <span class="version">v.{__APP_VERSION__}</span>
 		{#if dev}
-			<span class="label">dev</span>
+			<span class="badge">dev</span>
 		{/if}
 	</span>
 	<div slot="content" class="content">
@@ -89,12 +89,7 @@
 	.version {
 		opacity: 0.5;
 	}
-	.label {
+	.badge {
 		font-size: 0.75em;
-		border-radius: 999px;
-		border: 1px solid var(--color);
-		background: var(--color);
-		color: var(--container-background, var(--background));
-		padding-inline: 1em;
 	}
 </style>

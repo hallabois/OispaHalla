@@ -63,7 +63,9 @@
 {:else if $TAB_BLOCK}
 	<div class="ctmblock-div blurry-bg">
 		<h1>Sulje muut välilehdet</h1>
-		<p style="padding-bottom:1em;">OispaHallaa voi pelata vain yhdessä välilehdessä kerrallaan.</p>
+		<p style="padding-bottom:1em;text-align:center;">
+			OispaHallaa voi pelata vain yhdessä välilehdessä kerrallaan.
+		</p>
 		<button class="button action-btn" on:click={take_ownership}>Pelaa tässä</button>
 	</div>
 {:else}

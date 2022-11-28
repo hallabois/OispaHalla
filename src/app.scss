@@ -1345,6 +1345,14 @@ $t: 0;
 	background: transparent;
 	color: inherit;
 }
+
+.badge {
+	border-radius: 999px;
+	border: 1px solid var(--color);
+	background: var(--color);
+	color: var(--container-background, var(--background));
+	padding-inline: 1em;
+}
 //
 
 .blurry-bg {
