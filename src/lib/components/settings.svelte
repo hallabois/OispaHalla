@@ -140,7 +140,12 @@
 							class="button action-btn"
 							on:click={() => {
 								upload();
-							}}><Icon d={uploadIconData} viewBox="0 0 48 48" /></button
+							}}
+							><Icon
+								d={uploadIconData}
+								viewBox="0 0 48 48"
+								fill="var(--action-btn-color)"
+							/></button
 						>
 					{/if}
 				{:else}
