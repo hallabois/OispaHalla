@@ -72,7 +72,7 @@ export function createDB(
 		let d = await getDoc(dbRef);
 		let old_data = d.data() || {};
 		let old_gamedata = old_data.gamestate;
-		if(old_gamedata) {
+		if (old_gamedata) {
 			throw new Error("Tried to upload gamestate, but old data was found!");
 		}
 		await setDoc(dbRef, {

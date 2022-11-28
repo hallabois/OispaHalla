@@ -3,7 +3,7 @@
 	import { draw } from "svelte/transition";
 	import { quintOut } from "svelte/easing";
 
-	export let d = null;
+	export let d: string | null = null;
 	export let show_stroke = false;
 	export let stroke = "none";
 	export let stroke_width = "0.5";

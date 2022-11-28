@@ -89,7 +89,7 @@ class theme_manifest {
 let default_manifest: theme_manifest = {
 	name: "Oispa Halla",
 	description: "Yhdistä opettajat ja saavuta **Halla!**"
-}
+};
 class theme {
 	name!: string;
 	index!: number;
@@ -130,7 +130,6 @@ export let available_themes: Writable<Array<Theme>> = writable([
 	},
 	classic
 ]);
-
 
 let kaunis = {
 	name: "Kaunis",

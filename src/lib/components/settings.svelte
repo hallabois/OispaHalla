@@ -6,6 +6,8 @@
 	import Popup from "./common/popup/popup.svelte";
 	import ThemeChooser from "./common/theme-chooser/themeChooser.svelte";
 	import type Announcer from "./common/announcer/announcer.svelte";
+	import Icon from "./common/icon/icon.svelte";
+	import { deleteIconData, downloadIconData, uploadIconData } from "./common/icon/iconData";
 
 	let open = false;
 	export function show() {
@@ -23,7 +25,7 @@
 			announcer.announce("Aikaisempi siirto on vielä kesken");
 			return;
 		}
-		if (confirm("Kun peli on ladattu pilveen, se poistetaan tältä laitteelta")) {
+		if (true || confirm("Kun peli on ladattu pilveen, se poistetaan tältä laitteelta")) {
 			syncing = true;
 			let serialized = GameManagerInstance.serialize();
 			announcer.announce("Siirretään peliä...");
@@ -42,7 +44,10 @@
 			announcer.announce("Aikaisempi siirto on vielä kesken");
 			return;
 		}
-		if (confirm("Pilveen tallennettu peli korvaa paikallisen pelin ja peli poistetaan pilvestä")) {
+		if (
+			true ||
+			confirm("Pilveen tallennettu peli korvaa paikallisen pelin ja peli poistetaan pilvestä")
+		) {
 			let cloudstate = $db.data().gamestate;
 			if (cloudstate) {
 				syncing = true;
@@ -64,9 +69,8 @@
 
 	async function del() {
 		if (
-			confirm(
-				"Haluatko varmasti poistaa pilveen tallennetun pelin? Et saa sitä enää mitään kautta takaisin"
-			)
+			confirm("Haluatko varmasti poistaa pilveen tallennetun pelin?") &&
+			confirm("Oletko 100% varma? Et saa peliä enää mitään kautta takaisin.")
 		) {
 			let cloudstate = $db.data().gamestate;
 			if (cloudstate) {
@@ -114,14 +118,14 @@
 								class="button action-btn discouradge"
 								on:click={() => {
 									del();
-								}}>Poista tallennettu peli</button
+								}}><Icon d={deleteIconData} viewBox="0 0 48 48" /></button
 							>
 							{#if canDownload}
 								<button
 									class="button action-btn"
 									on:click={() => {
 										download();
-									}}>Siirrä pilvestä</button
+									}}><Icon d={downloadIconData} viewBox="0 0 48 48" /></button
 								>
 							{/if}
 						</div>
@@ -131,7 +135,7 @@
 							class="button action-btn"
 							on:click={() => {
 								upload();
-							}}>Siirrä nykyinen peli pilveen</button
+							}}><Icon d={uploadIconData} viewBox="0 0 48 48" /></button
 						>
 					{/if}
 				{:else}
