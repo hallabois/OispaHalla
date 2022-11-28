@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { marked } from "marked";
-	import { get_db, PSA } from "$lib/Firestore/db";
+	import { get_user_db, PSA } from "$lib/Firestore/db";
 	import { auth } from "$lib/Auth/authstore";
 	import { dev } from "$app/environment";
 	let user_db = null;
 	let userdata = null;
 	$: if ($auth) {
-		user_db = get_db($auth.uid);
+		user_db = get_user_db($auth.uid);
 	}
 	$: if ($user_db != null) {
 		userdata = $user_db.data();

@@ -134,7 +134,7 @@
 
 <div class="container">
 	<Announcer bind:this={AnnouncerInstance} />
-	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
+	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
 	<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
 	<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
 	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
