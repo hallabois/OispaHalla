@@ -21,6 +21,7 @@
 	import type Grid from "$lib/gamelogic/grid";
 	import { browser } from "$app/environment";
 	import Tournaments from "$lib/components/tournaments.svelte";
+	import Popup from "$lib/components/common/popup/popup.svelte";
 
 	let app_name = "Oispa Halla";
 	let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
@@ -77,6 +78,13 @@
 	let AnnouncerInstance: Announcer;
 	let BoardInstance: Board;
 	let TtInstance: Tournaments;
+	$: if (
+		$joined_game_id &&
+		$game_details[$joined_game_id] &&
+		$game_details[$joined_game_id].winner_id
+	) {
+		TtInstance.show();
+	}
 
 	let enableMonkey = false;
 	let monkeyInterval: NodeJS.Timer | undefined;

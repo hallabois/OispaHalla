@@ -9,7 +9,8 @@
 		name_cache,
 		send_message,
 		chat,
-		request_start
+		request_start,
+		request_kick
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
 	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
@@ -47,27 +48,40 @@
 			<p>Ladataan pelin tietoja...</p>
 		{:else}
 			{@const am_host = $user_details.admin || $user_details.id === game_data.creator_id}
-			<div class="top">
-				<button
-					class=""
-					on:click={() => {
-						if ($joined_game_id) request_leave($joined_game_id);
-					}}>Poistu Pelistä</button
-				>
-				{#if am_host}
-					Järjestäjä 👑
+			{#if game_data.winner_id}
+				{@const winner_name = ($name_cache || {})[game_data.winner_id]}
+				<h3 style="margin: 0;">Peli "{game_data.name}" on päättynyt</h3>
+				<div class="winner-announcement">
+					<h2>Voittaja:</h2>
+					<h1>{winner_name}</h1>
+					<button
+						class="button action-btn"
+						on:click={() => {
+							$joined_game_id = null;
+						}}>Takaisin valikkoon</button
+					>
+				</div>
+			{:else}
+				<div class="top">
 					<button
 						class=""
 						on:click={() => {
-							if ($joined_game_id) request_deletion($joined_game_id);
-						}}
+							if ($joined_game_id) request_leave($joined_game_id);
+						}}>Poistu Pelistä</button
 					>
-						Poista Peli
-					</button>
-				{/if}
-			</div>
-			<hr />
-			{#if game_data}
+					{#if am_host}
+						Järjestäjä 👑
+						<button
+							class=""
+							on:click={() => {
+								if ($joined_game_id) request_deletion($joined_game_id);
+							}}
+						>
+							Poista Peli
+						</button>
+					{/if}
+				</div>
+				<hr />
 				<p>Liitytty peliin "{game_data.name}"</p>
 				<p>
 					Liittymiskoodi: <code>{$joined_game_id}</code>
@@ -139,45 +153,34 @@
 						</div>
 					</div>
 				</div>
-			{:else}
-				<p>Ladataan pelin tietoja...</p>
-				<div class="data">
-					<div>
-						<h3>...</h3>
-						<div class="game-preview" />
+				{#if am_host}
+					<div class="start">
+						<button
+							style="width:100%;"
+							class="button action-btn"
+							on:click={() => {
+								request_start(game_data.id);
+							}}
+							disabled={game_data.started || game_data.ended}
+						>
+							{game_data.ended
+								? "Peli on päättynyt!"
+								: game_data.started
+								? "Peli on alkanut!"
+								: "Aloita Peli"}
+						</button>
 					</div>
-					<div>
-						<h3>...</h3>
+				{:else}
+					<div class="start">
+						<p style="width: 100%;text-align:center;">
+							{game_data.ended
+								? "Peli on päättynyt!"
+								: game_data.started
+								? "Peli on alkanut!"
+								: "Odotetaan pelin alkua..."}
+						</p>
 					</div>
-				</div>
-			{/if}
-			{#if am_host}
-				<div class="start">
-					<button
-						style="width:100%;"
-						class="button action-btn"
-						on:click={() => {
-							request_start(game_data.id);
-						}}
-						disabled={game_data.started || game_data.ended}
-					>
-						{game_data.ended
-							? "Peli on päättynyt!"
-							: game_data.started
-							? "Peli on alkanut!"
-							: "Aloita Peli"}
-					</button>
-				</div>
-			{:else}
-				<div class="start">
-					<p style="width: 100%;text-align:center;">
-						{game_data.ended
-							? "Peli on päättynyt!"
-							: game_data.started
-							? "Peli on alkanut!"
-							: "Odotetaan pelin alkua..."}
-					</p>
-				</div>
+				{/if}
 			{/if}
 
 			<Popup bind:open={player_list_open}>
@@ -190,6 +193,12 @@
 							{name}
 							{#if player_id === $user_details.id}
 								(sinä)
+							{:else if am_host}
+								<button
+									on:click={() => {
+										request_kick(game_data.id, player_id);
+									}}>×</button
+								>
 							{/if}
 						</p>
 					{/each}
@@ -269,5 +278,18 @@
 	}
 	hr {
 		margin-block: 0.25em;
+	}
+
+	.winner-announcement {
+		display: flex;
+		flex-direction: column;
+
+		justify-content: center;
+		align-items: center;
+
+		min-height: max(75vh, 500px);
+	}
+	.winner-announcement > * {
+		margin: 0;
 	}
 </style>

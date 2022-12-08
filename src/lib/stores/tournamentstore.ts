@@ -299,6 +299,14 @@ export function request_leave(game_id: number) {
 		joined_game_id.set(null);
 	}
 }
+export function request_kick(game_id: number, user_id: string) {
+	if (socket) {
+		socket.send(`kick|>${game_id}|>${user_id}`);
+	} else {
+		console.warn("not connected! can't kick participants.");
+		joined_game_id.set(null);
+	}
+}
 export function send_message(message: string | null) {
 	if (socket) {
 		if (message) socket.send(`say|>${message}`);
