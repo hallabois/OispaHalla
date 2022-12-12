@@ -180,7 +180,7 @@ let spooktober: Holiday = {
 let xmas: Holiday = {
 	min: {
 		month: 12,
-		date: 15
+		date: 1
 	},
 	max: {
 		month: 12,
