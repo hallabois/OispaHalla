@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Message from "./announcerMessage.svelte";
 
-	class announcement {
-		msg!: string;
-		time!: Date;
-	}
+	type announcement = {
+		msg: string;
+		time: Date;
+	};
 	let announcements: announcement[] = [];
 
 	export function announce(msg: string) {
@@ -17,7 +17,7 @@
 		setTimeout(() => {
 			announcements.shift();
 			announcements = announcements;
-		}, 2050);
+		}, 3550);
 	}
 </script>
 

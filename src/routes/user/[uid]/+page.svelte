@@ -70,7 +70,6 @@
 	import {
 		ready,
 		wasm,
-		validation_cache,
 		init as initWasm,
 		validation_cache
 	} from "$lib/wasm/twothousand_forty_eight";

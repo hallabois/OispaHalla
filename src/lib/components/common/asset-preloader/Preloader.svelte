@@ -15,3 +15,15 @@
 		<link rel="preload" as="image" href={image} />
 	{/each}
 </svelte:head>
+
+<main>
+	{#each preloadImageUrls as src}
+		<img {src} aria-hidden="false" alt="" />
+	{/each}
+</main>
+
+<style>
+	main {
+		display: none;
+	}
+</style>

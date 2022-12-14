@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { slide, fade } from "svelte/transition";
+	import { slide } from "svelte/transition";
 	export let msg: string;
 	export let time: Date;
 </script>
 
-<div class="notification" transition:slide>
+<div class="notification" id={time.getTime() + ""} transition:slide>
 	<p>
 		{msg}
 	</p>
@@ -41,6 +41,6 @@
 		height: 2px;
 		background: var(--color);
 		translate: -100% 0;
-		animation: timer 2s forwards;
+		animation: timer 3.5s forwards;
 	}
 </style>

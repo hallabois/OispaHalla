@@ -1,6 +1,6 @@
 <!-- / -->
 <script lang="ts">
-	import { slide, scale, type SlideParams } from "svelte/transition";
+	import { slide, scale } from "svelte/transition";
 	import { theme_index, base_path, available_themes } from "$lib/stores/themestore";
 
 	import { storage_loaded } from "$lib/stores/storage";

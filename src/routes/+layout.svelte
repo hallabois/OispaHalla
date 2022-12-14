@@ -1,6 +1,4 @@
 <script lang="ts">
-	import "$lib/devtools";
-
 	import type { LayoutData } from "./$types";
 	export let data: LayoutData;
 	$: ({ theme_override } = data);
@@ -8,12 +6,16 @@
 	import { TAB_BLOCK, take_ownership } from "$lib/session_manager";
 
 	import "../app.scss";
+	import "$lib/devtools";
 	import PopupScrolllock from "$lib/components/common/popup/popup_scrolllock.svelte";
 	import LoadingIndicator from "$lib/components/common/loading-indicator/LoadingIndicator.svelte";
 	import { storage_version } from "$lib/stores/storage";
 	import { theme_index } from "$lib/stores/themestore";
 	import { enable_countdown } from "../features";
 	import { browser, dev } from "$app/environment";
+	import Analytics from "$lib/components/analytics/analytics.svelte";
+	import Pwa from "$lib/components/common/pwa.svelte";
+
 	//export let theme_override: number | null;
 	if (theme_override != null) {
 		console.info("Found theme override", theme_override);
@@ -39,19 +41,9 @@
 			}
 		}, 1000);
 	}
-
-	import * as Sentry from "@sentry/svelte";
-	import { BrowserTracing } from "@sentry/tracing";
-	import Preloader from "$lib/components/common/image-preloader/Preloader.svelte";
-	if (browser && !dev) {
-		// Initialize the Sentry SDK here
-		Sentry.init({
-			dsn: "https://b7328d8038d34d72b707bd9b3e98a9e9@o4503924795244544.ingest.sentry.io/4503924806516736",
-			integrations: [new BrowserTracing({ tracingOrigins: ["*"] })],
-			tracesSampleRate: 0.2
-		});
-	}
 </script>
+
+<Pwa />
 
 <LoadingIndicator />
 
@@ -74,6 +66,8 @@
 		<slot />
 	{/key}
 {/if}
+
+<Analytics />
 
 <style lang="scss">
 	.ctmblock-div {

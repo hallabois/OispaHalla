@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	import { draw } from "svelte/transition";
 	import { quintOut } from "svelte/easing";
 

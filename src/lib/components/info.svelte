@@ -7,8 +7,6 @@
 	export function show() {
 		open = true;
 	}
-
-	// export let announcer: Announcer | null = null;
 </script>
 
 <Popup bind:open>

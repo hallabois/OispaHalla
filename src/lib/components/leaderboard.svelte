@@ -356,7 +356,12 @@
 					</div>
 				{:else}
 					<p>Virhe otettaessa yhteyttä palvelimeen.</p>
-					<button class="button action-btn" on:click={refresh}>Yritä uudelleen</button>
+					<button
+						class="button action-btn"
+						on:click={() => {
+							refresh();
+						}}>Yritä uudelleen</button
+					>
 				{/if}
 			{/await}
 		{:else}
@@ -375,7 +380,6 @@
 	startSubmitting={(s) => {
 		startSubmitting(s);
 	}}
-	sizes={enabled_sizes}
 />
 
 <style>

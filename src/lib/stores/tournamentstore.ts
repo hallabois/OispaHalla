@@ -6,7 +6,9 @@ import { type Writable, writable, get } from "svelte/store";
 import { getItem, setItem, storage_loaded } from "./storage";
 
 let tournament_endpoint_prod = "wss://mp.oispahalla.com";
-let tournament_endpoint_dev = mp_test_prod_endpoint ? tournament_endpoint_prod : "ws://localhost:9000";
+let tournament_endpoint_dev = mp_test_prod_endpoint
+	? tournament_endpoint_prod
+	: "ws://localhost:9000";
 export let tournament_endpoint = dev ? tournament_endpoint_dev : tournament_endpoint_prod;
 
 export let gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];

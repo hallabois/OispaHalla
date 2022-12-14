@@ -1,4 +1,4 @@
-import { readable, type Readable } from "svelte/store";
+import { readable } from "svelte/store";
 import { browser } from "$app/environment";
 import type { DocumentReference, DocumentSnapshot } from "firebase/firestore";
 import type { FirebaseApp } from "firebase/app";
