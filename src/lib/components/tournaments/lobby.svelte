@@ -249,7 +249,6 @@
 		overflow-y: scroll;
 	}
 	.messages p {
-		max-width: 10em;
 		margin: 0;
 	}
 	.start {
