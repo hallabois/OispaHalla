@@ -118,7 +118,7 @@
 								player_list_open = true;
 							}}
 						>
-							{game_data.clients.length}
+							{game_data.clients.length}/{game_data.max_clients}
 							{game_data.clients.length == 1 ? "pelaaja" : "pelaajaa"}
 						</button>
 						<div class="chat-window">
