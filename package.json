@@ -40,7 +40,7 @@
 		"tslib": "^2.3.1",
 		"twothousand-forty-eight": "^0.16.1",
 		"typescript": "^4.4.3",
-		"vite": "^3.0.0",
+		"vite": "^4.0.0",
 		"vite-plugin-top-level-await": "^1.1.1",
 		"vite-plugin-wasm": "^2.1.0"
 	},
