@@ -192,11 +192,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="disclaimer">
-		<p>
-			{@html marked.parse(app_notice)}
-		</p>
-	</div>
+	{#if app_notice && app_notice.length > 0}
+		<div class="disclaimer">
+			<p>
+				{@html marked.parse(app_notice)}
+			</p>
+		</div>
+	{/if}
 	<div class="board-container">
 		<Board
 			{enableKIM}
