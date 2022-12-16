@@ -30,7 +30,7 @@ storage.set = (value: KeyValueMap) => {
 export let storage_loaded: Writable<boolean> = writable(false);
 export let storage_status: Writable<string | null> = writable(null);
 export let storage_version: Writable<Object> = writable({});
-async function update_storage_from_localstorage() {
+export async function update_storage_from_localstorage() {
 	storage_loaded.set(false);
 	storage_status.set("Tarkistetaan tallennustilaa...");
 	console.log("Loading storage...");

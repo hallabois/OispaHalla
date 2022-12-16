@@ -204,8 +204,8 @@ export default class GameManager {
 
 	// Sends the updated grid to the actuator
 	actuate() {
-		if (this.storageManager.getBestScorePlus(this.size) < this.score) {
-			this.storageManager.setBestScorePlus(this.score, this.size);
+		if (this.storageManager.getBestScore(this.size) < this.score) {
+			this.storageManager.setBestScore(this.score, this.size);
 		}
 
 		// Clear the state when the game is over (game over only, not win)
@@ -220,7 +220,7 @@ export default class GameManager {
 			palautukset: this.palautukset,
 			over: this.over,
 			won: this.won,
-			bestScore: this.storageManager.getBestScorePlus(this.size),
+			bestScore: this.storageManager.getBestScore(this.size),
 			terminated: this.isGameTerminated()
 		});
 		this.update_subscribers();

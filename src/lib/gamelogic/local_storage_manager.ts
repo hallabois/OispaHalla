@@ -18,13 +18,7 @@ export default class LocalStorageManager {
 		}
 	}
 	// Best score getters/setters
-	getBestScore() {
-		if (!this.enabled) {
-			return 0;
-		}
-		return getItem(this.bestScoreKey) || 0;
-	}
-	getBestScorePlus(size: number) {
+	getBestScore(size: number) {
 		if (!this.enabled) {
 			return 0;
 		}
@@ -39,22 +33,12 @@ export default class LocalStorageManager {
 			console.log("Best scores not working!", e);
 			return 0;
 		}
-		if (size == 4) {
-			return this.getBestScore();
-		}
 		return 0;
 	}
-	setBestScore(score: number) {
+	setBestScore(score: number, size: number) {
 		if (!this.enabled) {
 			return;
 		}
-		setItem(this.bestScoreKey, score);
-	}
-	setBestScorePlus(score: number, size: number) {
-		if (!this.enabled) {
-			return;
-		}
-		setItem(this.bestScoreKey, score);
 		let current = getItem("bestScores");
 		current[size] = score;
 		setItem("bestScores", current);

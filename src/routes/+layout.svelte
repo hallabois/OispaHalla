@@ -15,6 +15,7 @@
 	import { browser, dev } from "$app/environment";
 	import Analytics from "$lib/components/analytics/analytics.svelte";
 	import Pwa from "$lib/components/common/pwa.svelte";
+	import ChromiumCachePreventer from "$lib/components/common/chromium-cache-preventer.svelte";
 
 	//export let theme_override: number | null;
 	if (theme_override != null) {
@@ -44,6 +45,7 @@
 </script>
 
 <Pwa />
+<ChromiumCachePreventer />
 
 <LoadingIndicator />
 
