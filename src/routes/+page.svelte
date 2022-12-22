@@ -5,7 +5,7 @@
 	import { enable_multiplayer, enable_leaderboards, enable_countdown } from "../features";
 	import { storage_loaded, storage } from "$lib/stores/storage";
 
-	import Preloader from "$lib/components/common/image-preloader/Preloader.svelte";
+	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
 
 	import Settings from "$lib/components/settings.svelte";
 	import Info from "$lib/components/info.svelte";
@@ -112,7 +112,7 @@
 	let lbInstance: Leaderboards;
 	let InfoInstance: Info;
 	let has_unread_notifications: boolean | null;
-	let unread_notification_count: string | null;
+	let unread_notification_count: number | null;
 	let PSAInstance: PSA;
 	let SettingsInstance: Settings;
 	let AnnouncerInstance: Announcer;
@@ -130,20 +130,13 @@
 	}
 </script>
 
-<Preloader />
-
 <div class="container">
 	<Announcer bind:this={AnnouncerInstance} />
-	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} />
-	<Info bind:this={InfoInstance} announcer={AnnouncerInstance} />
+	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
+	<Info bind:this={InfoInstance} />
 	<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
 	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
-	<PSA
-		bind:this={PSAInstance}
-		announcer={AnnouncerInstance}
-		bind:has_unread_notifications
-		bind:unread_notification_count
-	/>
+	<PSA bind:this={PSAInstance} bind:has_unread_notifications bind:unread_notification_count />
 	<div class="new-above-game">
 		<div class="above-game-left">
 			<a href="https://hallabois.github.io/invite/" target="_blank" rel="noreferrer">
@@ -199,11 +192,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="disclaimer">
-		<p>
-			{@html marked.parse(app_notice)}
-		</p>
-	</div>
+	{#if app_notice && app_notice.length > 0}
+		<div class="disclaimer">
+			<p>
+				{@html marked.parse(app_notice)}
+			</p>
+		</div>
+	{/if}
 	<div class="board-container">
 		<Board
 			{enableKIM}
@@ -247,7 +242,7 @@
 						stroke="var(--color)"
 						viewBox="0 0 48 48"
 						d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
-						upper_text={has_unread_notifications ? unread_notification_count || null : null}
+						upper_text={has_unread_notifications ? unread_notification_count + "" || null : null}
 					/>
 				</button>
 			</div>
@@ -298,11 +293,8 @@
 		>
 	</div> -->
 </div>
-<div class="patches">
-	<!-- <script src="/js/application.js"></script>
-    <script src="/js/HAC.js"></script> -->
-	<div class="preload-container" />
-</div>
+
+<Preloader />
 
 <style>
 	.board-container {
@@ -320,9 +312,5 @@
 		animation: none !important;
 		-moz-animation: none !important;
 		-webkit-animation: none !important;
-	}
-	.patches {
-		height: 0;
-		width: 0;
 	}
 </style>

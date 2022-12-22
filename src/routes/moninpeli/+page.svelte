@@ -19,8 +19,9 @@
 	} from "$lib/gamelogic/utils";
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
 	import type Grid from "$lib/gamelogic/grid";
-	import { browser } from "$app/environment";
+	import { browser, dev } from "$app/environment";
 	import Tournaments from "$lib/components/tournaments.svelte";
+	import Popup from "$lib/components/common/popup/popup.svelte";
 
 	let app_name = "Oispa Halla";
 	let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
@@ -40,21 +41,31 @@
 		// enableKIM = false;
 	} */
 
+	$: inputManager_should_exist =
+		$joined_game_id &&
+		$game_details[$joined_game_id]?.started &&
+		$state[$joined_game_id] &&
+		$user_details != null;
 	function move(direction: 0 | 1 | 2 | 3) {
-		if (true) {
+		if (inputManager_should_exist) {
 			// BoardInstance?.getGameManagerInstance()?.move(direction);
 			console.log("server-side move called with the value", direction);
 			request_move(direction);
 			// poll_send_moves.push(direction);
 			// console.info(JSON.stringify(poll_send_moves));
 		} else {
-			console.warn("Tried to move when the game hadn't started yet");
+			if (browser && document.oh_keylistener) {
+				document.oh_keylistener.removeKeydownHandler();
+			}
 		}
 	}
-	$: if ($joined_game_id) {
-		//window.onbeforeunload = function (e) {
-		//	return "Oletko varma että haluat jättää pelin kesken?";
-		//};
+	$: if (inputManager_should_exist) {
+		if (!dev) {
+			window.onbeforeunload = function (e) {
+				return "Oletko varma että haluat jättää pelin kesken?";
+			};
+		}
+
 		if (inputManager == null) {
 			console.log("Creating server-side inputmanager...");
 			inputManager = new KeyboardInputManager(inputRoot);
@@ -65,10 +76,11 @@
 		if (browser) {
 			window.onbeforeunload = null;
 		}
-		if (inputManager != null) {
+
+		if (browser && document.oh_keylistener) {
 			console.log("Destroying server-side inputmanager...");
+			document.oh_keylistener.removeKeydownHandler();
 			inputManager = null;
-			// enableKIM = false;
 		}
 	}
 
@@ -77,6 +89,13 @@
 	let AnnouncerInstance: Announcer;
 	let BoardInstance: Board;
 	let TtInstance: Tournaments;
+	$: if (
+		$joined_game_id &&
+		$game_details[$joined_game_id] &&
+		$game_details[$joined_game_id].winner_id
+	) {
+		TtInstance.show();
+	}
 
 	let enableMonkey = false;
 	let monkeyInterval: NodeJS.Timer | undefined;

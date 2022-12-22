@@ -2,7 +2,7 @@ import { type Writable, writable, get } from "svelte/store";
 import { browser } from "$app/environment";
 import { TAB_BLOCK } from "$lib/session_manager";
 import localforage from "localforage";
-import { get_db } from "$lib/Firestore/db";
+import { get_user_db } from "$lib/Firestore/db";
 import { auth } from "$lib/Auth/authstore";
 import { enable_sync } from "../../features";
 
@@ -30,7 +30,7 @@ storage.set = (value: KeyValueMap) => {
 export let storage_loaded: Writable<boolean> = writable(false);
 export let storage_status: Writable<string | null> = writable(null);
 export let storage_version: Writable<Object> = writable({});
-async function update_storage_from_localstorage() {
+export async function update_storage_from_localstorage() {
 	storage_loaded.set(false);
 	storage_status.set("Tarkistetaan tallennustilaa...");
 	console.log("Loading storage...");
@@ -119,7 +119,7 @@ storage.subscribe(async (data) => {
 			if (data && enable_sync) {
 				let $auth = get(auth);
 				if ($auth != null) {
-					let db = get_db($auth.uid);
+					let db = get_user_db($auth.uid);
 					if (get(db)) {
 						db.uploadStorage(data);
 					}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {dev} from "$app/environment";
+	import { dev } from "$app/environment";
 	import Popup from "./common/popup/popup.svelte";
 	// import type Announcer from "./tournaments/announcer.svelte";
 
@@ -7,14 +7,13 @@
 	export function show() {
 		open = true;
 	}
-
-	// export let announcer: Announcer | null = null;
 </script>
 
 <Popup bind:open>
-	<span slot="title" class="title">OispaHalla <span class="version">v.{__APP_VERSION__}</span>
+	<span slot="title" class="title"
+		>OispaHalla <span class="version">v.{__APP_VERSION__}</span>
 		{#if dev}
-			<span class="label">dev</span>
+			<span class="badge">dev</span>
 		{/if}
 	</span>
 	<div slot="content" class="content">
@@ -63,7 +62,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: .2em;
+		gap: 0.2em;
 	}
 	a,
 	p {
@@ -88,12 +87,7 @@
 	.version {
 		opacity: 0.5;
 	}
-	.label {
-		font-size: .75em;
-		border-radius: 999px;
-		border: 1px solid var(--color);
-		background: var(--color);
-		color: var(--container-background, var(--background));
-		padding-inline: 1em;
+	.badge {
+		font-size: 0.75em;
 	}
 </style>

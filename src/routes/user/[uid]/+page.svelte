@@ -70,7 +70,6 @@
 	import {
 		ready,
 		wasm,
-		validation_cache,
 		init as initWasm,
 		validation_cache
 	} from "$lib/wasm/twothousand_forty_eight";
@@ -192,7 +191,7 @@
 	{#if user_data.data}
 		<title>OispaHalla-käyttäjä "{user_data.data.screenName}"</title>
 	{:else}
-		<title>Puuttuva OispaHalla -käyttäjä {data.uid}</title>
+		<title>Puuttuva OispaHalla-käyttäjä {data.uid}</title>
 	{/if}
 </svelte:head>
 
@@ -216,11 +215,16 @@
 				{/each}
 			</div>
 			{#if selected_score_data != null}
-				<h2>{numberWithSpaces(selected_score_data.score)} pistettä</h2>
-				<h3>
-					{selected_score_frames?.length} siirtoa,
-					{selected_score_data.breaks}
-					{selected_score_data.breaks == 1 ? "kurinpalautus" : "kurinpalautusta"}
+				{@const histlen = selected_score_frames?.length || 1}
+				<h2>
+					{numberWithSpaces(selected_score_data.score)} pistettä
+				</h2>
+				<h3 class="stats">
+					<span title={`${selected_score_data.score / histlen} pps`}>{histlen} siirtoa</span>
+					<span
+						>{selected_score_data.breaks}
+						{selected_score_data.breaks == 1 ? "kurinpalautus" : "kurinpalautusta"}</span
+					>
 				</h3>
 				<h3>Saavutettu {new Date(selected_score_data.updatedAt).toLocaleString()}</h3>
 				<hr />
@@ -319,6 +323,17 @@
 	hr {
 		min-width: min(500px, 90vw);
 		margin-block: 0.333em !important;
+	}
+	.stats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25em;
+
+		justify-content: center;
+		align-items: center;
+	}
+	.stats > * {
+		margin-inline: 0.375em;
 	}
 	.playback-controls {
 		width: 100%;

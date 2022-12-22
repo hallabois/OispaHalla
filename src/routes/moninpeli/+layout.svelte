@@ -6,7 +6,7 @@
 	<slot />
 {:else}
 	<div class="blurry-bg coming-soon">
-		<img src="lmao.png" />
+		<img src="lmao.png" alt="LMAO -taulukot" />
 		<p>Isoja Juttuja Tulossa™</p>
 	</div>
 {/if}

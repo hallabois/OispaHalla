@@ -16,12 +16,19 @@
 	import TournamentJoiner from "$lib/components/tournaments/tournamentJoiner.svelte";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser } from "$app/environment";
+	import { storage_loaded } from "$lib/stores/storage";
 
 	export let announcer: Announcer | null = null;
 	$: $tournament_announcer = announcer;
 	let chosen_game: number | null | undefined = null;
 
-	$: if (browser && chosen_game == null && window.location.href.includes("?")) {
+	$: if (
+		browser &&
+		chosen_game == null &&
+		window.location.href.includes("?") &&
+		$storage_loaded &&
+		$auth
+	) {
 		let params = new URLSearchParams(window.location.href.split("?")[1]);
 		let game_id = params.get("game_id");
 		if (game_id) {
