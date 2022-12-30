@@ -57,8 +57,8 @@ export function generate_previous_positions(grid: Grid, previous: Grid) {
 	return grid;
 }
 
-type ohts_grid_row = Tile[];
-type ohts_gamestate = {
+export type ohts_grid_row = Tile[];
+export type ohts_gamestate = {
 	width: number;
 	height: number;
 	tiles: ohts_grid_row[];

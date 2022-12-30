@@ -10,6 +10,7 @@
 		name_cache,
 		request_move,
 		state,
+		tournament_ping,
 		user_details
 	} from "$lib/stores/tournamentstore";
 	import {
@@ -21,25 +22,8 @@
 	import type Grid from "$lib/gamelogic/grid";
 	import { browser, dev } from "$app/environment";
 	import Tournaments from "$lib/components/tournaments.svelte";
-	import Popup from "$lib/components/common/popup/popup.svelte";
-
-	let app_name = "Oispa Halla";
-	let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
-	let app_notice =
-		"**HUOMIO**: Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.";
-	let app_name_newgame = "Uusi Jakso";
-	let app_name_score = "arvosana";
-	let app_name_hiscore = "paras halla";
 
 	let enableKIM = false;
-
-	/* $: if ($poll_board_string) {
-		grid = hac_gamestate_to_grid($poll_board_string);
-	} else if ($joined_game_data) {
-		// grid = hac_gamestate_to_grid($joined_game_data.starting_state);
-	} else {
-		// enableKIM = false;
-	} */
 
 	$: inputManager_should_exist =
 		$joined_game_id &&
@@ -132,62 +116,63 @@
 	{/if}
 	{#if $joined_game_id && $game_details[$joined_game_id]?.started && $state[$joined_game_id] && $user_details != null}
 		{@const gamestates = $state[$joined_game_id]}
-		{@const gamestate = gamestates.find((s) => s.user_id === $user_details.id)}
+		{@const gamestate = gamestates.find((s) => $user_details && s.user_id === $user_details.id)}
 		{@const game = $game_details[$joined_game_id]}
-		{@const grid_o = gamestate.board}
-		{@const grid = processGrid(grid_o)}
-		<p>{gamestate.score}</p>
-		<div class="board-container">
-			<div
-				style="display: flex;justify-content:space-between;width:var(--field-width);margin-bottom: 8px;"
-			>
-				<div style="display: flex;align-items: end;">
-					<button
-						class="button color-button"
-						on:click={() => {
-							TtInstance.show();
-						}}
-						title="Tournament Mode"
-					>
-						Valikko
-					</button>
-				</div>
-				<!-- {#if $poll_success}
-			<h3 style="margin:0;">{$poll_game.client_aliases[$poll_id_index]}</h3>
-		{/if} -->
-				<div style="display: flex;align-items: end;">
-					<label for="monkey">Enable monkey</label>
-					<input id="monkey" type="checkbox" bind:checked={enableMonkey} />
-				</div>
-			</div>
-			{#key grid}
-				<Board
-					{enableKIM}
-					enableLSM={false}
-					{grid}
-					documentRoot={inputRoot}
-					announcer={AnnouncerInstance}
-					bind:this={BoardInstance}
-				/>
-			{/key}
-			<div class="mini-container">
-				{#each gamestates as gstate, index}
-					{@const board = ohts_gamestate_to_grid(gstate.board)}
-					{@const cached_name = ($name_cache || {})[gstate.user_id]}
-					<div class="mini">
-						<div class="mini-grid">
-							{#key board}
-								<Board {enableKIM} enableLSM={false} grid={board} />
-							{/key}
-						</div>
-						<div class="mini-details">
-							<p>{cached_name}</p>
-							<p>{gstate.score}</p>
-						</div>
+		{#if gamestate}
+			{@const grid_o = gamestate.board}
+			{@const grid = processGrid(grid_o)}
+			<p>{gamestate.score}</p>
+			<p>ping: {$tournament_ping ?? "measuring..."}</p>
+			<div class="board-container">
+				<div
+					style="display: flex;justify-content:space-between;width:var(--field-width);margin-bottom: 8px;"
+				>
+					<div style="display: flex;align-items: end;">
+						<button
+							class="button color-button"
+							on:click={() => {
+								TtInstance.show();
+							}}
+						>
+							Valikko
+						</button>
 					</div>
-				{/each}
+					<div style="display: flex;align-items: end;">
+						<label for="monkey">Enable monkey</label>
+						<input id="monkey" type="checkbox" bind:checked={enableMonkey} />
+					</div>
+				</div>
+				{#key grid}
+					<Board
+						{enableKIM}
+						enableLSM={false}
+						{grid}
+						documentRoot={inputRoot}
+						announcer={AnnouncerInstance}
+						bind:this={BoardInstance}
+					/>
+				{/key}
+				<div class="mini-container">
+					{#each gamestates as gstate, index}
+						{@const board = ohts_gamestate_to_grid(gstate.board)}
+						{@const cached_name = ($name_cache || {})[gstate.user_id]}
+						<div class="mini">
+							<div class="mini-grid">
+								{#key board}
+									<Board {enableKIM} enableLSM={false} grid={board} />
+								{/key}
+							</div>
+							<div class="mini-details">
+								<p>{cached_name}</p>
+								<p>{gstate.score}</p>
+							</div>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
+		{:else}
+			<p>gamestate not found?</p>
+		{/if}
 		<Tournaments bind:this={TtInstance} />
 	{:else}
 		<div class="blurry-bg menu-bg">
@@ -248,6 +233,7 @@
 
 		display: flex;
 		gap: 0.5em;
+		margin-top: 0.2em;
 	}
 	.mini {
 		display: flex;
@@ -256,6 +242,14 @@
 		width: var(--field-width);
 		height: var(--field-width);
 		overflow: hidden;
+	}
+	.mini-details {
+		background-color: var(--container-background);
+		padding: 0.1em 0.5em;
+	}
+	.mini-details * {
+		padding: 0;
+		margin: 0;
 	}
 	:global(.mini-container .tile-inner) {
 		animation: none !important;

@@ -249,6 +249,7 @@
 		overflow-y: scroll;
 	}
 	.messages p {
+		word-wrap: anywhere;
 		max-width: 300px;
 		margin: 0;
 	}

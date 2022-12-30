@@ -52,7 +52,6 @@
 			HTMLActuatorInstance,
 			LSM,
 			documentRoot || board,
-			announcer,
 			grid,
 			enableRng
 		);

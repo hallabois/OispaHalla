@@ -8,7 +8,8 @@
 		connect,
 		joined_game_id,
 		connection_error,
-		tournament_announcer
+		tournament_announcer,
+		tournament_ping
 	} from "$lib/stores/tournamentstore";
 	import TournamentCreator from "$lib/components/tournaments/tournamentCreator.svelte";
 	import TournamentBrowser from "$lib/components/tournaments/tournamentBrowser.svelte";
@@ -52,6 +53,9 @@
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
 		{#if $connected}
+			{#if $tournament_ping != null}
+				<p>ping: {$tournament_ping} ms</p>
+			{/if}
 			{#if $connection_error}
 				<p style="text-align: center;display: block;padding: 0.75em;">
 					Virhe otettaessa yhteyttä palvelimeen.

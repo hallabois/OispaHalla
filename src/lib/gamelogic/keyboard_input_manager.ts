@@ -112,6 +112,9 @@ export default class KeyboardInputManager {
 		this.bindButtonPress(".kurin-palautus", this.paritaKuli);
 		this.bindButtonPress(".event-button", this.toggleDarkMode);
 
+		if (!this.documentRoot) {
+			return;
+		}
 		// Respond to swipe events
 		var touchStartClientX, touchStartClientY;
 		var gameContainer = this.documentRoot.getElementsByClassName("game-container")[0];
@@ -198,6 +201,9 @@ export default class KeyboardInputManager {
 	}
 	bindButtonPress(selector, fn) {
 		if (!this.enabled) {
+			return;
+		}
+		if (!this.documentRoot) {
 			return;
 		}
 		var button = this.documentRoot.querySelector(selector);

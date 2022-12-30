@@ -7,7 +7,6 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 
 import { getItem, setItem } from "$lib/stores/storage";
-import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 import { TAB_BLOCK } from "$lib/session_manager";
 import { get } from "svelte/store";
 import { browser, dev } from "$app/environment";
@@ -34,7 +33,6 @@ export default class GameManager {
 
 	documentRoot: HTMLElement;
 	enable_random: boolean;
-	announcer: Announcer | null;
 
 	subscribers: Function[];
 
@@ -53,13 +51,11 @@ export default class GameManager {
 		Actuator: HTMLActuator,
 		StorageManager: LocalStorageManager,
 		documentRoot: HTMLElement,
-		announcer: Announcer | null,
 		grid: Grid | null = null,
 		enable_random = true
 	) {
 		this.documentRoot = documentRoot;
 		this.enable_random = enable_random;
-		this.announcer = announcer;
 
 		this.size = size; // Size of the grid
 		this.inputManager = InputManager;

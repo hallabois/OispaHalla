@@ -1,9 +1,9 @@
 import { browser, dev } from "$app/environment";
 import { token } from "$lib/Auth/authstore";
-import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 import { mp_test_prod_endpoint } from "../../features";
 import { type Writable, writable, get } from "svelte/store";
 import { getItem, setItem, storage_loaded } from "./storage";
+import type { ohts_gamestate } from "$lib/gamelogic/utils";
 
 let tournament_endpoint_prod = "wss://mp.oispahalla.com";
 let tournament_endpoint_dev = mp_test_prod_endpoint
@@ -77,7 +77,7 @@ export type GameState = {
 	game_id: number;
 	user_id: string;
 	score: number;
-	board: Object;
+	board: ohts_gamestate;
 };
 
 export let try_autoconnect: Writable<boolean> = writable(true);
@@ -111,11 +111,14 @@ joined_game_id.subscribe(($joined_game_id) => {
 		}
 	}
 });
-export let tournament_announcer: Writable<Announcer | null> = writable(null);
+export let tournament_announcer: Writable<any | null> = writable(null);
 
+export let tournament_ping: Writable<number | null> = writable(null);
 function socket_processor(message: any) {
 	let json = message.data;
 	if (json === "o") {
+		let now = new Date();
+		tournament_ping.set(now.getTime() - pingStartTime.getTime());
 		return;
 	}
 	let event = JSON.parse(json);
@@ -372,16 +375,18 @@ export function create(options: CreateOptions) {
 	}
 }
 
+let pingStartTime: Date;
 if (browser) {
 	token.subscribe(($token) => {
 		if ($token != null && get(try_autoconnect)) {
 			connect();
 		}
 	});
-	// Keep websocket connections alive by pinging the connection every 30s.
+	// Keep websocket connections alive by pinging the connection every 2000ms.
 	setInterval(() => {
 		if (socket) {
+			pingStartTime = new Date();
 			socket.send("\x70");
 		}
-	}, 30_000);
+	}, 2000);
 }
