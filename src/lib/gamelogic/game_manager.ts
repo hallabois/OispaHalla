@@ -7,7 +7,6 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 
 import { getItem, setItem } from "$lib/stores/storage";
-import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 import { TAB_BLOCK } from "$lib/session_manager";
 import { get } from "svelte/store";
 import { browser, dev } from "$app/environment";
@@ -34,7 +33,7 @@ export default class GameManager {
 
 	documentRoot: HTMLElement;
 	enable_random: boolean;
-	announcer: Announcer | null;
+	announcer: Object | null;
 
 	subscribers: Function[];
 
@@ -53,7 +52,7 @@ export default class GameManager {
 		Actuator: HTMLActuator,
 		StorageManager: LocalStorageManager,
 		documentRoot: HTMLElement,
-		announcer: Announcer | null,
+		announcer: Object | null,
 		grid: Grid | null = null,
 		enable_random = true
 	) {
@@ -161,6 +160,14 @@ export default class GameManager {
 	}
 	// Adds a tile in a random position
 	addRandomTile() {
+		let tile = this.getRandomTileToAdd();
+		if (tile) {
+			this.grid.insertTile(tile);
+			return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
+		}
+		this.update_subscribers();
+	}
+	getRandomTileToAdd() {
 		if (!this.enable_random) {
 			return;
 		}
@@ -168,10 +175,8 @@ export default class GameManager {
 			var value = Math.random() < 0.9 ? 2 : 4;
 			var tile = new Tile(this.grid.randomAvailableCell(), value);
 
-			this.grid.insertTile(tile);
-			return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
+			return tile;
 		}
-		this.update_subscribers();
 	}
 
 	loadPreviousState(previousState: any) {
