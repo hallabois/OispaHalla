@@ -157,6 +157,14 @@ export default class GameManager {
 	}
 	// Adds a tile in a random position
 	addRandomTile() {
+		let tile = this.getRandomTileToAdd();
+		if (tile) {
+			this.grid.insertTile(tile);
+			return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
+		}
+		this.update_subscribers();
+	}
+	getRandomTileToAdd() {
 		if (!this.enable_random) {
 			return;
 		}
@@ -164,10 +172,8 @@ export default class GameManager {
 			var value = Math.random() < 0.9 ? 2 : 4;
 			var tile = new Tile(this.grid.randomAvailableCell(), value);
 
-			this.grid.insertTile(tile);
-			return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
+			return tile;
 		}
-		this.update_subscribers();
 	}
 
 	loadPreviousState(previousState: any) {

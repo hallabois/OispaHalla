@@ -13,6 +13,7 @@ import { available_themes, festives_applied, theme_index } from "./stores/themes
 import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
 import { open_popups } from "$lib/stores/popupstore";
 import { auth } from "./Auth/authstore";
+import type GameManager from "./gamelogic/game_manager";
 
 function isStorageLoaded() {
 	return get(storage_loaded);
@@ -119,6 +120,32 @@ function getAuth() {
 	return get(auth);
 }
 
+function testProbabilities() {
+	let iters = 10_000;
+	console.log(`Starting probability test using ${iters} iterations...`);
+	// @ts-ignore
+	let game_manager: GameManager = window.GameManagerDebugInstance;
+	let values = [];
+	for (let i = 0; i < iters; i++) {
+		let tile = game_manager.getRandomTileToAdd();
+		if (!tile) {
+			console.error("getRandomTileToAdd didn't return anything!");
+			return;
+		}
+		values.push(tile.value);
+	}
+	let values_total = values.length;
+	let counted: number[] = [];
+	console.log("Percentages:");
+	for (let k of values) {
+		if (!counted.includes(k)) {
+			let c = values.filter((v) => v == k).length;
+			console.log(`"${k}": ${c} = ${(c / values_total) * 100}%`);
+			counted.push(k);
+		}
+	}
+}
+
 if (browser) {
 	// @ts-ignore
 	window.devtools = {
@@ -155,6 +182,8 @@ if (browser) {
 
 		toggleZenMode,
 
-		getAuth
+		getAuth,
+
+		testProbabilities
 	};
 }
