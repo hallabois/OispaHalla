@@ -60,7 +60,7 @@
 	export let expandY = true;
 </script>
 
-<main class:relative class:expandX class:expandY>
+<div class="main" class:relative class:expandX class:expandY>
 	{#if browser}
 		{#if $theme_index != null && $storage_loaded}
 			{#each $available_themes as theme, index}
@@ -111,10 +111,10 @@
 	{:else}
 		<button> ... </button>
 	{/if}
-</main>
+</div>
 
 <style>
-	main {
+	.main {
 		image-rendering: auto;
 
 		display: flex;
@@ -125,17 +125,17 @@
 
 		transition: left 200ms;
 	}
-	main.relative {
+	.main.relative {
 		position: relative;
 		left: var(--field-width, 500px);
 	}
-	main.expandX {
+	.main.expandX {
 		height: 0;
 	}
-	main.expandX button {
+	.main.expandX button {
 		min-height: 52px;
 	}
-	main.expandY {
+	.main.expandY {
 		width: 0;
 	}
 	button {
@@ -161,7 +161,7 @@
 	}
 
 	@media (max-width: 576px) {
-		main.expandY {
+		.main.expandY {
 			display: none;
 		}
 	}

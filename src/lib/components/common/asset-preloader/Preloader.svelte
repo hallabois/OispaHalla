@@ -16,14 +16,14 @@
 	{/each}
 </svelte:head>
 
-<main>
+<div class="main">
 	{#each preloadImageUrls as src}
 		<img {src} aria-hidden="false" alt="" />
 	{/each}
-</main>
+</div>
 
 <style>
-	main {
+	.main {
 		display: none;
 	}
 </style>

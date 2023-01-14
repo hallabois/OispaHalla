@@ -32,7 +32,7 @@
 </script>
 
 {#if visible}
-	<main on:click={hide} transition:fade>
+	<div class="main" on:click={hide} transition:fade>
 		<div
 			on:click={(e) => {
 				e.stopPropagation();
@@ -76,11 +76,11 @@
 				>
 			</div>
 		</div>
-	</main>
+	</div>
 {/if}
 
 <style>
-	main {
+	.main {
 		position: fixed;
 		left: 0;
 		top: 0;

@@ -110,11 +110,11 @@
 	export let onComponentsInitialized = () => {};
 </script>
 
-<main bind:this={board} title={$storage_status}>
+<div bind:this={board} title={$storage_status}>
 	{#key unique}
 		<Board {enable_theme_chooser} />
 	{/key}
-</main>
+</div>
 
 <style>
 </style>

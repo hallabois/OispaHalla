@@ -41,7 +41,7 @@
 	}
 </script>
 
-<main bind:this={inputRoot}>
+<div bind:this={inputRoot}>
 	{#if $joined_game_id && $user_details}
 		{@const game_data = $game_details[$joined_game_id]}
 		{#if !game_data}
@@ -213,7 +213,7 @@
 	{:else}
 		<p>Ladataan kirjautumistietoja...</p>
 	{/if}
-</main>
+</div>
 
 <style>
 	.top {

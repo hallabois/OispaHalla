@@ -25,7 +25,7 @@
 	}
 </script>
 
-<main>
+<div>
 	{#if $user_details}
 		{#if !$game_index}
 			<p>Haetaan pelejä...</p>
@@ -79,7 +79,7 @@
 			>
 		{/if}
 	{/if}
-</main>
+</div>
 
 <style>
 	.fill-w {

@@ -4,7 +4,7 @@
 
 {#if $navigating}
 	{#key $navigating.to}
-		<main />
+		<div />
 	{/key}
 {/if}
 
@@ -19,7 +19,7 @@
 			transform: translateX(0);
 		}
 	}
-	main {
+	div {
 		position: absolute;
 		left: 0;
 		right: 0;

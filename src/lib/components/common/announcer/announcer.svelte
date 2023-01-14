@@ -21,14 +21,14 @@
 	}
 </script>
 
-<main>
+<div class="main">
 	{#each announcements as announcement (announcement.time)}
 		<Message {...announcement} />
 	{/each}
-</main>
+</div>
 
 <style>
-	main {
+	.main {
 		z-index: 217;
 		position: fixed;
 		top: 0;

@@ -25,7 +25,7 @@
 	}
 </script>
 
-<main>
+<div class="main">
 	<!-- svelte-ignore a11y-autofocus -->
 	<input
 		bind:value={chosen_game}
@@ -56,10 +56,10 @@
 		}}
 		class="button action-btn fill-w">Liity</button
 	>
-</main>
+</div>
 
 <style>
-	main {
+	.main {
 		display: flex;
 		flex-direction: column;
 		gap: 0.5em;

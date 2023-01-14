@@ -1,11 +1,11 @@
-<main class="blurry-bg">
+<div class="blurry-bg">
 	<div class="positioner">
 		<slot />
 	</div>
-</main>
+</div>
 
 <style>
-	main {
+	.blurry-bg {
 		background-attachment: fixed;
 		min-height: 100vh;
 	}

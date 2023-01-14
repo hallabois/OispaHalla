@@ -18,4 +18,4 @@
 	}
 </script>
 
-<main />
+<div />

@@ -42,7 +42,7 @@
 	}
 </script>
 
-<main>
+<div>
 	{#if $token}
 		<div class="creator">
 			<h4>Asetukset</h4>
@@ -98,7 +98,7 @@
 	{:else}
 		<p>Ladataan kirjautumistietoja...</p>
 	{/if}
-</main>
+</div>
 
 <style>
 	h4 {

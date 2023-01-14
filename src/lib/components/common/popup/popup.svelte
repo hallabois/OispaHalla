@@ -30,7 +30,7 @@
 
 {#if open}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<main
+	<div
 		class="lb-popup"
 		on:click={() => {
 			open = false;
@@ -68,7 +68,7 @@
 				</div>
 			</div>
 		</div>
-	</main>
+	</div>
 {/if}
 
 <style lang="scss">
