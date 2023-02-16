@@ -22,6 +22,7 @@ export let gamemode_0_names: { [key: number]: string } = {
 	2048: "LHa"
 };
 export let enabled_sizes = [2, 3, 4, 5];
+const GAME_ANY = -1;
 
 export enum createTournamentGamemode {
 	FirstPastThePost = 0
@@ -173,7 +174,7 @@ function socket_processor(message: any) {
 			joined_game_id.set(event.data.GameJoined);
 		}
 		if (event.data.GameLeft) {
-			if (event.data.GameLeft == get(joined_game_id)) {
+			if (event.data.GameLeft == get(joined_game_id) || event.data.GameLeft == GAME_ANY) {
 				joined_game_id.set(null);
 			}
 			if (get(game_index) != null) {
@@ -326,6 +327,13 @@ export function admin_announce(message: string | null) {
 		throw new Error("not connected! can't announce.");
 	}
 }
+export function admin_deleteall() {
+	if (socket) {
+		socket.send(`deleteall`);
+	} else {
+		throw new Error("not connected! can't delete all games.");
+	}
+}
 export function request_game_chat() {
 	if (socket) {
 		socket.send(`chat`);
@@ -352,6 +360,13 @@ export function request_move(direction: number) {
 		socket.send(`move|>${direction}`);
 	} else {
 		throw new Error("not connected! can't move.");
+	}
+}
+export function send_custom(message: string) {
+	if (socket) {
+		socket.send(`${message}`);
+	} else {
+		throw new Error("not connected! can't send custom message");
 	}
 }
 

@@ -12,7 +12,9 @@
 		request_deletion,
 		admin_announce,
 		request_start,
-		request_stop
+		request_stop,
+		send_custom,
+		admin_deleteall
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
@@ -36,8 +38,11 @@
 	});
 
 	let selected_game: number | null;
+	let announce_open = false;
 	let announce_content: string = "";
 	let board_popups_open = {};
+	let eventsender_open = false;
+	let eventsender_content: string = "";
 </script>
 
 <svelte:head>
@@ -69,7 +74,11 @@
 				{#if $user_details}
 					<p>Logged in as <b>{$user_details.name}</b></p>
 					{#if $user_details.admin}
-						<button on:click={() => {}}>Delete ALL Games</button>
+						<button
+							on:click={() => {
+								admin_deleteall();
+							}}>Delete ALL Games</button
+						>
 					{/if}
 					<button
 						on:click={() => {
@@ -84,17 +93,17 @@
 							$game_details = {};
 						}}>Refresh data</button
 					>
-					<form
-						on:submit|preventDefault={() => {
-							if (announce_content.length > 0) {
-								admin_announce(announce_content);
-								announce_content = "";
-							}
-						}}
+
+					<button
+						on:click={() => {
+							announce_open = true;
+						}}>Announcer</button
 					>
-						<input bind:value={announce_content} placeholder="Write a message" />
-						<input type="submit" value="Announce" />
-					</form>
+					<button
+						on:click={() => {
+							eventsender_open = true;
+						}}>Eventsender</button
+					>
 				{/if}
 			</div>
 		{/if}
@@ -243,6 +252,42 @@
 			</div>
 		</div>
 	{/if}
+	<Popup bind:open={announce_open}>
+		<span slot="title">Announcer</span>
+		<div slot="content">
+			<form
+				on:submit|preventDefault={() => {
+					if (announce_content.length > 0) {
+						admin_announce(announce_content);
+						announce_content = "";
+					}
+				}}
+			>
+				<input bind:value={announce_content} placeholder="Write a message" autofocus />
+				<input type="submit" value="Announce" />
+			</form>
+		</div>
+	</Popup>
+	<Popup bind:open={eventsender_open}>
+		<span slot="title">Eventsender</span>
+		<div slot="content">
+			<form
+				on:submit|preventDefault={() => {
+					if (eventsender_content.length > 0) {
+						send_custom(eventsender_content);
+						eventsender_content = "";
+					}
+				}}
+			>
+				<input
+					bind:value={eventsender_content}
+					placeholder="action|>parameter1|>parameter2"
+					autofocus
+				/>
+				<input type="submit" value="Send event" />
+			</form>
+		</div>
+	</Popup>
 </main>
 
 <style>
