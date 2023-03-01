@@ -2,7 +2,7 @@
 	import { marked } from "marked";
 	import { onMount } from "svelte";
 
-	import { enable_multiplayer, enable_leaderboards, enable_countdown } from "../features";
+	import { enable_multiplayer, enable_leaderboards, enable_countdown } from "../../features";
 	import { storage_loaded, storage } from "$lib/stores/storage";
 
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";

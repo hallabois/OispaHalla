@@ -1,25 +1,8 @@
 @use "sass:map";
 @use "sass:math";
 
-@import "./style/helpers";
-@import "./style/fonts/clear-sans.css";
-
-:root {
-	--field-width: 500px;
-	--grid-gap: 15px;
-	--grid-size: 4;
-	--grid-size-max: 5;
-	--tile-size: calc(
-		calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) / var(--grid-size)
-	);
-	--tile-border-radius: 3px;
-	--action-btn-color: #f9f6f2;
-
-	--break-button-background-false: #c00;
-	--break-button-color-false: #222;
-	--break-button-background-true: #0c0;
-	--break-button-color-true: #ddd;
-}
+@import "./helpers.scss";
+@import "./fonts/clear-sans.css";
 
 $field-width: 500px;
 $grid-spacing: 15px;
@@ -47,44 +30,8 @@ $title-color-dark: #e6d2bf;
 
 $transition-speed: 100ms;
 
-html,
-body {
-	margin: 0;
-	padding: 0;
 
-	min-height: 100vh;
 
-	background: $game-background-dark;
-	color: $text-color;
-	font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-	font-size: 18px;
-	font-display: swap; // Ensure that text stays visible during font load
-
-	background-attachment: fixed;
-	background-repeat: no-repeat;
-	background-position: top center;
-
-	accent-color: var(--button-background);
-}
-
-.noscript {
-	background-color: #8f7a66;
-	color: #faf8ef;
-
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	text-align: center;
-
-	p {
-		margin: 0;
-	}
-}
-
-.heading {
-	@include clearfix;
-}
 
 .countdown-div {
 	display: flex;
@@ -891,9 +838,6 @@ $i: 2;
 	align-content: center;
 }
 
-.above-game {
-	@include clearfix;
-}
 
 .restart-button {
 	@include button;
@@ -1307,63 +1251,4 @@ $t: 0;
 
 #darkmode-icon.dark {
 	filter: saturate(0);
-}
-
-// Default component styles
-.button {
-	border: none;
-	border-radius: 3px;
-	font-weight: bold;
-	font-size: 1em;
-	font-family: "Clear Sans";
-	cursor: pointer;
-}
-.icon-button {
-	font-size: 1.25em;
-	height: 100%;
-}
-.background-none {
-	background: none;
-}
-.action-btn {
-	padding: 0.75em;
-	color: var(--action-btn-color);
-	background: var(--button-background);
-	border: 1px solid var(--button-background);
-	transition: transform 200ms;
-}
-.action-btn:hover {
-	transform: scale(1.03);
-}
-.action-btn:active {
-	transform: scale(0.97);
-}
-.action-btn:disabled {
-	filter: saturate(0);
-}
-.discouradge {
-	background: transparent;
-	color: inherit;
-}
-
-.badge {
-	border-radius: 999px;
-	border: 1px solid var(--color);
-	background: var(--color);
-	color: var(--container-background, var(--background));
-	padding-inline: 1em;
-}
-//
-
-.blurry-bg {
-	background-image: url("/img/ABC/blur_night.webp") !important;
-	background-size: cover !important;
-}
-
-.theme-1,
-.theme-5,
-.theme-16 {
-	.blurry-bg {
-		background-image: url("/img/ABC/blur.webp") !important;
-	}
 }

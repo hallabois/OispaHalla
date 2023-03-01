@@ -3,13 +3,16 @@
 	export let data: LayoutData;
 	$: ({ theme_override } = data);
 
-	import "../style/base.scss";
+	import { TAB_BLOCK, take_ownership } from "$lib/session_manager";
+
+	import "../../style/base.scss";
+	import "../../style/game.scss";
 	import "$lib/devtools";
 	import PopupScrolllock from "$lib/components/common/popup/popup_scrolllock.svelte";
 	import LoadingIndicator from "$lib/components/common/loading-indicator/LoadingIndicator.svelte";
 	import { storage_version } from "$lib/stores/storage";
 	import { theme_index } from "$lib/stores/themestore";
-	import { enable_countdown } from "../features";
+	import { enable_countdown } from "../../features";
 	import { browser, dev } from "$app/environment";
 	import Analytics from "$lib/components/analytics/analytics.svelte";
 	import Pwa from "$lib/components/common/pwa.svelte";
@@ -42,7 +45,12 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Oispa Halla</title>
+</svelte:head>
+
 <Pwa />
+<ChromiumCachePreventer />
 <LoadingIndicator />
 <PopupScrolllock />
 
@@ -51,6 +59,14 @@
 		<h1 class="title" style="color:#e6d2bf">OispaHalla</h1>
 		<span class="countdown">{dateToLaunch}</span>
 	</div>
+{:else if $TAB_BLOCK}
+	<div class="ctmblock-div blurry-bg">
+		<h1>Sulje muut välilehdet</h1>
+		<p style="padding-bottom:1em;text-align:center;">
+			OispaHallaa voi pelata vain yhdessä välilehdessä kerrallaan.
+		</p>
+		<button class="button action-btn" on:click={take_ownership}>Pelaa tässä</button>
+	</div>
 {:else}
 	{#key $storage_version}
 		<slot />
@@ -58,3 +74,20 @@
 {/if}
 
 <Analytics />
+
+<style lang="scss">
+	.ctmblock-div {
+		min-height: 100vh;
+		background-attachment: fixed;
+
+		display: flex;
+		justify-content: center;
+		text-align: center;
+		align-items: center;
+		flex-direction: column;
+
+		* {
+			margin: 0;
+		}
+	}
+</style>

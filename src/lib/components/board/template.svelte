@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ThemeChooser from "$lib/components/common/theme-chooser/themeChooser.svelte";
+	import "../../../style/board.scss";
 	export let enable_theme_chooser = true;
 </script>
 
