@@ -23,14 +23,6 @@
 	import Tournaments from "$lib/components/tournaments.svelte";
 	import Popup from "$lib/components/common/popup/popup.svelte";
 
-	let app_name = "Oispa Halla";
-	let app_description = "Yhdistä opettajat ja saavuta **Halla!**";
-	let app_notice =
-		"**HUOMIO**: Pelin lista opettajista on tehty täysin sattumanvaraisesti, eikä opettajia ole laitettu minkäänlaiseen paremmuusjärjestykseen. Rakastamme kaikkia opettajia sekä arvostamme kaikkien heidän työtänsä yhtä paljon ❤️.";
-	let app_name_newgame = "Uusi Jakso";
-	let app_name_score = "arvosana";
-	let app_name_hiscore = "paras halla";
-
 	let enableKIM = false;
 
 	/* $: if ($poll_board_string) {

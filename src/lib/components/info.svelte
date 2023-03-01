@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { dev } from "$app/environment";
+	import { config } from "localforage";
 	import Popup from "./common/popup/popup.svelte";
 	// import type Announcer from "./tournaments/announcer.svelte";
 
@@ -10,8 +11,9 @@
 </script>
 
 <Popup bind:open>
-	<span slot="title" class="title"
-		>OispaHalla <span class="version">v.{__APP_VERSION__}</span>
+	<span slot="title" class="title">
+		<!-- svelte-ignore missing-declaration __APP_VERSION__ should be defined in vite.config.ts -->
+		OispaHalla <span class="version">v.{__APP_VERSION__}</span>
 		{#if dev}
 			<span class="badge">dev</span>
 		{/if}

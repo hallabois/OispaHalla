@@ -3,7 +3,7 @@
 	import { generate_previous_positions, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import type { Score } from "$lib/server/leaderboards";
 	import { numberWithSpaces } from "$lib/utils";
-	import type { PageData } from "./$types";
+	import type { PageData } from "../../../user/[uid]/$types";
 	import Grid from "$lib/gamelogic/grid";
 	import Tile from "$lib/gamelogic/tile";
 
@@ -75,7 +75,7 @@
 	} from "$lib/wasm/twothousand_forty_eight";
 	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
-	import { enable_user_page_wasm } from "../../../features";
+	import { enable_user_page_wasm } from "../../../../features";
 
 	let board_cache: { [key: number]: null | any[] } = {};
 	$: if (

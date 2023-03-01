@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Header from "../header.svelte";
-	import type { PageData } from "./$types";
+	import type { PageData } from "../../../leaderboards/[size]/$types";
 	import { auth } from "$lib/Auth/authstore";
 	export let data: PageData;
 	$: ({ leaderboard_data, size } = data);

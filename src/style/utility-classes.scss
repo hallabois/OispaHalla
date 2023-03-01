@@ -1,0 +1,62 @@
+
+// Default component styles
+.button {
+	border: none;
+	border-radius: 3px;
+	font-weight: bold;
+	font-size: 1em;
+	font-family: "Clear Sans";
+	cursor: pointer;
+}
+a.button {
+    text-decoration: none;
+}
+.icon-button {
+	font-size: 1.25em;
+	height: 100%;
+}
+.background-none {
+	background: none;
+}
+.action-btn {
+	padding: 0.75em;
+	color: var(--action-btn-color);
+	background: var(--button-background);
+	border: 1px solid var(--button-background);
+	transition: transform 200ms;
+}
+.action-btn:hover {
+	transform: scale(1.03);
+}
+.action-btn:active {
+	transform: scale(0.97);
+}
+.action-btn:disabled {
+	filter: saturate(0);
+}
+.discouradge {
+	background: transparent;
+	color: inherit;
+}
+
+.badge {
+	border-radius: 999px;
+	border: 1px solid var(--color);
+	background: var(--color);
+	color: var(--container-background, var(--background));
+	padding-inline: 1em;
+}
+//
+
+.blurry-bg {
+	background-image: url("/img/ABC/blur_night.webp") !important;
+	background-size: cover !important;
+}
+
+.theme-1,
+.theme-5,
+.theme-16 {
+	.blurry-bg {
+		background-image: url("/img/ABC/blur.webp") !important;
+	}
+}

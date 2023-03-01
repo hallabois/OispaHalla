@@ -1,0 +1,322 @@
+
+@use "sass:map";
+@use "sass:math";
+
+@import "./helpers.scss";
+
+:root {
+	--field-width: 500px;
+	--grid-gap: 15px;
+	--grid-size: 4;
+	--grid-size-max: 5;
+	--tile-size: calc(
+		calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) / var(--grid-size)
+	);
+	--tile-border-radius: 3px;
+	--action-btn-color: #f9f6f2;
+
+	--break-button-background-false: #c00;
+	--break-button-color-false: #222;
+	--break-button-background-true: #0c0;
+	--break-button-color-true: #ddd;
+}
+
+//kurinpalautus
+@include keyframes(fade-in-out) {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+.game-container .kurin-palautus-viesti {
+	width: 94%;
+	position: absolute;
+	top: 25px;
+
+	display: -webkit-flex;
+	display: flex;
+	justify-content: center;
+
+	z-index: 1000;
+	pointer-events: none;
+
+	& img {
+		width: 300px;
+
+		@include animation(fade-in-out 4000ms ease-out);
+		@include animation-fill-mode(both);
+	}
+}
+
+$colors: (
+	"0-color-scheme": "dark",
+	"0-text-color": #eee,
+	"0-game-background": #161817,
+	"0-game-background-inverted": #e9e7e8,
+	//käytetään kurinpalautusnapin hoverausefektille
+	"0-game-container-background": #3e3933,
+	"0-title-color": #e6d2bf,
+	"0-button-color": #365ca6,
+	"0-break-button-background-false": #a63636,
+	//kurinpalautus!
+	"0-break-button-color-false": #ddd,
+	"0-break-button-background-true": #49a636,
+	"0-break-button-color-true": #dfdfdf,
+
+	"4-color-scheme": "dark",
+	"4-text-color": #eee,
+	"4-game-background": #202614,
+	"4-game-background-inverted": #e9e7e8,
+	//käytetään kurinpalautusnapin hoverausefektille
+	"4-game-container-background": #3e3933,
+	"4-title-color": #e6d2bf,
+	"4-button-color": #365ca6,
+	"4-break-button-background-false": #a63636,
+	//kurinpalautus!
+	"4-break-button-color-false": #ddd,
+	"4-break-button-background-true": #49a636,
+	"4-break-button-color-true": #dfdfdf,
+
+	"6-color-scheme": "dark",
+	"6-text-color": #eee,
+	"6-game-background": #202614,
+	"6-game-background-inverted": #e9e7e8,
+	//käytetään kurinpalautusnapin hoverausefektille
+	"6-game-container-background": #3e3933,
+	"6-title-color": #e6d2bf,
+	"6-button-color": #365ca6,
+	"6-break-button-background-false": #a63636,
+	//kurinpalautus!
+	"6-break-button-color-false": #ddd,
+	"6-break-button-background-true": #49a636,
+	"6-break-button-color-true": #dfdfdf,
+
+	"14-color-scheme": "dark",
+	"14-text-color": #eee,
+	"14-game-background": #161817,
+	"14-game-background-inverted": #e9e7e8,
+	//käytetään kurinpalautusnapin hoverausefektille
+	"14-game-container-background": #3e3933,
+	"14-title-color": #e6d2bf,
+	"14-button-color": #365ca6,
+	"14-break-button-background-false": #a63636,
+	//kurinpalautus!
+	"14-break-button-color-false": #ddd,
+	"14-break-button-background-true": #49a636,
+	"14-break-button-color-true": #dfdfdf,
+
+	"16-color-scheme": "light",
+	"16-break-button-background-false": #a63636,
+	//kurinpalautus!
+	"16-break-button-color-false": #ddd,
+	"16-break-button-background-true": #49a636,
+	"16-break-button-color-true": #dfdfdf,
+
+	"1-color-scheme": "light",
+	"1-break-button-background-false": #cc0000,
+	//kurinpalautus!
+	"1-break-button-color-false": #ddd,
+	"1-break-button-background-true": #00cc00,
+	"1-break-button-color-true": #dfdfdf,
+
+	"5-color-scheme": "light",
+	"5-game-background": #89c2d9,
+	"5-title-color": #534d48,
+	"5-break-button-background-false": #cc0000,
+	//kurinpalautus!
+	"5-break-button-color-false": #ddd,
+	"5-break-button-background-true": #00cc00,
+	"5-break-button-color-true": #dfdfdf,
+
+	"2-color-scheme": "dark",
+	"2-text-color": #eee,
+	"2-game-background": #161817,
+	"2-game-background-inverted": #e9e7e8,
+	//käytetään kurinpalautusnapin hoverausefektille
+	"2-game-container-background": #3e3933,
+	"2-title-color": #e6d2bf,
+	"2-button-color": #974f23,
+
+	"3-color-scheme": "dark",
+	"3-text-color": #dfdfdf,
+	"3-cell-color": rgba(204, 63, 63, 0.35),
+	"3-game-background": #460811,
+	"3-game-background-inverted": #b9f7ee,
+	//käytetään kurinpalautusnapin hoverausefektille
+	"3-game-container-background": #8b0f17,
+	"3-title-color": #f4ab1d,
+	"3-button-color": #146b3a,
+	"3-break-button-background-false": #8b0f17,
+	//kurinpalautus!
+	"3-break-button-color-false": #ddd,
+	"3-break-button-background-true": #146b3a,
+	"3-break-button-color-true": #dfdfdf
+);
+
+$kiillot: (
+	128: (
+		-4px,
+		#a8fa8a
+	),
+	256: (
+		-4px,
+		#fffb62
+	),
+	512: (
+		-3px,
+		#ffa600
+	),
+	1024: (
+		-1px,
+		#5000ff
+	),
+	2048: (
+		0px,
+		#ff4646
+	),
+	4096: (
+		0px,
+		#ff9b00
+	),
+	8192: (
+		0px,
+		#00ff13
+	),
+	16384: (
+		1px,
+		#ffc600
+	),
+	32768: (
+		2px,
+		#0b00ff
+	)
+);
+
+$i: 2;
+
+@while $i <= 32768 {
+	.tile-#{$i} .tile-inner {
+		background-image: url("/img/#{$i}.webp");
+		@if ($i >= 128) {
+			box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
+		}
+	}
+	$i: $i * 2;
+}
+
+
+@mixin setThemeColors($color-number) {
+	.theme-#{$t} {
+		// Formejen jne väritystä varten
+		@if map.has-key($colors, "#{$color-number}-color-scheme") {
+			--color-scheme: #{map-get($colors, "#{$color-number}-color-scheme")};
+			color-scheme: var(--color-scheme, "light");
+		}
+		--background: #{map-get($colors, "#{$color-number}-game-background")};
+		--background-inverted: #{map-get($colors, "#{$color-number}-game-background-inverted")};
+		//--color: #{$text-color};
+		@if map.has-key($colors, "#{$color-number}-text-color") {
+			--color: #{map-get($colors, "#{$color-number}-text-color")};
+		}
+		//--container-background: #{$game-background};
+		@if map.has-key($colors, "#{$color-number}-game-container-background") {
+			--container-background: #{map-get($colors, "#{$color-number}-game-container-background")};
+		}
+		--button-background: #8f7a66;
+		@if map.has-key($colors, "#{$color-number}-button-color") {
+			--button-background: #{map-get($colors, "#{$color-number}-button-color")};
+		}
+
+		background: map-get($colors, "#{$color-number}-game-background");
+		@if map.has-key($colors, "#{$color-number}-break-button-background-false") {
+			.parin-kulautus,
+			.kurin-palautus {
+				background: map-get($colors, "#{$color-number}-break-button-background-false");
+				color: map-get($colors, "#{$color-number}-break-button-color-false");
+				&.allowed {
+					background: map-get($colors, "#{$color-number}-break-button-background-true");
+					color: map-get($colors, "#{$color-number}-break-button-color-true");
+				}
+			}
+		} @else {
+			.parin-kulautus,
+			.kurin-palautus {
+				background: var(--break-button-background-false);
+				color: var(--break-button-color-false);
+				&.allowed {
+					background: var(--break-button-background-true);
+					color: var(--break-button-color-true);
+				}
+			}
+		}
+		& body {
+			background-image: url("/img/theme-#{$color-number}/OispaHallaTausta.webp");
+			@if map.has-key($colors, "#{$color-number}-game-background") {
+				// skips the definitions if the game background doesn't exist
+				color: map-get($colors, "#{$color-number}-text-color");
+				background-color: map-get($colors, "#{$color-number}-game-background");
+
+				a {
+					color: map-get($colors, "#{$color-number}-title-color");
+				}
+
+				.lb-popup-container {
+					background-color: map-get($colors, "#{$color-number}-game-container-background");
+				}
+
+				.grid-cell {
+					background-color: map-get($colors, "#{$color-number}-cell-color");
+				}
+
+				// .kurin-palautus {
+				//   border: 1px map-get($colors, '#{$color-number}-game-background') solid;
+
+				//   &:hover {
+				//     border: 1px map-get($colors, '#{$color-number}-game-background-inverted') solid;
+				//   }
+				// }
+
+				.game-container,
+				.score-container,
+				.best-container,
+				.HAC-container {
+					background: map-get($colors, "#{$color-number}-game-container-background");
+				}
+
+				.game-message.game-over {
+					background: rgba(map-get($colors, "#{$color-number}-game-background"), 0.8);
+				}
+
+				.restart-button,
+				.lower > * {
+					background: map-get($colors, "#{$color-number}-button-color") !important;
+				}
+			}
+		}
+	}
+}
+
+// Themes
+$t: 0;
+@while $t <= 20 {
+	$i: 2;
+	@while $i <= 32768 {
+		.theme-#{$t} .tile-#{$i} .tile-inner {
+			background-image: url("/img/theme-#{$t}/#{$i}.webp");
+			@if ($i >= 128) {
+				box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
+			}
+		}
+		$i: $i * 2;
+	}
+	@include setThemeColors("#{$t}");
+	$t: $t + 1;
+}

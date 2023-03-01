@@ -13,7 +13,7 @@
 		console.log("userdata:", userdata);
 	}
 
-	import type { PageData } from "./$types";
+	import type { PageData } from "../../tiedotukset/$types";
 	export let data: PageData;
 	$: content = data.content;
 </script>

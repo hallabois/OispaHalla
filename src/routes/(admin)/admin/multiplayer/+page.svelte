@@ -246,11 +246,6 @@
 </main>
 
 <style>
-	:global(html, body) {
-		color-scheme: dark;
-		background: #222 !important;
-		color: #ddd !important;
-	}
 	.action {
 		position: fixed;
 		top: 0;
