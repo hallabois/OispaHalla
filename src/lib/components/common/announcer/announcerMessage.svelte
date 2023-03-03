@@ -18,7 +18,7 @@
 		overflow: hidden;
 
 		box-sizing: border-box;
-		background-color: var(--container-background, var(--background));
+		background-color: var(--dialog-background);
 
 		border-radius: 0.25rem;
 		border: 1px solid var(--button-background);

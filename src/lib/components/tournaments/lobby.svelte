@@ -228,8 +228,10 @@
 	.game-preview {
 		--field-width: 300px !important;
 		--tile-size: calc(
-			calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) /
-				var(--grid-size)
+			calc(
+					var(--field-width, var(--default-field-width)) -
+						calc(var(--grid-gap) * calc(var(--grid-size) + 1))
+				) / var(--grid-size)
 		);
 		overflow: hidden;
 		display: block;

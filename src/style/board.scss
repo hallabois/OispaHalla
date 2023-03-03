@@ -1,24 +1,25 @@
-
 @use "sass:map";
 @use "sass:math";
 
 @import "./helpers.scss";
+$grid-max-size: 10;
 
 :root {
 	--field-width: 500px;
 	--grid-gap: 15px;
+	--game-container-margin-top: 40px;
+	--transition-speed: 100ms;
+
 	--grid-size: 4;
 	--grid-size-max: 5;
 	--tile-size: calc(
-		calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) / var(--grid-size)
+		calc(
+				var(--field-width, var(--default-field-width)) -
+					calc(var(--grid-gap, var(--default-grid-gap)) * calc(var(--grid-size) + 1))
+			) / var(--grid-size)
 	);
 	--tile-border-radius: 3px;
-	--action-btn-color: #f9f6f2;
-
-	--break-button-background-false: #c00;
-	--break-button-color-false: #222;
-	--break-button-background-true: #0c0;
-	--break-button-color-true: #ddd;
+	--tile-color: #eee4da;
 }
 
 //kurinpalautus
@@ -56,267 +57,281 @@
 	}
 }
 
-$colors: (
-	"0-color-scheme": "dark",
-	"0-text-color": #eee,
-	"0-game-background": #161817,
-	"0-game-background-inverted": #e9e7e8,
-	//käytetään kurinpalautusnapin hoverausefektille
-	"0-game-container-background": #3e3933,
-	"0-title-color": #e6d2bf,
-	"0-button-color": #365ca6,
-	"0-break-button-background-false": #a63636,
-	//kurinpalautus!
-	"0-break-button-color-false": #ddd,
-	"0-break-button-background-true": #49a636,
-	"0-break-button-color-true": #dfdfdf,
+@mixin game-field {
+	.game-container {
+		margin-top: var(--game-container-margin-top);
+		margin-left: auto;
+		margin-right: auto;
+		position: relative;
+		padding: var(--grid-gap);
 
-	"4-color-scheme": "dark",
-	"4-text-color": #eee,
-	"4-game-background": #202614,
-	"4-game-background-inverted": #e9e7e8,
-	//käytetään kurinpalautusnapin hoverausefektille
-	"4-game-container-background": #3e3933,
-	"4-title-color": #e6d2bf,
-	"4-button-color": #365ca6,
-	"4-break-button-background-false": #a63636,
-	//kurinpalautus!
-	"4-break-button-color-false": #ddd,
-	"4-break-button-background-true": #49a636,
-	"4-break-button-color-true": #dfdfdf,
+		cursor: default;
+		-webkit-touch-callout: none;
+		-ms-touch-callout: none;
 
-	"6-color-scheme": "dark",
-	"6-text-color": #eee,
-	"6-game-background": #202614,
-	"6-game-background-inverted": #e9e7e8,
-	//käytetään kurinpalautusnapin hoverausefektille
-	"6-game-container-background": #3e3933,
-	"6-title-color": #e6d2bf,
-	"6-button-color": #365ca6,
-	"6-break-button-background-false": #a63636,
-	//kurinpalautus!
-	"6-break-button-color-false": #ddd,
-	"6-break-button-background-true": #49a636,
-	"6-break-button-color-true": #dfdfdf,
+		user-select: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
 
-	"14-color-scheme": "dark",
-	"14-text-color": #eee,
-	"14-game-background": #161817,
-	"14-game-background-inverted": #e9e7e8,
-	//käytetään kurinpalautusnapin hoverausefektille
-	"14-game-container-background": #3e3933,
-	"14-title-color": #e6d2bf,
-	"14-button-color": #365ca6,
-	"14-break-button-background-false": #a63636,
-	//kurinpalautus!
-	"14-break-button-color-false": #ddd,
-	"14-break-button-background-true": #49a636,
-	"14-break-button-color-true": #dfdfdf,
+		-ms-touch-action: none;
+		touch-action: none;
 
-	"16-color-scheme": "light",
-	"16-break-button-background-false": #a63636,
-	//kurinpalautus!
-	"16-break-button-color-false": #ddd,
-	"16-break-button-background-true": #49a636,
-	"16-break-button-color-true": #dfdfdf,
+		background: var(--game-container-background);
+		transition: all 0.25s;
+		border-radius: calc(var(--tile-border-radius) * 2);
+		width: var(--field-width);
+		height: var(--field-width);
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
 
-	"1-color-scheme": "light",
-	"1-break-button-background-false": #cc0000,
-	//kurinpalautus!
-	"1-break-button-color-false": #ddd,
-	"1-break-button-background-true": #00cc00,
-	"1-break-button-color-true": #dfdfdf,
+		.game-message {
+			display: none;
 
-	"5-color-scheme": "light",
-	"5-game-background": #89c2d9,
-	"5-title-color": #534d48,
-	"5-break-button-background-false": #cc0000,
-	//kurinpalautus!
-	"5-break-button-color-false": #ddd,
-	"5-break-button-background-true": #00cc00,
-	"5-break-button-color-true": #dfdfdf,
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 100;
 
-	"2-color-scheme": "dark",
-	"2-text-color": #eee,
-	"2-game-background": #161817,
-	"2-game-background-inverted": #e9e7e8,
-	//käytetään kurinpalautusnapin hoverausefektille
-	"2-game-container-background": #3e3933,
-	"2-title-color": #e6d2bf,
-	"2-button-color": #974f23,
+			text-align: center;
 
-	"3-color-scheme": "dark",
-	"3-text-color": #dfdfdf,
-	"3-cell-color": rgba(204, 63, 63, 0.35),
-	"3-game-background": #460811,
-	"3-game-background-inverted": #b9f7ee,
-	//käytetään kurinpalautusnapin hoverausefektille
-	"3-game-container-background": #8b0f17,
-	"3-title-color": #f4ab1d,
-	"3-button-color": #146b3a,
-	"3-break-button-background-false": #8b0f17,
-	//kurinpalautus!
-	"3-break-button-color-false": #ddd,
-	"3-break-button-background-true": #146b3a,
-	"3-break-button-color-true": #dfdfdf
-);
+			p {
+				line-height: 60px;
+				font-weight: bold;
+				text-shadow: 0 0 0.75em var(--dialog-background);
+			}
 
-$kiillot: (
-	128: (
-		-4px,
-		#a8fa8a
-	),
-	256: (
-		-4px,
-		#fffb62
-	),
-	512: (
-		-3px,
-		#ffa600
-	),
-	1024: (
-		-1px,
-		#5000ff
-	),
-	2048: (
-		0px,
-		#ff4646
-	),
-	4096: (
-		0px,
-		#ff9b00
-	),
-	8192: (
-		0px,
-		#00ff13
-	),
-	16384: (
-		1px,
-		#ffc600
-	),
-	32768: (
-		2px,
-		#0b00ff
-	)
-);
+			.tilanne {
+				font-size: 60px;
+				margin-top: 180px;
+				// height: $field-width;
+				// line-height: $field-width;
+			}
 
-$i: 2;
+			.kurinpalautukset {
+				font-size: 20px;
+			}
 
-@while $i <= 32768 {
-	.tile-#{$i} .tile-inner {
-		background-image: url("/img/#{$i}.webp");
-		@if ($i >= 128) {
-			box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
+			.lower {
+				display: flex;
+				justify-content: center;
+				gap: 0.5em;
+				& {
+					.keep-playing-button {
+						display: none;
+					}
+				}
+			}
+
+			@include animation(fade-in 800ms ease calc(var(--transition-speed) * 12));
+			@include animation-fill-mode(both);
+
+			&.game-won {
+				background: #edc22e80;
+				color: var(--color);
+
+				.keep-playing-button {
+					display: inline-block;
+				}
+			}
+
+			&.game-won,
+			&.game-over {
+				display: block;
+				border-radius: calc(var(--tile-border-radius) * 2);
+				backdrop-filter: blur(3px) saturate(0.5);
+			}
 		}
 	}
-	$i: $i * 2;
-}
 
+	.grid-container {
+		position: absolute;
+		z-index: 1;
+		overflow: hidden;
+		display: grid;
+		grid-template-rows: repeat(var(--grid-size-max), var(--tile-size));
+		grid-template-columns: repeat(var(--grid-size-max), var(--tile-size));
+		gap: var(--grid-gap);
+		height: calc(100% - calc(var(--grid-gap) * 2));
+		width: calc(100% - calc(var(--grid-gap) * 2));
+		transition: all 0.25s;
+	}
 
-@mixin setThemeColors($color-number) {
-	.theme-#{$t} {
-		// Formejen jne väritystä varten
-		@if map.has-key($colors, "#{$color-number}-color-scheme") {
-			--color-scheme: #{map-get($colors, "#{$color-number}-color-scheme")};
-			color-scheme: var(--color-scheme, "light");
-		}
-		--background: #{map-get($colors, "#{$color-number}-game-background")};
-		--background-inverted: #{map-get($colors, "#{$color-number}-game-background-inverted")};
-		//--color: #{$text-color};
-		@if map.has-key($colors, "#{$color-number}-text-color") {
-			--color: #{map-get($colors, "#{$color-number}-text-color")};
-		}
-		//--container-background: #{$game-background};
-		@if map.has-key($colors, "#{$color-number}-game-container-background") {
-			--container-background: #{map-get($colors, "#{$color-number}-game-container-background")};
-		}
-		--button-background: #8f7a66;
-		@if map.has-key($colors, "#{$color-number}-button-color") {
-			--button-background: #{map-get($colors, "#{$color-number}-button-color")};
+	.grid-row {
+		display: grid;
+		grid-template-columns: repeat(var(--grid-size), var(--tile-size));
+		gap: var(--grid-gap);
+		overflow: hidden;
+
+		&:last-child {
+			margin-bottom: 0;
 		}
 
-		background: map-get($colors, "#{$color-number}-game-background");
-		@if map.has-key($colors, "#{$color-number}-break-button-background-false") {
-			.parin-kulautus,
-			.kurin-palautus {
-				background: map-get($colors, "#{$color-number}-break-button-background-false");
-				color: map-get($colors, "#{$color-number}-break-button-color-false");
-				&.allowed {
-					background: map-get($colors, "#{$color-number}-break-button-background-true");
-					color: map-get($colors, "#{$color-number}-break-button-color-true");
-				}
-			}
-		} @else {
-			.parin-kulautus,
-			.kurin-palautus {
-				background: var(--break-button-background-false);
-				color: var(--break-button-color-false);
-				&.allowed {
-					background: var(--break-button-background-true);
-					color: var(--break-button-color-true);
-				}
-			}
+		&:after {
+			content: "";
+			display: block;
+			clear: both;
 		}
-		& body {
-			background-image: url("/img/theme-#{$color-number}/OispaHallaTausta.webp");
-			@if map.has-key($colors, "#{$color-number}-game-background") {
-				// skips the definitions if the game background doesn't exist
-				color: map-get($colors, "#{$color-number}-text-color");
-				background-color: map-get($colors, "#{$color-number}-game-background");
+	}
 
-				a {
-					color: map-get($colors, "#{$color-number}-title-color");
-				}
+	.grid-cell {
+		width: var(--tile-size);
+		height: var(--tile-size);
+		margin-right: var(--grid-gap);
+		transition: all 0.25s;
 
-				.lb-popup-container {
-					background-color: map-get($colors, "#{$color-number}-game-container-background");
-				}
+		border-radius: var(--tile-border-radius);
 
-				.grid-cell {
-					background-color: map-get($colors, "#{$color-number}-cell-color");
-				}
+		background: var(--tile-color);
+		opacity: 0.35;
 
-				// .kurin-palautus {
-				//   border: 1px map-get($colors, '#{$color-number}-game-background') solid;
+		&:last-child {
+			margin-right: 0;
+		}
+	}
 
-				//   &:hover {
-				//     border: 1px map-get($colors, '#{$color-number}-game-background-inverted') solid;
-				//   }
-				// }
+	.tile-container {
+		position: absolute;
+		z-index: 2;
+	}
 
-				.game-container,
-				.score-container,
-				.best-container,
-				.HAC-container {
-					background: map-get($colors, "#{$color-number}-game-container-background");
-				}
+	.tile {
+		&,
+		.tile-inner {
+			width: var(--tile-size);
+			height: var(--tile-size);
+			line-height: var(--tile-size);
+			image-rendering: auto;
+		}
 
-				.game-message.game-over {
-					background: rgba(map-get($colors, "#{$color-number}-game-background"), 0.8);
-				}
-
-				.restart-button,
-				.lower > * {
-					background: map-get($colors, "#{$color-number}-button-color") !important;
+		// Build position classes
+		@for $x from 1 through $grid-max-size {
+			@for $y from 1 through $grid-max-size {
+				&.tile-position-#{$x}-#{$y} {
+					--x: #{$x};
+					--y: #{$y};
+					--xpos: calc(calc(var(--tile-size) + var(--grid-gap)) * calc(var(--x) - 1));
+					--ypos: calc(calc(var(--tile-size) + var(--grid-gap)) * calc(var(--y) - 1));
+					@include transform(translate(var(--xpos), var(--ypos)));
 				}
 			}
 		}
 	}
 }
 
-// Themes
-$t: 0;
-@while $t <= 20 {
-	$i: 2;
-	@while $i <= 32768 {
-		.theme-#{$t} .tile-#{$i} .tile-inner {
-			background-image: url("/img/theme-#{$t}/#{$i}.webp");
-			@if ($i >= 128) {
-				box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
-			}
-		}
-		$i: $i * 2;
+@include game-field;
+
+@include keyframes(fade-in) {
+	0% {
+		opacity: 0;
 	}
-	@include setThemeColors("#{$t}");
-	$t: $t + 1;
+
+	100% {
+		opacity: 1;
+	}
+}
+
+//kurinpalautus
+@include keyframes(fade-in-out) {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+.tile {
+	position: absolute; // Makes transforms relative to the top-left corner
+
+	.tile-inner {
+		background-image: url("/img/tile_unknown.png");
+		border-radius: var(--tile-border-radius);
+
+		text-align: center;
+		font-weight: bold;
+		z-index: 10;
+
+		font-size: 55px;
+
+		background-size: cover;
+	}
+
+	// Movement transition
+	@include transition(var(--transition-speed) ease-in-out);
+	-webkit-transition-property: -webkit-transform;
+	-moz-transition-property: -moz-transform;
+	transition-property: transform;
+
+	$base: 2;
+	$exponent: 1;
+	$limit: 11;
+
+	// Colors for all 11 states, false = no special color
+	$special-colors: false false,
+		// 2
+		false false,
+		// 4
+		#f78e48 true,
+		// 8
+		#fc5e2e true,
+		// 16
+		#ff3333 true,
+		// 32
+		#ff0000 true,
+		// 64
+		false true,
+		// 128
+		false true,
+		// 256
+		false true,
+		// 512
+		false true,
+		// 1024
+		false true; // 2048
+}
+
+@include keyframes(appear) {
+	0% {
+		opacity: 0;
+		@include transform(scale(0));
+	}
+
+	100% {
+		opacity: 1;
+		@include transform(scale(1));
+	}
+}
+
+.tile-new .tile-inner {
+	@include animation(appear 200ms ease var(--transition-speed));
+	@include animation-fill-mode(backwards);
+}
+
+@include keyframes(pop) {
+	0% {
+		@include transform(scale(0));
+	}
+
+	50% {
+		@include transform(scale(1.2));
+	}
+
+	100% {
+		@include transform(scale(1));
+	}
+}
+
+.tile-merged .tile-inner {
+	z-index: 20;
+	@include animation(pop 200ms ease var(--transition-speed));
+	@include animation-fill-mode(backwards);
 }

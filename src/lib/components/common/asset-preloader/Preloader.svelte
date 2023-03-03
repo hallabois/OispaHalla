@@ -18,7 +18,7 @@
 
 <div class="main">
 	{#each preloadImageUrls as src}
-		<img {src} aria-hidden="false" alt="" />
+		<img {src} aria-hidden="true" alt="" />
 	{/each}
 </div>
 

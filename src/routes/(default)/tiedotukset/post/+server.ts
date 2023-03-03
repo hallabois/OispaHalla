@@ -4,6 +4,8 @@ import { env } from "$env/dynamic/private";
 import { dev } from "$app/environment";
 import { getFirestore } from "firebase-admin/firestore";
 
+export const prerender = false;
+
 export async function POST({ request }) {
 	console.info("Validating admin post token...");
 	let body = await request.json();

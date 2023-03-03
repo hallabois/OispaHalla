@@ -8,7 +8,7 @@
 	let announcements: announcement[] = [];
 
 	export function announce(msg: string) {
-		console.info("ANNOUNCER announcing", msg);
+		console.info("ANNOUNCER", msg);
 		announcements.push({
 			msg: msg,
 			time: new Date()
@@ -38,5 +38,7 @@
 		display: flex;
 		gap: 0.1em;
 		flex-direction: column;
+
+		pointer-events: none;
 	}
 </style>

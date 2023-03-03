@@ -125,7 +125,7 @@
 			<p>ping: {$tournament_ping ?? "measuring..."}</p>
 			<div class="board-container">
 				<div
-					style="display: flex;justify-content:space-between;width:var(--field-width);margin-bottom: 8px;"
+					style="display: flex;justify-content:space-between;width:var(--field-width, --default-field-width);margin-bottom: 8px;"
 				>
 					<div style="display: flex;align-items: end;">
 						<button
@@ -191,8 +191,10 @@
 		place-items: center;
 
 		--tile-size: calc(
-			calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) /
-				var(--grid-size)
+			calc(
+					var(--field-width, --default-field-width) -
+						calc(var(--grid-gap) * calc(var(--grid-size) + 1))
+				) / var(--grid-size)
 		);
 	}
 	.err {
@@ -227,8 +229,10 @@
 		--field-width: calc(500px / 4) !important;
 		--grid-gap: calc(15px / 4);
 		--tile-size: calc(
-			calc(var(--field-width) - calc(var(--grid-gap) * calc(var(--grid-size) + 1))) /
-				var(--grid-size)
+			calc(
+					var(--field-width, --default-field-width) -
+						calc(var(--grid-gap) * calc(var(--grid-size) + 1))
+				) / var(--grid-size)
 		);
 
 		display: flex;
@@ -244,7 +248,7 @@
 		overflow: hidden;
 	}
 	.mini-details {
-		background-color: var(--container-background);
+		background-color: var(--dialog-background);
 		padding: 0.1em 0.5em;
 	}
 	.mini-details * {

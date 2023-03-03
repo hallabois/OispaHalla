@@ -3,6 +3,8 @@ import { getAuth } from "firebase-admin/auth";
 import { app } from "$lib/Auth_admin/auth.server";
 import { env } from "$env/dynamic/private";
 
+export const prerender = false;
+
 function get_admins() {
 	if (env.OH_ADMIN_EMAIL_LIST) {
 		let emails = env.OH_ADMIN_EMAIL_LIST.split(";");

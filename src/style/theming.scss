@@ -1,0 +1,272 @@
+@use "sass:map";
+@use "sass:math";
+
+// Required:
+//      n-color-scheme
+//      n-text-color
+//      n-dialog-background
+//      n-game-background
+//      n-game-container-background
+//      n-game-score-background
+//      n-title-color
+//      n-button-color
+//      n-button-background
+//      n-break-button-background-false
+//      n-break-button-color-false
+//      n-break-button-background-true
+//      n-break-button-color-true
+$colors: (
+	"0-color-scheme": "dark",
+	"0-text-color": #eee,
+	"0-dialog-background": #3e3933,
+	"0-game-background": #161817,
+	"0-game-container-background": #57524c,
+	"0-game-score-background": #3e3933,
+	"0-title-color": #e6d2bf,
+	"0-button-color": #f9f6f2,
+	"0-button-background": #365ca6,
+	"0-break-button-background-false": #a63636,
+	"0-break-button-color-false": #ddd,
+	"0-break-button-background-true": #49a636,
+	"0-break-button-color-true": #dfdfdf,
+
+	"1-color-scheme": "light",
+	"1-text-color": #776e65,
+	"1-dialog-background": #faf8ef,
+	"1-game-background": #faf8ef,
+	"1-game-container-background": #bbada0,
+	"1-game-score-background": #bbada0,
+	"1-title-color": #776e65,
+	"1-button-color": #f9f6f2,
+	"1-button-background": #8f7a66,
+	"1-break-button-background-false": #cc0000,
+	"1-break-button-color-false": #ddd,
+	"1-break-button-background-true": #00cc00,
+	"1-break-button-color-true": #dfdfdf,
+
+	"2-color-scheme": "dark",
+	"2-text-color": #eee,
+	"2-dialog-background": #3e3933,
+	"2-game-background": #161817,
+	"2-game-container-background": #57524c,
+	"2-game-score-background": #3e3933,
+	"2-title-color": #e6d2bf,
+	"2-button-color": #f9f6f2,
+	"2-button-background": #974f23,
+	"2-break-button-background-false": #a63636,
+	"2-break-button-color-false": #ddd,
+	"2-break-button-background-true": #49a636,
+	"2-break-button-color-true": #dfdfdf,
+
+	"3-color-scheme": "dark",
+	"3-text-color": #dfdfdf,
+	"3-dialog-background": #452424,
+	"3-cell-color": #601919,
+	"3-game-background": #460811,
+	"3-game-container-background": #8b0f17,
+	"3-game-score-background": #8b0f17,
+	"3-title-color": #f4ab1d,
+	"3-button-color": #f9f6f2,
+	"3-button-background": #146b3a,
+	"3-break-button-background-false": #8b0f17,
+	"3-break-button-color-false": #ddd,
+	"3-break-button-background-true": #146b3a,
+	"3-break-button-color-true": #dfdfdf,
+
+	"4-color-scheme": "dark",
+	"4-text-color": #eee,
+	"4-dialog-background": #3e3933,
+	"4-game-background": #202614,
+	"4-game-container-background": #57524c,
+	"4-game-score-background": #3e3933,
+	"4-title-color": #e6d2bf,
+	"4-button-color": #f9f6f2,
+	"4-button-background": #365ca6,
+	"4-break-button-background-false": #a63636,
+	"4-break-button-color-false": #ddd,
+	"4-break-button-background-true": #49a636,
+	"4-break-button-color-true": #dfdfdf,
+
+	"5-color-scheme": "light",
+	"5-text-color": #776e65,
+	"5-dialog-background": #faf8ef,
+	"5-game-background": #89c2d9,
+	"5-game-container-background": #bbada0,
+	"5-game-score-background": #bbada0,
+	"5-title-color": #534d48,
+	"5-button-color": #f9f6f2,
+	"5-button-background": #8f7a66,
+	"5-break-button-background-false": #cc0000,
+	"5-break-button-color-false": #ddd,
+	"5-break-button-background-true": #00cc00,
+	"5-break-button-color-true": #dfdfdf,
+
+	"6-color-scheme": "dark",
+	"6-text-color": #eee,
+	"6-dialog-background": #3e3933,
+	"6-game-background": transparent,
+	"6-game-container-background": transparent,
+	"6-game-score-background": #3e3933,
+	"6-title-color": #e6d2bf,
+	"6-button-color": #f9f6f2,
+	"6-button-background": #365ca6,
+	"6-break-button-background-false": #a63636,
+	"6-break-button-color-false": #ddd,
+	"6-break-button-background-true": #49a636,
+	"6-break-button-color-true": #dfdfdf,
+
+	"13-color-scheme": "dark",
+	"13-text-color": #eee,
+	"13-dialog-background": #3e3933,
+	"13-game-background": transparent,
+	"13-game-container-background": transparent,
+	"13-game-score-background": #3e3933,
+	"13-title-color": #e6d2bf,
+	"13-button-color": #f9f6f2,
+	"13-button-background": #365ca6,
+	"13-break-button-background-false": #a63636,
+	"13-break-button-color-false": #ddd,
+	"13-break-button-background-true": #49a636,
+	"13-break-button-color-true": #dfdfdf,
+
+	"16-color-scheme": "light",
+	"16-text-color": #776e65,
+	"16-dialog-background": #faf8ef,
+	"16-game-background": #ffffff,
+	"16-game-container-background": #ffffff,
+	"16-game-score-background": #bbada0,
+	"16-title-color": #776e65,
+	"16-button-color": #f9f6f2,
+	"16-button-background": #8f7a66,
+	"16-break-button-background-false": #a63636,
+	"16-break-button-color-false": #ddd,
+	"16-break-button-background-true": #49a636,
+	"16-break-button-color-true": #dfdfdf
+);
+
+$kiillot: (
+	128: (
+		-4px,
+		#a8fa8a
+	),
+	256: (
+		-4px,
+		#fffb62
+	),
+	512: (
+		-3px,
+		#ffa600
+	),
+	1024: (
+		-1px,
+		#5000ff
+	),
+	2048: (
+		0px,
+		#ff4646
+	),
+	4096: (
+		0px,
+		#ff9b00
+	),
+	8192: (
+		0px,
+		#00ff13
+	),
+	16384: (
+		1px,
+		#ffc600
+	),
+	32768: (
+		2px,
+		#0b00ff
+	)
+);
+
+$i: 2;
+
+@while $i <= 32768 {
+	.tile-#{$i} .tile-inner {
+		background-image: url("/img/#{$i}.webp");
+		@if ($i >= 128) {
+			box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
+		}
+	}
+	$i: $i * 2;
+}
+
+@mixin setThemeColors($color-number) {
+	.theme-#{$t} {
+		// Formejen jne väritystä varten
+		--color-scheme: #{map-get($colors, "#{$color-number}-color-scheme")};
+		color-scheme: var(--color-scheme, "light");
+		--color: #{map-get($colors, "#{$color-number}-text-color")};
+		--dialog-background: #{map-get($colors, "#{$color-number}-dialog-background")};
+		--game-background: #{map-get($colors, "#{$color-number}-game-background")};
+		--game-container-background: #{map-get($colors, "#{$color-number}-game-container-background")};
+		--game-score-background: #{map-get($colors, "#{$color-number}-game-score-background")};
+
+		--button-color: #{map-get($colors, "#{$color-number}-button-color")};
+		--button-background: #{map-get($colors, "#{$color-number}-button-background")};
+		--break-button-background-false: #{map-get(
+				$colors,
+				"#{$color-number}-break-button-background-false"
+			)};
+		--break-button-color-false: #{map-get($colors, "#{$color-number}-break-button-color-false")};
+		--break-button-background-true: #{map-get(
+				$colors,
+				"#{$color-number}-break-button-background-true"
+			)};
+		--break-button-color-true: #{map-get($colors, "#{$color-number}-break-button-color-true")};
+
+		& body {
+			background-image: url("/img/theme-#{$color-number}/OispaHallaTausta.webp");
+			@if map.has-key($colors, "#{$color-number}-game-background") {
+				// skips the definitions if the game background doesn't exist
+				color: map-get($colors, "#{$color-number}-text-color");
+				background-color: map-get($colors, "#{$color-number}-game-background");
+
+				a {
+					color: map-get($colors, "#{$color-number}-title-color");
+				}
+
+				.lb-popup-container {
+					background-color: map-get($colors, "#{$color-number}-game-container-background");
+				}
+
+				.grid-cell {
+					background-color: map-get($colors, "#{$color-number}-cell-color");
+				}
+
+				// .kurin-palautus {
+				//   border: 1px map-get($colors, '#{$color-number}-game-background') solid;
+
+				//   &:hover {
+				//     border: 1px map-get($colors, '#{$color-number}-game-background-inverted') solid;
+				//   }
+				// }
+
+				.game-message.game-over {
+					background: rgba(map-get($colors, "#{$color-number}-game-background"), 0.8);
+				}
+			}
+		}
+	}
+}
+
+// Themes
+$t: 0;
+@while $t <= 20 {
+	$i: 2;
+	@while $i <= 32768 {
+		.theme-#{$t} .tile-#{$i} .tile-inner {
+			background-image: url("/img/theme-#{$t}/#{$i}.webp");
+			@if ($i >= 128) {
+				box-shadow: 0px 0px 15px nth(map.get($kiillot, $i), 1) nth(map.get($kiillot, $i), 2);
+			}
+		}
+		$i: $i * 2;
+	}
+	@include setThemeColors("#{$t}");
+	$t: $t + 1;
+}

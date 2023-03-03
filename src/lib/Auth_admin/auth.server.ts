@@ -7,12 +7,11 @@ if (!clientEmail) {
 	throw new Error("Env variable OH_FIREBASE_ADMIN_CLIENT_EMAIL missing!");
 }
 
-let privateKey = env.OH_FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, "\n");
+let privateKey = env.OH_FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
 if (!privateKey) {
 	throw new Error("Env variable OH_FIREBASE_ADMIN_PRIVATE_KEY missing!");
-}
-if (!privateKey.includes("\n")) {
-	console.warn(
+} else if (!privateKey.includes("\n")) {
+	throw new Error(
 		"Please verify that your private key env variable preservers the original newlines!"
 	);
 }

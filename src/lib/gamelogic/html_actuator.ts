@@ -44,7 +44,6 @@ export default class HTMLActuator {
 			});
 
 			self.updateScore(metadata.score, metadata.palautukset, metadata.terminated);
-			self.updateBestScore(metadata.bestScore);
 
 			if (metadata.terminated) {
 				if (metadata.over) {
@@ -174,12 +173,9 @@ export default class HTMLActuator {
 			console.warn("Score container missing!");
 		}
 	}
-	updateBestScore(bestScore) {
-		// Depreciated
-	}
 	message(won, kurinPalautukset) {
-		var type = won ? "game-won" : "game-over";
-		var message = won ? "HALLA!" : "Improbatur...";
+		let type = won ? "game-won" : "game-over";
+		let message = won ? "HALLA!" : "Improbatur...";
 		//TODO: eri viestejä riippuen parhaimmasta ruudusta pelissä
 		this.messageContainer.classList.add(type);
 		this.messageContainer.getElementsByTagName("p")[0].textContent = message;

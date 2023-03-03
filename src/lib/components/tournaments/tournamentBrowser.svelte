@@ -35,7 +35,11 @@
 					Löydettiin {$game_index.joinable_games.length}
 					{$game_index.joinable_games.length == 1 ? "julkinen peli" : "julkista peliä"}!
 				</p>
-				<input class="search" bind:value={filter} placeholder="Hae pelejä nimen perusteella" />
+				<input
+					class="search fill-w"
+					bind:value={filter}
+					placeholder="Hae pelejä nimen perusteella"
+				/>
 			</div>
 			<hr />
 			<div class="games">
@@ -83,10 +87,9 @@
 
 <style>
 	.fill-w {
-		width: calc(100%);
+		width: 100%;
 	}
 	.search {
-		width: calc(100% - 2em);
 		padding: 0.25em 1em;
 	}
 	.games {
@@ -107,13 +110,14 @@
 		border-radius: 0.25em;
 		cursor: pointer;
 		transition: background 200ms, color 200ms;
+		border: 1px solid transparent;
 	}
 	.game:hover {
-		background: var(--background);
+		border-color: var(--color);
 	}
 	.game.selected {
 		background: var(--color);
-		color: var(--background);
+		color: var(--dialog-background);
 	}
 	.game p {
 		margin: 0;

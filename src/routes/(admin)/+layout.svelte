@@ -6,7 +6,7 @@
 <style>
 	:root {
 		--color: #ddd !important;
-		--background: #222 !important;
+		--dialog-background: #222 !important;
 	}
 	:global(*) {
 		margin: 0;
@@ -16,7 +16,7 @@
 	}
 	:global(html, body) {
 		color-scheme: dark;
-		background: var(--background) !important;
+		background: var(--dialog-background) !important;
 		color: var(--color) !important;
 	}
 </style>

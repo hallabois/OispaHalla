@@ -335,7 +335,7 @@
 											shareScore();
 										}}
 									>
-										<Icon fill="var(--action-btn-color)" viewBox="0 0 48 48" d={shareIconData} />
+										<Icon fill="var(--button-color)" viewBox="0 0 48 48" d={shareIconData} />
 									</button>
 								{/if}
 							</div>

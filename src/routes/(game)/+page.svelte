@@ -160,7 +160,7 @@
 				{/if}
 			</div>
 			<div
-				class="restart-button button"
+				class="restart-button button action-btn"
 				bind:this={restartbtn}
 				on:click={() => {
 					if (!restartbtn.classList.contains("open")) {

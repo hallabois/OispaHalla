@@ -241,8 +241,9 @@
 	.page {
 		width: min(500px, 95vw);
 		margin: 0 auto;
-		background: var(--container-background, var(--background));
+		background: var(--dialog-background);
 		padding: 1em;
+		box-sizing: content-box;
 	}
 	textarea {
 		width: 100%;

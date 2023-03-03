@@ -1,8 +1,8 @@
 <script>
-	import { dev } from "$app/environment";
+	import { browser, dev } from "$app/environment";
 	import Sentry from "./Sentry.svelte";
 </script>
 
-{#if !dev}
+{#if browser}
 	<Sentry />
 {/if}

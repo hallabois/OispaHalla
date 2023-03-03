@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { dev } from "$app/environment";
-	import { config } from "localforage";
 	import Popup from "./common/popup/popup.svelte";
-	// import type Announcer from "./tournaments/announcer.svelte";
 
 	let open = false;
 	export function show() {

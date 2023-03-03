@@ -61,7 +61,7 @@
 		position: absolute;
 		transform: translate(10px, -10px);
 		background: var(--button-background);
-		color: var(--action-btn-color);
+		color: var(--button-color);
 		width: 20px;
 		height: 20px;
 		font-size: 15px;

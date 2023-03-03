@@ -120,42 +120,54 @@ export default class KeyboardInputManager {
 		var gameContainer = this.documentRoot.getElementsByClassName("game-container")[0];
 
 		if (gameContainer) {
-			gameContainer.addEventListener(this.eventTouchstart, function (event: TouchEvent) {
-				if (event.touches.length > 1 || event.targetTouches.length > 1) {
-					return; // Ignore if touching with more than 1 finger
-				}
+			gameContainer.addEventListener(
+				this.eventTouchstart,
+				function (event: TouchEvent) {
+					if (event.touches.length > 1 || event.targetTouches.length > 1) {
+						return; // Ignore if touching with more than 1 finger
+					}
 
-				touchStartClientX = event.touches[0].clientX;
-				touchStartClientY = event.touches[0].clientY;
+					touchStartClientX = event.touches[0].clientX;
+					touchStartClientY = event.touches[0].clientY;
 
-				event.preventDefault();
-			});
+					event.preventDefault();
+				},
+				{ passive: false }
+			);
 
-			gameContainer.addEventListener(this.eventTouchmove, function (event) {
-				event.preventDefault();
-			});
+			gameContainer.addEventListener(
+				this.eventTouchmove,
+				function (event) {
+					event.preventDefault();
+				},
+				{ passive: false }
+			);
 
-			gameContainer.addEventListener(this.eventTouchend, function (event: TouchEvent) {
-				if (event.touches.length > 0 || event.targetTouches.length > 0) {
-					return; // Ignore if still touching with one or more fingers
-				}
+			gameContainer.addEventListener(
+				this.eventTouchend,
+				function (event: TouchEvent) {
+					if (event.touches.length > 0 || event.targetTouches.length > 0) {
+						return; // Ignore if still touching with one or more fingers
+					}
 
-				var touchEndClientX, touchEndClientY;
+					var touchEndClientX, touchEndClientY;
 
-				touchEndClientX = event.changedTouches[0].clientX;
-				touchEndClientY = event.changedTouches[0].clientY;
+					touchEndClientX = event.changedTouches[0].clientX;
+					touchEndClientY = event.changedTouches[0].clientY;
 
-				var dx = touchEndClientX - touchStartClientX;
-				var absDx = Math.abs(dx);
+					var dx = touchEndClientX - touchStartClientX;
+					var absDx = Math.abs(dx);
 
-				var dy = touchEndClientY - touchStartClientY;
-				var absDy = Math.abs(dy);
+					var dy = touchEndClientY - touchStartClientY;
+					var absDy = Math.abs(dy);
 
-				if (Math.max(absDx, absDy) > 10) {
-					// (right : left) : (down : up)
-					self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : dy > 0 ? 2 : 0);
-				}
-			});
+					if (Math.max(absDx, absDy) > 10) {
+						// (right : left) : (down : up)
+						self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : dy > 0 ? 2 : 0);
+					}
+				},
+				{ passive: false }
+			);
 		}
 	}
 	keydownHandler(event) {

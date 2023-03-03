@@ -370,7 +370,7 @@
 		text-align: left;
 		padding: 8px;
 
-		overflow: scroll;
+		overflow: auto;
 	}
 	tr:nth-child(even) {
 		background-color: #e6d2bf22;

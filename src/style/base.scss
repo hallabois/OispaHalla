@@ -1,5 +1,12 @@
-@import "./fonts/clear-sans.css";
+@import "./clear.scss";
 @import "./utility-classes.scss";
+@import "./fonts/clear-sans.css";
+@import "./theming.scss";
+
+:root {
+	--default-field-width: 500px;
+	--default-grid-gap: 15px;
+}
 
 html,
 body {
@@ -17,6 +24,7 @@ body {
 	background-position: top center;
 
 	accent-color: var(--button-background);
+	color: var(--color);
 }
 
 .noscript {

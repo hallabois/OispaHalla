@@ -117,7 +117,7 @@
 	.tutorial-container {
 		display: flex;
 		flex-direction: column;
-		background: var(--container-background);
+		background: var(--dialog-background);
 		padding: 1em;
 		border-radius: 0.25rem;
 	}

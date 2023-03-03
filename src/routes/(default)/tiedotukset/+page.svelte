@@ -13,7 +13,7 @@
 		console.log("userdata:", userdata);
 	}
 
-	import type { PageData } from "../../tiedotukset/$types";
+	import type { PageData } from "./$types";
 	export let data: PageData;
 	$: content = data.content;
 </script>
@@ -59,7 +59,7 @@
 
 <style>
 	main {
-		min-height: calc(100vh - 2em);
+		min-height: 100vh;
 		padding-top: 2em;
 		overflow: auto;
 		background-attachment: fixed;
@@ -71,7 +71,7 @@
 	}
 
 	.psa {
-		background-color: var(--container-background, var(--background));
+		background-color: var(--dialog-background);
 		padding: 0.66em 1em;
 		box-sizing: border-box;
 		border-radius: 0.25rem;

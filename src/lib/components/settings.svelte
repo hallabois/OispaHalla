@@ -8,6 +8,7 @@
 	import type Announcer from "./common/announcer/announcer.svelte";
 	import Icon from "./common/icon/icon.svelte";
 	import { deleteIconData, downloadIconData, uploadIconData } from "./common/icon/iconData";
+	import { dev } from "$app/environment";
 
 	let open = false;
 	export function show() {
@@ -129,7 +130,7 @@
 									><Icon
 										d={downloadIconData}
 										viewBox="0 0 48 48"
-										fill="var(--action-btn-color)"
+										fill="var(--button-color)"
 									/></button
 								>
 							{/if}
@@ -140,12 +141,7 @@
 							class="button action-btn"
 							on:click={() => {
 								upload();
-							}}
-							><Icon
-								d={uploadIconData}
-								viewBox="0 0 48 48"
-								fill="var(--action-btn-color)"
-							/></button
+							}}><Icon d={uploadIconData} viewBox="0 0 48 48" fill="var(--button-color)" /></button
 						>
 					{/if}
 				{:else}
@@ -183,6 +179,19 @@
 				>
 			{/if}
 		</div>
+		{#if dev}
+			<h3>Kehittäjäasetukset</h3>
+			<div class="section dev">
+				<div class="actions">
+					<button
+						class="button action-btn"
+						on:click={() => {
+							throw new Error("error for testing purposes ;)");
+						}}>luo virhe</button
+					>
+				</div>
+			</div>
+		{/if}
 	</div>
 </Popup>
 
@@ -205,7 +214,8 @@
 	.cloud-notice {
 		text-align: center;
 	}
-	.remote {
+	.remote,
+	.dev {
 		display: flex;
 		flex-direction: column;
 		gap: 0.5em;

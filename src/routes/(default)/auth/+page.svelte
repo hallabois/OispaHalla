@@ -87,13 +87,13 @@
 				>
 				<Popup bind:open={help_open}>
 					<span slot="title">Kirjautumisesta</span>
-					<div slot="content">
+					<div slot="content" class="popup-content">
 						<b
-							>Jos käytät firefoxia, tai muuta selainta jossa evästeet eristetään sivustokohtaisesti</b
+							>Jos käytät firefoxia, tai muuta selainta jossa evästeet eristetään
+							sivustokohtaisesti, laita evästeiden eristys pois päältä</b
 						>
-						<p>Laita evästeiden eristys pois päältä.</p>
-						<p style="margin: 0;">Firefoxissa:</p>
-						<ol style="margin: 0;">
+						<p>Firefoxissa:</p>
+						<ol>
 							<li>Paina sivuston osoitteen vasemmalla puolella olevasta kilvestä</li>
 							<li>Laita tehostettu seurannan suojaus pois päältä</li>
 						</ol>
@@ -164,7 +164,7 @@
 		margin-top: -0.5em;
 	}
 	main {
-		background: var(--background);
+		background: var(--dialog-background);
 		background-position: center;
 		background-size: cover;
 
@@ -184,5 +184,12 @@
 		color: red;
 		padding: 0.2em 1em;
 		border-radius: 0.25rem;
+	}
+
+	.popup-content {
+		max-width: 70ch;
+	}
+	.popup-content ol {
+		margin-left: 40px;
 	}
 </style>

@@ -29,7 +29,7 @@
 		background-attachment: fixed;
 	}
 	div.container {
-		background: var(--container-background);
+		background: var(--dialog-background);
 		padding: 1em;
 		border-radius: 0.75rem;
 	}

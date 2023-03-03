@@ -15,7 +15,12 @@
 	let psas: object | null;
 	$: psas = $PSA?.data()?.content;
 	$: unread_psas = Object.keys(psas || {}).filter(
-		(psa) => !(($storage.read_psas || []).includes(psa) || (psas[psa].devonly && !dev))
+		(psa) =>
+			!(
+				($storage.read_psas || []).includes(psa) ||
+				(psas[psa].devonly && !dev) ||
+				psas[psa].archived
+			)
 	);
 	$: unread_important_psas = unread_psas.filter((psa) => psas[psa].important);
 	$: unread_psas_reverse = [...unread_psas].reverse();
@@ -84,7 +89,7 @@
 			<div class="section">
 				<p>
 					Aiemmat tiedotukset löydät osoitteesta
-					<a href={PSA_URL}>{PSA_URL}</a>
+					<a href={PSA_URL} style="display: block;">{PSA_URL}</a>
 				</p>
 			</div>
 		{:else}
@@ -102,7 +107,7 @@
 	}
 	.section {
 		margin-block: 1em;
-		max-width: 550px;
+		width: min(550px, 75vw);
 	}
 
 	h1 {

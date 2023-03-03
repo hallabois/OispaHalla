@@ -6,7 +6,7 @@ import { synced_variables } from "../../features";
 
 let dbs: { [key: string]: DB } = {};
 
-export type DB = ReturnType<createDB>;
+export type DB = typeof createDB;
 
 export function createDB(
 	collection: string,
