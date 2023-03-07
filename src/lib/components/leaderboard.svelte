@@ -13,7 +13,7 @@
 	} from "$lib/stores/leaderboardstore";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
-	import { browser, dev } from "$app/environment";
+	import { browser } from "$app/environment";
 	import Actions from "./leaderboard/actions.svelte";
 	import { getItem, setItem, storage, storage_loaded } from "$lib/stores/storage";
 	import Icon from "./common/icon/icon.svelte";

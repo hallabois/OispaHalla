@@ -1,16 +1,20 @@
 import { json as json$1 } from "@sveltejs/kit";
 import { getLeaderBoardData } from "$lib/server/leaderboards";
 import { env } from "$env/dynamic/private";
+import type { RequestHandler } from "./$types";
 
-export async function GET({ request, getClientAddress, params }) {
-	let uid = params.uid;
+export const GET = (async ({ params }) => {
+	const uid = params.uid;
 	console.info(`User info request for uid "${uid}"`);
 	try {
-		let resp = await getLeaderBoardData(uid, env.ADMIN_TOKEN);
+		const resp = await getLeaderBoardData(uid, env.ADMIN_TOKEN);
 		if (resp.err) {
 			throw new Error(resp.err);
 		}
-		let lb = {
+		if (!resp.data) {
+			throw new Error("lb did not return any data" + resp);
+		}
+		const lb = {
 			uid: resp.data.uid,
 			screenName: resp.data.screenName,
 			updatedAt: resp.data.updatedAt
@@ -34,4 +38,4 @@ export async function GET({ request, getClientAddress, params }) {
 			}
 		);
 	}
-}
+}) satisfies RequestHandler;

@@ -1,13 +1,13 @@
 import { get_all_scores } from "$lib/stores/leaderboardstore";
+import type { PageServerLoad } from "./$types";
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ request, setHeaders, params }) {
-	let size = params.size;
+export const load = (async ({ params }) => {
+	const size = params.size;
 
-	let leaderboard_data = await get_all_scores(size);
+	const leaderboard_data = await get_all_scores(+size);
 
 	return {
 		leaderboard_data,
 		size
 	};
-}
+}) satisfies PageServerLoad;

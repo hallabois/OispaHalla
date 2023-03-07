@@ -1,8 +1,8 @@
 import { browser } from "$app/environment";
-import { get, writable } from "svelte/store";
+import { writable } from "svelte/store";
 
-export let tabID = 1.0;
-let date_registered: number = 0;
+export const tabID = 1.0;
+let date_registered = 0;
 
 function unregisterTabID() {
 	if (browser) {
@@ -28,16 +28,16 @@ if (browser) {
 	window.onbeforeunload = unregisterTabID;
 }
 
-export let TAB_BLOCK = writable(false);
+export const TAB_BLOCK = writable(false);
 let oldest_tab = 999999999999999;
 
-let ctm_channel_sync = "crosstab_management_oh";
-let ctm_close_key = -245;
+const ctm_channel_sync = "crosstab_management_oh";
+const ctm_close_key = -245;
 
 let nt: BroadcastChannel;
 if (browser) {
 	date_registered = new Date().getTime();
-	let storage_lock = +(localStorage.getItem("lastSession") || "9999999999999999999");
+	const storage_lock = +(localStorage.getItem("lastSession") || "9999999999999999999");
 	if (storage_lock < date_registered) {
 		TAB_BLOCK.set(true);
 	} else {

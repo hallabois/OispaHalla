@@ -1,13 +1,13 @@
 import { defaultTheme } from "$lib/stores/themestore";
+import type { LayoutServerLoad } from "./$types";
 
-/** @type {import('./$types').LayoutServerLoad} */
-export async function load({ request, setHeaders }) {
+export const load = (async ({ request }) => {
 	// Check for theme cookie
-	let cookie = request.headers.get("cookie");
+	const cookie = request.headers.get("cookie");
 	let theme = defaultTheme;
 	if (cookie) {
-		let matching = cookie.match(/theme=\d{1,5}/) || []; // qualifies theme:[0-99999]
-		if (matching.length > 0) {
+		const matching = cookie.match(/theme=\d{1,5}/) || []; // qualifies theme:[0-99999]
+		if (matching.length > 0 && matching[0] != null) {
 			theme = +matching[0].split("=")[1];
 		}
 	}
@@ -17,4 +17,4 @@ export async function load({ request, setHeaders }) {
 	return {
 		theme
 	};
-}
+}) satisfies LayoutServerLoad;

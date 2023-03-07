@@ -7,11 +7,11 @@ export let defaultTheme = 4;
 export function setDefaultTheme(theme: number) {
 	defaultTheme = theme;
 }
-export let currentImageThemeVersion = 6;
+export const currentImageThemeVersion = 6;
 
-export let theme_index: Writable<number> = writable(defaultTheme);
-export let theme_loaded: Writable<boolean> = writable(false);
-export let festives_applied: Writable<string[]> = writable([]);
+export const theme_index: Writable<number> = writable(defaultTheme);
+export const theme_loaded: Writable<boolean> = writable(false);
+export const festives_applied: Writable<string[]> = writable([]);
 theme_index.subscribe((themeID) => {
 	if (!get(storage_loaded)) {
 		return; // Overwriting at this point would always cause the default theme to load
@@ -28,9 +28,11 @@ theme_index.subscribe((themeID) => {
 		// Save choice as a cookie
 		try {
 			document.cookie = `theme=${themeID};SameSite=None;secure=true;expires=Fri, 31 Dec 9999 23:59:59 GMT"max-age=31536000;path=/;`;
-		} catch {}
+		} catch (e) {
+			console.warn("Failed to save theme as cookie: ", e);
+		}
 		// Apply theme
-		let html = document.querySelector("html");
+		const html = document.querySelector("html");
 		if (html) {
 			html.setAttribute("class", "theme-" + themeID);
 		}
@@ -46,7 +48,7 @@ festives_applied.subscribe((festives) => {
 		console.warn("Failed to save applied festives", e);
 	}
 });
-export let base_path: Writable<string> = writable("");
+export const base_path: Writable<string> = writable("");
 
 export function get_base_path(): string {
 	return get(base_path);
@@ -56,7 +58,7 @@ export function get_base_path(): string {
 storage_loaded.subscribe(($storage_loaded) => {
 	if ($storage_loaded) {
 		console.log("Loading theme...");
-		let localtheme = getItem("imageTheme");
+		const localtheme = getItem("imageTheme");
 		if (localtheme != null) {
 			console.log(`found an existing prefer for theme ${localtheme}`);
 			if (
@@ -72,7 +74,7 @@ storage_loaded.subscribe(($storage_loaded) => {
 		}
 		console.info(`Loaded theme ${get(theme_index)}.`);
 
-		let festives = getItem("festives_applied");
+		const festives = getItem("festives_applied");
 		if (festives != null) {
 			festives_applied.set(festives);
 		} else {
@@ -86,7 +88,7 @@ class theme_manifest {
 	name!: string;
 	description!: string;
 }
-let default_manifest: theme_manifest = {
+const default_manifest: theme_manifest = {
 	name: "Oispa Halla",
 	description: "Yhdistä opettajat ja saavuta **Halla!**"
 };
@@ -106,14 +108,28 @@ class theme_custom {
 	manifest!: theme_manifest;
 }
 export type Theme = theme | theme_custom;
-let classic = {
+const classic = {
 	name: "Classic",
 	index: 16,
 	icon_url: "/img/theme-16/2048.webp",
 	style: "background: transparent;",
 	manifest: default_manifest
 };
-export let available_themes: Writable<Array<Theme>> = writable([
+export const available_themes: Writable<Array<Theme>> = writable([
+	{
+		name: "Kaunis",
+		index: 5,
+		icon_url: "/img/theme-4/cover.webp",
+		style: "background: #8cc4e3;",
+		manifest: default_manifest
+	},
+	{
+		name: "Kaunis (tumma)",
+		index: 4,
+		icon_url: "/img/theme-4/cover.webp",
+		style: "background: #001522;",
+		manifest: default_manifest
+	},
 	{
 		name: "OispaHalla",
 		index: 1,
@@ -131,24 +147,6 @@ export let available_themes: Writable<Array<Theme>> = writable([
 	classic
 ]);
 
-let kaunis = {
-	name: "Kaunis",
-	index: 5,
-	icon_url: "/img/theme-4/cover.webp",
-	style: "background: #8cc4e3;",
-	manifest: default_manifest
-};
-let kaunis_dark = {
-	name: "Kaunis (tumma)",
-	index: 4,
-	icon_url: "/img/theme-4/cover.webp",
-	style: "background: #001522;",
-	manifest: default_manifest
-};
-if (true) {
-	available_themes.set([kaunis, kaunis_dark, ...get(available_themes)]);
-}
-
 // Check for holidays
 class Holiday {
 	min!: {
@@ -161,7 +159,7 @@ class Holiday {
 	};
 	theme!: theme;
 }
-let spooktober: Holiday = {
+const spooktober: Holiday = {
 	min: {
 		month: 10,
 		date: 10
@@ -174,10 +172,11 @@ let spooktober: Holiday = {
 		name: "Hallaween",
 		index: 2,
 		icon_url: "/img/theme-2/2048.webp",
-		style: "background: #001522;"
+		style: "background: #001522;",
+		manifest: default_manifest
 	}
 };
-let xmas: Holiday = {
+const xmas: Holiday = {
 	min: {
 		month: 12,
 		date: 1
@@ -190,10 +189,11 @@ let xmas: Holiday = {
 		name: "Joulu",
 		index: 3,
 		icon_url: "/img/theme-3/2048.webp",
-		style: "background: #001522;"
+		style: "background: #001522;",
+		manifest: default_manifest
 	}
 };
-let holidays: Holiday[] = [spooktober, xmas];
+const holidays: Holiday[] = [spooktober, xmas];
 
 function removeHolidayThemeFromUse(t: theme) {
 	available_themes.set(get(available_themes).filter((t2) => t2.index !== t.index));
@@ -204,12 +204,12 @@ function removeHolidayThemeFromUse(t: theme) {
 
 theme_loaded.subscribe(($theme_loaded) => {
 	if ($theme_loaded) {
-		let now = new Date();
-		let year = now.getFullYear();
-		let month = now.getMonth() + 1;
-		let day = now.getDate();
-		for (let holiday of holidays) {
-			let festive_hash = `${holiday.theme.index}_${year}`;
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = now.getMonth() + 1;
+		const day = now.getDate();
+		for (const holiday of holidays) {
+			const festive_hash = `${holiday.theme.index}_${year}`;
 			if (month > holiday.min.month || (month == holiday.min.month && day >= holiday.min.date)) {
 				if (month < holiday.max.month || (month == holiday.max.month && day <= holiday.max.date)) {
 					available_themes.set([...get(available_themes), holiday.theme]);

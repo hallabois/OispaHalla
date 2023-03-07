@@ -28,37 +28,36 @@ export default class HTMLActuator {
 		this.score = 0;
 	}
 	actuate(grid, metadata) {
-		var self = this;
 		// @ts-ignore, it works or it doesn't
 		this.html_component.style = "--grid-size:" + grid.size + "!important;";
 
-		window.requestAnimationFrame(function () {
-			self.clearContainer(self.tileContainer);
+		window.requestAnimationFrame(() => {
+			this.clearContainer(this.tileContainer);
 
-			grid.cells.forEach(function (column) {
-				column.forEach(function (cell) {
+			grid.cells.forEach((column) => {
+				column.forEach((cell) => {
 					if (cell) {
-						self.addTile(cell);
+						this.addTile(cell);
 					}
 				});
 			});
 
-			self.updateScore(metadata.score, metadata.palautukset, metadata.terminated);
+			this.updateScore(metadata.score, metadata.palautukset, metadata.terminated);
 
 			if (metadata.terminated) {
 				if (metadata.over) {
-					self.message(false, metadata.palautukset); // You lose
+					this.message(false, metadata.palautukset); // You lose
 				} else if (metadata.won) {
-					self.message(true, metadata.palautukset); // You win!
+					this.message(true, metadata.palautukset); // You win!
 				}
 			}
 			const base_path = get_base_path();
 			if (base_path && base_path != "") {
 				// @ts-ignore, probably doesn't work but we don't care
-				let images = [...self.documentRoot.querySelectorAll(".tile-inner")];
+				const images = [...this.documentRoot.querySelectorAll(".tile-inner")];
 				console.log("Images: ", images);
-				for (let i in images) {
-					let img = images[i];
+				for (const i in images) {
+					const img = images[i];
 					console.log("img", i, img);
 					img.style.background = window
 						.getComputedStyle(img)
@@ -87,15 +86,13 @@ export default class HTMLActuator {
 		}
 	}
 	addTile(tile) {
-		var self = this;
-
-		var wrapper = document.createElement("div");
-		var inner = document.createElement("div");
-		var position = tile.previousPosition || { x: tile.x, y: tile.y };
-		var positionClass = this.positionClass(position);
+		const wrapper = document.createElement("div");
+		const inner = document.createElement("div");
+		const position = tile.previousPosition || { x: tile.x, y: tile.y };
+		const positionClass = this.positionClass(position);
 
 		// We can't use classlist because it somehow glitches when replacing classes
-		var classes = ["tile", "tile-" + tile.value, positionClass];
+		const classes = ["tile", "tile-" + tile.value, positionClass];
 
 		if (tile.value > 2048) classes.push("tile-super");
 
@@ -105,17 +102,17 @@ export default class HTMLActuator {
 
 		if (tile.previousPosition) {
 			// Make sure that the tile gets rendered in the previous position first
-			window.requestAnimationFrame(function () {
-				classes[2] = self.positionClass({ x: tile.x, y: tile.y });
-				self.applyClasses(wrapper, classes); // Update the position
+			window.requestAnimationFrame(() => {
+				classes[2] = this.positionClass({ x: tile.x, y: tile.y });
+				this.applyClasses(wrapper, classes); // Update the position
 			});
 		} else if (tile.mergedFrom) {
 			classes.push("tile-merged");
 			this.applyClasses(wrapper, classes);
 
 			// Render the tiles that merged
-			tile.mergedFrom.forEach(function (merged) {
-				self.addTile(merged);
+			tile.mergedFrom.forEach((merged) => {
+				this.addTile(merged);
 			});
 		} else {
 			classes.push("tile-new");
@@ -125,7 +122,7 @@ export default class HTMLActuator {
 		if (tile.hasBeenMerged) {
 			// Remove this tile from the dom after it's animation has finished (animation lenght 100ms)
 			setTimeout(() => {
-				self.removeMergedTile(wrapper);
+				this.removeMergedTile(wrapper);
 			}, 100);
 		}
 
@@ -149,13 +146,13 @@ export default class HTMLActuator {
 		if (this.scoreContainer) {
 			this.clearContainer(this.scoreContainer);
 
-			var difference = score - this.score;
+			const difference = score - this.score;
 			this.score = score;
 
 			this.scoreContainer.textContent = this.score;
 
 			if (difference > 0) {
-				var addition = document.createElement("div");
+				const addition = document.createElement("div");
 				addition.classList.add("score-addition");
 				addition.textContent = "+" + difference;
 
@@ -174,8 +171,8 @@ export default class HTMLActuator {
 		}
 	}
 	message(won, kurinPalautukset) {
-		let type = won ? "game-won" : "game-over";
-		let message = won ? "HALLA!" : "Improbatur...";
+		const type = won ? "game-won" : "game-over";
+		const message = won ? "HALLA!" : "Improbatur...";
 		//TODO: eri viestejä riippuen parhaimmasta ruudusta pelissä
 		this.messageContainer.classList.add(type);
 		this.messageContainer.getElementsByTagName("p")[0].textContent = message;
@@ -195,12 +192,12 @@ export default class HTMLActuator {
 		if (this.scoreContainer) {
 			this.scoreContainer.textContent = this.score - 1000;
 
-			var addition = document.createElement("div");
+			const addition = document.createElement("div");
 			addition.classList.add("score-addition");
 			addition.textContent = "-1000";
 			this.scoreContainer.appendChild(addition);
 
-			var messageElement = document.createElement("img");
+			const messageElement = document.createElement("img");
 			messageElement.setAttribute("src", "./img/parinkulautus.png");
 
 			this.kurinPalautusViesti.appendChild(messageElement);

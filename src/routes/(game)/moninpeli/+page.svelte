@@ -15,8 +15,8 @@
 	} from "$lib/stores/tournamentstore";
 	import {
 		generate_previous_positions,
-		hac_gamestate_to_grid,
-		ohts_gamestate_to_grid
+		ohts_gamestate_to_grid,
+		type ohts_gamestate
 	} from "$lib/gamelogic/utils";
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
 	import type Grid from "$lib/gamelogic/grid";
@@ -32,20 +32,13 @@
 		$user_details != null;
 	function move(direction: 0 | 1 | 2 | 3) {
 		if (inputManager_should_exist) {
-			// BoardInstance?.getGameManagerInstance()?.move(direction);
 			console.log("server-side move called with the value", direction);
 			request_move(direction);
-			// poll_send_moves.push(direction);
-			// console.info(JSON.stringify(poll_send_moves));
-		} else {
-			if (browser && document.oh_keylistener) {
-				document.oh_keylistener.removeKeydownHandler();
-			}
 		}
 	}
 	$: if (inputManager_should_exist) {
 		if (!dev) {
-			window.onbeforeunload = function (e) {
+			window.onbeforeunload = () => {
 				return "Oletko varma että haluat jättää pelin kesken?";
 			};
 		}
@@ -59,12 +52,6 @@
 	} else {
 		if (browser) {
 			window.onbeforeunload = null;
-		}
-
-		if (browser && document.oh_keylistener) {
-			console.log("Destroying server-side inputmanager...");
-			document.oh_keylistener.removeKeydownHandler();
-			inputManager = null;
 		}
 	}
 
@@ -82,7 +69,7 @@
 	}
 
 	let enableMonkey = false;
-	let monkeyInterval: NodeJS.Timer | undefined;
+	let monkeyInterval: ReturnType<typeof setInterval> | undefined;
 	$: if (enableMonkey) {
 		monkeyInterval = setInterval(() => {
 			//@ts-ignore, we modulo integers by 4 so it's good.
@@ -93,7 +80,7 @@
 	}
 
 	let last_grid: Grid | null = null;
-	function processGrid(inp: Object) {
+	function processGrid(inp: ohts_gamestate) {
 		let translated = ohts_gamestate_to_grid(inp);
 		if (last_grid) {
 			translated = generate_previous_positions(translated, last_grid);
@@ -117,7 +104,7 @@
 	{#if $joined_game_id && $game_details[$joined_game_id]?.started && $state[$joined_game_id] && $user_details != null}
 		{@const gamestates = $state[$joined_game_id]}
 		{@const gamestate = gamestates.find((s) => $user_details && s.user_id === $user_details.id)}
-		{@const game = $game_details[$joined_game_id]}
+
 		{#if gamestate}
 			{@const grid_o = gamestate.board}
 			{@const grid = processGrid(grid_o)}
@@ -148,7 +135,6 @@
 						enableLSM={false}
 						{grid}
 						documentRoot={inputRoot}
-						announcer={AnnouncerInstance}
 						bind:this={BoardInstance}
 					/>
 				{/key}

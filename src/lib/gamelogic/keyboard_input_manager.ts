@@ -26,7 +26,7 @@ export default class KeyboardInputManager {
 	addKeydownHandler: () => void;
 	removeKeydownHandler: () => void;
 
-	constructor(documentRoot: HTMLElement, enabled: boolean = true) {
+	constructor(documentRoot: HTMLElement, enabled = true) {
 		this.enabled = enabled;
 		if (!enabled) {
 			return;
@@ -87,7 +87,7 @@ export default class KeyboardInputManager {
 		if (!this.enabled) {
 			return;
 		}
-		var callbacks = this.events[event];
+		const callbacks = this.events[event];
 		if (callbacks) {
 			callbacks.forEach(function (callback) {
 				callback(data);
@@ -99,7 +99,7 @@ export default class KeyboardInputManager {
 		if (!this.enabled) {
 			return;
 		}
-		var self = this;
+		const self = this;
 
 		// Respond to direction keys
 		this.addKeydownHandler();
@@ -116,8 +116,8 @@ export default class KeyboardInputManager {
 			return;
 		}
 		// Respond to swipe events
-		var touchStartClientX, touchStartClientY;
-		var gameContainer = this.documentRoot.getElementsByClassName("game-container")[0];
+		let touchStartClientX, touchStartClientY;
+		const gameContainer = this.documentRoot.getElementsByClassName("game-container")[0];
 
 		if (gameContainer) {
 			gameContainer.addEventListener(
@@ -150,16 +150,16 @@ export default class KeyboardInputManager {
 						return; // Ignore if still touching with one or more fingers
 					}
 
-					var touchEndClientX, touchEndClientY;
+					let touchEndClientX, touchEndClientY;
 
 					touchEndClientX = event.changedTouches[0].clientX;
 					touchEndClientY = event.changedTouches[0].clientY;
 
-					var dx = touchEndClientX - touchStartClientX;
-					var absDx = Math.abs(dx);
+					const dx = touchEndClientX - touchStartClientX;
+					const absDx = Math.abs(dx);
 
-					var dy = touchEndClientY - touchStartClientY;
-					var absDy = Math.abs(dy);
+					const dy = touchEndClientY - touchStartClientY;
+					const absDy = Math.abs(dy);
 
 					if (Math.max(absDx, absDy) > 10) {
 						// (right : left) : (down : up)
@@ -174,8 +174,8 @@ export default class KeyboardInputManager {
 		if (!this.enabled || get(open_popups).length > 0) {
 			return;
 		}
-		var modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
-		var mapped = this.map[event.which];
+		const modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
+		const mapped = this.map[event.which];
 
 		if (!modifiers) {
 			if (mapped !== undefined) {
@@ -218,7 +218,7 @@ export default class KeyboardInputManager {
 		if (!this.documentRoot) {
 			return;
 		}
-		var button = this.documentRoot.querySelector(selector);
+		const button = this.documentRoot.querySelector(selector);
 		if (button) {
 			button.addEventListener("click", fn.bind(this));
 			button.addEventListener(this.eventTouchend, fn.bind(this));
@@ -228,7 +228,7 @@ export default class KeyboardInputManager {
 		if (!this.enabled) {
 			return;
 		}
-		var button = this.documentRoot.querySelector(selector);
+		const button = this.documentRoot.querySelector(selector);
 		if (button) {
 			button.addEventListener("contextmenu", fn.bind(this));
 		}

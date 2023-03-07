@@ -3,16 +3,17 @@ import { app } from "$lib/Auth_admin/auth.server";
 import { env } from "$env/dynamic/private";
 import { dev } from "$app/environment";
 import { getFirestore } from "firebase-admin/firestore";
+import type { RequestHandler } from "./$types";
 
 export const prerender = false;
 
-export async function POST({ request }) {
+export const POST = (async ({ request }) => {
 	console.info("Validating admin post token...");
-	let body = await request.json();
+	const body = await request.json();
 	return await handle(body, request);
-}
+}) satisfies RequestHandler;
 
-async function handle(body: object, request) {
+async function handle(body: any, request: Request) {
 	if (!dev) {
 		return json$1(
 			{
@@ -33,7 +34,7 @@ async function handle(body: object, request) {
 			}
 		);
 	} else {
-		let token = body.token;
+		const token = body.token;
 
 		try {
 			if (env.ADMIN_TOKEN) {
@@ -50,14 +51,14 @@ async function handle(body: object, request) {
 						);
 					}
 					console.info("Acquiring db...");
-					let db = getFirestore(app);
+					const db = getFirestore(app);
 					console.info("getting dbRef...");
-					let ref = db.doc("global/PSA");
+					const ref = db.doc("global/PSA");
 					console.info("getting current document");
-					let document = await ref.get();
+					const document = await ref.get();
 					console.info("getting current content...");
-					let data = document.data() || {};
-					let content = data.content || {};
+					const data = document.data() || {};
+					const content = data.content || {};
 					console.info("setting new content...");
 					content[body.psa.id] = body.psa.content;
 					await ref.set({

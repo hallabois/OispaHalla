@@ -1,13 +1,6 @@
 <script lang="ts">
 	import "../../../style/utility-classes.scss";
-	import {
-		multiplayerIconData,
-		leaderboardIconData,
-		infoIconData,
-		settingsIconData,
-		notificationIconData,
-		activeNotificationIconData
-	} from "$lib/components/common/icon/iconData";
+	import { multiplayerIconData } from "$lib/components/common/icon/iconData";
 	import Icon from "$lib/components/common/icon/icon.svelte";
 </script>
 

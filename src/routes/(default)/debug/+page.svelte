@@ -18,14 +18,6 @@
 			copytext = null;
 		}, 500);
 	}
-	function email() {
-		let mail_template = "Kuvaile bugia:\n\nAutomaattiset Virheenkorjaustiedot:\n";
-		window.open(
-			`mailto:bugreports@oispahalla.com?subject=Bugiraportti&body=${mail_template}${JSON.stringify(
-				$storage
-			)}`
-		);
-	}
 
 	let copytext: string | null;
 </script>
@@ -61,7 +53,6 @@
 		{:else}
 			<p>Ei näytettävää dataa.</p>
 		{/if}
-		<!-- <button on:click={email}>Lähetä bugi-ilmoitus sähköpostilla.</button> -->
 	{:else}
 		<div>
 			<button

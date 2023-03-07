@@ -11,7 +11,11 @@
 		init as initWasm
 	} from "$lib/wasm/twothousand_forty_eight";
 	import { browser } from "$app/environment";
-	import { generate_previous_positions, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import {
+		generate_previous_positions,
+		ohts_gamestate_to_grid,
+		type ohts_gamestate
+	} from "$lib/gamelogic/utils";
 
 	const directions = {
 		"0": "ylös",
@@ -26,7 +30,7 @@
 	let show_additions = false;
 	$: usable_input = input.replaceAll("\n", "");
 	let parsed: any;
-	let grid;
+	let grid: Grid;
 	let lastGrid;
 	let err: string | null;
 	let validation_result;
@@ -64,7 +68,7 @@
 	}
 
 	let err2: string | null;
-	let frame;
+	let frame: ohts_gamestate;
 	let move_direction: string | null = null;
 	$: if (parsed != null && selected_frame != null && $wasm != null) {
 		console.info("Trying to render selected frame...");

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { marked } from "marked";
-	import { get_user_db, PSA } from "$lib/Firestore/db";
+	import { get_user_db } from "$lib/Firestore/db";
 	import { auth } from "$lib/Auth/authstore";
 	import { dev } from "$app/environment";
 	let user_db = null;

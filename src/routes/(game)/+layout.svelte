@@ -13,7 +13,7 @@
 	import { storage_version } from "$lib/stores/storage";
 	import { theme_index } from "$lib/stores/themestore";
 	import { enable_countdown } from "../../features";
-	import { browser, dev } from "$app/environment";
+	import { browser } from "$app/environment";
 	import Analytics from "$lib/components/analytics/analytics.svelte";
 	import Pwa from "$lib/components/common/pwa.svelte";
 	import ChromiumCachePreventer from "$lib/components/common/chromium-cache-preventer.svelte";
@@ -39,7 +39,6 @@
 		setInterval(() => {
 			if (!launched) {
 				date = new Date();
-			} else {
 			}
 		}, 1000);
 	}

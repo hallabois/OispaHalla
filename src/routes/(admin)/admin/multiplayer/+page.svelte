@@ -28,21 +28,16 @@
 
 	let action_status: null | boolean = null; // Null: Clear, true: OK, false: Error
 
-	function confirm_action() {
-		let answer = prompt("Please retype your token");
-		return answer === admin_token;
-	}
-
 	onDestroy(() => {
 		disconnect();
 	});
 
 	let selected_game: number | null;
 	let announce_open = false;
-	let announce_content: string = "";
+	let announce_content = "";
 	let board_popups_open = {};
 	let eventsender_open = false;
-	let eventsender_content: string = "";
+	let eventsender_content = "";
 </script>
 
 <svelte:head>
@@ -409,7 +404,6 @@
 	}
 
 	h1,
-	h2,
 	h3 {
 		margin: 0;
 	}

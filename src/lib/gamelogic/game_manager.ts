@@ -1,4 +1,4 @@
-declare var sa_event: Function;
+declare let sa_event: Function;
 
 import Grid from "./grid";
 import type HTMLActuator from "./html_actuator";
@@ -22,11 +22,11 @@ export default class GameManager {
 	startTiles: number;
 	numOfScores: number;
 	popup: Element | null;
-	palautukset: number = 0;
+	palautukset = 0;
 	//@ts-ignore, make sure it's always initialized
 	grid: Grid;
-	over: boolean = false;
-	won: boolean = false;
+	over = false;
+	won = false;
 	score: number;
 	run_best_score: number | null; // Keep track of the best score reached during this run, as kurinpalautukset changes the score by -1000
 	doKeepPlaying: boolean | null;
@@ -40,7 +40,7 @@ export default class GameManager {
 		this.subscribers = [...this.subscribers, listener];
 	}
 	update_subscribers() {
-		for (let subscriber of this.subscribers) {
+		for (const subscriber of this.subscribers) {
 			subscriber();
 		}
 	}
@@ -133,7 +133,7 @@ export default class GameManager {
 
 	// Set up the game
 	setup() {
-		var previousState = this.storageManager.getGameState();
+		const previousState = this.storageManager.getGameState();
 		this.loadPreviousState(previousState);
 
 		// Analytics
@@ -151,13 +151,13 @@ export default class GameManager {
 		if (!this.enable_random) {
 			return;
 		}
-		for (var i = 0; i < this.startTiles; i++) {
+		for (let i = 0; i < this.startTiles; i++) {
 			this.addRandomTile();
 		}
 	}
 	// Adds a tile in a random position
 	addRandomTile() {
-		let tile = this.getRandomTileToAdd();
+		const tile = this.getRandomTileToAdd();
 		if (tile) {
 			this.grid.insertTile(tile);
 			return "" + tile.x + "," + tile.y + "." + tile.value; // for HAC
@@ -169,10 +169,12 @@ export default class GameManager {
 			return;
 		}
 		if (this.grid.cellsAvailable()) {
-			var value = Math.random() < 0.9 ? 2 : 4;
-			var tile = new Tile(this.grid.randomAvailableCell(), value);
-
-			return tile;
+			const value = Math.random() < 0.9 ? 2 : 4;
+			const chosen_location = this.grid.randomAvailableCell();
+			if (chosen_location) {
+				const tile = new Tile(chosen_location, value);
+				return tile;
+			}
 		}
 	}
 
@@ -259,60 +261,58 @@ export default class GameManager {
 	}
 	// Move tiles on the grid in the specified direction
 	move(direction: 0 | 1 | 2 | 3) {
-		let HAC_grid = this.grid.serialize_HAC();
+		const HAC_grid = this.grid.serialize_HAC();
 
 		// 0: up, 1: right, 2: down, 3: left
-		let directions = ["up", "right", "down", "left"];
-		// console.log("clientside moving", directions[direction]);
-		var self = this;
+		const directions = ["up", "right", "down", "left"];
 
 		if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
-		var cell, tile;
+		let cell, tile;
 
-		var vector = this.getVector(direction);
-		var traversals = this.buildTraversals(vector);
-		var moved = false;
+		const vector = this.getVector(direction);
+		const traversals = this.buildTraversals(vector);
+		let moved = false;
 
 		// Save the current tile positions and remove merger information
 		this.prepareTiles();
 
 		// Traverse the grid in the right direction and move tiles
-		traversals.x.forEach(function (x) {
-			traversals.y.forEach(function (y) {
-				cell = { x: x, y: y };
-				tile = self.grid.cellContent(cell);
+		traversals.x.forEach((x) => {
+			traversals.y.forEach((y) => {
+				cell = { x, y };
+				tile = this.grid.cellContent(cell);
 
 				if (tile) {
-					var positions = self.findFarthestPosition(cell, vector);
-					var next = self.grid.cellContent(positions.next);
+					const positions = this.findFarthestPosition(cell, vector);
+					const next = this.grid.cellContent(positions.next);
 
 					// Only one merger per row traversal?
 					if (next && next.value === tile.value && !next.mergedFrom) {
-						var merged = new Tile(positions.next, tile.value * 2);
+						const merged = new Tile(positions.next, tile.value * 2);
 						merged.mergedFrom = [tile, next];
 						tile.hasBeenMerged = true;
 						next.hasBeenMerged = true;
 
-						self.grid.insertTile(merged);
-						self.grid.removeTile(tile);
+						this.grid.insertTile(merged);
+						this.grid.removeTile(tile);
 
 						// Converge the two tiles' positions
 						tile.updatePosition(positions.next);
 
 						// Update the score
-						self.score += merged.value;
-						if (self.run_best_score != null) {
-							self.run_best_score = Math.max(self.run_best_score, self.score);
+						this.score += merged.value;
+						if (this.run_best_score != null) {
+							this.run_best_score = Math.max(this.run_best_score, this.score);
 						}
 
 						// The mighty 2048 tile
-						if (merged.value === 2048) self.won = true;
+						if (merged.value === 2048) this.won = true;
 					} else {
-						self.moveTile(tile, positions.farthest);
+						this.moveTile(tile, positions.farthest);
 					}
 
-					if (!self.positionsEqual(cell, tile)) {
+					if (!this.positionsEqual(cell, tile)) {
 						moved = true; // The tile moved from its original cell!
 					}
 				}
@@ -328,7 +328,7 @@ export default class GameManager {
 				this.over = true; // Game over!
 
 				// Record end for HAC
-				let state = this.serialize_HAC(HAC_grid, "f", added);
+				const state = this.serialize_HAC(HAC_grid, "f", added);
 				this.pushToHistory(state);
 
 				this.recordBest();
@@ -346,9 +346,9 @@ export default class GameManager {
 			this.actuate();
 		}
 		if (!ended && moved) {
-			let HAC_direction = moved ? direction : "e";
+			const HAC_direction = moved ? direction : "e";
 			//HAC_grid = this.grid.serialize_HAC();
-			let state = this.serialize_HAC(HAC_grid, HAC_direction, added);
+			const state = this.serialize_HAC(HAC_grid, HAC_direction, added);
 			this.pushToHistory(state);
 
 			this.recordBest();
@@ -358,7 +358,7 @@ export default class GameManager {
 	// Get the vector representing the chosen direction
 	getVector(direction: 0 | 1 | 2 | 3): { x: number; y: number } {
 		// Vectors representing tile movement
-		var map = {
+		const map = {
 			0: { x: 0, y: -1 },
 			1: { x: 1, y: 0 },
 			2: { x: 0, y: 1 },
@@ -369,9 +369,9 @@ export default class GameManager {
 	}
 	// Build a list of positions to traverse in the right order
 	buildTraversals(vector: { x: number; y: number }) {
-		var traversals = { x: [], y: [] };
+		const traversals = { x: [], y: [] };
 
-		for (var pos = 0; pos < this.size; pos++) {
+		for (let pos = 0; pos < this.size; pos++) {
 			//@ts-ignore
 			traversals.x.push(pos);
 			//@ts-ignore
@@ -385,7 +385,7 @@ export default class GameManager {
 		return traversals;
 	}
 	findFarthestPosition(cell: any, vector: { x: number; y: number }) {
-		var previous;
+		let previous;
 
 		// Progress towards the vector direction until an obstacle is found
 		do {
@@ -403,21 +403,19 @@ export default class GameManager {
 	}
 	// Check for available matches between tiles (more expensive check)
 	tileMatchesAvailable() {
-		var self = this;
+		let tile;
 
-		var tile;
-
-		for (var x = 0; x < this.size; x++) {
-			for (var y = 0; y < this.size; y++) {
+		for (let x = 0; x < this.size; x++) {
+			for (let y = 0; y < this.size; y++) {
 				tile = this.grid.cellContent({ x: x, y: y });
 
 				if (tile) {
-					for (var direction = 0; direction < 4; direction++) {
+					for (let direction = 0; direction < 4; direction++) {
 						//@ts-ignore, just make sure direction remains between 0-3
-						var vector = self.getVector(direction);
-						var cell = { x: x + vector.x, y: y + vector.y };
+						const vector = this.getVector(direction);
+						const cell = { x: x + vector.x, y: y + vector.y };
 
-						var other = self.grid.cellContent(cell);
+						const other = this.grid.cellContent(cell);
 
 						if (other && other.value === tile.value) {
 							return true; // These two tiles can be merged
@@ -438,7 +436,7 @@ export default class GameManager {
 			return;
 		}
 
-		let score = this.run_best_score || this.score;
+		const score = this.run_best_score || this.score;
 
 		let best = getItem("HAC_best_score" + this.size);
 		if (best == null && getItem("HAC_best_score") != null && this.size == 4) {
@@ -448,7 +446,7 @@ export default class GameManager {
 		if (best == null) {
 			best = 0;
 		}
-		let old_best = getItem("HAC_best_score" + this.size) || -1;
+		const old_best = getItem("HAC_best_score" + this.size) || -1;
 		let best_history = getItem("HAC_best_history" + this.size);
 		if (best_history == null && getItem("HAC_best_history") != null && this.size == 4) {
 			best_history = getItem("HAC_best_history");
@@ -480,7 +478,7 @@ export default class GameManager {
 			setItem("HAC_best_score" + this.size, score);
 			if (this.over) {
 				// Send an event to open the leaderboard popup
-				let event = new Event("game_ended_with_best_score");
+				const event = new Event("game_ended_with_best_score");
 				window.dispatchEvent(event);
 			}
 		}

@@ -13,8 +13,8 @@
 		request_kick
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
-	import { hac_gamestate_to_grid, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
-	import type Announcer from "./announcer.svelte";
+	import { ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser } from "$app/environment";
 	import Popup from "../common/popup/popup.svelte";
 
@@ -88,7 +88,7 @@
 					{#if navigator.clipboard}
 						<button on:click={copyGameID}>Kopioi linkki</button>
 					{/if}
-					{#if browser && navigator.share}
+					{#if browser && navigator.share != null}
 						<button on:click={shareGameID}>Jaa kutsu</button>
 					{/if}
 				</p>

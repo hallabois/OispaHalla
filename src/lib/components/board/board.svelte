@@ -10,9 +10,7 @@
 	import { generate_previous_positions } from "$lib/gamelogic/utils";
 	import type Grid from "$lib/gamelogic/grid";
 	import { base_path } from "$lib/stores/themestore";
-	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 
-	export let announcer: Announcer | null;
 	export let enableKIM = false;
 	export let enableLSM = false;
 	export let enableRng = false;
@@ -23,7 +21,7 @@
 	export let grid: Grid | null = null;
 
 	let board: HTMLElement;
-	let GameManagerInstance: GameManager | null;
+	let GameManagerInstance: GameManager;
 	let HTMLActuatorInstance: html_actuator;
 	let KIM: KeyboardInputManager;
 	let LSM: LocalStorageManager;
@@ -32,14 +30,7 @@
 		documentRoot = root;
 	}
 
-	export function setAnnouncer(announ: Announcer) {
-		announcer = announ;
-	}
-
 	export function initcomponents() {
-		if (GameManagerInstance) {
-			GameManagerInstance = null;
-		}
 		HTMLActuatorInstance = new html_actuator(documentRoot || board);
 		// if(KIM && KIM.removeKeydownHandler) {
 		//     KIM.removeKeydownHandler();
@@ -93,9 +84,6 @@
 	}
 
 	let unique = {};
-	export function destruct() {
-		return;
-	}
 
 	let mounted = false;
 	onMount(() => {

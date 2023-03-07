@@ -1,5 +1,5 @@
 <script>
-	import { browser, dev } from "$app/environment";
+	import { browser } from "$app/environment";
 	import Sentry from "./Sentry.svelte";
 </script>
 

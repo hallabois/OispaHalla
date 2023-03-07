@@ -1,9 +1,8 @@
 <script lang="ts">
 	import Board from "$lib/components/board/board.svelte";
-	import { generate_previous_positions, ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import type { Score } from "$lib/server/leaderboards";
 	import { numberWithSpaces } from "$lib/utils";
-	import type { PageData } from "../../../user/[uid]/$types";
+	import type { PageData } from "./$types";
 	import Grid from "$lib/gamelogic/grid";
 	import Tile from "$lib/gamelogic/tile";
 
@@ -67,12 +66,7 @@
 		return grid;
 	}
 
-	import {
-		ready,
-		wasm,
-		init as initWasm,
-		validation_cache
-	} from "$lib/wasm/twothousand_forty_eight";
+	import { ready, wasm, init as initWasm } from "$lib/wasm/twothousand_forty_eight";
 	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
 	import { enable_user_page_wasm } from "../../../../features";
@@ -93,44 +87,10 @@
 	}
 
 	let selected_frames: { [key: number]: number } = {};
-	let grids: { [key: number]: { [key: number]: Grid } } = {};
-	$: if (selected_score_size && selected_score_data && selected_score_frames && false) {
-		if (selected_frames[selected_score_size] == null) {
-			selected_frames[selected_score_size] = selected_score_frames.length - 1;
-		}
-		if (selected_frames[selected_score_size] != null) {
-			selected_frames[selected_score_size] = Math.max(
-				0,
-				Math.min(selected_frames[selected_score_size], selected_score_frames.length - 1)
-			);
-			let frame = selected_score_frames[selected_frames[selected_score_size]];
-			if (grids[selected_score_size] == null) {
-				grids[selected_score_size] = {};
-			}
-			if (
-				selected_frames[selected_score_size] != null &&
-				board_cache[selected_score_size] &&
-				board_cache[selected_score_size][selected_frames[selected_score_size]]
-			) {
-				if (selected_frames[selected_score_size]) {
-					let last_b = board_cache[selected_score_size][selected_frames[selected_score_size] - 1];
-					if (last_b) {
-						last_grid = processGrid(last_b, false);
-					}
-				}
-				let b = board_cache[selected_score_size][selected_frames[selected_score_size]];
-				grids[selected_score_size][selected_frames[selected_score_size]] = processGrid(b);
-			} else {
-				grids[selected_score_size][selected_frames[selected_score_size]] = parse_frame_grid(
-					frame,
-					selected_score_size
-				);
-			}
-		}
-	}
 
 	let inputRoot: HTMLElement;
 	let boardInstance: Board;
+	let boardReady = false;
 	let mounted = false;
 	onMount(async () => {
 		if (browser && enable_user_page_wasm) {
@@ -141,49 +101,12 @@
 		mounted = true;
 	});
 
-	let grid = null;
-	function updateGrid() {
-		if (boardInstance) {
-			grid =
-				// grids[selected_score_size][selected_frames[selected_score_size]] ||
-				selected_score_last_grid;
-		} /* else {
-			grid = new Grid(selected_score_size);
-		} */
-	}
-	/* $: if (
-		// grids[selected_score_size][selected_frames[selected_score_size]] ||
-		selected_score_last_grid
-	) {
-		updateGrid();
-	} else if (boardInstance) {
-		update_grid_raw();
-	} */
-	$: if (boardInstance) {
+	let grid: Grid | null = null;
+	$: if (boardInstance && grid != null && boardReady) {
 		let gameManager = boardInstance.getGameManagerInstance();
-		if (gameManager) {
-			console.log("Applying grid update...");
-			gameManager.grid = grid;
-			gameManager.actuate();
-		} else {
-		}
-	}
-
-	let last_grid: Grid | null = null;
-	function processGrid(inp: Object, with_last_positions = true) {
-		let translated = ohts_gamestate_to_grid(inp);
-		if (last_grid && with_last_positions) {
-			translated = generate_previous_positions(translated, last_grid);
-		}
-		last_grid = translated;
-		console.log(
-			"ids",
-			translated.cells
-				.flat()
-				.filter((t) => t && t.value)
-				.map((t) => t.id)
-		);
-		return translated;
+		console.log("Applying grid update...");
+		gameManager.grid = grid;
+		gameManager.actuate();
 	}
 </script>
 
@@ -230,13 +153,15 @@
 				<hr />
 				<div class="game-preview">
 					<Board
-						announcer={null}
 						bind:this={boardInstance}
 						enableLSM={false}
 						documentRoot={inputRoot}
 						enableKIM={false}
 						enable_theme_chooser={false}
-						onComponentsInitialized={update_grid_raw}
+						onComponentsInitialized={() => {
+							boardReady = true;
+							update_grid_raw();
+						}}
 					/>
 				</div>
 				{#if enable_user_page_wasm}

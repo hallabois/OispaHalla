@@ -1,11 +1,11 @@
 import { getLeaderBoardData } from "$lib/server/leaderboards";
 import { env } from "$env/dynamic/private";
+import type { PageServerLoad } from "./$types";
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ request, setHeaders, params, url }) {
-	let uid = params.uid;
+export const load = (async ({ params, url }) => {
+	const uid = params.uid;
 
-	let resp = await getLeaderBoardData(uid, env.ADMIN_TOKEN);
+	const resp = await getLeaderBoardData(uid, env.ADMIN_TOKEN);
 	let size = null;
 	if (url.searchParams) {
 		size = url.searchParams.get("size");
@@ -16,4 +16,4 @@ export async function load({ request, setHeaders, params, url }) {
 		resp,
 		size
 	};
-}
+}) satisfies PageServerLoad;

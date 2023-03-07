@@ -9,12 +9,12 @@
 	} from "$lib/stores/tournamentstore";
 	let name: string;
 	let create_public = true;
-	let size: number = 3;
+	let size = 3;
 	let max_clients = 4;
 	let password: string | null;
 	let gamemode: number;
 
-	let gamemode_0_goal: number = 128;
+	let gamemode_0_goal = 128;
 
 	$: t_valid =
 		create_public != null &&

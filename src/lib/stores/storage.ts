@@ -8,7 +8,7 @@ import { enable_sync } from "../../features";
 
 export async function getWholeLocalForage() {
 	let composite = {};
-	await localforage.iterate(function (value, key, _iterationNumber) {
+	await localforage.iterate(function (value, key) {
 		composite = {
 			...composite,
 			[key]: value
@@ -19,28 +19,28 @@ export async function getWholeLocalForage() {
 
 type KeyValueMap = { [key: string]: any };
 
-export let storage: Writable<KeyValueMap> = writable({});
-let _superset = storage.set;
+export const storage: Writable<KeyValueMap> = writable({});
+const _superset = storage.set;
 storage.set = (value: KeyValueMap) => {
 	_superset({
 		...value,
 		__updated_ms: new Date().getTime()
 	});
 };
-export let storage_loaded: Writable<boolean> = writable(false);
-export let storage_status: Writable<string | null> = writable(null);
-export let storage_version: Writable<Object> = writable({});
+export const storage_loaded: Writable<boolean> = writable(false);
+export const storage_status: Writable<string | null> = writable(null);
+export const storage_version = writable({});
 export async function update_storage_from_localstorage() {
 	storage_loaded.set(false);
 	storage_status.set("Tarkistetaan tallennustilaa...");
 	console.log("Loading storage...");
-	let flag = await localforage.getItem("__updated_ms");
+	const flag = await localforage.getItem("__updated_ms");
 	if (flag == null && localStorage.data == null) {
 		console.info("Migrating localstorage...");
 		storage_status.set("Muutetaan tallennustilaa uuteen muotoon...");
-		let data: KeyValueMap = {};
-		for (let k of Object.keys(localStorage)) {
-			let oregano = localStorage[k];
+		const data: KeyValueMap = {};
+		for (const k of Object.keys(localStorage)) {
+			const oregano = localStorage[k];
 			let parsed = oregano;
 			try {
 				parsed = JSON.parse(oregano);
@@ -50,7 +50,7 @@ export async function update_storage_from_localstorage() {
 			data[k] = parsed;
 		}
 		storage.set(data);
-		for (let k of Object.keys(data)) {
+		for (const k of Object.keys(data)) {
 			if (k !== "backup" && k !== "lastSession") {
 				delete localStorage[k];
 			}
@@ -63,7 +63,7 @@ export async function update_storage_from_localstorage() {
 		delete localStorage.data;
 	} else {
 		storage_status.set("Ladataan tallennustilaa...");
-		let composite = await getWholeLocalForage();
+		const composite = await getWholeLocalForage();
 		storage.set({
 			...get(storage),
 			...composite
@@ -95,31 +95,31 @@ storage.subscribe(async (data) => {
 					console.error("Refusing to write data as multiple tabs are open!");
 					return;
 				}
-				let local_ts: number = data.__updated_ms || 0;
-				let external_ts: number = (await localforage.getItem("__updated_ms")) || 0;
+				const local_ts: number = data.__updated_ms || 0;
+				const external_ts: number = (await localforage.getItem("__updated_ms")) || 0;
 				if (external_ts > local_ts) {
 					console.error("refusing to write expired changes to storage.", local_ts, external_ts);
 					return;
 				}
 
-				let localHash = JSON.stringify({ ...data, __updated_ms: 0 }, null, 4);
-				let externalHash = JSON.stringify(
+				const localHash = JSON.stringify({ ...data, __updated_ms: 0 }, null, 4);
+				const externalHash = JSON.stringify(
 					{ ...(await getWholeLocalForage()), __updated_ms: 0 },
 					null,
 					4
 				);
 
 				if (localHash !== externalHash) {
-					for (let key of Object.keys(data)) {
+					for (const key of Object.keys(data)) {
 						await localforage.setItem(key, data[key]);
 					}
 				}
 			}
 
 			if (data && enable_sync) {
-				let $auth = get(auth);
+				const $auth = get(auth);
 				if ($auth != null) {
-					let db = get_user_db($auth.uid);
+					const db = get_user_db($auth.uid);
 					if (get(db)) {
 						db.uploadStorage(data);
 					}
@@ -134,13 +134,13 @@ storage.subscribe(async (data) => {
 });
 
 export function setItem(key: string, value: any) {
-	let data = get(storage);
+	const data = get(storage);
 	data[key] = value;
 	storage.set(data);
 }
 
 export function getItem(key: string): any {
-	let items = get(storage);
+	const items = get(storage);
 	return items[key];
 }
 

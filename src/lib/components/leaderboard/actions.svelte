@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { auth } from "$lib/Auth/authstore";
-
 	import Popup from "$lib/components/common/popup/popup.svelte";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { setItem, getItem } from "$lib/stores/storage";

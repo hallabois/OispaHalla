@@ -1,18 +1,18 @@
 import { app } from "$lib/Auth_admin/auth.server";
 import { getFirestore } from "firebase-admin/firestore";
+import type { PageServerLoad } from "./$types";
 
 export const prerender = false;
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ request, setHeaders, params, url }) {
+export const load = (async () => {
 	console.info("PSAS requested");
-	let db = getFirestore(app);
-	let ref = db.doc("global/PSA");
-	let document = await ref.get();
-	let data = document.data() || {};
-	let content = data.content || {};
+	const db = getFirestore(app);
+	const ref = db.doc("global/PSA");
+	const document = await ref.get();
+	const data = document.data() || {};
+	const content = data.content || {};
 
 	return {
 		content
 	};
-}
+}) satisfies PageServerLoad;

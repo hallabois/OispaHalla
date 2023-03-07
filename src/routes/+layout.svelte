@@ -1,8 +1,4 @@
 <script lang="ts">
-	import type { LayoutData } from "./$types";
-	export let data: LayoutData;
-	$: ({ theme_override } = data);
-
 	import "../style/base.scss";
 	import "$lib/devtools";
 	import PopupScrolllock from "$lib/components/common/popup/popup_scrolllock.svelte";
@@ -10,12 +6,14 @@
 	import { storage_version } from "$lib/stores/storage";
 	import { theme_index } from "$lib/stores/themestore";
 	import { enable_countdown } from "../features";
-	import { browser, dev } from "$app/environment";
+	import { browser } from "$app/environment";
 	import Analytics from "$lib/components/analytics/analytics.svelte";
 	import Pwa from "$lib/components/common/pwa.svelte";
-	import ChromiumCachePreventer from "$lib/components/common/chromium-cache-preventer.svelte";
 
-	//export let theme_override: number | null;
+	import type { LayoutData } from "./$types";
+	export let data: LayoutData;
+	$: ({ theme_override } = data);
+
 	if (theme_override != null) {
 		console.info("Found theme override", theme_override);
 		theme_index.set(theme_override);
@@ -36,7 +34,6 @@
 		setInterval(() => {
 			if (!launched) {
 				date = new Date();
-			} else {
 			}
 		}, 1000);
 	}

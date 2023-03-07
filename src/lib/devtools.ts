@@ -28,11 +28,11 @@ function getAllItems() {
 }
 
 function setWholeLocalForage(data: string) {
-	let parsed = JSON.parse(data);
+	const parsed = JSON.parse(data);
 	console.info("Clearing storage...");
 	clearStorage();
 	console.info("Updating storage...");
-	for (let k of Object.keys(parsed)) {
+	for (const k of Object.keys(parsed)) {
 		setItem(k, parsed[k]);
 	}
 	console.info("Storage operation ready, have a nice day.");
@@ -60,9 +60,9 @@ function setAppliedFestives(applied: string[]) {
 
 function getHACHistory() {
 	// @ts-ignore
-	let game_manager = window.GameManagerDebugInstance;
-	let size = game_manager.size;
-	let history = game_manager.history;
+	const game_manager = window.GameManagerDebugInstance;
+	const size = game_manager.size;
+	const history = game_manager.history;
 	return `${size}x${size}S${history.join(":")}`;
 }
 
@@ -91,17 +91,17 @@ async function getWasmAndSetup() {
 }
 
 async function validateCurrentHistory() {
-	let history = getHACHistory();
-	let wasm = await getWasmAndSetup();
-	let result = wasm?.validate(history);
+	const history = getHACHistory();
+	const wasm = await getWasmAndSetup();
+	const result = wasm?.validate(history);
 	if (result == null) return;
 	return JSON.parse(result);
 }
 
 async function validateCurrentHistoryAllFrames() {
-	let history = getHACHistory();
-	let wasm = await getWasmAndSetup();
-	let result = wasm?.validate_all_frames(history);
+	const history = getHACHistory();
+	const wasm = await getWasmAndSetup();
+	const result = wasm?.validate_all_frames(history);
 	if (result == null) return;
 	return JSON.parse(result);
 }
@@ -121,25 +121,25 @@ function getAuth() {
 }
 
 function testProbabilities() {
-	let iters = 10_000;
+	const iters = 10_000;
 	console.log(`Starting probability test using ${iters} iterations...`);
 	// @ts-ignore
-	let game_manager: GameManager = window.GameManagerDebugInstance;
-	let values = [];
+	const game_manager: GameManager = window.GameManagerDebugInstance;
+	const values = [];
 	for (let i = 0; i < iters; i++) {
-		let tile = game_manager.getRandomTileToAdd();
+		const tile = game_manager.getRandomTileToAdd();
 		if (!tile) {
 			console.error("getRandomTileToAdd didn't return anything!");
 			return;
 		}
 		values.push(tile.value);
 	}
-	let values_total = values.length;
-	let counted: number[] = [];
+	const values_total = values.length;
+	const counted: number[] = [];
 	console.log("Percentages:");
-	for (let k of values) {
+	for (const k of values) {
 		if (!counted.includes(k)) {
-			let c = values.filter((v) => v == k).length;
+			const c = values.filter((v) => v == k).length;
 			console.log(`"${k}": ${c} = ${(c / values_total) * 100}%`);
 			counted.push(k);
 		}

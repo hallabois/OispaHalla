@@ -102,14 +102,14 @@ let token_refresh_timer: NodeJS.Timeout | null;
 async function rewrite_token($auth: User) {
 	console.log("Attempting to refresh token...");
 	if ($auth != null) {
-		let tk = await $auth.getIdToken();
+		const tk = await $auth.getIdToken();
 		try {
-			let tk_info = await $auth.getIdTokenResult();
-			let time_till_exp =
+			const tk_info = await $auth.getIdTokenResult();
+			const time_till_exp =
 				new Date(tk_info.expirationTime).getTime() - new Date(tk_info.authTime).getTime();
 			console.info("time till token expiration", time_till_exp);
 			token_refresh_timer = setTimeout(async () => {
-				let $auth = get(auth);
+				const $auth = get(auth);
 				await rewrite_token($auth);
 			}, time_till_exp / 100.0);
 		} catch (e) {
@@ -129,7 +129,7 @@ if (browser) {
 			}
 			await rewrite_token($auth);
 			if (storage_loaded && $auth.uid) {
-				let connected_accounts = getItem("connected_accounts") || [];
+				const connected_accounts = getItem("connected_accounts") || [];
 				if (!connected_accounts.includes($auth.uid)) {
 					setItem("connected_accounts", [...connected_accounts, $auth.uid]);
 				}

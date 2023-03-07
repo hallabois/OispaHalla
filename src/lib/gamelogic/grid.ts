@@ -1,7 +1,7 @@
 import Tile from "./tile";
 
 export default class Grid {
-	size: any;
+	size;
 	cells: any[];
 	constructor(size: number, previousState = null) {
 		this.size = size;
@@ -9,26 +9,26 @@ export default class Grid {
 	}
 	// Build a grid of the specified size
 	empty() {
-		var cells = [];
+		const cells = [];
 
-		for (var x = 0; x < this.size; x++) {
-			var row = (cells[x] = []);
+		for (let x = 0; x < this.size; x++) {
+			const row = (cells[x] = []);
 
-			for (var y = 0; y < this.size; y++) {
+			for (let y = 0; y < this.size; y++) {
 				row.push(null);
 			}
 		}
 
 		return cells;
 	}
-	fromState(state) {
-		var cells = [];
+	fromState(state: any[][]) {
+		const cells = [];
 
-		for (var x = 0; x < this.size; x++) {
-			var row = (cells[x] = []);
+		for (let x = 0; x < this.size; x++) {
+			const row = (cells[x] = []);
 
-			for (var y = 0; y < this.size; y++) {
-				var tile = state[x][y];
+			for (let y = 0; y < this.size; y++) {
+				const tile = state[x][y];
 				row.push(tile ? new Tile(tile.position, tile.value) : null);
 			}
 		}
@@ -37,14 +37,14 @@ export default class Grid {
 	}
 	// Find the first available random position
 	randomAvailableCell() {
-		var cells = this.availableCells();
+		const cells = this.availableCells();
 
 		if (cells.length) {
 			return cells[Math.floor(Math.random() * cells.length)];
 		}
 	}
 	availableCells() {
-		var cells = [];
+		const cells: { x: any; y: any }[] = [];
 
 		this.eachCell(function (x, y, tile) {
 			if (!tile) {
@@ -56,8 +56,8 @@ export default class Grid {
 	}
 	// Call callback for every cell
 	eachCell(callback) {
-		for (var x = 0; x < this.size; x++) {
-			for (var y = 0; y < this.size; y++) {
+		for (let x = 0; x < this.size; x++) {
+			for (let y = 0; y < this.size; y++) {
 				callback(x, y, this.cells[x][y]);
 			}
 		}
@@ -91,12 +91,12 @@ export default class Grid {
 		return position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size;
 	}
 	serialize() {
-		var cellState = [];
+		const cellState = [];
 
-		for (var x = 0; x < this.size; x++) {
-			var row = (cellState[x] = []);
+		for (let x = 0; x < this.size; x++) {
+			const row = (cellState[x] = []);
 
-			for (var y = 0; y < this.size; y++) {
+			for (let y = 0; y < this.size; y++) {
 				row.push(this.cells[x][y] ? this.cells[x][y].serialize() : null);
 			}
 		}
@@ -107,9 +107,9 @@ export default class Grid {
 		};
 	}
 	serialize_HAC() {
-		var state: number[] = [];
-		for (var y = 0; y < this.size; y++) {
-			for (var x = 0; x < this.size; x++) {
+		const state: number[] = [];
+		for (let y = 0; y < this.size; y++) {
+			for (let x = 0; x < this.size; x++) {
 				try {
 					if (this.cells[x][y]) {
 						state.push(this.cells[x][y].value);
@@ -124,8 +124,8 @@ export default class Grid {
 		return state;
 	}
 	palautaKuri() {
-		for (var x = 0; x < this.size; x++) {
-			for (var y = 0; y < this.size; y++) {
+		for (let x = 0; x < this.size; x++) {
+			for (let y = 0; y < this.size; y++) {
 				if (this.cells[x][y] && this.cells[x][y].value < 16) {
 					this.cells[x][y] = null;
 				}

@@ -1,18 +1,17 @@
 import { type Writable, writable, get } from "svelte/store";
-import { browser, dev } from "$app/environment";
-import { auth } from "$lib/Auth/authstore";
+import { dev } from "$app/environment";
 
 import { setItem, getItem, storage, storage_loaded } from "$lib/stores/storage";
 import { lb_test_prod_endpoint } from "../../features";
 import { json_headers } from "$lib/utils";
 
-let leaderboard_endpoint_prod = "https://lb.oispahalla.com";
-let leaderboard_endpoint_dev = lb_test_prod_endpoint
+const leaderboard_endpoint_prod = "https://lb.oispahalla.com";
+const leaderboard_endpoint_dev = lb_test_prod_endpoint
 	? leaderboard_endpoint_prod
 	: "http://localhost:5000";
-export let leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
+export const leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
 
-export let lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
+export const lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
 lb_screenName.subscribe((val) => {
 	if (val == "null") {
 		lb_screenName.set(null);
@@ -165,7 +164,7 @@ export async function fetchboard(
 					lb_screenName.set(json_result?.score?.user?.screenName);
 				}
 				if (json_result.score && json_result.score.size && json_result.score.score) {
-					let existing = getItem("bestScores") || {};
+					const existing = getItem("bestScores") || {};
 					setItem("bestScores", {
 						...existing,
 						[json_result.score.size]: Math.max(
@@ -173,7 +172,7 @@ export async function fetchboard(
 							existing[json_result.score.size] || 0
 						)
 					});
-					let existing_submitted = getItem("lb_submitted") || {};
+					const existing_submitted = getItem("lb_submitted") || {};
 					setItem("lb_submitted", {
 						...existing_submitted,
 						[json_result.score.size]: Math.max(
@@ -222,7 +221,7 @@ export async function submit_score(
 	run_breaks: number,
 	run_history: string
 ): Promise<submit_response> {
-	let connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
+	const connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
 	try {
 		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}`, {
 			method: "POST",
@@ -246,7 +245,7 @@ export async function submit_score(
 			};
 		} else {
 			console.error(resp);
-			let json = await resp.json();
+			const json = await resp.json();
 			console.error("resp json:", json);
 			return {
 				success: false,
@@ -287,7 +286,7 @@ export async function change_name(
 	token: string
 ): Promise<change_name_response> {
 	try {
-		let connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
+		const connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
 		const resp = await fetch(`${leaderboard_endpoint}/meta/changename`, {
 			method: "POST",
 			headers: json_headers,
@@ -304,7 +303,7 @@ export async function change_name(
 			};
 		} else {
 			console.warn(resp);
-			let json = await resp.json();
+			const json = await resp.json();
 			return {
 				success: false,
 				message: json.message || "Tuntematon virhe"

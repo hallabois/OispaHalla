@@ -1,1 +1,0 @@
-{__APP_VERSION__}

@@ -4,9 +4,9 @@ import type { DocumentReference, DocumentSnapshot } from "firebase/firestore";
 import type { FirebaseApp } from "firebase/app";
 import { synced_variables } from "../../features";
 
-let dbs: { [key: string]: DB } = {};
+const dbs: { [key: string]: DB } = {};
 
-export type DB = typeof createDB;
+export type DB = ReturnType<typeof createDB>;
 
 export function createDB(
 	collection: string,
@@ -27,7 +27,7 @@ export function createDB(
 
 				dbRef = doc(db, collection, document);
 
-				let documentExists = (await getDoc(dbRef)).exists();
+				const documentExists = (await getDoc(dbRef)).exists();
 				if (!documentExists) {
 					await activateAccount();
 				}
@@ -46,12 +46,12 @@ export function createDB(
 
 	async function uploadStorage(storage: Object) {
 		const { getDoc, setDoc } = await import("firebase/firestore");
-		let d = await getDoc(dbRef);
-		let old_data = d.data() || {};
+		const d = await getDoc(dbRef);
+		const old_data = d.data() || {};
 
-		let enabled_keys = synced_variables;
-		let data = {};
-		for (let k of Object.keys(storage)) {
+		const enabled_keys = synced_variables;
+		const data = {};
+		for (const k of Object.keys(storage)) {
 			if (enabled_keys.includes(k)) {
 				if (storage[k] != null) {
 					data[k] = JSON.stringify(storage[k]);
@@ -69,9 +69,9 @@ export function createDB(
 	async function uploadGame(gamestate: Object) {
 		console.info("trying to upload gamestate...");
 		const { getDoc, setDoc } = await import("firebase/firestore");
-		let d = await getDoc(dbRef);
-		let old_data = d.data() || {};
-		let old_gamedata = old_data.gamestate;
+		const d = await getDoc(dbRef);
+		const old_data = d.data() || {};
+		const old_gamedata = old_data.gamestate;
 		if (old_gamedata) {
 			throw new Error("Tried to upload gamestate, but old data was found!");
 		}
@@ -95,17 +95,17 @@ export function createDB(
 	async function activateAccount() {
 		console.info("Activating account...");
 		const { getDoc, setDoc } = await import("firebase/firestore");
-		let d = await getDoc(dbRef);
-		let data = d.data() || {};
+		const d = await getDoc(dbRef);
+		const data = d.data() || {};
 		await setDoc(dbRef, data);
 		console.info("Account activated.");
 	}
 
 	async function server_setPSA(index: number, content: string) {
 		const { getDoc, setDoc } = await import("firebase/firestore");
-		let d = await getDoc(dbRef);
-		let data = d.data() || {};
-		let old_content = data.content || {};
+		const d = await getDoc(dbRef);
+		const data = d.data() || {};
+		const old_content = data.content || {};
 		await setDoc(dbRef, {
 			...data,
 			content: {
@@ -130,7 +130,7 @@ export function get_user_db(uid: string): DB {
 	if (Object.keys(dbs).includes(uid)) {
 		return dbs[uid];
 	}
-	let userdb = createDB("user", uid);
+	const userdb = createDB("user", uid);
 	dbs[uid] = userdb;
 	return userdb;
 }

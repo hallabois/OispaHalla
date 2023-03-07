@@ -2,7 +2,7 @@
 	import { marked } from "marked";
 	import { onMount } from "svelte";
 
-	import { enable_multiplayer, enable_leaderboards, enable_countdown } from "../../features";
+	import { enable_multiplayer, enable_leaderboards } from "../../features";
 	import { storage_loaded, storage } from "$lib/stores/storage";
 
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
@@ -15,7 +15,6 @@
 
 	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/common/announcer/announcer.svelte";
-	import type KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
 	import type GameManager from "$lib/gamelogic/game_manager";
 	import Icon from "$lib/components/common/icon/icon.svelte";
 	import {
@@ -27,7 +26,6 @@
 		activeNotificationIconData
 	} from "$lib/components/common/icon/iconData";
 	import { base_path } from "$lib/stores/themestore";
-	import { browser, dev } from "$app/environment";
 
 	let app_name = "";
 	let app_description = "";
@@ -84,10 +82,7 @@
 	$: if (mounted && $storage_loaded && !load_started) {
 		load_started = true;
 		console.log("Starting to load game logic...");
-		// inputManager = new KeyboardInputManager(inputRoot);
-		// inputManager.on("move", move);
 		BoardInstance.setDocumentRoot(inputRoot);
-		BoardInstance.setAnnouncer(AnnouncerInstance);
 		BoardInstance.initcomponents();
 		GameManagerInstance = BoardInstance.getGameManagerInstance();
 		GameManagerInstance.subscribe(() => {
@@ -102,11 +97,6 @@
 
 	let enableKIM = true;
 
-	function move(direction: number) {
-		BoardInstance.getGameManagerInstance().move(direction);
-	}
-
-	let inputManager: KeyboardInputManager | null = null;
 	let inputRoot: HTMLElement;
 	let TtInstance: Tournaments;
 	let lbInstance: Leaderboards;
@@ -121,7 +111,7 @@
 	let restartbtn: HTMLElement;
 	function restartGame(size: number) {
 		let GameManagerInstance = BoardInstance.getGameManagerInstance();
-		GameManagerInstance.restartplus(size);
+		GameManagerInstance?.restartplus(size);
 	}
 	function paritaKuli() {
 		if (GameManagerInstance != null && confirm("Haluatko käyttää kurinpalautuksen?")) {
@@ -169,9 +159,13 @@
 						restartbtn.classList.remove("open");
 					}
 				}}
-				on:keydown={() => {}}
-				on:keyup={() => {}}
-				on:keypress={() => {}}
+				on:keypress={() => {
+					if (!restartbtn.classList.contains("open")) {
+						restartbtn.classList.add("open");
+					} else {
+						restartbtn.classList.remove("open");
+					}
+				}}
 			>
 				<div class="uusi-jakso">{app_name_newgame}</div>
 				<div class="size-selector">
@@ -206,7 +200,6 @@
 			enableRng={true}
 			documentRoot={inputRoot}
 			initComponentsOnMount={false}
-			announcer={AnnouncerInstance}
 			bind:this={BoardInstance}
 		/>
 		<div class="underbar-container">
@@ -284,14 +277,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- <div
-		class="pwa-container"
-		style="width: 100%;z-index: 500;display: flex;justify-content: center;margin-top: 30px;margin-bottom: -50px;"
-	>
-		<button class="pwa-add-button" style="display: none;border: none;margin: .5em;cursor: pointer;"
-			>Asenna sovelluksena</button
-		>
-	</div> -->
 </div>
 
 <Preloader />

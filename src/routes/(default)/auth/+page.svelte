@@ -34,7 +34,9 @@
 			if (result) {
 				try {
 					window.localStorage.setItem("emailForSignIn", email);
-				} catch {}
+				} catch {
+					console.warn("Failed to set emailForSignIn in localstorage");
+				}
 				alert(
 					"Linkki lähetetty!\nMuistathan tarkistaa roskaposti-kansion.\n\nVoit poistua tältä sivulta toistaiseksi."
 				);

@@ -9,9 +9,6 @@
 	if (browser) {
 		email = localStorage.getItem("emailForSignIn");
 	}
-	function promptEmail() {
-		email = prompt("Sähköposti");
-	}
 	let signInMessage: string | null;
 	let loadingResults = false;
 	async function attemptSignIn() {

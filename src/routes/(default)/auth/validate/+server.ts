@@ -7,7 +7,7 @@ export const prerender = false;
 
 function get_admins() {
 	if (env.OH_ADMIN_EMAIL_LIST) {
-		let emails = env.OH_ADMIN_EMAIL_LIST.split(";");
+		const emails = env.OH_ADMIN_EMAIL_LIST.split(";");
 		return emails;
 	}
 	return [];
@@ -15,8 +15,8 @@ function get_admins() {
 
 export async function POST({ request, getClientAddress }) {
 	console.info("Validating token...");
-	let admin_emails = get_admins();
-	let body = await request.json();
+	const admin_emails = get_admins();
+	const body = await request.json();
 	if (body.token == null) {
 		return json$1(
 			{
@@ -27,15 +27,15 @@ export async function POST({ request, getClientAddress }) {
 			}
 		);
 	} else {
-		let token = body.token;
+		const token = body.token;
 
 		console.info("token validation request headers:", request.headers);
 		try {
 			if (env.ADMIN_TOKEN) {
-				let ip = getClientAddress();
+				const ip = getClientAddress();
 				if (token === env.ADMIN_TOKEN) {
 					console.info(`ADMIN TOKEN USED BY ${ip}`);
-					let info = {
+					const info = {
 						name: "admin",
 						uid: "::admin::",
 						email: "admin@oispahalla.com",
@@ -52,9 +52,11 @@ export async function POST({ request, getClientAddress }) {
 				console.warn("ADMIN_TOKEN not set!");
 			}
 
-			let result = await getAuth(app).verifyIdToken(token);
-			let verified_email = result.email_verified ? result.email || "no-email" : "unverified-email";
-			let info = {
+			const result = await getAuth(app).verifyIdToken(token);
+			const verified_email = result.email_verified
+				? result.email || "no-email"
+				: "unverified-email";
+			const info = {
 				name: result.name,
 				uid: result.uid,
 				email: result.email,

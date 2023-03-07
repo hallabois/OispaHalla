@@ -1,9 +1,10 @@
 import { getItem, setItem } from "$lib/stores/storage";
+import type GameManager from "./game_manager";
 
 export default class LocalStorageManager {
 	enabled: boolean;
 	gameStateKey: string;
-	constructor(enabled: boolean = true) {
+	constructor(enabled = true) {
 		this.enabled = enabled;
 		this.gameStateKey = "gameState";
 		if (!this.enabled) {
@@ -25,7 +26,7 @@ export default class LocalStorageManager {
 		try {
 			if (getItem("bestScores") != null) {
 				if (Object.keys(getItem("bestScores")).includes(size.toString())) {
-					let val = getItem("bestScores")[size];
+					const val = getItem("bestScores")[size];
 					return val;
 				}
 			}
@@ -39,7 +40,7 @@ export default class LocalStorageManager {
 		if (!this.enabled) {
 			return;
 		}
-		let current = getItem("bestScores");
+		const current = getItem("bestScores");
 		current[size] = score;
 		setItem("bestScores", current);
 	}
@@ -48,10 +49,10 @@ export default class LocalStorageManager {
 		if (!this.enabled) {
 			return;
 		}
-		let state = getItem(this.gameStateKey);
+		const state = getItem(this.gameStateKey);
 		return state;
 	}
-	setGameState(gameState: any) {
+	setGameState(gameState: ReturnType<GameManager["serialize"]>) {
 		if (!this.enabled) {
 			return;
 		}

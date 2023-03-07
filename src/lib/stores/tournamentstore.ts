@@ -2,17 +2,16 @@ import { browser, dev } from "$app/environment";
 import { token } from "$lib/Auth/authstore";
 import { mp_test_prod_endpoint } from "../../features";
 import { type Writable, writable, get } from "svelte/store";
-import { getItem, setItem, storage_loaded } from "./storage";
 import type { ohts_gamestate } from "$lib/gamelogic/utils";
 
-let tournament_endpoint_prod = "wss://mp.oispahalla.com";
-let tournament_endpoint_dev = mp_test_prod_endpoint
+const tournament_endpoint_prod = "wss://mp.oispahalla.com";
+const tournament_endpoint_dev = mp_test_prod_endpoint
 	? tournament_endpoint_prod
 	: "ws://localhost:9000";
-export let tournament_endpoint = dev ? tournament_endpoint_dev : tournament_endpoint_prod;
+export const tournament_endpoint = dev ? tournament_endpoint_dev : tournament_endpoint_prod;
 
-export let gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
-export let gamemode_0_names: { [key: number]: string } = {
+export const gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
+export const gamemode_0_names: { [key: number]: string } = {
 	32: "SSn",
 	64: "MSl",
 	128: "CFr",
@@ -21,7 +20,7 @@ export let gamemode_0_names: { [key: number]: string } = {
 	1024: "EHy",
 	2048: "LHa"
 };
-export let enabled_sizes = [2, 3, 4, 5];
+export const enabled_sizes = [2, 3, 4, 5];
 const GAME_ANY = -1;
 
 export enum createTournamentGamemode {
@@ -53,7 +52,7 @@ export type GameDetails = {
 	ended: boolean;
 	winner_id: string | null;
 	clients: string[];
-	starting_state: Object;
+	starting_state: ohts_gamestate;
 };
 export type GameIndex = {
 	id: number;
@@ -81,18 +80,18 @@ export type GameState = {
 	board: ohts_gamestate;
 };
 
-export let try_autoconnect: Writable<boolean> = writable(true);
+export const try_autoconnect: Writable<boolean> = writable(true);
 
-export let connected: Writable<boolean | null> = writable(null);
-export let connection_error: Writable<boolean | null> = writable(null);
-export let errors: Writable<Error[]> = writable([]);
-export let user_details: Writable<UserDetails | null> = writable(null);
-export let game_details: Writable<{ [key: number]: GameDetails }> = writable({});
-export let game_index: Writable<Index | null> = writable(null);
-export let joined_game_id: Writable<number | null> = writable(null);
-export let chat: Writable<ChatMessage[] | null> = writable(null);
-export let name_cache: Writable<{ [key: string]: string } | null> = writable(null);
-export let state: Writable<{ [key: number]: GameState[] }> = writable({});
+export const connected: Writable<boolean | null> = writable(null);
+export const connection_error: Writable<boolean | null> = writable(null);
+export const errors: Writable<Error[]> = writable([]);
+export const user_details: Writable<UserDetails | null> = writable(null);
+export const game_details: Writable<{ [key: number]: GameDetails }> = writable({});
+export const game_index: Writable<Index | null> = writable(null);
+export const joined_game_id: Writable<number | null> = writable(null);
+export const chat: Writable<ChatMessage[] | null> = writable(null);
+export const name_cache: Writable<{ [key: string]: string } | null> = writable(null);
+export const state: Writable<{ [key: number]: GameState[] }> = writable({});
 joined_game_id.subscribe(($joined_game_id) => {
 	if ($joined_game_id == null) {
 		chat.set(null);
@@ -112,17 +111,17 @@ joined_game_id.subscribe(($joined_game_id) => {
 		}
 	}
 });
-export let tournament_announcer: Writable<any | null> = writable(null);
+export const tournament_announcer: Writable<any | null> = writable(null);
 
-export let tournament_ping: Writable<number | null> = writable(null);
+export const tournament_ping: Writable<number | null> = writable(null);
 function socket_processor(message: any) {
-	let json = message.data;
+	const json = message.data;
 	if (json === "o") {
-		let now = new Date();
+		const now = new Date();
 		tournament_ping.set(now.getTime() - pingStartTime.getTime());
 		return;
 	}
-	let event = JSON.parse(json);
+	const event = JSON.parse(json);
 	console.info("socket ev", event);
 	if (event.data) {
 		if (event.data.Index) {
@@ -135,7 +134,7 @@ function socket_processor(message: any) {
 			game_details.set({});
 		}
 		if (event.data.UserDetails) {
-			let details = event.data.UserDetails as UserDetails;
+			const details = event.data.UserDetails as UserDetails;
 			user_details.set(details);
 			if (details.current_games.length > 0) {
 				if (get(joined_game_id) == null) {
@@ -151,8 +150,8 @@ function socket_processor(message: any) {
 		}
 		if (event.data.GameState) {
 			if (event.data.GameState.length > 0) {
-				let states: GameState[] = event.data.GameState;
-				let game_id = states[0].game_id;
+				const states: GameState[] = event.data.GameState;
+				const game_id = states[0].game_id;
 				state.set({
 					...get(state),
 					[game_id]: event.data.GameState
@@ -191,16 +190,16 @@ function socket_processor(message: any) {
 			name_cache.set(event.data.ParticipantDetails.names);
 		}
 		if (event.data.ServerMessage) {
-			let msg = event.data.ServerMessage;
+			const msg = event.data.ServerMessage;
 			console.info("Server message:", msg);
-			let announcer = get(tournament_announcer);
+			const announcer = get(tournament_announcer);
 			if (announcer) {
 				announcer.announce(`${msg.title}: ${msg.message}`);
 			}
 		}
 
 		if (event.data.GenericError) {
-			let announcer = get(tournament_announcer);
+			const announcer = get(tournament_announcer);
 			if (announcer) {
 				announcer.announce(`Virhe: ${event.data.GenericError}`);
 			}
@@ -215,9 +214,9 @@ export function connect_with_token(token: string | null) {
 	if (socket) {
 		disconnect();
 	}
-	let connection_string = `${tournament_endpoint}/ws?token=${token}`;
+	const connection_string = `${tournament_endpoint}/ws?token=${token}`;
 	socket = new WebSocket(connection_string);
-	socket.addEventListener("open", (event) => {
+	socket.addEventListener("open", () => {
 		connection_error.set(false);
 		connected.set(true);
 		errors.set([]);
@@ -382,7 +381,7 @@ export type CreateOptions = {
 	joinpassword: string | null;
 };
 export function create(options: CreateOptions) {
-	let $token = get(token);
+	const $token = get(token);
 	if (socket) {
 		socket.send(`create|>${JSON.stringify(options)}`);
 	} else {
@@ -399,7 +398,7 @@ if (browser) {
 	});
 	// Keep websocket connections alive by pinging the connection every 2000ms.
 	setInterval(() => {
-		if (socket) {
+		if (socket && socket.readyState === socket.OPEN) {
 			pingStartTime = new Date();
 			socket.send("\x70");
 		}
