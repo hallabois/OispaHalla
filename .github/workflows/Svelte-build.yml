@@ -17,6 +17,13 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
+    env:
+      OH_ADMIN_EMAIL_LIST: ${{secrets.OH_ADMIN_EMAIL_LIST}}
+      ADMIN_TOKEN: ${{secrets.ADMIN_TOKEN}}
+      OH_FIREBASE_ADMIN_CLIENT_EMAIL: ${{secrets.OH_FIREBASE_ADMIN_CLIENT_EMAIL}}
+      OH_FIREBASE_ADMIN_PRIVATE_KEY: ${{secrets.OH_FIREBASE_ADMIN_PRIVATE_KEY}}
+      OH_FIREBASE_ADMIN_PROJECT_ID: ${{secrets.OH_FIREBASE_ADMIN_PROJECT_ID}}
+      OH_FIREBASE_ADMIN_DATABASE_URL: ${{secrets.OH_FIREBASE_ADMIN_DATABASE_URL}}
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
