@@ -36,6 +36,7 @@
 		"svelte-check": "^3.0.4",
 		"svelte-gestures": "^1.4.1",
 		"svelte-preprocess": "^5.0.1",
+		"svelte-tiny-linked-charts": "^1.1.5",
 		"svelte2tsx": "^0.6.2",
 		"tslib": "^2.5.0",
 		"twothousand-forty-eight": "^0.17.0",

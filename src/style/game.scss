@@ -13,28 +13,6 @@ $title-color-dark: #e6d2bf;
 
 $transition-speed: 100ms;
 
-.countdown-div {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	font-size: 350px;
-	padding-top: 320px;
-}
-
-.countdown {
-	font-size: 80px;
-}
-
-h1.title {
-	font-size: 45px;
-	font-weight: bold;
-	margin: 0;
-	display: block;
-	float: left;
-	transition: 0.25s color;
-}
-
 @keyframes popdown {
 	from {
 		margin-top: -50vh;
@@ -142,13 +120,20 @@ h1.title {
 }
 
 .disclaimer {
-	margin-top: 60px;
+	padding-block: 20px;
 	font-size: small;
 	text-align: center;
 }
 
 .disclaimer p {
-	margin-bottom: 20px;
+	margin: 0;
+}
+
+.disclaimer > p {
+	/* Ensure visibility for all themes */
+	background-color: #8f7a66 !important;
+	color: white !important;
+	border-radius: 3px !important;
 }
 
 .discord {
@@ -232,19 +217,6 @@ p {
 	margin-top: 0;
 	margin-bottom: 10px;
 	line-height: 1.65;
-}
-
-a {
-	color: inherit;
-	font-weight: bold;
-	text-decoration: underline;
-	cursor: pointer;
-}
-
-strong {
-	&.important {
-		text-transform: uppercase;
-	}
 }
 
 hr {

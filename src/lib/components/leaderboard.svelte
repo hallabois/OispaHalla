@@ -246,11 +246,11 @@
 														<tr in:scale={{ delay: 100 * index }}>
 															<td>{index + 1}.</td>
 															<td>{score.score}</td>
-															<td
-																><a class="player" href={`/user/${score.user.uid}?size=${size}`}
-																	>{score.user ? score.user.screenName : "[Virheellinen nimi]"}</a
-																></td
-															>
+															<td>
+																<a class="player" href={`/user/${score.user.uid}?size=${size}`}>
+																	{score.user ? score.user.screenName : "[Virheellinen nimi]"}
+																</a>
+															</td>
 														</tr>
 													{/each}
 												{:else}
@@ -271,7 +271,7 @@
 								>
 									Päivitä
 								</a>
-								<a href="/leaderboards/{size}"> Näytä kaikki </a>
+								<a href="/leaderboards/{size}">Näytä kaikki</a>
 							</div>
 							{#if $token != null}
 								{#if fetchboard_results[size] != null}

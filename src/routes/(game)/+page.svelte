@@ -186,13 +186,13 @@
 			</div>
 		</div>
 	</div>
-	{#if app_notice && app_notice.length > 0}
-		<div class="disclaimer">
+	<div class="disclaimer">
+		{#if app_notice && app_notice.length > 0}
 			<p>
 				{@html marked.parse(app_notice)}
 			</p>
-		</div>
-	{/if}
+		{/if}
+	</div>
 	<div class="board-container">
 		<Board
 			{enableKIM}
@@ -283,7 +283,6 @@
 
 <style>
 	.board-container {
-		margin-top: 40px;
 		display: grid;
 		place-items: center;
 	}

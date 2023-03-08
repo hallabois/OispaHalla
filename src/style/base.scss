@@ -41,3 +41,16 @@ body {
 		margin: 0;
 	}
 }
+
+a {
+	color: inherit;
+	font-weight: bold;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+strong {
+	&.important {
+		text-transform: uppercase;
+	}
+}

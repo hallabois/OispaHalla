@@ -1,4 +1,12 @@
 // Default component styles
+h1.title {
+	font-size: 45px;
+	font-weight: bold;
+	margin: 0;
+	display: block;
+	float: left;
+	transition: 0.25s color;
+}
 .button {
 	border: none;
 	border-radius: 3px;
@@ -48,7 +56,18 @@ a.action-btn {
 	color: var(--dialog-background);
 	padding-inline: 1em;
 }
-//
+
+.countdown {
+	font-size: 80px;
+}
+.countdown-div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	font-size: 350px;
+	padding-top: 320px;
+}
 
 .blurry-bg {
 	background-image: url("/img/ABC/blur_night.webp") !important;

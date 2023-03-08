@@ -33,12 +33,12 @@ export async function check_server_alive() {
 	}
 }
 
-export class scores_ok {
-	scores!: any[];
-}
-export class scores_error {
-	error_msg!: string;
-}
+export type scores_ok = {
+	scores: any[];
+};
+export type scores_error = {
+	error_msg: string;
+};
 export type scores_response = scores_ok | scores_error;
 export async function get_all_scores(size: number): Promise<scores_response> {
 	try {

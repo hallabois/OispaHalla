@@ -205,7 +205,7 @@
 		background-attachment: fixed;
 	}
 	.menu {
-		min-width: min(90vw, 500px);
+		max-width: 90vw;
 	}
 	.board-container {
 		display: grid;

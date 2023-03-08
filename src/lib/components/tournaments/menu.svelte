@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { LinkedChart } from "svelte-tiny-linked-charts";
 
 	import { auth } from "$lib/Auth/authstore";
 
@@ -9,7 +10,9 @@
 		joined_game_id,
 		connection_error,
 		tournament_announcer,
-		tournament_ping
+		tournament_ping_average,
+		tournament_ping_average_history,
+		tournament_endpoint
 	} from "$lib/stores/tournamentstore";
 	import TournamentCreator from "$lib/components/tournaments/tournamentCreator.svelte";
 	import TournamentBrowser from "$lib/components/tournaments/tournamentBrowser.svelte";
@@ -46,16 +49,27 @@
 	});
 
 	let activeTab = 0;
+	let chartWidth = 500;
 </script>
 
-<a href="/" data-sveltekit-reload>Takaisin yksinpeliin</a>
+<a href="/" style="width: min(500px, 90vw);">Takaisin yksinpeliin</a>
 {#if mounted}
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
 		{#if $connected}
-			{#if $tournament_ping != null}
-				<p>ping: {$tournament_ping} ms</p>
-			{/if}
+			<p>
+				{#if $tournament_ping_average}
+					{Math.round($tournament_ping_average)} ms latency
+				{:else}
+					measuring latency...
+				{/if}
+			</p>
+			<LinkedChart
+				data={$tournament_ping_average_history}
+				width={chartWidth}
+				fill="var(--button-background)"
+			/><br />
+			<p bind:clientWidth={chartWidth} style="opacity: .5;">connected to {$tournament_endpoint}</p>
 			{#if $connection_error}
 				<p style="text-align: center;display: block;padding: 0.75em;">
 					Virhe otettaessa yhteyttä palvelimeen.

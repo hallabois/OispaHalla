@@ -23,8 +23,6 @@
 			$tournament_announcer = announcer;
 		}
 	});
-
-	let activeTab = 0;
 </script>
 
 <Popup bind:open>

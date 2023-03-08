@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Header from "../header.svelte";
-	import type { PageData } from "../../../leaderboards/[size]/$types";
+	import type { PageData } from "./$types";
 	import { auth } from "$lib/Auth/authstore";
 	export let data: PageData;
 	$: ({ leaderboard_data, size } = data);
@@ -10,20 +10,24 @@
 <Header>
 	<h3 slot="size">{size}x{size}</h3>
 </Header>
-<table>
-	<tr>
-		<th>Sija</th>
-		<th>Pisteet</th>
-		<th>Nimi</th>
-	</tr>
-	{#each scores as score, index}
-		<tr class:me={$auth && $auth.uid === score.user.uid}>
-			<td>{index + 1}.</td>
-			<td>{score.score}</td>
-			<td><a href={`/user/${score.user.uid}?size=${size}`}>{score.user.screenName}</a></td>
+{#if leaderboard_data.error_msg}
+	<p>Virhe: {leaderboard_data.error_msg}</p>
+{:else}
+	<table>
+		<tr>
+			<th>Sija</th>
+			<th>Pisteet</th>
+			<th>Nimi</th>
 		</tr>
-	{/each}
-</table>
+		{#each scores as score, index}
+			<tr class:me={$auth && $auth.uid === score.user.uid}>
+				<td>{index + 1}.</td>
+				<td>{score.score}</td>
+				<td><a href={`/user/${score.user.uid}?size=${size}`}>{score.user.screenName}</a></td>
+			</tr>
+		{/each}
+	</table>
+{/if}
 
 <style>
 	table {

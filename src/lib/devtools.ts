@@ -14,6 +14,7 @@ import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
 import { open_popups } from "$lib/stores/popupstore";
 import { auth } from "./Auth/authstore";
 import type GameManager from "./gamelogic/game_manager";
+import * as mp from "./stores/tournamentstore";
 
 function isStorageLoaded() {
 	return get(storage_loaded);
@@ -146,6 +147,13 @@ function testProbabilities() {
 	}
 }
 
+function setMpEndpoint(endpoint_url: string) {
+	mp.disconnect();
+	setTimeout(() => {
+		mp.tournament_endpoint.set(endpoint_url);
+	}, 2000);
+}
+
 if (browser) {
 	// @ts-ignore
 	window.devtools = {
@@ -171,6 +179,9 @@ if (browser) {
 		initWasm,
 		getWasm,
 		getWasmReady,
+
+		setMpEndpoint,
+		mp,
 
 		validateCurrentHistory,
 		validateCurrentHistoryAllFrames,

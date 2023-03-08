@@ -8,7 +8,9 @@ const tournament_endpoint_prod = "wss://mp.oispahalla.com";
 const tournament_endpoint_dev = mp_test_prod_endpoint
 	? tournament_endpoint_prod
 	: "ws://localhost:9000";
-export const tournament_endpoint = dev ? tournament_endpoint_dev : tournament_endpoint_prod;
+export const tournament_endpoint = writable(
+	dev ? tournament_endpoint_dev : tournament_endpoint_prod
+);
 
 export const gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
 export const gamemode_0_names: { [key: number]: string } = {
@@ -32,7 +34,7 @@ export class createTournamentGamemodeOptions {
 	goal!: number;
 }
 
-let socket: WebSocket | null = null;
+let socket: Writable<WebSocket | null> = writable(null);
 export type UserDetails = {
 	id: string;
 	name: string;
@@ -114,11 +116,39 @@ joined_game_id.subscribe(($joined_game_id) => {
 export const tournament_announcer: Writable<any | null> = writable(null);
 
 export const tournament_ping: Writable<number | null> = writable(null);
+export const tournament_ping_average: Writable<number | null> = writable(null);
+export const tournament_ping_average_history: Writable<number[]> = writable([]);
+tournament_ping.subscribe(($tournament_ping) => {
+	if ($tournament_ping != null) {
+		const abs_diff = $tournament_ping;
+		const $tournament_ping_average = get(tournament_ping_average);
+		tournament_ping_average.set((abs_diff + ($tournament_ping_average ?? 0)) / 2);
+	}
+});
+tournament_ping.subscribe(($value) => {
+	if ($value) {
+		tournament_ping_average_history.update(($old_history) => {
+			return [...$old_history, $value];
+		});
+	}
+});
+
+function reset_values() {
+	connected.set(false);
+	socket.set(null);
+	pingStartTime.set(null);
+	tournament_ping.set(null);
+	tournament_ping_average.set(null);
+	tournament_ping_average_history.set([]);
+}
+
 function socket_processor(message: any) {
 	const json = message.data;
 	if (json === "o") {
 		const now = new Date();
-		tournament_ping.set(now.getTime() - pingStartTime.getTime());
+		const $pingStartTime = get(pingStartTime);
+		if ($pingStartTime) tournament_ping.set(now.getTime() - $pingStartTime.getTime());
+		pingStartTime.set(null);
 		return;
 	}
 	const event = JSON.parse(json);
@@ -211,24 +241,24 @@ function socket_error_processor(err: any) {
 }
 
 export function connect_with_token(token: string | null) {
-	if (socket) {
+	if (get(socket)) {
 		disconnect();
 	}
-	const connection_string = `${tournament_endpoint}/ws?token=${token}`;
-	socket = new WebSocket(connection_string);
-	socket.addEventListener("open", () => {
+	const connection_string = `${get(tournament_endpoint)}/ws?token=${token}`;
+	const new_socket = new WebSocket(connection_string);
+	new_socket.addEventListener("open", () => {
 		connection_error.set(false);
 		connected.set(true);
 		errors.set([]);
-		if (socket) {
-			socket.send("udetails");
+
+		const $socket = get(socket);
+		if ($socket) {
+			$socket.send("udetails");
 		}
 		console.log("ws connected");
 	});
-	socket.addEventListener("close", (event) => {
-		connected.set(false);
-
-		socket = null;
+	new_socket.addEventListener("close", (event) => {
+		reset_values();
 		if (event.code == 3001) {
 			// User decision
 			connection_error.set(null);
@@ -238,132 +268,150 @@ export function connect_with_token(token: string | null) {
 			console.log("ws connection error");
 		}
 	});
-	socket.addEventListener("message", socket_processor);
-	socket.addEventListener("error", socket_error_processor);
+	new_socket.addEventListener("message", socket_processor);
+	new_socket.addEventListener("error", socket_error_processor);
+	socket.set(new_socket);
 }
 export function connect() {
 	connect_with_token(get(token));
 }
 export function disconnect() {
-	if (socket) {
-		socket.close(3001);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.close(3001);
 	}
 }
 
 export function request_index() {
-	if (socket) {
-		socket.send("index");
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send("index");
 	} else {
 		throw new Error("not connected! can't get index.");
 	}
 }
 export function request_game_details(game_id: number) {
-	if (socket) {
-		socket.send(`gdetails|>${game_id}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`gdetails|>${game_id}`);
 	} else {
 		throw new Error("not connected! can't get game details.");
 	}
 }
 export function request_deletion(game_id: number) {
-	if (socket) {
-		socket.send(`delete|>${game_id}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`delete|>${game_id}`);
 	} else {
 		throw new Error("not connected! can't delete game.");
 	}
 }
 export function request_start(game_id: number) {
-	if (socket) {
-		socket.send(`start|>${game_id}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`start|>${game_id}`);
 	} else {
 		throw new Error("not connected! can't start game.");
 	}
 }
 export function request_stop(game_id: number) {
-	if (socket) {
-		socket.send(`stop|>${game_id}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`stop|>${game_id}`);
 	} else {
 		throw new Error("not connected! can't stop game.");
 	}
 }
 export function request_join(game_id: number, password: string | null) {
-	if (socket) {
+	const $socket = get(socket);
+	if ($socket) {
 		let str = `join|>${game_id}`;
 		if (password != null && password.length > 0) {
 			str = `${str}|>${password}`;
 		}
-		socket.send(str);
+		$socket.send(str);
 	} else {
 		throw new Error("not connected! can't join game.");
 	}
 }
 export function request_leave(game_id: number) {
-	if (socket) {
-		socket.send(`leave|>${game_id}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`leave|>${game_id}`);
 	} else {
 		console.warn("left game without connection");
 		joined_game_id.set(null);
 	}
 }
 export function request_kick(game_id: number, user_id: string) {
-	if (socket) {
-		socket.send(`kick|>${game_id}|>${user_id}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`kick|>${game_id}|>${user_id}`);
 	} else {
 		console.warn("not connected! can't kick participants.");
 		joined_game_id.set(null);
 	}
 }
 export function send_message(message: string | null) {
-	if (socket) {
-		if (message) socket.send(`say|>${message}`);
+	const $socket = get(socket);
+	if ($socket) {
+		if (message) $socket.send(`say|>${message}`);
 	} else {
 		throw new Error("not connected! can't send message.");
 	}
 }
 export function admin_announce(message: string | null) {
-	if (socket) {
-		if (message) socket.send(`announce|>${message}`);
+	const $socket = get(socket);
+	if ($socket) {
+		if (message) $socket.send(`announce|>${message}`);
 	} else {
 		throw new Error("not connected! can't announce.");
 	}
 }
 export function admin_deleteall() {
-	if (socket) {
-		socket.send(`deleteall`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`deleteall`);
 	} else {
 		throw new Error("not connected! can't delete all games.");
 	}
 }
 export function request_game_chat() {
-	if (socket) {
-		socket.send(`chat`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`chat`);
 	} else {
 		throw new Error("not connected! can't get chat.");
 	}
 }
 export function request_game_names() {
-	if (socket) {
-		socket.send(`names`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`names`);
 	} else {
 		throw new Error("not connected! can't get names.");
 	}
 }
 export function request_game_state() {
-	if (socket) {
-		socket.send(`state`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`state`);
 	} else {
 		throw new Error("not connected! can't get state.");
 	}
 }
 export function request_move(direction: number) {
-	if (socket) {
-		socket.send(`move|>${direction}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`move|>${direction}`);
 	} else {
 		throw new Error("not connected! can't move.");
 	}
 }
 export function send_custom(message: string) {
-	if (socket) {
-		socket.send(`${message}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`${message}`);
 	} else {
 		throw new Error("not connected! can't send custom message");
 	}
@@ -381,26 +429,39 @@ export type CreateOptions = {
 	joinpassword: string | null;
 };
 export function create(options: CreateOptions) {
-	const $token = get(token);
-	if (socket) {
-		socket.send(`create|>${JSON.stringify(options)}`);
+	const $socket = get(socket);
+	if ($socket) {
+		$socket.send(`create|>${JSON.stringify(options)}`);
 	} else {
 		throw new Error("not connected! can't create game.");
 	}
 }
 
-let pingStartTime: Date;
+function connect_if_possible() {
+	if (get(token) != null && get(try_autoconnect)) {
+		connect();
+	}
+}
+let pingStartTime: Writable<Date | null> = writable(null);
+let pingIterations: Writable<number> = writable(168);
 if (browser) {
-	token.subscribe(($token) => {
-		if ($token != null && get(try_autoconnect)) {
-			connect();
-		}
+	token.subscribe(() => {
+		connect_if_possible();
+	});
+	tournament_endpoint.subscribe(() => {
+		connect_if_possible();
 	});
 	// Keep websocket connections alive by pinging the connection every 2000ms.
 	setInterval(() => {
-		if (socket && socket.readyState === socket.OPEN) {
-			pingStartTime = new Date();
-			socket.send("\x70");
+		const $socket = get(socket);
+		const $pingIterations = get(pingIterations);
+		const $pingStartTime = get(pingStartTime);
+		if ($pingStartTime == null) {
+			if ($socket && $socket.readyState === $socket.OPEN) {
+				$socket.send("p");
+				pingIterations.set($pingIterations + 1);
+				pingStartTime.set(new Date());
+			}
 		}
-	}, 2000);
+	}, 100);
 }

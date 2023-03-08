@@ -27,7 +27,7 @@
 
 <div>
 	{#if $user_details}
-		{#if !$game_index}
+		{#if $game_index == null}
 			<p>Haetaan pelejä...</p>
 		{:else}
 			<div>
