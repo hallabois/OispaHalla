@@ -121,19 +121,20 @@
 									del();
 								}}><Icon d={deleteIconData} viewBox="0 0 48 48" /></button
 							>
-							{#if canDownload}
-								<button
-									class="button action-btn"
-									on:click={() => {
+							<button
+								class="button action-btn"
+								disabled={!canDownload}
+								on:click={() => {
+									if (canDownload) {
 										download();
-									}}
-									><Icon
-										d={downloadIconData}
-										viewBox="0 0 48 48"
-										fill="var(--button-color)"
-									/></button
-								>
-							{/if}
+									}
+								}}
+								><Icon
+									d={downloadIconData}
+									viewBox="0 0 48 48"
+									fill="var(--button-color)"
+								/></button
+							>
 						</div>
 					{:else}
 						<p class="cloud-notice">Pilvestä ei löytynyt pelejä</p>

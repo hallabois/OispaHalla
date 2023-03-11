@@ -47,10 +47,6 @@
 		<div class="creator">
 			<h4>Asetukset</h4>
 			<div class="input-section">
-				<label for="ispublic">Julkinen</label>
-				<input type="checkbox" id="ispublic" bind:checked={create_public} />
-			</div>
-			<div class="input-section">
 				<label type="text" for="name">Pelin nimi</label>
 				<input id="name" bind:value={name} />
 			</div>
@@ -74,6 +70,10 @@
 					bind:value={password}
 					placeholder="Voit jättää salasanan tyhjäksi"
 				/>
+			</div>
+			<div class="input-section">
+				<label for="ispublic">Julkinen</label>
+				<input type="checkbox" id="ispublic" bind:checked={create_public} />
 			</div>
 			<h4>Säännöt</h4>
 			<div class="input-section">

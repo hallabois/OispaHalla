@@ -14,7 +14,8 @@
 		request_start,
 		request_stop,
 		send_custom,
-		admin_deleteall
+		admin_deleteall,
+		log
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
@@ -38,6 +39,7 @@
 	let board_popups_open = {};
 	let eventsender_open = false;
 	let eventsender_content = "";
+	let log_open = false;
 </script>
 
 <svelte:head>
@@ -98,6 +100,11 @@
 						on:click={() => {
 							eventsender_open = true;
 						}}>Eventsender</button
+					>
+					<button
+						on:click={() => {
+							log_open = true;
+						}}>View Log</button
 					>
 				{/if}
 			</div>
@@ -283,6 +290,43 @@
 			</form>
 		</div>
 	</Popup>
+	<Popup bind:open={log_open}>
+		<span slot="title">Log</span>
+		<div slot="content">
+			<button
+				on:click={() => {
+					send_custom("log");
+				}}>reload</button
+			>
+			{#if $log != null}
+				<table class="logs">
+					<tr>
+						<th>Level</th>
+						<th>Time</th>
+						<th>Target</th>
+						<th>Field</th>
+						<th>Value</th>
+					</tr>
+					{#each $log as log_event}
+						{@const time_str = new Date(log_event.created * 1000).toLocaleString()}
+						<tr>
+							<td class={`loglevel ${log_event.level}`}>{log_event.level}</td>
+							<td title={log_event.created + ""}>{time_str}</td>
+							<td>{log_event.target}</td>
+							<td>{log_event.field}</td>
+							<td>{log_event.value}</td>
+						</tr>
+					{/each}
+				</table>
+			{:else}
+				<button
+					on:click={() => {
+						send_custom("log");
+					}}>fetch log</button
+				>
+			{/if}
+		</div>
+	</Popup>
 </main>
 
 <style>
@@ -401,6 +445,26 @@
 		align-items: center;
 
 		border-top: 1px solid;
+	}
+
+	.loglevel {
+		background-color: var(--dialog-background);
+		text-align: center;
+	}
+	.loglevel.INFO {
+		color: greenyellow;
+	}
+	.loglevel.ERROR {
+		color: red;
+	}
+	.loglevel.WARN {
+		color: yellow;
+	}
+	.loglevel.DEBUG {
+		color: orange;
+	}
+	.loglevel.TRACE {
+		color: purple;
 	}
 
 	h1,

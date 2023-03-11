@@ -400,7 +400,6 @@
 	table {
 		width: 100%;
 
-		border: 1px solid;
 		border-collapse: collapse;
 
 		text-align: left;
@@ -413,7 +412,7 @@
 		padding: 0.25em 0.5em;
 	}
 	td {
-		border: 1px solid;
+		border: 1px solid var(--game-container-background);
 	}
 	tr.me {
 		font-weight: bold;

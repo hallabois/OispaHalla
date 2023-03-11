@@ -54,3 +54,9 @@ strong {
 		text-transform: uppercase;
 	}
 }
+
+hr {
+	border: none;
+	border-bottom: 1px solid var(--text-color, #776e65);
+	opacity: 0.5;
+}

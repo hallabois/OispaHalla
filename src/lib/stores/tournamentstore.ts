@@ -81,6 +81,13 @@ export type GameState = {
 	score: number;
 	board: ohts_gamestate;
 };
+export type LogEvent = {
+	created: number;
+	level: string;
+	target: string;
+	field: string;
+	value: string;
+};
 
 export const try_autoconnect: Writable<boolean> = writable(true);
 
@@ -94,6 +101,17 @@ export const joined_game_id: Writable<number | null> = writable(null);
 export const chat: Writable<ChatMessage[] | null> = writable(null);
 export const name_cache: Writable<{ [key: string]: string } | null> = writable(null);
 export const state: Writable<{ [key: number]: GameState[] }> = writable({});
+export const log: Writable<LogEvent[] | null> = writable(null);
+function resetState() {
+	user_details.set(null);
+	game_details.set({});
+	game_index.set(null);
+	joined_game_id.set(null);
+	chat.set(null);
+	name_cache.set(null);
+	state.set({});
+	log.set(null);
+}
 joined_game_id.subscribe(($joined_game_id) => {
 	if ($joined_game_id == null) {
 		chat.set(null);
@@ -128,6 +146,10 @@ tournament_ping.subscribe(($tournament_ping) => {
 tournament_ping.subscribe(($value) => {
 	if ($value) {
 		tournament_ping_average_history.update(($old_history) => {
+			if ($old_history.length > 100) {
+				// Limit array length to 101
+				$old_history.shift();
+			}
 			return [...$old_history, $value];
 		});
 	}
@@ -227,6 +249,9 @@ function socket_processor(message: any) {
 				announcer.announce(`${msg.title}: ${msg.message}`);
 			}
 		}
+		if (event.data.Log) {
+			log.set(event.data.Log);
+		}
 
 		if (event.data.GenericError) {
 			const announcer = get(tournament_announcer);
@@ -244,6 +269,7 @@ export function connect_with_token(token: string | null) {
 	if (get(socket)) {
 		disconnect();
 	}
+	resetState();
 	const connection_string = `${get(tournament_endpoint)}/ws?token=${token}`;
 	const new_socket = new WebSocket(connection_string);
 	new_socket.addEventListener("open", () => {
