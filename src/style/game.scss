@@ -207,21 +207,21 @@
 	content: var(--c, "Paras Halla");
 }
 
-p {
-	margin-top: 0;
-	margin-bottom: 10px;
-	line-height: 1.65;
-}
-
-hr {
-	margin-top: 20px;
-	margin-bottom: 30px;
-}
-
 .container {
 	width: var(--field-width);
 	margin: 0 auto;
 	padding-top: 40px;
+
+	p {
+		margin-top: 0;
+		margin-bottom: 10px;
+		line-height: 1.65;
+	}
+	
+	hr {
+		margin-top: 20px;
+		margin-bottom: 30px;
+	}
 }
 
 .new-above-game {

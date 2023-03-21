@@ -7,7 +7,6 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 
 import { getItem, setItem } from "$lib/stores/storage";
-import { TAB_BLOCK } from "$lib/session_manager";
 import { get } from "svelte/store";
 import { browser, dev } from "$app/environment";
 import { recordGame } from "$lib/stores/analytics";
@@ -432,10 +431,6 @@ export default class GameManager {
 	}
 
 	recordBest() {
-		if (get(TAB_BLOCK)) {
-			return;
-		}
-
 		const score = this.run_best_score || this.score;
 
 		let best = getItem("HAC_best_score" + this.size);

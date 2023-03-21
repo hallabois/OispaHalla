@@ -2,14 +2,14 @@ import { browser } from "$app/environment";
 import { type Writable, writable, get } from "svelte/store";
 
 import { setItem, getItem, storage_loaded } from "$lib/stores/storage";
+import { defaultTheme } from "../../brand";
 
-export let defaultTheme = 4;
 export function setDefaultTheme(theme: number) {
-	defaultTheme = theme;
+	defaultTheme.set(theme);
 }
 export const currentImageThemeVersion = 6;
 
-export const theme_index: Writable<number> = writable(defaultTheme);
+export const theme_index: Writable<number> = writable(get(defaultTheme));
 export const theme_loaded: Writable<boolean> = writable(false);
 export const festives_applied: Writable<string[]> = writable([]);
 theme_index.subscribe((themeID) => {
@@ -67,10 +67,10 @@ storage_loaded.subscribe(($storage_loaded) => {
 			) {
 				theme_index.set(+localtheme);
 			} else {
-				theme_index.set(defaultTheme);
+				theme_index.set(get(defaultTheme));
 			}
 		} else {
-			theme_index.set(defaultTheme);
+			theme_index.set(get(defaultTheme));
 		}
 		console.info(`Loaded theme ${get(theme_index)}.`);
 
@@ -198,7 +198,7 @@ const holidays: Holiday[] = [spooktober, xmas];
 function removeHolidayThemeFromUse(t: theme) {
 	available_themes.set(get(available_themes).filter((t2) => t2.index !== t.index));
 	if (get(theme_index) === t.index) {
-		theme_index.set(defaultTheme);
+		theme_index.set(get(defaultTheme));
 	}
 }
 

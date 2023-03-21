@@ -1,17 +1,13 @@
 import { browser } from "$app/environment";
 import { writable } from "svelte/store";
 
-export const tabID = 1.0;
 let date_registered = 0;
 
-function unregisterTabID() {
+export function destroyCTMBlock() {
 	if (browser) {
 		nt.postMessage(new Date().getTime());
 		if (localStorage) {
 			if (localStorage.lastSession) {
-				if (localStorage.lastSession == tabID) {
-					delete localStorage.lastSession;
-				}
 				if (localStorage.lastSession == date_registered) {
 					delete localStorage.lastSession;
 				} else if (+localStorage.lastSession < date_registered) {
@@ -19,13 +15,8 @@ function unregisterTabID() {
 				}
 			}
 		}
+		console.info("Session manager unregistered with the tab id", date_registered);
 	}
-}
-
-if (browser) {
-	console.info("Session manager registered with the tab id", tabID);
-	window.onpagehide = unregisterTabID;
-	window.onbeforeunload = unregisterTabID;
 }
 
 export const TAB_BLOCK = writable(false);
@@ -35,14 +26,19 @@ const ctm_channel_sync = "crosstab_management_oh";
 const ctm_close_key = -245;
 
 let nt: BroadcastChannel;
-if (browser) {
+export function initCTMBlock() {
 	date_registered = new Date().getTime();
-	const storage_lock = +(localStorage.getItem("lastSession") || "9999999999999999999");
+
+	console.info("Session manager registered with the tab id", date_registered);
+	window.onpagehide = destroyCTMBlock;
+	window.onbeforeunload = destroyCTMBlock;
+
+	/* const storage_lock = +(localStorage.getItem("lastSession") || "9999999999999999999");
 	if (storage_lock < date_registered) {
 		TAB_BLOCK.set(true);
 	} else {
 		localStorage.setItem("lastSession", date_registered + "");
-	}
+	} */
 	nt = new BroadcastChannel(ctm_channel_sync);
 	nt.postMessage(date_registered); /* send */
 	nt.onmessage = function (ev) {

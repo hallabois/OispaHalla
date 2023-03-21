@@ -62,7 +62,7 @@
 						{#if game.requires_password}
 							<p title="Tähän peliin liittyminen vaatii salasanan">🔐</p>
 						{/if}
-						<p>{game.clients}/{game.max_clients} {game.clients == 1 ? "pelaaja " : "pelaajaa"}</p>
+						<p>{game.clients}/{game.max_clients} pelaajaa</p>
 					</div>
 					{#if game.requires_password && chosen_game == game.id && !am_host}
 						<div>

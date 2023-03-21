@@ -37,7 +37,7 @@ export class createTournamentGamemodeOptions {
 let socket: Writable<WebSocket | null> = writable(null);
 export type UserDetails = {
 	id: string;
-	name: string;
+	name: string | null;
 	admin: boolean;
 	current_games: number[];
 };

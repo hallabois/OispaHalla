@@ -91,6 +91,8 @@
 	@media (max-width: 600px) {
 		.lb-popup-container {
 			height: 100vh !important;
+			/* for mobile */
+			height: 100svh !important;
 			width: 100vw !important;
 			margin: 0 !important;
 		}
@@ -99,7 +101,7 @@
 			height: 100%;
 		}
 		.lb-header {
-			margin-bottom: 3em;
+			margin-bottom: 0.75em;
 		}
 	}
 

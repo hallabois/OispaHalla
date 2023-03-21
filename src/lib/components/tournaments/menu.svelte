@@ -121,7 +121,6 @@
 			<h3>Otetaan yhteyttä palvelimeen...</h3>
 		{:else}
 			<h3>Palvelimeen ei saatu yhteyttä.</h3>
-			<button on:click={connect}>Yritä uudelleen</button>
 		{/if}
 	{:else if $auth === undefined}
 		<p style="text-align: center;display: block;padding: 0.75em;">Tarkistetaan tietoja</p>

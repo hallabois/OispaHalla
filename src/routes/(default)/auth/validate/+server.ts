@@ -1,4 +1,4 @@
-import { json as json$1 } from "@sveltejs/kit";
+import { json as json$1, type RequestHandler } from "@sveltejs/kit";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "$lib/Auth_admin/auth.server";
 import { env } from "$env/dynamic/private";
@@ -13,7 +13,7 @@ function get_admins() {
 	return [];
 }
 
-export async function POST({ request, getClientAddress }) {
+export const POST = (async ({ request, getClientAddress }) => {
 	console.info("Validating token...");
 	const admin_emails = get_admins();
 	const body = await request.json();
@@ -94,4 +94,4 @@ export async function POST({ request, getClientAddress }) {
 			);
 		}
 	}
-}
+}) satisfies RequestHandler;

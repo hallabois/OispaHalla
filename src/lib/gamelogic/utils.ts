@@ -65,7 +65,6 @@ export type ohts_gamestate = {
 };
 
 export function ohts_gamestate_to_grid(gamestate: ohts_gamestate) {
-	console.info("gamestate", gamestate);
 	const grid = new Grid(gamestate.width);
 	for (const row of gamestate.tiles) {
 		for (const tile of row) {

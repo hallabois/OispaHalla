@@ -1,9 +1,10 @@
 // This hook "pre-renders" the appropriate theme server-side.
-import { defaultTheme } from "$lib/stores/themestore";
+import { get } from "svelte/store";
+import { defaultTheme } from "./brand";
 import type { Handle } from "@sveltejs/kit";
 
 export const handle = (async ({ event, resolve }) => {
-	let theme = defaultTheme;
+	let theme = get(defaultTheme);
 
 	// Check for theme cookie
 	const cookie = event.request.headers.get("cookie");

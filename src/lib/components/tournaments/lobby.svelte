@@ -144,7 +144,7 @@
 										{@const name = cached_name
 											? cached_name.split(" ")[0]
 											: msg.user_id.substring(0, 5)}
-										<p>{name}: {msg.content}</p>
+										<p><b>{name}</b>: {msg.content}</p>
 									{/each}
 								{:else}
 									<p>...</p>

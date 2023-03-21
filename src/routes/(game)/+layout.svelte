@@ -3,7 +3,7 @@
 	export let data: LayoutData;
 	$: ({ theme_override } = data);
 
-	import { TAB_BLOCK, take_ownership } from "$lib/session_manager";
+	import { TAB_BLOCK, take_ownership, initCTMBlock, destroyCTMBlock } from "$lib/session_manager";
 
 	import "../../style/base.scss";
 	import "../../style/game.scss";
@@ -17,6 +17,7 @@
 	import Analytics from "$lib/components/analytics/analytics.svelte";
 	import Pwa from "$lib/components/common/pwa.svelte";
 	import ChromiumCachePreventer from "$lib/components/common/chromium-cache-preventer.svelte";
+	import { onDestroy, onMount } from "svelte";
 
 	//export let theme_override: number | null;
 	if (theme_override != null) {
@@ -42,6 +43,14 @@
 			}
 		}, 1000);
 	}
+
+	onMount(() => {
+		initCTMBlock();
+	});
+
+	onDestroy(() => {
+		destroyCTMBlock();
+	});
 </script>
 
 <svelte:head>

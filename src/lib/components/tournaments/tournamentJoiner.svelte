@@ -69,7 +69,7 @@
 		width: calc(100%);
 	}
 	input {
-		width: calc(100% - 2em);
+		width: 100%;
 		padding: 0.25em 1em;
 		font-size: 1.15em;
 	}

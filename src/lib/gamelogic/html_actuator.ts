@@ -14,7 +14,7 @@ export default class HTMLActuator {
 	score: number;
 	constructor(documentRoot: HTMLElement) {
 		this.documentRoot = documentRoot;
-		console.info("html actuator initialized with root", this.documentRoot);
+		//console.info("html actuator initialized with root", this.documentRoot);
 
 		this.html_component = documentRoot;
 		this.tileContainer = documentRoot.querySelector(".tile-container");
@@ -167,7 +167,7 @@ export default class HTMLActuator {
 				this.kurinPalautusNappi.classList.remove("allowed");
 			}
 		} else {
-			console.warn("Score container missing!");
+			//console.warn("Score container missing!");
 		}
 	}
 	message(won, kurinPalautukset) {
@@ -202,7 +202,7 @@ export default class HTMLActuator {
 
 			this.kurinPalautusViesti.appendChild(messageElement);
 		} else {
-			console.warn("Score container missing!");
+			//console.warn("Score container missing!");
 		}
 		return true;
 	}

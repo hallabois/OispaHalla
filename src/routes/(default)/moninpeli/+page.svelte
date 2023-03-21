@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
 	import MultiplayerMenu from "$lib/components/tournaments/menu.svelte";
 	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/common/announcer/announcer.svelte";
@@ -22,6 +23,7 @@
 	import type Grid from "$lib/gamelogic/grid";
 	import { browser, dev } from "$app/environment";
 	import Tournaments from "$lib/components/tournaments.svelte";
+	import { onMount } from "svelte";
 
 	let enableKIM = false;
 
@@ -30,10 +32,30 @@
 		$game_details[$joined_game_id]?.started &&
 		$state[$joined_game_id] &&
 		$user_details != null;
+	let localGameState: ohts_gamestate | null = null;
+	$: if (!inputManager_should_exist) localGameState = null;
 	function move(direction: 0 | 1 | 2 | 3) {
 		if (inputManager_should_exist) {
 			console.log("server-side move called with the value", direction);
 			request_move(direction);
+			if ($wasm && localGameState) {
+				prediction_allowed = true;
+				try {
+					let predicted = JSON.parse(
+						$wasm.apply_move(JSON.stringify(localGameState), direction, false)
+					);
+					console.info("client-side prediction", predicted);
+					if (predicted.possible) {
+						localGameState.tiles = predicted.tiles;
+					}
+				} catch (e) {
+					console.warn("client-side prediction failed", e);
+				}
+			}
+			return true;
+		} else {
+			// Propagate event
+			return false;
 		}
 	}
 	$: if (inputManager_should_exist) {
@@ -80,14 +102,40 @@
 	}
 
 	let last_grid: Grid | null = null;
-	function processGrid(inp: ohts_gamestate) {
+	let last_remote_input: ohts_gamestate | null = null;
+
+	let prediction_allowed = false;
+	function processGrid(inp: ohts_gamestate, remote: boolean) {
+		if (remote) {
+			if (last_remote_input == inp) return last_grid;
+		}
+		// Update localGameState
+		if (remote && localGameState != inp) {
+			prediction_allowed = false;
+			localGameState = inp;
+		}
+
 		let translated = ohts_gamestate_to_grid(inp);
 		if (last_grid) {
 			translated = generate_previous_positions(translated, last_grid);
 		}
 		last_grid = translated;
+		if (remote) {
+			last_remote_input = inp;
+		}
 		return translated;
 	}
+
+	import {
+		ready,
+		success as wasm_init_result,
+		wasm,
+		validation_cache,
+		init as initWasm
+	} from "$lib/wasm/twothousand_forty_eight";
+	onMount(async () => {
+		await initWasm();
+	});
 </script>
 
 <main bind:this={inputRoot}>
@@ -101,15 +149,29 @@
 			>
 		</p>
 	{/if}
+	<div class="wasm-indicator">
+		{#if $wasm_init_result == null}
+			<p class="loading">loading wasm...</p>
+		{:else if $wasm_init_result}
+			<p class="loaded">wasm ready</p>
+		{:else}
+			<p class="error">wasm could not be initialized</p>
+		{/if}
+	</div>
 	{#if $joined_game_id && $game_details[$joined_game_id]?.started && $state[$joined_game_id] && $user_details != null}
 		{@const gamestates = $state[$joined_game_id]}
 		{@const gamestate = gamestates.find((s) => $user_details && s.user_id === $user_details.id)}
 
 		{#if gamestate}
 			{@const grid_o = gamestate.board}
-			{@const grid = processGrid(grid_o)}
+			{@const grid_remote = processGrid(grid_o, true)}
+			{@const grid_or_predicted =
+				localGameState != null ? processGrid(localGameState, false) : grid_remote}
+			{@const grid = grid_or_predicted}
 			<p>{gamestate.score}</p>
-			<p>ping: {$tournament_ping ?? "measuring..."}</p>
+			<p>
+				ping: {$tournament_ping ?? "measuring..."}
+			</p>
 			<div class="board-container">
 				<div
 					style="display: flex;justify-content:space-between;width:var(--field-width, --default-field-width);margin-bottom: 8px;"
@@ -124,7 +186,7 @@
 							Valikko
 						</button>
 					</div>
-					<div style="display: flex;align-items: end;">
+					<div style="display: flex;align-items: center;gap: .5em;">
 						<label for="monkey">Enable monkey</label>
 						<input id="monkey" type="checkbox" bind:checked={enableMonkey} />
 					</div>
@@ -145,7 +207,7 @@
 						<div class="mini">
 							<div class="mini-grid">
 								{#key board}
-									<Board {enableKIM} enableLSM={false} grid={board} />
+									<Board {enableKIM} enableLSM={false} grid={board} documentRoot={null} />
 								{/key}
 							</div>
 							<div class="mini-details">
@@ -169,6 +231,8 @@
 	{/if}
 </main>
 
+<Preloader />
+
 <style>
 	main {
 		min-height: 100vh;
@@ -182,6 +246,16 @@
 						calc(var(--grid-gap) * calc(var(--grid-size) + 1))
 				) / var(--grid-size)
 		);
+	}
+	.wasm-indicator {
+		position: fixed;
+		top: 0;
+		left: 0;
+		opacity: 0.5;
+	}
+	.wasm-indicator .error {
+		color: red;
+		background-color: black;
 	}
 	.err {
 		z-index: 217;
@@ -227,6 +301,8 @@
 	}
 	.mini {
 		display: flex;
+		background-color: var(--dialog-background);
+		border-radius: calc(var(--tile-border-radius) * 2);
 	}
 	.mini-grid {
 		width: var(--field-width);
@@ -234,7 +310,6 @@
 		overflow: hidden;
 	}
 	.mini-details {
-		background-color: var(--dialog-background);
 		padding: 0.1em 0.5em;
 	}
 	.mini-details * {

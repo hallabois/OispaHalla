@@ -84,15 +84,16 @@ export default class KeyboardInputManager {
 		this.events[event].push(callback);
 	}
 	emit(event, data) {
-		if (!this.enabled) {
-			return;
+		let to_return = false;
+		if (this.enabled) {
+			const callbacks = this.events[event];
+			if (callbacks) {
+				callbacks.forEach(function (callback) {
+					to_return = callback(data) || to_return;
+				});
+			}
 		}
-		const callbacks = this.events[event];
-		if (callbacks) {
-			callbacks.forEach(function (callback) {
-				callback(data);
-			});
-		}
+		return to_return;
 	}
 
 	listen() {
@@ -179,8 +180,10 @@ export default class KeyboardInputManager {
 
 		if (!modifiers) {
 			if (mapped !== undefined) {
-				event.preventDefault();
-				this.emit("move", mapped);
+				let result = this.emit("move", mapped);
+				if (result !== false) {
+					event.preventDefault();
+				}
 			}
 		}
 
@@ -193,8 +196,7 @@ export default class KeyboardInputManager {
 		if (!this.enabled) {
 			return;
 		}
-		event.preventDefault();
-		this.emit("restart", null);
+		if (this.emit("restart", null) !== false) event.preventDefault();
 	}
 	restartplus(event) {
 		if (!this.enabled) {

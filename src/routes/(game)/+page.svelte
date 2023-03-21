@@ -26,6 +26,14 @@
 		activeNotificationIconData
 	} from "$lib/components/common/icon/iconData";
 	import { base_path } from "$lib/stores/themestore";
+	import {
+		app_description_default,
+		app_name_default,
+		app_name_hiscore_default,
+		app_name_newgame_default,
+		app_name_score_default,
+		app_notice_default
+	} from "../../brand";
 
 	let app_name = "";
 	let app_description = "";
@@ -33,13 +41,6 @@
 	let app_name_newgame = "";
 	let app_name_score = "";
 	let app_name_hiscore = "";
-
-	let app_name_default = "Oispa Halla";
-	let app_description_default = "Yhdistä opettajat ja saavuta **Halla!**";
-	let app_notice_default = "";
-	let app_name_newgame_default = "Uusi Jakso";
-	let app_name_score_default = "arvosana";
-	let app_name_hiscore_default = "paras halla";
 
 	function setDefaultMetaValues() {
 		app_name = app_name_default;
