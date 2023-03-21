@@ -33,7 +33,7 @@
 		app_name_newgame_default,
 		app_name_score_default,
 		app_notice_default
-	} from "../../brand";
+	} from "$lib/brand";
 
 	let app_name = "";
 	let app_description = "";

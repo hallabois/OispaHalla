@@ -1,6 +1,6 @@
 // This hook "pre-renders" the appropriate theme server-side.
 import { get } from "svelte/store";
-import { defaultTheme } from "./brand";
+import { defaultTheme } from "./lib/brand";
 import type { Handle } from "@sveltejs/kit";
 
 export const handle = (async ({ event, resolve }) => {

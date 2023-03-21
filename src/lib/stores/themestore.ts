@@ -2,7 +2,7 @@ import { browser } from "$app/environment";
 import { type Writable, writable, get } from "svelte/store";
 
 import { setItem, getItem, storage_loaded } from "$lib/stores/storage";
-import { defaultTheme } from "../../brand";
+import { defaultTheme } from "$lib/brand";
 
 export function setDefaultTheme(theme: number) {
 	defaultTheme.set(theme);

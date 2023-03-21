@@ -1,4 +1,4 @@
-import { defaultTheme } from "$lib/stores/themestore";
+import { defaultTheme } from "$lib/brand";
 import type { LayoutServerLoad } from "./$types";
 
 export const load = (async ({ request }) => {
