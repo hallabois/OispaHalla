@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		joined_game_id,
+		joined_game_id_padded,
 		request_deletion,
 		request_leave,
 		user_details,
@@ -28,14 +29,14 @@
 	function shareGameID() {
 		navigator.share({
 			title: "Kutsu OispaHalla -peliin",
-			text: `Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id} tai alla olevan linkin kautta.`,
-			url: `https://oispahalla.com/moninpeli?game_id=${$joined_game_id}`
+			text: `Liity mukaan OispaHalla -peliini koodilla ${$joined_game_id_padded} tai alla olevan linkin kautta.`,
+			url: `https://oispahalla.com/moninpeli?game_id=${$joined_game_id_padded}`
 		});
 	}
 	function copyGameID() {
 		if (announcer) {
 			navigator.clipboard.writeText(
-				`${window.location.origin}/moninpeli?game_id=${$joined_game_id}`
+				`${window.location.origin}/moninpeli?game_id=${$joined_game_id_padded}`
 			);
 			announcer.announce("Liittymislinkki kopioitu!");
 		}
@@ -59,8 +60,10 @@
 						class="button action-btn"
 						on:click={() => {
 							$joined_game_id = null;
-						}}>Takaisin valikkoon</button
+						}}
 					>
+						Takaisin valikkoon
+					</button>
 				</div>
 				<div
 					style="
@@ -107,7 +110,7 @@
 				<hr />
 				<p>Liitytty peliin "{game_data.name}"</p>
 				<p>
-					Liittymiskoodi: <code>{$joined_game_id}</code>
+					Liittymiskoodi: <code>{$joined_game_id_padded}</code>
 					{#if navigator.clipboard}
 						<button on:click={copyGameID}>Kopioi linkki</button>
 					{/if}

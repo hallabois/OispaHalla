@@ -3,18 +3,19 @@
 	import { game_details, request_game_details, request_join } from "$lib/stores/tournamentstore";
 
 	export let chosen_game: number | null = null;
+	$: chosen_game_number = chosen_game == null ? null : +chosen_game;
 	let requires_password = false;
 	let password: string | null;
 	let canJoin = false;
-	$: game_id_valid = chosen_game != null && !isNaN(chosen_game);
-	$: if (chosen_game && game_id_valid) {
-		if ($game_details[chosen_game]) {
-			requires_password = $game_details[chosen_game].requires_password;
+	$: game_id_valid = chosen_game != null && !isNaN(chosen_game) && (chosen_game + "").length == 5;
+	$: if (chosen_game_number && game_id_valid) {
+		if ($game_details[chosen_game_number]) {
+			requires_password = $game_details[chosen_game_number].requires_password;
 			if (!requires_password) {
 				canJoin = true;
 			}
 		} else {
-			request_game_details(chosen_game);
+			request_game_details(chosen_game_number);
 		}
 	} else {
 		canJoin = false;

@@ -7,6 +7,7 @@
 		request_join,
 		user_details
 	} from "$lib/stores/tournamentstore";
+	import Busy from "../common/loading-indicator/Busy.svelte";
 
 	$: if (connected && $game_index == null) {
 		request_index();
@@ -28,7 +29,9 @@
 <div>
 	{#if $user_details}
 		{#if $game_index == null}
-			<p>Haetaan pelejä...</p>
+			<Busy>
+				<h2>Haetaan pelejä...</h2>
+			</Busy>
 		{:else}
 			<div>
 				<p>
@@ -93,7 +96,7 @@
 		padding: 0.25em 1em;
 	}
 	.games {
-		max-height: 30vh;
+		max-height: 40vh;
 		min-height: 2em;
 		overflow-y: auto;
 

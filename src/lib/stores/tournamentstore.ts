@@ -1,7 +1,7 @@
 import { browser, dev } from "$app/environment";
 import { token } from "$lib/Auth/authstore";
 import { mp_test_prod_endpoint } from "../../features";
-import { type Writable, writable, get } from "svelte/store";
+import { type Writable, writable, get, derived, type Readable } from "svelte/store";
 import type { ohts_gamestate } from "$lib/gamelogic/utils";
 
 const tournament_endpoint_prod = "wss://mp.oispahalla.com";
@@ -104,11 +104,22 @@ export const user_details: Writable<UserDetails | null> = writable(null);
 export const game_details: Writable<{ [key: number]: GameDetails }> = writable({});
 export const game_index: Writable<Index | null> = writable(null);
 export const joined_game_id: Writable<number | null> = writable(null);
+export const joined_game_id_padded: Readable<string | null> = derived(
+	joined_game_id,
+	($joined_game_id) => {
+		if ($joined_game_id == null) {
+			return null;
+		} else {
+			return String($joined_game_id).padStart(5, "0");
+		}
+	}
+);
 export const chat: Writable<ChatMessage[] | null> = writable(null);
 export const name_cache: Writable<{ [key: string]: string } | null> = writable(null);
 export const state: Writable<{ [key: number]: GameState[] }> = writable({});
 export const log: Writable<LogEvent[] | null> = writable(null);
 function resetState() {
+	server_status.set(null);
 	user_details.set(null);
 	game_details.set({});
 	game_index.set(null);
@@ -270,9 +281,14 @@ function socket_processor(message: any) {
 		}
 
 		if (event.data.GenericError) {
+			const error = event.data.GenericError;
+			let message = `Virhe: ${event.data.GenericError}`;
+			if (error === "error.mp.game.notfound") {
+				message = "Peliä ei löytynyt";
+			}
 			const announcer = get(tournament_announcer);
-			if (announcer) {
-				announcer.announce(`Virhe: ${event.data.GenericError}`);
+			if (announcer && message != null) {
+				announcer.announce(message);
 			}
 		}
 	}
@@ -496,6 +512,9 @@ if (browser) {
 	// Keep websocket connections alive by pinging the connection every 2000ms.
 	setInterval(() => {
 		const $socket = get(socket);
+		if ($socket == null) {
+			connect_if_possible();
+		}
 		const $pingIterations = get(pingIterations);
 		const $pingStartTime = get(pingStartTime);
 		if ($pingStartTime == null) {

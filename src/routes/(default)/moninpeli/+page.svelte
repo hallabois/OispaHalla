@@ -150,6 +150,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Oispa Halla Moninpeli</title>
+</svelte:head>
+
 <main bind:this={inputRoot}>
 	<Announcer bind:this={AnnouncerInstance} />
 	{#if $connection_error}

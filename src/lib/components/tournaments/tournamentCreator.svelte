@@ -7,7 +7,7 @@
 		enabled_sizes
 	} from "$lib/stores/tournamentstore";
 
-	import { BarLoader } from "svelte-loading-spinners";
+	import Busy from "$lib/components/common/loading-indicator/Busy.svelte";
 
 	let busy = false;
 
@@ -49,16 +49,13 @@
 
 <div>
 	{#if busy}
-		<div class="busy">
+		<Busy
+			onCancel={() => {
+				busy = false;
+			}}
+		>
 			<h2>Luodaan peliä...</h2>
-			<BarLoader size="60" color="var(--button-background)" unit="px" duration="2s" />
-			<button
-				class="button action-btn discouradge"
-				on:click={() => {
-					busy = false;
-				}}>peruuta</button
-			>
-		</div>
+		</Busy>
 	{:else if $token}
 		<div class="creator">
 			<h4>Asetukset</h4>
@@ -125,14 +122,6 @@
 		margin-top: 0.5em;
 		margin-bottom: 0;
 		text-align: center;
-	}
-	.busy {
-		min-height: 10em;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		gap: 0.5em;
 	}
 	.creator {
 		display: flex;

@@ -37,9 +37,8 @@
 		let game_id = params.get("game_id");
 		if (game_id) {
 			console.log("read game_id", game_id);
-			chosen_game = +game_id;
+			chosen_game = game_id;
 			activeTab = 2;
-			history.replaceState(null, "Oispa Halla", "moninpeli");
 		}
 	}
 
