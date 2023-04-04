@@ -9,6 +9,7 @@
 	import Icon from "./common/icon/icon.svelte";
 	import { deleteIconData, downloadIconData, uploadIconData } from "./common/icon/iconData";
 	import { dev } from "$app/environment";
+	import Busy from "./common/loading-indicator/Busy.svelte";
 
 	let open = false;
 	export function show() {
@@ -146,7 +147,9 @@
 						>
 					{/if}
 				{:else}
-					<p class="cloud-notice">Ladataan pilvitallennuksia...</p>
+					<Busy>
+						<p class="cloud-notice">Ladataan pilvitallennuksia...</p>
+					</Busy>
 				{/if}
 			{:else if $auth === undefined}
 				<p class="cloud-notice">...</p>

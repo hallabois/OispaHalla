@@ -78,3 +78,50 @@ export function ohts_gamestate_to_grid(gamestate: ohts_gamestate) {
 	}
 	return grid;
 }
+
+export function do_gamestates_differ(a: ohts_gamestate, b: ohts_gamestate) {
+	if (a.width !== b.width) return ["w", a.width, b.width];
+	if (a.height !== b.height) return ["h", a.height, b.height];
+	let w = a.width;
+	let h = b.height;
+	for (let y = 0; y < h; y++) {
+		for (let x = 0; x < w; x++) {
+			let ta = a.tiles[y][x];
+			let tb = a.tiles[y][x];
+			if (ta.value !== tb.value) {
+				return [ta, tb];
+			}
+		}
+	}
+	return false;
+}
+
+function gather_ids(gamestate: ohts_gamestate) {
+	let ids = [];
+	for (let y = 0; y < gamestate.height; y++) {
+		for (let x = 0; x < gamestate.width; x++) {
+			let t = gamestate.tiles[y][x];
+			ids.push(t.id);
+		}
+	}
+	return ids;
+}
+
+export function fix_new_ids(remote: ohts_gamestate, predicted: ohts_gamestate | null) {
+	if (!predicted) return predicted;
+	let w = remote.width;
+	let h = remote.height;
+
+	for (let y = 0; y < h; y++) {
+		for (let x = 0; x < w; x++) {
+			let t_remote = remote.tiles[y][x];
+			let t_predicted = predicted.tiles[y][x];
+			if (t_remote.id !== t_predicted.id && t_remote.value === t_predicted.value) {
+				t_predicted.id = t_remote.id;
+				predicted.tiles[y][x] = t_predicted;
+			}
+		}
+	}
+
+	return predicted;
+}

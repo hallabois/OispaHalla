@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { BarLoader } from "svelte-loading-spinners";
-	export let onCancel: Function | null;
+	export let onCancel: Function | null = null;
+	export let minHeight = "5em";
 </script>
 
-<div class="busy">
+<div class="busy" style:--busy-min-h={minHeight}>
 	<slot />
 	<BarLoader size="60" color="var(--button-background)" unit="px" duration="2s" />
 	{#if onCancel != null}
 		<button
 			class="button action-btn discouradge"
 			on:click={() => {
-				onCancel;
+				if (onCancel) onCancel();
 			}}>peruuta</button
 		>
 	{/if}
@@ -18,7 +19,7 @@
 
 <style>
 	.busy {
-		min-height: 10em;
+		min-height: var(--busy-min-h);
 		display: flex;
 		justify-content: center;
 		align-items: center;

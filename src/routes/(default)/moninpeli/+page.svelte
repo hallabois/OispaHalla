@@ -17,7 +17,9 @@
 	import {
 		generate_previous_positions,
 		ohts_gamestate_to_grid,
-		type ohts_gamestate
+		type ohts_gamestate,
+		do_gamestates_differ,
+		fix_new_ids
 	} from "$lib/gamelogic/utils";
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
 	import type Grid from "$lib/gamelogic/grid";
@@ -39,7 +41,6 @@
 			console.log("server-side move called with the value", direction);
 			request_move(direction);
 			if ($wasm && localGameState) {
-				prediction_allowed = true;
 				try {
 					let random_seed = undefined;
 					if ($joined_game_id) {
@@ -47,7 +48,6 @@
 						const gamestate = gamestates.find(
 							(s) => $user_details && s.user_id === $user_details.id
 						);
-						console.log("gamestate", gamestate);
 						if (gamestate) {
 							random_seed = $joined_game_id + gamestate.length + 1;
 						}
@@ -114,17 +114,13 @@
 	}
 
 	let last_grid: Grid | null = null;
-	let last_remote_input: ohts_gamestate | null = null;
 
-	let prediction_allowed = false;
 	function processGrid(inp: ohts_gamestate, remote: boolean) {
-		if (remote) {
-			if (last_remote_input == inp) return last_grid;
-		}
 		// Update localGameState
-		if (remote && localGameState != inp) {
-			prediction_allowed = false;
-			localGameState = inp;
+		let difference = localGameState ? do_gamestates_differ(localGameState, inp) : true;
+		if (remote && difference) {
+			console.log("Predictions differed!", localGameState, inp, difference);
+			localGameState = fix_new_ids(inp, localGameState);
 		}
 
 		let translated = ohts_gamestate_to_grid(inp);
@@ -132,9 +128,6 @@
 			translated = generate_previous_positions(translated, last_grid);
 		}
 		last_grid = translated;
-		if (remote) {
-			last_remote_input = inp;
-		}
 		return translated;
 	}
 
