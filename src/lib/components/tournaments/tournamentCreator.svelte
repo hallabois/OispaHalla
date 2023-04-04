@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { token } from "$lib/Auth/authstore";
-
 	import {
 		gamemode_0_goals,
 		gamemode_0_names,
 		create,
 		enabled_sizes
 	} from "$lib/stores/tournamentstore";
+
+	import { BarLoader } from "svelte-loading-spinners";
+
+	let busy = false;
+
 	let name: string;
 	let create_public = true;
 	let size = 3;
@@ -28,6 +32,7 @@
 			alert("Virheellinen sisäänkirjautuminen");
 			return;
 		}
+		busy = true;
 		create({
 			name,
 			size,
@@ -43,15 +48,30 @@
 </script>
 
 <div>
-	{#if $token}
+	{#if busy}
+		<div class="busy">
+			<h2>Luodaan peliä...</h2>
+			<BarLoader size="60" color="var(--button-background)" unit="px" duration="2s" />
+			<button
+				class="button action-btn discouradge"
+				on:click={() => {
+					busy = false;
+				}}>peruuta</button
+			>
+		</div>
+	{:else if $token}
 		<div class="creator">
 			<h4>Asetukset</h4>
+			<label for="name">Pelin nimi</label>
+			<input
+				class="full-input"
+				id="name"
+				type="text"
+				placeholder="Fysiikan abikurssi"
+				bind:value={name}
+			/>
 			<div class="input-section">
-				<label type="text" for="name">Pelin nimi</label>
-				<input id="name" bind:value={name} />
-			</div>
-			<div class="input-section">
-				<label type="text" for="size">Pelin koko</label>
+				<label for="size">Pelin koko</label>
 				<select id="size" bind:value={size}>
 					{#each enabled_sizes as size}
 						<option>{size}</option>
@@ -106,6 +126,14 @@
 		margin-bottom: 0;
 		text-align: center;
 	}
+	.busy {
+		min-height: 10em;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		gap: 0.5em;
+	}
 	.creator {
 		display: flex;
 		flex-direction: column;
@@ -117,5 +145,11 @@
 	}
 	.input-section * {
 		flex: 1;
+		padding: 0.25em 0.5em;
+	}
+	.full-input {
+		width: 100%;
+		padding: 0.25em 0.5em;
+		font-size: 1em;
 	}
 </style>

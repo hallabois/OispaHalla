@@ -17,6 +17,7 @@
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser } from "$app/environment";
 	import Popup from "../common/popup/popup.svelte";
+	import { Confetti } from "svelte-confetti";
 
 	export let announcer: Announcer | null = null;
 	let inputRoot: HTMLElement;
@@ -60,6 +61,28 @@
 							$joined_game_id = null;
 						}}>Takaisin valikkoon</button
 					>
+				</div>
+				<div
+					style="
+						position: fixed;
+						top: -10px;
+						left: 0;
+						height: 100vh;
+						width: 100vw;
+						display: flex;
+						justify-content: center;
+						overflow: hidden;
+						pointer-events: none;"
+				>
+					<Confetti
+						x={[-5, 5]}
+						y={[0, 0.1]}
+						delay={[500, 2000]}
+						infinite
+						duration="5000"
+						amount="200"
+						fallDistance="100vh"
+					/>
 				</div>
 			{:else}
 				<div class="top">

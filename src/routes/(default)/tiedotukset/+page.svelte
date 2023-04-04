@@ -60,6 +60,7 @@
 <style>
 	main {
 		min-height: 100vh;
+		min-height: 100svh;
 		padding-top: 2em;
 		overflow: auto;
 		background-attachment: fixed;

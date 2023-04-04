@@ -35,6 +35,10 @@ export class createTournamentGamemodeOptions {
 }
 
 let socket: Writable<WebSocket | null> = writable(null);
+export type ServerStatus = {
+	db_size: number | null;
+	users: string[] | null;
+};
 export type UserDetails = {
 	id: string;
 	name: string | null;
@@ -80,6 +84,7 @@ export type GameState = {
 	user_id: string;
 	score: number;
 	board: ohts_gamestate;
+	length: number;
 };
 export type LogEvent = {
 	created: number;
@@ -94,6 +99,7 @@ export const try_autoconnect: Writable<boolean> = writable(true);
 export const connected: Writable<boolean | null> = writable(null);
 export const connection_error: Writable<boolean | null> = writable(null);
 export const errors: Writable<Error[]> = writable([]);
+export const server_status: Writable<ServerStatus | null> = writable(null);
 export const user_details: Writable<UserDetails | null> = writable(null);
 export const game_details: Writable<{ [key: number]: GameDetails }> = writable({});
 export const game_index: Writable<Index | null> = writable(null);
@@ -112,6 +118,13 @@ function resetState() {
 	state.set({});
 	log.set(null);
 }
+user_details.subscribe(($user) => {
+	if ($user != null) {
+		if ($user.admin && get(server_status) == null) {
+			send_custom("a_serverstatus");
+		}
+	}
+});
 joined_game_id.subscribe(($joined_game_id) => {
 	if ($joined_game_id == null) {
 		chat.set(null);
@@ -252,6 +265,9 @@ function socket_processor(message: any) {
 		if (event.data.Log) {
 			log.set(event.data.Log);
 		}
+		if (event.data.Status) {
+			server_status.set(event.data.Status);
+		}
 
 		if (event.data.GenericError) {
 			const announcer = get(tournament_announcer);
@@ -389,7 +405,7 @@ export function send_message(message: string | null) {
 export function admin_announce(message: string | null) {
 	const $socket = get(socket);
 	if ($socket) {
-		if (message) $socket.send(`announce|>${message}`);
+		if (message) $socket.send(`a_announce|>${message}`);
 	} else {
 		throw new Error("not connected! can't announce.");
 	}
@@ -397,7 +413,7 @@ export function admin_announce(message: string | null) {
 export function admin_deleteall() {
 	const $socket = get(socket);
 	if ($socket) {
-		$socket.send(`deleteall`);
+		$socket.send(`a_deleteall`);
 	} else {
 		throw new Error("not connected! can't delete all games.");
 	}

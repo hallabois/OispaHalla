@@ -24,6 +24,7 @@
 	main {
 		display: flex;
 		min-height: 100vh;
+		min-height: 100svh;
 		justify-content: center;
 		align-items: center;
 		background-attachment: fixed;

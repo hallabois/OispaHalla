@@ -15,7 +15,8 @@
 		request_stop,
 		send_custom,
 		admin_deleteall,
-		log
+		log,
+		server_status
 	} from "$lib/stores/tournamentstore";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
@@ -40,6 +41,7 @@
 	let eventsender_open = false;
 	let eventsender_content = "";
 	let log_open = false;
+	let playerlist_open = false;
 </script>
 
 <svelte:head>
@@ -69,7 +71,13 @@
 		{#if $connected}
 			<div class="actions">
 				{#if $user_details}
-					<p>Logged in as <b>{$user_details.name}</b></p>
+					<p>
+						Logged in as <b>{$user_details.name}</b>
+						{#if !$user_details.admin}
+							(not admin)
+						{/if}
+					</p>
+					<div class="spacer" />
 					{#if $user_details.admin}
 						<button
 							on:click={() => {
@@ -106,6 +114,43 @@
 							log_open = true;
 						}}>View Log</button
 					>
+				{/if}
+			</div>
+		{/if}
+		<hr />
+		{#if $server_status && $connected}
+			<div class="stats">
+				{#if $server_status.db_size != null}
+					<p>{$server_status.db_size / 1000000} MB used</p>
+				{:else}
+					<p>Storage usage unknown</p>
+				{/if}
+				{#if $server_status.users != null}
+					{@const userc = $server_status.users.length}
+					<p>
+						{userc}
+						{userc == 1 ? "user" : "users"}
+						<button
+							on:click={() => {
+								playerlist_open = true;
+							}}
+						>
+							list
+						</button>
+					</p>
+					<Popup bind:open={playerlist_open}>
+						<span slot="title">Users</span>
+						<div slot="content">
+							<table>
+								<tr>
+									<th>UID</th>
+								</tr>
+								{#each $server_status.users as user}
+									<tr><td>{user}</td></tr>
+								{/each}
+							</table>
+						</div>
+					</Popup>
 				{/if}
 			</div>
 		{/if}
@@ -295,7 +340,7 @@
 		<div slot="content">
 			<button
 				on:click={() => {
-					send_custom("log");
+					send_custom("a_log");
 				}}>reload</button
 			>
 			{#if $log != null}
@@ -319,17 +364,16 @@
 					{/each}
 				</table>
 			{:else}
-				<button
-					on:click={() => {
-						send_custom("log");
-					}}>fetch log</button
-				>
+				<p>No logs yet</p>
 			{/if}
 		</div>
 	</Popup>
 </main>
 
 <style>
+	button {
+		padding: 0.125em 0.33em;
+	}
 	.action {
 		position: fixed;
 		top: 0;
@@ -348,7 +392,8 @@
 	}
 	main {
 		height: 100vh;
-		--header-height: 100px;
+		height: 100svh;
+		--header-height: 140px;
 
 		color: #e6d2bf;
 	}
@@ -372,9 +417,19 @@
 		gap: 0.5em;
 		align-items: center;
 	}
+	.spacer {
+		flex-grow: 1;
+	}
+	.stats {
+		padding: 0.5em;
+		display: flex;
+		gap: 1em;
+		align-items: center;
+	}
 	.content {
 		flex: 1;
 		height: calc(100vh - var(--header-height));
+		height: calc(100svh - var(--header-height));
 
 		display: flex;
 		flex-direction: column;
@@ -386,6 +441,7 @@
 
 	.data-view {
 		height: calc(100vh - var(--header-height));
+		height: calc(100svh - var(--header-height));
 
 		display: flex;
 		flex-direction: column;

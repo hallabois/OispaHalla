@@ -19,7 +19,7 @@
 	import Lobby from "$lib/components/tournaments/lobby.svelte";
 	import TournamentJoiner from "$lib/components/tournaments/tournamentJoiner.svelte";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
-	import { browser } from "$app/environment";
+	import { browser, dev } from "$app/environment";
 	import { storage_loaded } from "$lib/stores/storage";
 
 	export let announcer: Announcer | null = null;
@@ -57,19 +57,23 @@
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
 		{#if $connected}
-			<p>
-				{#if $tournament_ping_average}
-					{Math.round($tournament_ping_average)} ms latency
-				{:else}
-					measuring latency...
-				{/if}
-			</p>
-			<LinkedChart
-				data={$tournament_ping_average_history}
-				width={chartWidth}
-				fill="var(--button-background)"
-			/><br />
-			<p bind:clientWidth={chartWidth} style="opacity: .5;">connected to {$tournament_endpoint}</p>
+			{#if dev}
+				<p>
+					{#if $tournament_ping_average}
+						{Math.round($tournament_ping_average)} ms latency
+					{:else}
+						measuring latency...
+					{/if}
+				</p>
+				<LinkedChart
+					data={$tournament_ping_average_history}
+					width={chartWidth}
+					fill="var(--button-background)"
+				/><br />
+				<p bind:clientWidth={chartWidth} style="opacity: .5;">
+					connected to {$tournament_endpoint}
+				</p>
+			{/if}
 			{#if $connection_error}
 				<p style="text-align: center;display: block;padding: 0.75em;">
 					Virhe otettaessa yhteyttä palvelimeen.

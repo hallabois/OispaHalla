@@ -133,8 +133,10 @@
 						disabled={selected_score_size == +k}
 						on:click={() => {
 							selected_score_size = +k;
-						}}>{k}</button
+						}}
 					>
+						{k}
+					</button>
 				{/each}
 			</div>
 			{#if selected_score_data != null}
@@ -214,6 +216,7 @@
 <style>
 	main {
 		min-height: 100vh;
+		min-height: 100svh;
 		background-attachment: fixed;
 
 		display: flex;

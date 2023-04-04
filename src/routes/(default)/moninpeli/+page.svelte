@@ -41,8 +41,20 @@
 			if ($wasm && localGameState) {
 				prediction_allowed = true;
 				try {
+					let random_seed = undefined;
+					if ($joined_game_id) {
+						const gamestates = $state[$joined_game_id] ?? [];
+						const gamestate = gamestates.find(
+							(s) => $user_details && s.user_id === $user_details.id
+						);
+						console.log("gamestate", gamestate);
+						if (gamestate) {
+							random_seed = $joined_game_id + gamestate.length + 1;
+						}
+					}
+					console.log("rng seed", random_seed);
 					let predicted = JSON.parse(
-						$wasm.apply_move(JSON.stringify(localGameState), direction, false)
+						$wasm.apply_move_with_seed(JSON.stringify(localGameState), direction, true, random_seed)
 					);
 					console.info("client-side prediction", predicted);
 					if (predicted.possible) {
@@ -236,6 +248,7 @@
 <style>
 	main {
 		min-height: 100vh;
+		min-height: 100svh;
 
 		display: grid;
 		place-items: center;

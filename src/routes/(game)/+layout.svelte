@@ -86,6 +86,7 @@
 <style lang="scss">
 	.ctmblock-div {
 		min-height: 100vh;
+		min-height: 100svh;
 		background-attachment: fixed;
 
 		display: flex;

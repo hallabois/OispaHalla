@@ -8,6 +8,7 @@
 	.blurry-bg {
 		background-attachment: fixed;
 		min-height: 100vh;
+		min-height: 100svh;
 	}
 	.positioner {
 		width: min(500px, 90vw);
