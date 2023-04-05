@@ -1,30 +1,32 @@
 import { open_popups } from "$lib/stores/popupstore";
 import { get } from "svelte/store";
 
+const eventTouchstart = "touchstart";
+const eventTouchmove = "touchmove";
+const eventTouchend = "touchend";
+
+const map = {
+	38: 0,
+	39: 1,
+	40: 2,
+	37: 3,
+	75: 0,
+	76: 1,
+	74: 2,
+	72: 3,
+	87: 0,
+	68: 1,
+	83: 2,
+	65: 3 // A
+};
+
 export default class KeyboardInputManager {
 	enabled: boolean;
-	documentRoot: HTMLElement;
-	events: {};
-	eventTouchstart: string;
-	eventTouchmove: string;
-	eventTouchend: string;
-	map: {
-		38: number;
-		39: number;
-		40: number;
-		37: number;
-		75: number;
-		76: number;
-		74: number;
-		72: number;
-		87: number;
-		68: number;
-		83: number;
-		65: number; // A
-	};
+	documentRoot!: HTMLElement;
+	events!: {};
 	boundKeyDownHandler: any;
-	addKeydownHandler: () => void;
-	removeKeydownHandler: () => void;
+	addKeydownHandler!: () => void;
+	removeKeydownHandler!: () => void;
 
 	constructor(documentRoot: HTMLElement, enabled = true) {
 		this.enabled = enabled;
@@ -33,25 +35,6 @@ export default class KeyboardInputManager {
 		}
 		this.documentRoot = documentRoot;
 		this.events = {};
-
-		this.eventTouchstart = "touchstart";
-		this.eventTouchmove = "touchmove";
-		this.eventTouchend = "touchend";
-
-		this.map = {
-			38: 0,
-			39: 1,
-			40: 2,
-			37: 3,
-			75: 0,
-			76: 1,
-			74: 2,
-			72: 3,
-			87: 0,
-			68: 1,
-			83: 2,
-			65: 3 // A
-		};
 
 		this.boundKeyDownHandler = this.keydownHandler.bind(this);
 
@@ -122,8 +105,8 @@ export default class KeyboardInputManager {
 
 		if (gameContainer) {
 			gameContainer.addEventListener(
-				this.eventTouchstart,
-				function (event: TouchEvent) {
+				eventTouchstart,
+				function (event) {
 					if (event.touches.length > 1 || event.targetTouches.length > 1) {
 						return; // Ignore if touching with more than 1 finger
 					}
@@ -137,7 +120,7 @@ export default class KeyboardInputManager {
 			);
 
 			gameContainer.addEventListener(
-				this.eventTouchmove,
+				eventTouchmove,
 				function (event) {
 					event.preventDefault();
 				},
@@ -145,8 +128,8 @@ export default class KeyboardInputManager {
 			);
 
 			gameContainer.addEventListener(
-				this.eventTouchend,
-				function (event: TouchEvent) {
+				eventTouchend,
+				function (event) {
 					if (event.touches.length > 0 || event.targetTouches.length > 0) {
 						return; // Ignore if still touching with one or more fingers
 					}
@@ -176,7 +159,7 @@ export default class KeyboardInputManager {
 			return;
 		}
 		const modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
-		const mapped = this.map[event.which];
+		const mapped = map[event.which];
 
 		if (!modifiers) {
 			if (mapped !== undefined) {

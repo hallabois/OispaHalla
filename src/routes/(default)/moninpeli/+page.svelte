@@ -27,8 +27,6 @@
 	import Tournaments from "$lib/components/tournaments.svelte";
 	import { onMount } from "svelte";
 
-	let enableKIM = false;
-
 	$: inputManager_should_exist =
 		$joined_game_id &&
 		$game_details[$joined_game_id]?.started &&
@@ -70,7 +68,7 @@
 			return false;
 		}
 	}
-	$: if (inputManager_should_exist) {
+	$: if (inputManager_should_exist && BoardInstance != null) {
 		if (!dev) {
 			window.onbeforeunload = () => {
 				return "Oletko varma että haluat jättää pelin kesken?";
@@ -119,7 +117,6 @@
 		// Update localGameState
 		let difference = localGameState ? do_gamestates_differ(localGameState, inp) : true;
 		if (remote && difference) {
-			console.log("Predictions differed!", localGameState, inp, difference);
 			localGameState = fix_new_ids(inp, localGameState);
 		}
 
@@ -138,8 +135,10 @@
 		validation_cache,
 		init as initWasm
 	} from "$lib/wasm/twothousand_forty_eight";
+	let mounted = false;
 	onMount(async () => {
 		await initWasm();
+		mounted = true;
 	});
 </script>
 
@@ -202,7 +201,7 @@
 				</div>
 				{#key grid}
 					<Board
-						{enableKIM}
+						enableKIM={false}
 						enableLSM={false}
 						{grid}
 						documentRoot={inputRoot}
@@ -216,7 +215,7 @@
 						<div class="mini">
 							<div class="mini-grid">
 								{#key board}
-									<Board {enableKIM} enableLSM={false} grid={board} documentRoot={null} />
+									<Board enableKIM={false} enableLSM={false} grid={board} documentRoot={null} />
 								{/key}
 							</div>
 							<div class="mini-details">
@@ -330,5 +329,13 @@
 		animation: none !important;
 		-moz-animation: none !important;
 		-webkit-animation: none !important;
+	}
+
+	@media screen and (max-width: 520px) {
+		:root {
+			--field-width: 320px !important;
+			--grid-gap: 10px !important;
+			--tile-border-radius: 3px !important;
+		}
 	}
 </style>

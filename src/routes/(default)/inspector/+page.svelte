@@ -255,4 +255,11 @@
 		resize: vertical;
 		min-height: 150px;
 	}
+	@media screen and (max-width: 520px) {
+		:root {
+			--field-width: 320px !important;
+			--grid-gap: 10px !important;
+			--tile-border-radius: 3px !important;
+		}
+	}
 </style>
