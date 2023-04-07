@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { swipe } from "svelte-gestures";
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
 	import MultiplayerMenu from "$lib/components/tournaments/menu.svelte";
 	import Board from "$lib/components/board/board.svelte";
@@ -68,19 +69,27 @@
 			return false;
 		}
 	}
-	$: if (inputManager_should_exist && BoardInstance != null) {
+	function swipeHandler(event: CustomEvent) {
+		const direction_map = {
+			top: 0,
+			right: 1,
+			bottom: 2,
+			left: 3
+		};
+		const direction = event.detail.direction;
+		const direction_mapped = direction_map[direction];
+		move(direction_mapped);
+	}
+	$: if (inputManager_should_exist && inputRoot != null) {
+		console.log("inputroot", inputRoot);
 		if (!dev) {
 			window.onbeforeunload = () => {
 				return "Oletko varma että haluat jättää pelin kesken?";
 			};
 		}
 
-		if (inputManager == null) {
-			console.log("Creating server-side inputmanager...");
-			inputManager = new KeyboardInputManager(inputRoot);
-			inputManager.on("move", move);
-			// enableKIM = true;
-		}
+		inputManager = new KeyboardInputManager(inputRoot);
+		inputManager.on("move", move);
 	} else {
 		if (browser) {
 			window.onbeforeunload = null;
@@ -146,7 +155,7 @@
 	<title>Oispa Halla Moninpeli</title>
 </svelte:head>
 
-<main bind:this={inputRoot}>
+<main>
 	<Announcer bind:this={AnnouncerInstance} />
 	{#if $connection_error}
 		<p class="err">
@@ -180,7 +189,7 @@
 			<p>
 				ping: {$tournament_ping ?? "measuring..."}
 			</p>
-			<div class="board-container">
+			<div class="board-container" bind:this={inputRoot} use:swipe on:swipe={swipeHandler}>
 				<div
 					style="display: flex;justify-content:space-between;width:var(--field-width, --default-field-width);margin-bottom: 8px;"
 				>
@@ -215,7 +224,13 @@
 						<div class="mini">
 							<div class="mini-grid">
 								{#key board}
-									<Board enableKIM={false} enableLSM={false} grid={board} documentRoot={null} />
+									<Board
+										enableKIM={false}
+										enableLSM={false}
+										grid={board}
+										enable_theme_chooser={false}
+										documentRoot={null}
+									/>
 								{/key}
 							</div>
 							<div class="mini-details">
