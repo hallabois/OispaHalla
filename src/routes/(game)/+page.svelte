@@ -104,6 +104,7 @@
 	let InfoInstance: Info;
 	let has_unread_notifications: boolean | null;
 	let unread_notification_count: number | null;
+	let multiplayer_game_ready: boolean;
 	let PSAInstance: PSA;
 	let SettingsInstance: Settings;
 	let AnnouncerInstance: Announcer;
@@ -126,7 +127,11 @@
 	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
 	<Info bind:this={InfoInstance} />
 	<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
-	<Tournaments bind:this={TtInstance} announcer={AnnouncerInstance} />
+	<Tournaments
+		bind:this={TtInstance}
+		announcer={AnnouncerInstance}
+		bind:indicator_game_ready={multiplayer_game_ready}
+	/>
 	<PSA bind:this={PSAInstance} bind:has_unread_notifications bind:unread_notification_count />
 	<div class="new-above-game">
 		<div class="above-game-left">
@@ -253,12 +258,18 @@
 				{#if enable_multiplayer}
 					<button
 						class="button background-none color-button"
+						class:attention-grabber={multiplayer_game_ready}
 						on:click={() => {
 							TtInstance.show();
 						}}
 						title="Moninpeli"
 					>
-						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={multiplayerIconData} />
+						<Icon
+							stroke="var(--color)"
+							viewBox="0 0 48 48"
+							d={multiplayerIconData}
+							upper_text={multiplayer_game_ready ? "1" : ""}
+						/>
 					</button>
 				{/if}
 				{#if enable_leaderboards}

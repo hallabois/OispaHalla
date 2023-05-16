@@ -24,7 +24,7 @@
 	let email_popup_open = false;
 	let email: string | null;
 	let email_submitting = false;
-	$: email_valid = email != null && email.endsWith("@ksyk.fi");
+	$: email_valid = email != null && (email.endsWith("@ksyk.fi") || dev);
 
 	async function log_in_with_email() {
 		if (email && email_valid) {

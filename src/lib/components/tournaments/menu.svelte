@@ -12,7 +12,8 @@
 		tournament_announcer,
 		tournament_ping_average,
 		tournament_ping_average_history,
-		tournament_endpoint
+		tournament_endpoint,
+		known_error
 	} from "$lib/stores/tournamentstore";
 	import TournamentCreator from "$lib/components/tournaments/tournamentCreator.svelte";
 	import TournamentBrowser from "$lib/components/tournaments/tournamentBrowser.svelte";
@@ -21,6 +22,8 @@
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser, dev } from "$app/environment";
 	import { storage_loaded } from "$lib/stores/storage";
+	import NameChanger from "../leaderboard/nameChanger.svelte";
+	import { lb_screenName } from "$lib/stores/leaderboardstore";
 
 	export let announcer: Announcer | null = null;
 	$: $tournament_announcer = announcer;
@@ -49,13 +52,41 @@
 
 	let activeTab = 0;
 	let chartWidth = 500;
+
+	let NameChangerInstance: NameChanger;
+	function editScreenName() {
+		NameChangerInstance.show();
+	}
 </script>
 
 <a href="/" style="width: min(500px, 90vw);">Takaisin yksinpeliin</a>
 {#if mounted}
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
-		{#if $connected}
+		{#if $known_error}
+			{#if $known_error == "error.mp.info.lb"}
+				<div class="action-chooser">
+					{#if $lb_screenName}
+						<button on:click={editScreenName} class="button action-btn" style="flex:1;"
+							>Muuta nimimerkkiä "{$lb_screenName}"</button
+						>
+					{:else}
+						<button on:click={editScreenName} class="button action-btn" style="flex:1;"
+							>Lisää nimimerkki</button
+						>
+					{/if}
+				</div>
+				<NameChanger
+					{announcer}
+					bind:this={NameChangerInstance}
+					callback={() => {
+						connect();
+					}}
+				/>
+			{:else}
+				<p>Virhe: {$known_error}</p>
+			{/if}
+		{:else if $connected}
 			{#if dev}
 				<p>
 					{#if $tournament_ping_average}

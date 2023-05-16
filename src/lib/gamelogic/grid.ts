@@ -1,9 +1,11 @@
 import Tile from "./tile";
 
+type Position = { x: number; y: number };
+
 export default class Grid {
 	size;
-	cells: any[];
-	constructor(size: number, previousState = null) {
+	cells: (Tile | null)[][];
+	constructor(size: number, previousState: (Tile | null)[][] | null = null) {
 		this.size = size;
 		this.cells = previousState ? this.fromState(previousState) : this.empty();
 	}
@@ -12,7 +14,7 @@ export default class Grid {
 		const cells = [];
 
 		for (let x = 0; x < this.size; x++) {
-			const row = (cells[x] = []);
+			const row: (Tile | null)[] = (cells[x] = []);
 
 			for (let y = 0; y < this.size; y++) {
 				row.push(null);
@@ -25,7 +27,7 @@ export default class Grid {
 		const cells = [];
 
 		for (let x = 0; x < this.size; x++) {
-			const row = (cells[x] = []);
+			const row: (Tile | null)[] = (cells[x] = []);
 
 			for (let y = 0; y < this.size; y++) {
 				const tile = state[x][y];
@@ -44,7 +46,7 @@ export default class Grid {
 		}
 	}
 	availableCells() {
-		const cells: { x: any; y: any }[] = [];
+		const cells: { x: number; y: number }[] = [];
 
 		this.eachCell(function (x, y, tile) {
 			if (!tile) {
@@ -55,7 +57,7 @@ export default class Grid {
 		return cells;
 	}
 	// Call callback for every cell
-	eachCell(callback) {
+	eachCell(callback: { (arg0: number, arg1: number, arg2: Tile | null): void }) {
 		for (let x = 0; x < this.size; x++) {
 			for (let y = 0; y < this.size; y++) {
 				callback(x, y, this.cells[x][y]);
@@ -67,13 +69,13 @@ export default class Grid {
 		return !!this.availableCells().length;
 	}
 	// Check if the specified cell is taken
-	cellAvailable(cell) {
+	cellAvailable(cell: Position) {
 		return !this.cellOccupied(cell);
 	}
-	cellOccupied(cell) {
+	cellOccupied(cell: Position) {
 		return !!this.cellContent(cell);
 	}
-	cellContent(cell) {
+	cellContent(cell: Position) {
 		if (this.withinBounds(cell)) {
 			return this.cells[cell.x][cell.y];
 		} else {
@@ -81,23 +83,26 @@ export default class Grid {
 		}
 	}
 	// Inserts a tile at its position
-	insertTile(tile) {
+	insertTile(tile: Tile) {
 		this.cells[tile.x][tile.y] = tile;
 	}
-	removeTile(tile) {
+	removeTile(tile: Tile) {
 		this.cells[tile.x][tile.y] = null;
 	}
-	withinBounds(position) {
+	withinBounds(position: Position) {
 		return position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size;
 	}
 	serialize() {
-		const cellState = [];
+		const cellState: (Tile | null)[][] = [];
 
 		for (let x = 0; x < this.size; x++) {
-			const row = (cellState[x] = []);
+			const row: ({
+				position: { x: number; y: number };
+				value: number;
+			} | null)[] = (cellState[x] = []);
 
 			for (let y = 0; y < this.size; y++) {
-				row.push(this.cells[x][y] ? this.cells[x][y].serialize() : null);
+				row.push(this.cells[x][y]?.serialize() || null);
 			}
 		}
 
@@ -112,7 +117,7 @@ export default class Grid {
 			for (let x = 0; x < this.size; x++) {
 				try {
 					if (this.cells[x][y]) {
-						state.push(this.cells[x][y].value);
+						state.push(this.cells[x][y]?.value || 0);
 					} else {
 						state.push(0);
 					}
@@ -126,7 +131,7 @@ export default class Grid {
 	palautaKuri() {
 		for (let x = 0; x < this.size; x++) {
 			for (let y = 0; y < this.size; y++) {
-				if (this.cells[x][y] && this.cells[x][y].value < 16) {
+				if (this.cells[x][y] && (this.cells[x][y]?.value || 0) < 16) {
 					this.cells[x][y] = null;
 				}
 			}

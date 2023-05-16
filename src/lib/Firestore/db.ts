@@ -44,7 +44,7 @@ export function createDB(
 		return () => unsubscribe();
 	});
 
-	async function uploadStorage(storage: Object) {
+	async function uploadStorage(storage: object) {
 		const { getDoc, setDoc } = await import("firebase/firestore");
 		const d = await getDoc(dbRef);
 		const old_data = d.data() || {};

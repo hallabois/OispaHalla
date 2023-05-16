@@ -1,4 +1,4 @@
-declare let sa_event: Function;
+declare const sa_event: (event: string) => void;
 
 import Grid from "./grid";
 import type HTMLActuator from "./html_actuator";
@@ -7,23 +7,19 @@ import type LocalStorageManager from "./local_storage_manager";
 import Tile from "./tile";
 
 import { getItem, setItem } from "$lib/stores/storage";
-import { get } from "svelte/store";
-import { browser, dev } from "$app/environment";
 import { recordGame } from "$lib/stores/analytics";
 
 export default class GameManager {
-	size: any;
-	//@ts-ignore, make sure it's always initialized
-	history: string[];
-	inputManager: any;
+	size: number;
+	history!: string[];
+	inputManager: KeyboardInputManager;
 	storageManager: LocalStorageManager;
-	actuator: any;
+	actuator: HTMLActuator;
 	startTiles: number;
 	numOfScores: number;
 	popup: Element | null;
 	palautukset = 0;
-	//@ts-ignore, make sure it's always initialized
-	grid: Grid;
+	grid!: Grid;
 	over = false;
 	won = false;
 	score: number;
@@ -33,9 +29,9 @@ export default class GameManager {
 	documentRoot: HTMLElement;
 	enable_random: boolean;
 
-	subscribers: Function[];
+	subscribers: (() => void)[];
 
-	subscribe(listener: Function) {
+	subscribe(listener: () => void) {
 		this.subscribers = [...this.subscribers, listener];
 	}
 	update_subscribers() {
@@ -139,7 +135,9 @@ export default class GameManager {
 		try {
 			sa_event("new_game");
 			sa_event("new_game_size_" + this.size);
-		} catch {}
+		} catch {
+			// Ignore
+		}
 		//
 
 		// Update the actuator
@@ -177,7 +175,7 @@ export default class GameManager {
 		}
 	}
 
-	loadPreviousState(previousState: any) {
+	loadPreviousState(previousState: ReturnType<GameManager["serialize"]> | null) {
 		// Reload the game from a previous game if present
 		if (previousState) {
 			this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
@@ -244,7 +242,7 @@ export default class GameManager {
 	}
 	// Save all tile positions and remove merger info
 	prepareTiles() {
-		this.grid.eachCell(function (x: number, y: number, tile: any) {
+		this.grid.eachCell((x, y, tile) => {
 			if (tile) {
 				tile.mergedFrom = null;
 				tile.hasBeenMerged = false;
@@ -253,7 +251,7 @@ export default class GameManager {
 		});
 	}
 	// Move a tile and its representation
-	moveTile(tile: Tile, cell: any) {
+	moveTile(tile: Tile, cell: { x: number; y: number }) {
 		this.grid.cells[tile.x][tile.y] = null;
 		this.grid.cells[cell.x][cell.y] = tile;
 		tile.updatePosition(cell);
@@ -263,7 +261,7 @@ export default class GameManager {
 		const HAC_grid = this.grid.serialize_HAC();
 
 		// 0: up, 1: right, 2: down, 3: left
-		const directions = ["up", "right", "down", "left"];
+		// const directions = ["up", "right", "down", "left"];
 
 		if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
@@ -336,7 +334,9 @@ export default class GameManager {
 				recordGame(this.size + "x" + this.size + "S" + this.history.join(":"), this.score);
 				try {
 					sa_event("game_failed");
-				} catch {}
+				} catch {
+					// Ignore
+				}
 				//
 
 				ended = true;
@@ -368,12 +368,13 @@ export default class GameManager {
 	}
 	// Build a list of positions to traverse in the right order
 	buildTraversals(vector: { x: number; y: number }) {
-		const traversals = { x: [], y: [] };
+		const traversals: {
+			x: number[];
+			y: number[];
+		} = { x: [], y: [] };
 
 		for (let pos = 0; pos < this.size; pos++) {
-			//@ts-ignore
 			traversals.x.push(pos);
-			//@ts-ignore
 			traversals.y.push(pos);
 		}
 
@@ -383,7 +384,7 @@ export default class GameManager {
 
 		return traversals;
 	}
-	findFarthestPosition(cell: any, vector: { x: number; y: number }) {
+	findFarthestPosition(cell: { x: number; y: number }, vector: { x: number; y: number }) {
 		let previous;
 
 		// Progress towards the vector direction until an obstacle is found
@@ -410,8 +411,7 @@ export default class GameManager {
 
 				if (tile) {
 					for (let direction = 0; direction < 4; direction++) {
-						//@ts-ignore, just make sure direction remains between 0-3
-						const vector = this.getVector(direction);
+						const vector = this.getVector(direction as 0 | 1 | 2 | 3);
 						const cell = { x: x + vector.x, y: y + vector.y };
 
 						const other = this.grid.cellContent(cell);
@@ -481,17 +481,6 @@ export default class GameManager {
 
 	pushToHistory(state: string) {
 		this.history.push(state);
-		if (browser && dev) {
-			//@ts-ignore
-			window.devtools.validateCurrentHistory().then((result) => {
-				console.log(result);
-				if (result && !result.Ok) {
-					alert(
-						"Pelin historia on korruptoitunut!\nOta yhteyttä kehittäjiin tai käynnistä peli uudelleen.\n\nKorruptoitunutta peliä ei voi lähettää leaderboardeille."
-					);
-				}
-			});
-		}
 		// this.removeConsecutiveDuplicatesFromHistory();
 	}
 

@@ -3,7 +3,8 @@ export default class Tile {
 	y: number;
 	value: number;
 	previousPosition: { x: number; y: number } | null;
-	mergedFrom: any[] | null;
+	mergedFrom: Tile[] | null;
+	hasBeenMerged?: boolean;
 
 	id: number | null;
 	constructor(position: { x: number; y: number }, value: number, id: number | null = null) {

@@ -23,8 +23,10 @@ const map = {
 export default class KeyboardInputManager {
 	enabled: boolean;
 	documentRoot!: HTMLElement;
-	events!: {};
-	boundKeyDownHandler: any;
+	events!: {
+		[event: string]: unknown[];
+	};
+	boundKeyDownHandler!: (event: KeyboardEvent) => void;
 	addKeydownHandler!: () => void;
 	removeKeydownHandler!: () => void;
 

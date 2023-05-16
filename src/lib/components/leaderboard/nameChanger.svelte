@@ -34,6 +34,7 @@
 			}
 			lb_screenName.set(name_in_progress);
 			open = false;
+			callback();
 		} catch (e) {
 			if (announcer != null) {
 				announcer.announce(`Virhe: ${e}`);
@@ -64,6 +65,8 @@
 	}
 
 	$: name_in_progress = name_in_progress?.trim();
+
+	export let callback: () => void = () => {};
 
 	export let announcer: Announcer | null = null;
 </script>

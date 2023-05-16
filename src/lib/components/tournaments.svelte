@@ -11,12 +11,19 @@
 	export function show() {
 		open = true;
 	}
+	export let indicator_game_ready: boolean = false;
 
 	export let announcer: Announcer | null = null;
 
 	$: if ($joined_game_id != null && !window.location.href.endsWith("/moninpeli")) {
-		console.log("Moving to multiplayer...");
-		window.location.href = `/moninpeli`;
+		if (open) {
+			console.log("Moving to multiplayer...");
+			window.location.href = `/moninpeli`;
+		} else {
+			indicator_game_ready = true;
+		}
+	} else {
+		indicator_game_ready = false;
 	}
 	onMount(() => {
 		if (announcer) {

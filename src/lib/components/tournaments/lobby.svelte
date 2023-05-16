@@ -160,6 +160,7 @@
 									disabled={message_input == null || message_input.length < 1}
 								/>
 							</form>
+							<hr />
 							<div class="messages">
 								{#if $name_cache == null}
 									<p>Ladataan nimiä....</p>
@@ -269,6 +270,13 @@
 		max-height: 300px;
 		display: flex;
 		flex-direction: column;
+		background-color: var(--dialog-background);
+		padding: 0.5em;
+		border-radius: var(--tile-border-radius);
+	}
+	.chat-window > form {
+		display: flex;
+		gap: 0.25em;
 	}
 	.players {
 		margin-block: 0.5em;

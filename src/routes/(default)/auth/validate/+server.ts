@@ -2,6 +2,7 @@ import { json as json$1, type RequestHandler } from "@sveltejs/kit";
 import { getAuth } from "firebase-admin/auth";
 import { app } from "$lib/Auth_admin/auth.server";
 import { env } from "$env/dynamic/private";
+import { dev } from "$app/environment";
 
 export const prerender = false;
 
@@ -67,15 +68,20 @@ export const POST = (async ({ request, getClientAddress }) => {
 			console.info("Token valid.");
 			console.info("\tuid", info.uid);
 			console.info("\temail_verified:", info.email_verified);
-			if (result.firebase.sign_in_provider === "password" && !result.email?.endsWith("@ksyk.fi")) {
-				return json$1(
-					{
-						message: "invalid email"
-					},
-					{
-						status: 403
-					}
-				);
+			if (!dev && !info.admin) {
+				if (
+					result.firebase.sign_in_provider === "password" &&
+					!result.email?.endsWith("@ksyk.fi")
+				) {
+					return json$1(
+						{
+							message: "invalid email"
+						},
+						{
+							status: 403
+						}
+					);
+				}
 			}
 			return json$1({
 				message: "auth ok",

@@ -34,7 +34,7 @@ export class createTournamentGamemodeOptions {
 	goal!: number;
 }
 
-let socket: Writable<WebSocket | null> = writable(null);
+const socket: Writable<WebSocket | null> = writable(null);
 export type ServerStatus = {
 	db_size: number | null;
 	users: string[] | null;
@@ -95,6 +95,9 @@ export type LogEvent = {
 };
 
 export const try_autoconnect: Writable<boolean> = writable(true);
+const supress_autoconnect: Writable<boolean> = writable(false);
+export type ErrorType = "error.mp.info.lb";
+export const known_error: Writable<ErrorType | null> = writable(null);
 
 export const connected: Writable<boolean | null> = writable(null);
 export const connection_error: Writable<boolean | null> = writable(null);
@@ -119,6 +122,7 @@ export const name_cache: Writable<{ [key: string]: string } | null> = writable(n
 export const state: Writable<{ [key: number]: GameState[] }> = writable({});
 export const log: Writable<LogEvent[] | null> = writable(null);
 function resetState() {
+	known_error.set(null);
 	server_status.set(null);
 	user_details.set(null);
 	game_details.set({});
@@ -170,8 +174,8 @@ tournament_ping.subscribe(($tournament_ping) => {
 tournament_ping.subscribe(($value) => {
 	if ($value) {
 		tournament_ping_average_history.update(($old_history) => {
-			if ($old_history.length > 100) {
-				// Limit array length to 101
+			if ($old_history.length > 150) {
+				// Limit array length to 151
 				$old_history.shift();
 			}
 			return [...$old_history, $value];
@@ -305,6 +309,7 @@ export function connect_with_token(token: string | null) {
 	const connection_string = `${get(tournament_endpoint)}/ws?token=${token}`;
 	const new_socket = new WebSocket(connection_string);
 	new_socket.addEventListener("open", () => {
+		supress_autoconnect.set(false);
 		connection_error.set(false);
 		connected.set(true);
 		errors.set([]);
@@ -321,9 +326,14 @@ export function connect_with_token(token: string | null) {
 			// User decision
 			connection_error.set(null);
 			console.log("ws disconnected");
+		} else if (event.code == 4013) {
+			connection_error.set(null);
+			supress_autoconnect.set(true);
+			console.warn(`ws connection error from server:`, event.reason);
+			known_error.set(event.reason as ErrorType);
 		} else {
 			connection_error.set(true);
-			console.log("ws connection error");
+			console.warn("ws connection error", event.code);
 		}
 	});
 	new_socket.addEventListener("message", socket_processor);
@@ -496,12 +506,12 @@ export function create(options: CreateOptions) {
 }
 
 function connect_if_possible() {
-	if (get(token) != null && get(try_autoconnect)) {
+	if (get(token) != null && get(try_autoconnect) && !get(supress_autoconnect)) {
 		connect();
 	}
 }
-let pingStartTime: Writable<Date | null> = writable(null);
-let pingIterations: Writable<number> = writable(168);
+const pingStartTime: Writable<Date | null> = writable(null);
+const pingIterations: Writable<number> = writable(168);
 if (browser) {
 	token.subscribe(() => {
 		connect_if_possible();
@@ -519,9 +529,9 @@ if (browser) {
 		const $pingStartTime = get(pingStartTime);
 		if ($pingStartTime == null) {
 			if ($socket && $socket.readyState === $socket.OPEN) {
-				$socket.send("p");
-				pingIterations.set($pingIterations + 1);
-				pingStartTime.set(new Date());
+				//$socket.send("p");
+				//pingIterations.set($pingIterations + 1);
+				//pingStartTime.set(new Date());
 			}
 		}
 	}, 100);
