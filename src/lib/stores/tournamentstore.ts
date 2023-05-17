@@ -2,7 +2,8 @@ import { browser, dev } from "$app/environment";
 import { token } from "$lib/Auth/authstore";
 import { mp_test_prod_endpoint } from "../../features";
 import { type Writable, writable, get, derived, type Readable } from "svelte/store";
-import type { ohts_gamestate } from "$lib/gamelogic/utils";
+import type { ohmp_gamestate } from "$lib/gamelogic/utils";
+import type { SvelteComponentTyped } from "svelte";
 
 const tournament_endpoint_prod = "wss://mp.oispahalla.com";
 const tournament_endpoint_dev = mp_test_prod_endpoint
@@ -58,7 +59,7 @@ export type GameDetails = {
 	ended: boolean;
 	winner_id: string | null;
 	clients: string[];
-	starting_state: ohts_gamestate;
+	starting_state: ohmp_gamestate;
 };
 export type GameIndex = {
 	id: number;
@@ -83,7 +84,7 @@ export type GameState = {
 	game_id: number;
 	user_id: string;
 	score: number;
-	board: ohts_gamestate;
+	board: ohmp_gamestate;
 	length: number;
 };
 export type LogEvent = {
@@ -101,7 +102,7 @@ export const known_error: Writable<ErrorType | null> = writable(null);
 
 export const connected: Writable<boolean | null> = writable(null);
 export const connection_error: Writable<boolean | null> = writable(null);
-export const errors: Writable<Error[]> = writable([]);
+export const errors: Writable<Event[]> = writable([]);
 export const server_status: Writable<ServerStatus | null> = writable(null);
 export const user_details: Writable<UserDetails | null> = writable(null);
 export const game_details: Writable<{ [key: number]: GameDetails }> = writable({});
@@ -159,7 +160,7 @@ joined_game_id.subscribe(($joined_game_id) => {
 		}
 	}
 });
-export const tournament_announcer: Writable<any | null> = writable(null);
+export const tournament_announcer: Writable<SvelteComponentTyped | null> = writable(null);
 
 export const tournament_ping: Writable<number | null> = writable(null);
 export const tournament_ping_average: Writable<number | null> = writable(null);
@@ -192,7 +193,7 @@ function reset_values() {
 	tournament_ping_average_history.set([]);
 }
 
-function socket_processor(message: any) {
+function socket_processor(message: { data: string }) {
 	const json = message.data;
 	if (json === "o") {
 		const now = new Date();
@@ -269,12 +270,23 @@ function socket_processor(message: any) {
 		if (event.data.ParticipantDetails) {
 			name_cache.set(event.data.ParticipantDetails.names);
 		}
+		if (event.data === "IndexUpdate") {
+			// TODO: This is a hack to get the index to update
+			request_index();
+		}
 		if (event.data.ServerMessage) {
 			const msg = event.data.ServerMessage;
 			console.info("Server message:", msg);
 			const announcer = get(tournament_announcer);
 			if (announcer) {
 				announcer.announce(`${msg.title}: ${msg.message}`);
+			}
+		}
+		if (event.data.ShutDown) {
+			const reason = event.data.ShutDown;
+			const announcer = get(tournament_announcer);
+			if (announcer) {
+				announcer.announce(`Server is shutting down: ${reason}`);
 			}
 		}
 		if (event.data.Log) {
@@ -297,7 +309,7 @@ function socket_processor(message: any) {
 		}
 	}
 }
-function socket_error_processor(err: any) {
+function socket_error_processor(err: Event) {
 	errors.set([...get(errors), err]);
 }
 
@@ -337,7 +349,9 @@ export function connect_with_token(token: string | null) {
 		}
 	});
 	new_socket.addEventListener("message", socket_processor);
-	new_socket.addEventListener("error", socket_error_processor);
+	new_socket.addEventListener("error", (error) => {
+		socket_error_processor(error);
+	});
 	socket.set(new_socket);
 }
 export function connect() {

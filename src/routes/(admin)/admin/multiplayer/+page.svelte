@@ -22,7 +22,7 @@
 	import { browser } from "$app/environment";
 	import Popup from "$lib/components/common/popup/popup.svelte";
 	import Board from "$lib/components/board/board.svelte";
-	import { ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import { ohmp_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { onDestroy } from "svelte";
 	try_autoconnect.set(false);
 	let refreshKey = {};
@@ -45,7 +45,7 @@
 </script>
 
 <svelte:head>
-	<title>OHTS Admin Panel</title>
+	<title>OHMP Admin Panel</title>
 </svelte:head>
 
 <main>
@@ -244,7 +244,7 @@
 															<div slot="content">
 																<Board
 																	enableLSM={false}
-																	grid={ohts_gamestate_to_grid(val)}
+																	grid={ohmp_gamestate_to_grid(val)}
 																	enable_theme_chooser={false}
 																/>
 															</div>

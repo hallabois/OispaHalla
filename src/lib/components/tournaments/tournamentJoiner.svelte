@@ -9,9 +9,11 @@
 	let canJoin = false;
 	$: game_id_valid = chosen_game != null && !isNaN(chosen_game) && (chosen_game + "").length == 5;
 	$: if (chosen_game_number && game_id_valid) {
-		if ($game_details[chosen_game_number]) {
-			requires_password = $game_details[chosen_game_number].requires_password;
-			if (!requires_password) {
+		let details = $game_details[chosen_game_number];
+		if (details) {
+			if (details.requires_password && !details.started) {
+				requires_password = true;
+			} else if (!details.started) {
 				canJoin = true;
 			}
 		} else {
@@ -47,6 +49,18 @@
 				}}>×</button
 			>
 		</div>
+	{/if}
+	{#if game_id_valid && chosen_game_number != null}
+		{@const game = $game_details[chosen_game_number]}
+		{#if game}
+			<div class="game-info-card">
+				<p>{game.name}</p>
+				<p>{game.clients.length} / {game.max_clients} pelaajaa</p>
+				{#if game.started}
+					<p>Peli on jo alkanut</p>
+				{/if}
+			</div>
+		{/if}
 	{/if}
 	<button
 		disabled={!canJoin}

@@ -14,7 +14,7 @@
 		request_kick
 	} from "$lib/stores/tournamentstore";
 	import Board from "../board/board.svelte";
-	import { ohts_gamestate_to_grid } from "$lib/gamelogic/utils";
+	import { ohmp_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser } from "$app/environment";
 	import Popup from "../common/popup/popup.svelte";
@@ -131,15 +131,15 @@
 						<div class="game-preview">
 							<Board
 								enableLSM={false}
-								grid={ohts_gamestate_to_grid(game_data.starting_state)}
+								grid={ohmp_gamestate_to_grid(game_data.starting_state)}
 								documentRoot={inputRoot}
 								enable_theme_chooser={false}
 							/>
 						</div>
 					</div>
-					<div>
+					<div class="peers">
 						<button
-							class="button action-btn players"
+							class="button action-btn"
 							on:click={() => {
 								player_list_open = true;
 							}}
@@ -166,6 +166,18 @@
 									<p>Ladataan nimiä....</p>
 								{/if}
 								{#if $chat}
+									{#if $chat.length < 1}
+										<div
+											style="
+												height: 100%;
+												display: flex;
+												justify-content: center;
+												align-items: center;
+											"
+										>
+											<p>Ei viestejä.</p>
+										</div>
+									{/if}
 									{#each [...$chat].reverse() as msg}
 										{@const cached_name = ($name_cache || {})[msg.user_id]}
 										{@const name = cached_name
@@ -266,23 +278,29 @@
 		height: 300px;
 		border-radius: 6px;
 	}
+	.peers {
+		height: 333px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+	}
 	.chat-window {
-		max-height: 300px;
+		flex: 1;
+		padding: 0.5em;
+
+		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
 		background-color: var(--dialog-background);
-		padding: 0.5em;
 		border-radius: var(--tile-border-radius);
 	}
 	.chat-window > form {
 		display: flex;
 		gap: 0.25em;
 	}
-	.players {
-		margin-block: 0.5em;
-	}
 	.messages {
 		overflow-y: scroll;
+		flex: 1;
 	}
 	.messages p {
 		word-wrap: anywhere;

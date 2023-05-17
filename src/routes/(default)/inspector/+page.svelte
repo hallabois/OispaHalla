@@ -13,8 +13,8 @@
 	import { browser } from "$app/environment";
 	import {
 		generate_previous_positions,
-		ohts_gamestate_to_grid,
-		type ohts_gamestate
+		ohmp_gamestate_to_grid,
+		type ohmp_gamestate
 	} from "$lib/gamelogic/utils";
 
 	const directions = {
@@ -68,19 +68,19 @@
 	}
 
 	let err2: string | null;
-	let frame: ohts_gamestate;
+	let frame: ohmp_gamestate;
 	let move_direction: string | null = null;
 	$: if (parsed != null && selected_frame != null && $wasm != null) {
 		console.info("Trying to render selected frame...");
 		try {
 			err2 = null;
 			frame = parsed[selected_frame];
-			let parsed_frame = ohts_gamestate_to_grid(frame);
+			let parsed_frame = ohmp_gamestate_to_grid(frame);
 			if (selected_frame > 0) {
 				let last_frame = parsed[selected_frame - 1];
 				parsed_frame = generate_previous_positions(
 					parsed_frame,
-					ohts_gamestate_to_grid(last_frame)
+					ohmp_gamestate_to_grid(last_frame)
 				);
 			}
 			console.log("frame", parsed_frame);

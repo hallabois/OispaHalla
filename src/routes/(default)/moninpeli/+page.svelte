@@ -17,8 +17,8 @@
 	} from "$lib/stores/tournamentstore";
 	import {
 		generate_previous_positions,
-		ohts_gamestate_to_grid,
-		type ohts_gamestate,
+		ohmp_gamestate_to_grid,
+		type ohmp_gamestate,
 		do_gamestates_differ,
 		fix_new_ids
 	} from "$lib/gamelogic/utils";
@@ -33,7 +33,7 @@
 		$game_details[$joined_game_id]?.started &&
 		$state[$joined_game_id] &&
 		$user_details != null;
-	let localGameState: ohts_gamestate | null = null;
+	let localGameState: ohmp_gamestate | null = null;
 	$: if (!inputManager_should_exist) localGameState = null;
 	function move(direction: 0 | 1 | 2 | 3) {
 		if (inputManager_should_exist) {
@@ -122,14 +122,14 @@
 
 	let last_grid: Grid | null = null;
 
-	function processGrid(inp: ohts_gamestate, remote: boolean) {
+	function processGrid(inp: ohmp_gamestate, remote: boolean) {
 		// Update localGameState
 		let difference = localGameState ? do_gamestates_differ(localGameState, inp) : true;
 		if (remote && difference) {
 			localGameState = fix_new_ids(inp, localGameState);
 		}
 
-		let translated = ohts_gamestate_to_grid(inp);
+		let translated = ohmp_gamestate_to_grid(inp);
 		if (last_grid) {
 			translated = generate_previous_positions(translated, last_grid);
 		}
@@ -219,7 +219,7 @@
 				{/key}
 				<div class="mini-container">
 					{#each gamestates as gstate, index}
-						{@const board = ohts_gamestate_to_grid(gstate.board)}
+						{@const board = ohmp_gamestate_to_grid(gstate.board)}
 						{@const cached_name = ($name_cache || {})[gstate.user_id]}
 						<div class="mini">
 							<div class="mini-grid">

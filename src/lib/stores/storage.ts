@@ -77,7 +77,7 @@ export async function update_storage_from_localstorage() {
 }
 
 if (browser) {
-	update_storage_from_localstorage().then(() => {});
+	update_storage_from_localstorage();
 	/* window.addEventListener('storage', function(event){
         update_storage_from_localstorage();
     }, false); */

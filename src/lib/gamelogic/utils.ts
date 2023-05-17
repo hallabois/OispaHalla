@@ -57,14 +57,14 @@ export function generate_previous_positions(grid: Grid, previous: Grid) {
 	return grid;
 }
 
-export type ohts_grid_row = Tile[];
-export type ohts_gamestate = {
+export type ohmp_grid_row = Tile[];
+export type ohmp_gamestate = {
 	width: number;
 	height: number;
-	tiles: ohts_grid_row[];
+	tiles: ohmp_grid_row[];
 };
 
-export function ohts_gamestate_to_grid(gamestate: ohts_gamestate) {
+export function ohmp_gamestate_to_grid(gamestate: ohmp_gamestate) {
 	const grid = new Grid(gamestate.width);
 	for (const row of gamestate.tiles) {
 		for (const tile of row) {
@@ -79,7 +79,7 @@ export function ohts_gamestate_to_grid(gamestate: ohts_gamestate) {
 	return grid;
 }
 
-export function do_gamestates_differ(a: ohts_gamestate, b: ohts_gamestate) {
+export function do_gamestates_differ(a: ohmp_gamestate, b: ohmp_gamestate) {
 	if (a.width !== b.width) return ["w", a.width, b.width];
 	if (a.height !== b.height) return ["h", a.height, b.height];
 	let w = a.width;
@@ -96,7 +96,7 @@ export function do_gamestates_differ(a: ohts_gamestate, b: ohts_gamestate) {
 	return false;
 }
 
-function gather_ids(gamestate: ohts_gamestate) {
+function gather_ids(gamestate: ohmp_gamestate) {
 	let ids = [];
 	for (let y = 0; y < gamestate.height; y++) {
 		for (let x = 0; x < gamestate.width; x++) {
@@ -107,7 +107,7 @@ function gather_ids(gamestate: ohts_gamestate) {
 	return ids;
 }
 
-export function fix_new_ids(remote: ohts_gamestate, predicted: ohts_gamestate | null) {
+export function fix_new_ids(remote: ohmp_gamestate, predicted: ohmp_gamestate | null) {
 	if (!predicted) return predicted;
 	let w = remote.width;
 	let h = remote.height;

@@ -46,7 +46,7 @@
 			</div>
 			<hr />
 			<div class="games">
-				{#each $game_index.joinable_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index}
+				{#each $game_index.joinable_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index (game.id)}
 					{@const am_host = $user_details.admin || $user_details.id == game.creator}
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<div
