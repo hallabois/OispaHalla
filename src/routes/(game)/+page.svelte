@@ -10,7 +10,7 @@
 	import Settings from "$lib/components/settings.svelte";
 	import Info from "$lib/components/info.svelte";
 	import PSA from "$lib/components/psa.svelte";
-	import Tournaments from "$lib/components/tournaments.svelte";
+	import Tournaments from "$lib/components/multiplayer.svelte";
 	import Leaderboards from "$lib/components/leaderboard.svelte";
 
 	import Board from "$lib/components/board/board.svelte";

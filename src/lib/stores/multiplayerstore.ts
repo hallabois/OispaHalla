@@ -1,11 +1,11 @@
 import { browser, dev } from "$app/environment";
-import { token } from "$lib/Auth/authstore";
+import { auth, rewrite_token, token } from "$lib/Auth/authstore";
 import { mp_test_prod_endpoint } from "../../features";
 import { type Writable, writable, get, derived, type Readable } from "svelte/store";
 import type { ohmp_gamestate } from "$lib/gamelogic/utils";
 import type { SvelteComponentTyped } from "svelte";
 
-const tournament_endpoint_prod = "wss://mp.oispahalla.com";
+const tournament_endpoint_prod = "ws://reznor.ruta.fi";
 const tournament_endpoint_dev = mp_test_prod_endpoint
 	? tournament_endpoint_prod
 	: "ws://localhost:9000";
@@ -204,18 +204,18 @@ function socket_processor(message: { data: string }) {
 	}
 	const event = JSON.parse(json);
 	console.info("socket ev", event);
-	if (event.data) {
-		if (event.data.Index) {
-			game_index.set(event.data.Index);
+	if (event != null) {
+		if (event.Index) {
+			game_index.set(event.Index);
 		}
-		if (event.data.GameStarted || event.data.GameStopped || event.data.GameDeleted) {
+		if (event.GameStarted || event.GameStopped || event.GameDeleted) {
 			if (get(game_index) != null) {
 				request_index();
 			}
 			game_details.set({});
 		}
-		if (event.data.UserDetails) {
-			const details = event.data.UserDetails as UserDetails;
+		if (event.UserDetails) {
+			const details = event.UserDetails as UserDetails;
 			user_details.set(details);
 			if (details.current_games.length > 0) {
 				if (get(joined_game_id) == null) {
@@ -223,82 +223,82 @@ function socket_processor(message: { data: string }) {
 				}
 			}
 		}
-		if (event.data.GameDetails) {
+		if (event.GameDetails) {
 			game_details.set({
 				...get(game_details),
-				[event.data.GameDetails.id]: event.data.GameDetails
+				[event.GameDetails.id]: event.GameDetails
 			});
 		}
-		if (event.data.GameState) {
-			if (event.data.GameState.length > 0) {
-				const states: GameState[] = event.data.GameState;
+		if (event.GameState) {
+			if (event.GameState.length > 0) {
+				const states: GameState[] = event.GameState;
 				const game_id = states[0].game_id;
 				state.set({
 					...get(state),
-					[game_id]: event.data.GameState
+					[game_id]: event.GameState
 				});
 			}
 		}
-		if (event.data.GameCreated) {
-			request_join(event.data.GameCreated, null);
+		if (event.GameCreated) {
+			request_join(event.GameCreated, null);
 		}
-		if (event.data.GameDeleted) {
-			if (get(joined_game_id) == event.data.GameDeleted) {
+		if (event.GameDeleted) {
+			if (get(joined_game_id) == event.GameDeleted) {
 				joined_game_id.set(null);
 			}
 			if (get(game_index) != null) {
 				request_index();
 			}
 		}
-		if (event.data.GameJoined) {
-			joined_game_id.set(event.data.GameJoined);
+		if (event.GameJoined) {
+			joined_game_id.set(event.GameJoined);
 		}
-		if (event.data.GameLeft) {
-			if (event.data.GameLeft == get(joined_game_id) || event.data.GameLeft == GAME_ANY) {
+		if (event.GameLeft) {
+			if (event.GameLeft == get(joined_game_id) || event.GameLeft == GAME_ANY) {
 				joined_game_id.set(null);
 			}
 			if (get(game_index) != null) {
 				request_index();
 			}
 		}
-		if (event.data.Chat) {
-			chat.set([...(get(chat) || []), event.data.Chat]);
+		if (event.Chat) {
+			chat.set([...(get(chat) || []), event.Chat]);
 		}
-		if (event.data.ChatLog) {
-			chat.set(event.data.ChatLog);
+		if (event.ChatLog) {
+			chat.set(event.ChatLog);
 		}
-		if (event.data.ParticipantDetails) {
-			name_cache.set(event.data.ParticipantDetails.names);
+		if (event.ParticipantDetails) {
+			name_cache.set(event.ParticipantDetails.names);
 		}
-		if (event.data === "IndexUpdate") {
+		if (event === "IndexUpdate") {
 			// TODO: This is a hack to get the index to update
 			request_index();
 		}
-		if (event.data.ServerMessage) {
-			const msg = event.data.ServerMessage;
+		if (event.ServerMessage) {
+			const msg = event.ServerMessage;
 			console.info("Server message:", msg);
 			const announcer = get(tournament_announcer);
 			if (announcer) {
 				announcer.announce(`${msg.title}: ${msg.message}`);
 			}
 		}
-		if (event.data.ShutDown) {
-			const reason = event.data.ShutDown;
+		if (event.ShutDown) {
+			const reason = event.ShutDown;
 			const announcer = get(tournament_announcer);
 			if (announcer) {
 				announcer.announce(`Server is shutting down: ${reason}`);
 			}
 		}
-		if (event.data.Log) {
-			log.set(event.data.Log);
+		if (event.Log) {
+			log.set(event.Log);
 		}
-		if (event.data.Status) {
-			server_status.set(event.data.Status);
+		if (event.Status) {
+			server_status.set(event.Status);
 		}
 
-		if (event.data.GenericError) {
-			const error = event.data.GenericError;
-			let message = `Virhe: ${event.data.GenericError}`;
+		if (event.GenericError) {
+			const error = event.GenericError;
+			let message = `Virhe: ${event.GenericError}`;
 			if (error === "error.mp.game.notfound") {
 				message = "Peliä ei löytynyt";
 			}
@@ -313,12 +313,12 @@ function socket_error_processor(err: Event) {
 	errors.set([...get(errors), err]);
 }
 
-export function connect_with_token(token: string | null) {
+export function connect_with_token($token: string | null) {
 	if (get(socket)) {
 		disconnect();
 	}
 	resetState();
-	const connection_string = `${get(tournament_endpoint)}/ws?token=${token}`;
+	const connection_string = `${get(tournament_endpoint)}/ws?token=${$token}`;
 	const new_socket = new WebSocket(connection_string);
 	new_socket.addEventListener("open", () => {
 		supress_autoconnect.set(false);
@@ -343,6 +343,12 @@ export function connect_with_token(token: string | null) {
 			supress_autoconnect.set(true);
 			console.warn(`ws connection error from server:`, event.reason);
 			known_error.set(event.reason as ErrorType);
+			if (event.reason == "error.mp.auth.token") {
+				const $auth = get(auth);
+				if ($auth) {
+					rewrite_token($auth);
+				}
+			}
 		} else {
 			connection_error.set(true);
 			console.warn("ws connection error", event.code);
@@ -359,7 +365,7 @@ export function connect() {
 }
 export function disconnect() {
 	const $socket = get(socket);
-	if ($socket) {
+	if ($socket != null) {
 		$socket.close(3001);
 	}
 }
@@ -543,10 +549,10 @@ if (browser) {
 		const $pingStartTime = get(pingStartTime);
 		if ($pingStartTime == null) {
 			if ($socket && $socket.readyState === $socket.OPEN) {
-				//$socket.send("p");
-				//pingIterations.set($pingIterations + 1);
-				//pingStartTime.set(new Date());
+				$socket.send("p");
+				pingIterations.set($pingIterations + 1);
+				pingStartTime.set(new Date());
 			}
 		}
-	}, 100);
+	}, 500);
 }

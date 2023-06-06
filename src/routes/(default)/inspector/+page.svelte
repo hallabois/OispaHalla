@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Board from "$lib/components/board/board.svelte";
-	import Grid from "$lib/gamelogic/grid";
+	import type Grid from "$lib/gamelogic/grid";
 	import Tile from "$lib/gamelogic/tile";
 	import { onMount } from "svelte";
 	import { long4x4 } from "./example_games";

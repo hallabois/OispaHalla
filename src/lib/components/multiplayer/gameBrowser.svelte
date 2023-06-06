@@ -6,7 +6,7 @@
 		request_index,
 		request_join,
 		user_details
-	} from "$lib/stores/tournamentstore";
+	} from "$lib/stores/multiplayerstore";
 	import Busy from "../common/loading-indicator/Busy.svelte";
 
 	$: if (connected && $game_index == null) {
@@ -48,13 +48,18 @@
 			<div class="games">
 				{#each $game_index.joinable_games.filter((x) => filter == null || x.name.includes(filter) || chosen_game == x.id) as game, index (game.id)}
 					{@const am_host = $user_details.admin || $user_details.id == game.creator}
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<div
 						class="game"
 						class:selected={chosen_game == game.id}
 						on:click={() => {
 							selectGame(game);
 						}}
+						on:keydown={(e) => {
+							if (e.key == "Enter") selectGame(game);
+						}}
+						role="checkbox"
+						aria-checked={chosen_game == game.id}
+						tabindex={0}
 						title={game.id + ""}
 					>
 						<p>{game.name}</p>
@@ -115,8 +120,10 @@
 		transition: background 200ms, color 200ms;
 		border: 1px solid transparent;
 	}
-	.game:hover {
+	.game:hover,
+	.game:focus {
 		border-color: var(--color);
+		outline: none;
 	}
 	.game.selected {
 		background: var(--color);

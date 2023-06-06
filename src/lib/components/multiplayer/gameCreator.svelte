@@ -5,7 +5,7 @@
 		gamemode_0_names,
 		create,
 		enabled_sizes
-	} from "$lib/stores/tournamentstore";
+	} from "$lib/stores/multiplayerstore";
 
 	import Busy from "$lib/components/common/loading-indicator/Busy.svelte";
 

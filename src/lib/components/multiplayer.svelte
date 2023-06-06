@@ -2,9 +2,9 @@
 	import { onMount } from "svelte";
 	import Popup from "$lib/components/common/popup/popup.svelte";
 
-	import Content from "$lib/components/tournaments/menu.svelte";
+	import Content from "$lib/components/multiplayer/menu.svelte";
 
-	import { joined_game_id, tournament_announcer } from "$lib/stores/tournamentstore";
+	import { joined_game_id, tournament_announcer } from "$lib/stores/multiplayerstore";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 
 	export let open = false;

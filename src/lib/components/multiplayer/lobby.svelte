@@ -12,7 +12,7 @@
 		chat,
 		request_start,
 		request_kick
-	} from "$lib/stores/tournamentstore";
+	} from "$lib/stores/multiplayerstore";
 	import Board from "../board/board.svelte";
 	import { ohmp_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
@@ -145,7 +145,7 @@
 							}}
 						>
 							{game_data.clients.length}/{game_data.max_clients}
-							{game_data.clients.length == 1 ? "pelaaja" : "pelaajaa"}
+							pelaajaa
 						</button>
 						<div class="chat-window">
 							<form
@@ -163,18 +163,13 @@
 							<hr />
 							<div class="messages">
 								{#if $name_cache == null}
-									<p>Ladataan nimiä....</p>
+									<div class="status-container">
+										<p>Ei viestejä.</p>
+									</div>
 								{/if}
 								{#if $chat}
 									{#if $chat.length < 1}
-										<div
-											style="
-												height: 100%;
-												display: flex;
-												justify-content: center;
-												align-items: center;
-											"
-										>
+										<div class="status-container">
 											<p>Ei viestejä.</p>
 										</div>
 									{/if}
@@ -307,6 +302,12 @@
 		max-width: 300px;
 		margin: 0;
 	}
+	.messages .status-container {
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 	.start {
 		margin-top: 1em;
 	}
@@ -330,6 +331,12 @@
 		display: flex;
 		justify-content: end;
 		align-items: end;
+	}
+	button:not(.action-btn) {
+		padding: 0.25em 0.5em;
+	}
+	input {
+		padding: 0.25em 0.5em;
 	}
 	hr {
 		margin-block: 0.25em;

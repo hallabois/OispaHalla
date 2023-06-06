@@ -7,7 +7,7 @@ import { getItem, setItem, storage_loaded } from "$lib/stores/storage";
 const createAuth = () => {
 	let auth: Auth;
 
-	const { subscribe } = readable<User>(undefined, (set) => {
+	const { subscribe } = readable<User | null>(undefined, (set) => {
 		let unsubscribe = () => {};
 
 		async function listen() {
@@ -99,7 +99,7 @@ const createAuth = () => {
 
 export const token: Writable<null | string> = writable(null);
 let token_refresh_timer: NodeJS.Timeout | null;
-async function rewrite_token($auth: User) {
+export async function rewrite_token($auth: User) {
 	console.log("Attempting to refresh token...");
 	if ($auth != null) {
 		const tk = await $auth.getIdToken();
@@ -110,7 +110,9 @@ async function rewrite_token($auth: User) {
 			console.info("time till token expiration", time_till_exp);
 			token_refresh_timer = setTimeout(async () => {
 				const $auth = get(auth);
-				await rewrite_token($auth);
+				if ($auth) {
+					await rewrite_token($auth);
+				}
 			}, time_till_exp / 100.0);
 		} catch (e) {
 			console.warn("Failed to set up automatic token refresh:", e);

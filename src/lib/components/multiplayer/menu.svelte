@@ -14,11 +14,11 @@
 		tournament_ping_average_history,
 		tournament_endpoint,
 		known_error
-	} from "$lib/stores/tournamentstore";
-	import TournamentCreator from "$lib/components/tournaments/tournamentCreator.svelte";
-	import TournamentBrowser from "$lib/components/tournaments/tournamentBrowser.svelte";
-	import Lobby from "$lib/components/tournaments/lobby.svelte";
-	import TournamentJoiner from "$lib/components/tournaments/tournamentJoiner.svelte";
+	} from "$lib/stores/multiplayerstore";
+	import GameCreator from "./gameCreator.svelte";
+	import GameBrowser from "./gameBrowser.svelte";
+	import Lobby from "./lobby.svelte";
+	import GameJoiner from "./gameJoiner.svelte";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser, dev } from "$app/environment";
 	import { storage_loaded } from "$lib/stores/storage";
@@ -142,13 +142,13 @@
 					}}>&lt; Takaisin</button
 				>
 				{#if activeTab == 1}
-					<TournamentCreator />
+					<GameCreator />
 				{/if}
 				{#if activeTab == 2}
-					<TournamentJoiner {chosen_game} />
+					<GameJoiner {chosen_game} />
 				{/if}
 				{#if activeTab == 3}
-					<TournamentBrowser />
+					<GameBrowser />
 				{/if}
 			{/if}
 		{:else if $connected == null}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade } from "svelte/transition";
-	import { game_details, request_game_details, request_join } from "$lib/stores/tournamentstore";
+	import { game_details, request_game_details, request_join } from "$lib/stores/multiplayerstore";
 
 	export let chosen_game: number | null = null;
 	$: chosen_game_number = chosen_game == null ? null : +chosen_game;

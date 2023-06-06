@@ -49,14 +49,6 @@
 		</noscript>
 		<div id="svelte">%sveltekit.body%</div>
 
-		<!-- Backup localstorage just in case -->
-		<script>
-			if (localStorage["backup"] == null) {
-				console.info("Trying to backup localstorage...");
-				localStorage.setItem("backup", JSON.stringify(localStorage));
-			}
-		</script>
-
 		<script
 			data-collect-dnt="true"
 			async

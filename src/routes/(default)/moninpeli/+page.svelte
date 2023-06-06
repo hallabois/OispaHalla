@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { swipe } from "svelte-gestures";
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
-	import MultiplayerMenu from "$lib/components/tournaments/menu.svelte";
+	import MultiplayerMenu from "$lib/components/multiplayer/menu.svelte";
 	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import {
@@ -14,7 +14,7 @@
 		state,
 		tournament_ping,
 		user_details
-	} from "$lib/stores/tournamentstore";
+	} from "$lib/stores/multiplayerstore";
 	import {
 		generate_previous_positions,
 		ohmp_gamestate_to_grid,
@@ -25,7 +25,7 @@
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
 	import type Grid from "$lib/gamelogic/grid";
 	import { browser, dev } from "$app/environment";
-	import Tournaments from "$lib/components/tournaments.svelte";
+	import Tournaments from "$lib/components/multiplayer.svelte";
 	import { onMount } from "svelte";
 
 	$: inputManager_should_exist =
