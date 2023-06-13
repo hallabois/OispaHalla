@@ -53,6 +53,7 @@
 						<slot name="buttons">
 							<button
 								title="Sulje ikkuna"
+								aria-label="Sulje ikkuna"
 								class="button background-none color-button"
 								on:click={() => {
 									open = false;
