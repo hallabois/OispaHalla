@@ -1,17 +1,11 @@
-import { browser, dev } from "$app/environment";
+import { browser } from "$app/environment";
 import { auth, rewrite_token, token } from "$lib/Auth/authstore";
-import { mp_test_prod_endpoint } from "../../features";
+import { mp_default_endpoint } from "$lib/config";
 import { type Writable, writable, get, derived, type Readable } from "svelte/store";
 import type { ohmp_gamestate } from "$lib/gamelogic/utils";
 import type { SvelteComponentTyped } from "svelte";
 
-const tournament_endpoint_prod = "ws://reznor.ruta.fi";
-const tournament_endpoint_dev = mp_test_prod_endpoint
-	? tournament_endpoint_prod
-	: "ws://localhost:9000";
-export const tournament_endpoint = writable(
-	dev ? tournament_endpoint_dev : tournament_endpoint_prod
-);
+export const tournament_endpoint = writable(mp_default_endpoint);
 
 export const gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
 export const gamemode_0_names: { [key: number]: string } = {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enable_multiplayer } from "../../../features";
+	import { enable_multiplayer } from "$lib/config";
 </script>
 
 {#if enable_multiplayer}

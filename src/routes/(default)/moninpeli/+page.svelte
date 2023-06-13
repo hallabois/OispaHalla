@@ -14,7 +14,7 @@
 		state,
 		tournament_ping,
 		user_details
-	} from "$lib/stores/multiplayerstore";
+	} from "$lib/stores/multiplayer";
 	import {
 		generate_previous_positions,
 		ohmp_gamestate_to_grid,
@@ -303,6 +303,7 @@
 		background-attachment: fixed;
 	}
 	.menu {
+		min-width: 350px;
 		max-width: 90vw;
 	}
 	.board-container {

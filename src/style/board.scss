@@ -36,6 +36,22 @@ $grid-max-size: 10;
 		opacity: 0;
 	}
 }
+@include keyframes(loading) {
+	0% {
+		filter: hue-rotate(0deg);
+		scale: 1;
+	}
+
+	50% {
+		filter: hue-rotate(180deg);
+		scale: .95;
+	}
+
+	100% {
+		filter: hue-rotate(360deg);
+		scale: 1;
+	}
+}
 
 .game-container .kurin-palautus-viesti {
 	width: 94%;
@@ -181,7 +197,6 @@ $grid-max-size: 10;
 		width: var(--tile-size);
 		height: var(--tile-size);
 		margin-right: var(--grid-gap);
-		transition: all 0.25s;
 
 		border-radius: var(--tile-border-radius);
 
@@ -191,6 +206,16 @@ $grid-max-size: 10;
 		&:last-child {
 			margin-right: 0;
 		}
+
+		filter: hue-rotate(0deg);
+		scale: 1;
+
+		transition: all 0.25s;
+	}
+	.loading .grid-cell {
+		filter: hue-rotate(180deg);
+		scale: .95;
+		animation: loading 0.9s ease var(--animation-offset, 0ms) infinite;
 	}
 
 	.tile-container {

@@ -14,7 +14,7 @@
 		tournament_ping_average_history,
 		tournament_endpoint,
 		known_error
-	} from "$lib/stores/multiplayerstore";
+	} from "$lib/stores/multiplayer";
 	import GameCreator from "./gameCreator.svelte";
 	import GameBrowser from "./gameBrowser.svelte";
 	import Lobby from "./lobby.svelte";
@@ -23,7 +23,7 @@
 	import { browser, dev } from "$app/environment";
 	import { storage_loaded } from "$lib/stores/storage";
 	import NameChanger from "../leaderboard/nameChanger.svelte";
-	import { lb_screenName } from "$lib/stores/leaderboardstore";
+	import { lb_screenName } from "$lib/stores/leaderboard";
 
 	export let announcer: Announcer | null = null;
 	$: $tournament_announcer = announcer;
@@ -114,9 +114,9 @@
 				<div class="action-chooser">
 					<button
 						on:click={() => {
-							activeTab = 1;
+							activeTab = 3;
 						}}
-						class="button action-btn">Luo Peli</button
+						class="button action-btn">Selaa Julkisia Pelejä</button
 					>
 					<button
 						on:click={() => {
@@ -124,11 +124,12 @@
 						}}
 						class="button action-btn">Liity Peliin Koodilla</button
 					>
+					<hr />
 					<button
 						on:click={() => {
-							activeTab = 3;
+							activeTab = 1;
 						}}
-						class="button action-btn">Selaa Julkisia Pelejä</button
+						class="button action-btn">Luo Peli</button
 					>
 				</div>
 				<a href="/auth" style="text-align: center;display: block;padding: 0.75em;"
@@ -180,5 +181,8 @@
 	}
 	.back {
 		font-size: 0.75em;
+	}
+	hr {
+		margin-block: 0;
 	}
 </style>

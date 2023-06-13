@@ -1,4 +1,4 @@
-import { get_all_scores } from "$lib/stores/leaderboardstore";
+import { get_all_scores } from "$lib/stores/leaderboard";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ params }) => {

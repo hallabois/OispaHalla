@@ -4,7 +4,7 @@ import { TAB_BLOCK } from "$lib/session_manager";
 import localforage from "localforage";
 import { get_user_db } from "$lib/Firestore/db";
 import { auth } from "$lib/Auth/authstore";
-import { enable_sync } from "../../features";
+import { enable_sync } from "$lib/config";
 
 export async function getWholeLocalForage() {
 	let composite = {};

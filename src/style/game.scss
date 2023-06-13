@@ -35,6 +35,12 @@
 
 	gap: 1em;
 
+	.button-container-size {
+		flex: 1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 	.button-container {
 		display: flex;
 		gap: 1em;
@@ -111,7 +117,7 @@
 }
 
 .disclaimer {
-	padding-block: 20px;
+	padding-block: 10px;
 	font-size: small;
 	text-align: center;
 }

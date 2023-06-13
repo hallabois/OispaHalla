@@ -8,7 +8,10 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		env: {
+			publicPrefix: "OH_PUBLIC"
+		}
 	}
 };
 

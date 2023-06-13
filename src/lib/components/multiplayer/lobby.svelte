@@ -12,7 +12,7 @@
 		chat,
 		request_start,
 		request_kick
-	} from "$lib/stores/multiplayerstore";
+	} from "$lib/stores/multiplayer";
 	import Board from "../board/board.svelte";
 	import { ohmp_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";

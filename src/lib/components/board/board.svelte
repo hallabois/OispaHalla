@@ -10,6 +10,7 @@
 	import { generate_previous_positions } from "$lib/gamelogic/utils";
 	import type Grid from "$lib/gamelogic/grid";
 	import { base_path } from "$lib/stores/themestore";
+	import { browser } from "$app/environment";
 
 	export let enableKIM = false;
 	export let enableLSM = false;
@@ -97,7 +98,15 @@
 	export let onComponentsInitialized = () => {};
 </script>
 
-<div bind:this={board} title={$storage_status}>
+<div
+	bind:this={board}
+	title={$storage_status}
+	class:loading={!browser ||
+		!$storage_loaded ||
+		!mounted ||
+		!GameManagerInstance ||
+		!GameManagerInstance.grid}
+>
 	{#key unique}
 		<Board {enable_theme_chooser} />
 	{/key}

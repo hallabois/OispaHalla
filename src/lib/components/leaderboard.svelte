@@ -10,7 +10,7 @@
 		submit_score,
 		fetchboard,
 		type Fetchboard_response
-	} from "$lib/stores/leaderboardstore";
+	} from "$lib/stores/leaderboard";
 	import { scale } from "svelte/transition";
 	import type GameManager from "$lib/gamelogic/game_manager";
 	import { browser } from "$app/environment";
@@ -412,7 +412,9 @@
 		padding: 0.25em 0.5em;
 	}
 	td {
-		border: 1px solid var(--game-container-background);
+		border: 1px solid;
+		border-color: var(--game-container-background);
+		border-color: color-mix(in srgb, var(--game-container-background) 95%, var(--color) 5%);
 	}
 	tr.me {
 		font-weight: bold;

@@ -11,39 +11,16 @@
 		<p class="kurinpalautukset" />
 		<div class="lower">
 			<button class="button action-btn keep-playing-button">Jatka pelaamista</button>
-			<button class="button action-btn discouradge retry-button">Yritä uudelleen</button>
+			<button class="button action-btn discouradge retry-button"
+				><span>Yritä uudelleen</span></button
+			>
 		</div>
 	</div>
 
 	<div class="grid-container">
-		<!-- Standard 4x4 -->
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<!-- In case we need more -->
-		<!-- 5x5 -->
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
-		<div class="grid-cell" />
+		{#each new Array(16 + 9).fill(0) as _, i}
+			<div class="grid-cell" style:--animation-offset={`${i * 10}ms`} />
+		{/each}
 	</div>
 
 	<div class="tile-container" />

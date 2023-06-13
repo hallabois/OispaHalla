@@ -2,7 +2,7 @@
 	import { marked } from "marked";
 	import { onMount } from "svelte";
 
-	import { enable_multiplayer, enable_leaderboards } from "../../features";
+	import { enable_multiplayer, enable_leaderboards } from "$lib/config";
 	import { storage_loaded, storage } from "$lib/stores/storage";
 
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
@@ -209,41 +209,43 @@
 			bind:this={BoardInstance}
 		/>
 		<div class="underbar-container">
-			<div class="button-container" style="margin-top: 0;flex: 1;justify-content: start;">
-				<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
-				<button
-					class="button background-none color-button icon-button"
-					on:click={() => {
-						SettingsInstance.show();
-					}}
-					title="Asetukset"
-				>
-					<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
-				</button>
-				<button
-					class="button background-none color-button icon-button"
-					on:click={() => {
-						InfoInstance.show();
-					}}
-					title="Info"
-				>
-					<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
-				</button>
-				<button
-					class="button background-none color-button icon-button"
-					class:attention-grabber={has_unread_notifications}
-					on:click={() => {
-						PSAInstance.show();
-					}}
-					title="Tiedotukset"
-				>
-					<Icon
-						stroke="var(--color)"
-						viewBox="0 0 48 48"
-						d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
-						upper_text={has_unread_notifications ? unread_notification_count + "" || null : null}
-					/>
-				</button>
+			<div class="button-container-size">
+				<div class="button-container">
+					<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
+					<button
+						class="button background-none color-button icon-button"
+						on:click={() => {
+							SettingsInstance.show();
+						}}
+						title="Asetukset"
+					>
+						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
+					</button>
+					<button
+						class="button background-none color-button icon-button"
+						on:click={() => {
+							InfoInstance.show();
+						}}
+						title="Info"
+					>
+						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
+					</button>
+					<button
+						class="button background-none color-button icon-button"
+						class:attention-grabber={has_unread_notifications}
+						on:click={() => {
+							PSAInstance.show();
+						}}
+						title="Tiedotukset"
+					>
+						<Icon
+							stroke="var(--color)"
+							viewBox="0 0 48 48"
+							d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
+							upper_text={has_unread_notifications ? unread_notification_count + "" || null : null}
+						/>
+					</button>
+				</div>
 			</div>
 			<div class="kurin-palautus-container" style="flex: 1;">
 				<button class="button kurin-palautus kurin-palautus-color" on:click={paritaKuli}>
@@ -254,38 +256,40 @@
 					>
 				</button>
 			</div>
-			<div class="button-container" style="margin-top: 0;flex: 1;justify-content: end;">
-				{#if enable_multiplayer}
-					<button
-						class="button background-none color-button"
-						class:attention-grabber={multiplayer_game_ready}
-						on:click={() => {
-							TtInstance.show();
-						}}
-						title="Moninpeli"
-					>
-						<Icon
-							stroke="var(--color)"
-							viewBox="0 0 48 48"
-							d={multiplayerIconData}
-							upper_text={multiplayer_game_ready ? "1" : ""}
-						/>
-					</button>
-				{/if}
-				{#if enable_leaderboards}
-					<button
-						on:click={() => {
-							lbInstance.show();
-						}}
-						id="lb-button"
-						class="color-button button background-none icon-button"
-						title="Leaderboards"
-						style="display: flex;"
-					>
-						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
-						<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
-					</button>
-				{/if}
+			<div class="button-container-size">
+				<div class="button-container">
+					{#if enable_multiplayer}
+						<button
+							class="button background-none color-button"
+							class:attention-grabber={multiplayer_game_ready}
+							on:click={() => {
+								TtInstance.show();
+							}}
+							title="Moninpeli"
+						>
+							<Icon
+								stroke="var(--color)"
+								viewBox="0 0 48 48"
+								d={multiplayerIconData}
+								upper_text={multiplayer_game_ready ? "1" : ""}
+							/>
+						</button>
+					{/if}
+					{#if enable_leaderboards}
+						<button
+							on:click={() => {
+								lbInstance.show();
+							}}
+							id="lb-button"
+							class="color-button button background-none icon-button"
+							title="Leaderboards"
+							style="display: flex;"
+						>
+							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
+							<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
+						</button>
+					{/if}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -300,6 +304,17 @@
 	}
 	.kurin-palautus-container {
 		margin-top: 0 !important;
+	}
+	.underbar-container .button-container {
+		--bg-mix: color-mix(
+			in srgb,
+			var(--dialog-background) 50%,
+			var(--game-container-background) 50%
+		);
+		background: color-mix(in srgb, var(--bg-mix) 40%, transparent 60%);
+		backdrop-filter: blur(10px);
+		border-radius: var(--tile-border-radius);
+		padding: 0.5em;
 	}
 	.underbar-container .button-container > * {
 		width: auto !important;

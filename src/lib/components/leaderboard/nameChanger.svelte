@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { auth, token } from "$lib/Auth/authstore";
-	import { lb_screenName, check_name, change_name } from "$lib/stores/leaderboardstore";
+	import { lb_screenName, check_name, change_name } from "$lib/stores/leaderboard";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";

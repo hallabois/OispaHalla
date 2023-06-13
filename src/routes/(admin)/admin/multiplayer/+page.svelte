@@ -17,7 +17,7 @@
 		admin_deleteall,
 		log,
 		server_status
-	} from "$lib/stores/multiplayerstore";
+	} from "$lib/stores/multiplayer";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
 	import Popup from "$lib/components/common/popup/popup.svelte";

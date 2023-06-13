@@ -1,15 +1,7 @@
 import { type Writable, writable, get } from "svelte/store";
-import { dev } from "$app/environment";
-
-import { setItem, getItem, storage, storage_loaded } from "$lib/stores/storage";
-import { lb_test_prod_endpoint } from "../../features";
+import { setItem, getItem, storage_loaded } from "$lib/stores/storage";
 import { json_headers } from "$lib/utils";
-
-const leaderboard_endpoint_prod = "https://lb.oispahalla.com";
-const leaderboard_endpoint_dev = lb_test_prod_endpoint
-	? leaderboard_endpoint_prod
-	: "http://localhost:5000";
-export const leaderboard_endpoint = dev ? leaderboard_endpoint_dev : leaderboard_endpoint_prod;
+import { leaderboard_endpoint } from "$lib/config";
 
 export const lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
 lb_screenName.subscribe((val) => {

@@ -6,7 +6,7 @@
 		request_index,
 		request_join,
 		user_details
-	} from "$lib/stores/multiplayerstore";
+	} from "$lib/stores/multiplayer";
 	import Busy from "../common/loading-indicator/Busy.svelte";
 
 	$: if (connected && $game_index == null) {
@@ -36,7 +36,7 @@
 			<div>
 				<p>
 					Löydettiin {$game_index.joinable_games.length}
-					{$game_index.joinable_games.length == 1 ? "julkinen peli" : "julkista peliä"}!
+					{$game_index.joinable_games.length == 1 ? "julkinen peli" : "julkista peliä"}
 				</p>
 				<input
 					class="search fill-w"

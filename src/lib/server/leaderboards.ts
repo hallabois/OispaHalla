@@ -1,4 +1,4 @@
-import { leaderboard_endpoint } from "$lib/stores/leaderboardstore";
+import { leaderboard_endpoint } from "$lib/config";
 import { json_headers } from "$lib/utils";
 
 export type Score = {

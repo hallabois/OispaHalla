@@ -8,7 +8,7 @@
 	const animate = (node: Element, args: any) =>
 		args.condition ? slide(node, args) : scale(node, args);
 	import { browser } from "$app/environment";
-	import { enable_custom_themes } from "../../../../features";
+	import { enable_custom_themes } from "$lib/config";
 
 	let menu_open = false;
 

@@ -14,7 +14,7 @@ import { wasm, ready, init } from "$lib/wasm/twothousand_forty_eight";
 import { open_popups } from "$lib/stores/popupstore";
 import { auth } from "./Auth/authstore";
 import type GameManager from "./gamelogic/game_manager";
-import * as mp from "./stores/multiplayerstore";
+import * as mp from "./stores/multiplayer";
 
 function isStorageLoaded() {
 	return get(storage_loaded);

@@ -69,7 +69,7 @@
 	import { ready, wasm, init as initWasm } from "$lib/wasm/twothousand_forty_eight";
 	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
-	import { enable_user_page_wasm } from "../../../../features";
+	import { enable_user_page_wasm } from "$lib/config";
 
 	let board_cache: { [key: number]: null | any[] } = {};
 	$: if (

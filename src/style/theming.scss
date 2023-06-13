@@ -201,6 +201,7 @@ $i: 2;
 		--color-scheme: #{map-get($colors, "#{$color-number}-color-scheme")};
 		color-scheme: var(--color-scheme, "light");
 		--color: #{map-get($colors, "#{$color-number}-text-color")};
+		--title-color: #{map-get($colors, "#{$color-number}-title-color")};
 		--dialog-background: #{map-get($colors, "#{$color-number}-dialog-background")};
 		--game-background: #{map-get($colors, "#{$color-number}-game-background")};
 		--game-container-background: #{map-get($colors, "#{$color-number}-game-container-background")};

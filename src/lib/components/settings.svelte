@@ -10,6 +10,7 @@
 	import { deleteIconData, downloadIconData, uploadIconData } from "./common/icon/iconData";
 	import { dev } from "$app/environment";
 	import Busy from "./common/loading-indicator/Busy.svelte";
+	import { leaderboard_endpoint, mp_default_endpoint } from "$lib/config";
 
 	let open = false;
 	export function show() {
@@ -117,12 +118,6 @@
 						{/if}
 						<div class="actions">
 							<button
-								class="button action-btn discouradge"
-								on:click={() => {
-									del();
-								}}><Icon d={deleteIconData} viewBox="0 0 48 48" /></button
-							>
-							<button
 								class="button action-btn"
 								disabled={!canDownload}
 								on:click={() => {
@@ -135,6 +130,12 @@
 									viewBox="0 0 48 48"
 									fill="var(--button-color)"
 								/></button
+							>
+							<button
+								class="button action-btn discouradge"
+								on:click={() => {
+									del();
+								}}><Icon d={deleteIconData} viewBox="0 0 48 48" /></button
 							>
 						</div>
 					{:else}
@@ -186,6 +187,12 @@
 		{#if dev}
 			<h3>Kehittäjäasetukset</h3>
 			<div class="section dev">
+				<b>Endpoints</b>
+				<div>
+					<p>lb: {leaderboard_endpoint}</p>
+					<p>mp: {mp_default_endpoint}</p>
+				</div>
+				<b>Actions</b>
 				<div class="actions">
 					<button
 						class="button action-btn"
@@ -202,6 +209,10 @@
 <style>
 	.content {
 		max-width: 45ch;
+	}
+	.actions {
+		display: flex;
+		gap: 0.75em;
 	}
 	h3 {
 		margin: 0;

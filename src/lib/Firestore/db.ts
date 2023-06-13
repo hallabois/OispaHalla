@@ -2,7 +2,7 @@ import { readable } from "svelte/store";
 import { browser } from "$app/environment";
 import type { DocumentReference, DocumentSnapshot } from "firebase/firestore";
 import type { FirebaseApp } from "firebase/app";
-import { synced_variables } from "../../features";
+import { synced_variables } from "$lib/config";
 
 const dbs: { [key: string]: DB } = {};
 
