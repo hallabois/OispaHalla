@@ -6,9 +6,9 @@ export const dev_branch = __APP_BRANCH__ == "testing";
 export const leaderboard_endpoint = env.OH_PUBLIC_LB_ENDPOINT || "https://lb.oispahalla.com";
 export const mp_default_endpoint = env.OH_PUBLIC_MP_ENDPOINT || "wss://mp.oispahalla.com";
 
-export const enable_multiplayer = vite_dev || dev_branch;
+export const enable_multiplayer = env.OH_PUBLIC_ENABLE_MP || vite_dev || dev_branch;
 export const enable_leaderboards = true;
-export const enable_custom_themes = vite_dev;
+export const enable_custom_themes = env.OH_PUBLIC_ENABLE_CUSTOM_THEMES || vite_dev;
 
 export const countdown: Date | undefined = env.OH_PUBLIC_COUNTDOWN
 	? new Date(env.OH_PUBLIC_COUNTDOWN)
