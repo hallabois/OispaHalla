@@ -195,6 +195,13 @@ $i: 2;
 	$i: $i * 2;
 }
 
+.game-background {
+	min-height: 100vh;
+	min-height: 100svh; /* for mobile */
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-position: top center;
+}
 @mixin setThemeColors($color-number) {
 	.theme-#{$t} {
 		// Formejen jne väritystä varten
@@ -220,7 +227,7 @@ $i: 2;
 			)};
 		--break-button-color-true: #{map-get($colors, "#{$color-number}-break-button-color-true")};
 
-		& body {
+		.game-background {
 			background-image: url("/img/theme-#{$color-number}/OispaHallaTausta.webp");
 			@if map.has-key($colors, "#{$color-number}-game-background") {
 				// skips the definitions if the game background doesn't exist

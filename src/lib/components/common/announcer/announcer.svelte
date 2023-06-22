@@ -7,7 +7,7 @@
 	};
 	let announcements: announcement[] = [];
 
-	export function announce(msg: string) {
+	export function announce(msg: string, timeout = 3550) {
 		console.info("ANNOUNCER", msg);
 		announcements.push({
 			msg: msg,
@@ -17,7 +17,7 @@
 		setTimeout(() => {
 			announcements.shift();
 			announcements = announcements;
-		}, 3550);
+		}, timeout);
 	}
 </script>
 

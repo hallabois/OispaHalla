@@ -11,7 +11,7 @@
 	export function show() {
 		open = true;
 	}
-	export let indicator_game_ready: boolean = false;
+	export let indicator_game_ready = false;
 
 	export let announcer: Announcer | null = null;
 

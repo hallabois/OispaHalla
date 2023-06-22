@@ -33,6 +33,7 @@ export async function getLeaderBoardData(
 	admin_token: string
 ): Promise<leaderBoardDataResult> {
 	// ADMIN_TOKEN must match the ADMIN_TOKEN that of the lb backend
+	if (admin_token === undefined) return { err: "ADMIN_TOKEN not set", data: null };
 	const url = `${leaderboard_endpoint}/admin/user/uid/${uid}?token=${encodeURIComponent(
 		admin_token
 	)}`;

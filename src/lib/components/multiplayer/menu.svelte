@@ -24,6 +24,15 @@
 	import { storage_loaded } from "$lib/stores/storage";
 	import NameChanger from "../leaderboard/nameChanger.svelte";
 	import { lb_screenName } from "$lib/stores/leaderboard";
+	import Icon from "../common/icon/icon.svelte";
+	import {
+		browseIconData,
+		createIconData,
+		passwordIconData,
+		pinIconData,
+		settingsIconData,
+		shareIconData
+	} from "../common/icon/iconData";
 
 	export let announcer: Announcer | null = null;
 	$: $tournament_announcer = announcer;
@@ -116,21 +125,49 @@
 						on:click={() => {
 							activeTab = 3;
 						}}
-						class="button action-btn">Selaa Julkisia Pelejä</button
+						class="button action-btn"
 					>
+						<Icon
+							d={browseIconData}
+							fill="var(--button-color)"
+							viewBox="0 -960 960 960"
+							height="1.5em"
+							width="1.5em"
+							take_no_space={true}
+						/>
+						<p>Selaa Julkisia Pelejä</p>
+					</button>
 					<button
 						on:click={() => {
 							activeTab = 2;
 						}}
-						class="button action-btn">Liity Peliin Koodilla</button
+						class="button action-btn"
 					>
+						<Icon
+							d={pinIconData}
+							fill="var(--button-color)"
+							viewBox="0 -960 960 960"
+							height="1.5em"
+							width="1.5em"
+						/>
+						<p>Liity Peliin Koodilla</p>
+					</button>
 					<hr />
 					<button
 						on:click={() => {
 							activeTab = 1;
 						}}
-						class="button action-btn">Luo Peli</button
+						class="button action-btn"
 					>
+						<Icon
+							d={createIconData}
+							fill="var(--button-color)"
+							viewBox="0 -960 960 960"
+							height="1.5em"
+							width="1.5em"
+						/>
+						<p>Luo Peli</p>
+					</button>
 				</div>
 				<a href="/auth" style="text-align: center;display: block;padding: 0.75em;"
 					>Hallinnoi kirjautumista</a
@@ -178,6 +215,15 @@
 		flex-direction: column;
 		gap: 0.5em;
 		margin-top: 0.5em;
+	}
+	.action-chooser .button {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.action-chooser .button p {
+		flex: 1;
+		margin: 0;
 	}
 	.back {
 		font-size: 0.75em;

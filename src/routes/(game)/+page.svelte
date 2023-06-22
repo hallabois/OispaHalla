@@ -90,7 +90,7 @@
 			GameManagerInstance = BoardInstance.getGameManagerInstance();
 		});
 
-		// @ts-ignore, only for devtools
+		// @ts-ignore - Debugging
 		window.GameManagerDebugInstance = GameManagerInstance;
 
 		console.info("Game logic loaded.");
@@ -122,173 +122,177 @@
 	}
 </script>
 
-<div class="container">
-	<Announcer bind:this={AnnouncerInstance} />
-	<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
-	<Info bind:this={InfoInstance} />
-	<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
-	<Tournaments
-		bind:this={TtInstance}
-		announcer={AnnouncerInstance}
-		bind:indicator_game_ready={multiplayer_game_ready}
-	/>
-	<PSA bind:this={PSAInstance} bind:has_unread_notifications bind:unread_notification_count />
-	<div class="new-above-game">
-		<div class="above-game-left">
-			<a href="https://hallabois.github.io/invite/" target="_blank" rel="noreferrer">
-				<h1 class="title">{app_name}</h1>
-			</a>
-			{@html marked.parse(app_description)}
-		</div>
-		<div class="above-game-right">
-			<div class="score-container" style="--c:'{app_name_score}'">0</div>
-			<div
-				class="best-container"
-				style="--c:'{app_name_hiscore}'"
-				title={Object.keys($storage?.bestScores || {})
-					.map((x) => `${x}: ${$storage.bestScores[x]}`)
-					.join("\n")}
-			>
-				{#if GameManagerInstance != null && $storage?.bestScores}
-					{$storage?.bestScores[GameManagerInstance.size]}
-				{:else}
-					0
-				{/if}
-			</div>
-			<div
-				class="restart-button button action-btn"
-				bind:this={restartbtn}
-				on:click={() => {
-					if (!restartbtn.classList.contains("open")) {
-						restartbtn.classList.add("open");
-					} else {
-						restartbtn.classList.remove("open");
-					}
-				}}
-				on:keypress={() => {
-					if (!restartbtn.classList.contains("open")) {
-						restartbtn.classList.add("open");
-					} else {
-						restartbtn.classList.remove("open");
-					}
-				}}
-			>
-				<div class="uusi-jakso">{app_name_newgame}</div>
-				<div class="size-selector">
-					<button>&lt;</button>
-					<button
-						on:click={() => {
-							restartGame(3);
-						}}
-						class="restart-3x3">3x3</button
-					>
-					<button
-						on:click={() => {
-							restartGame(4);
-						}}
-						class="restart-4x4">4x4</button
-					>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="disclaimer">
-		{#if app_notice && app_notice.length > 0}
-			<p>
-				{@html marked.parse(app_notice)}
-			</p>
-		{/if}
-	</div>
-	<div class="board-container">
-		<Board
-			{enableKIM}
-			enableLSM={true}
-			enableRng={true}
-			documentRoot={inputRoot}
-			initComponentsOnMount={false}
-			bind:this={BoardInstance}
+<div class="game-background">
+	<div class="container">
+		<Announcer bind:this={AnnouncerInstance} />
+		<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
+		<Info bind:this={InfoInstance} />
+		<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
+		<Tournaments
+			bind:this={TtInstance}
+			announcer={AnnouncerInstance}
+			bind:indicator_game_ready={multiplayer_game_ready}
 		/>
-		<div class="underbar-container">
-			<div class="button-container-size">
-				<div class="button-container">
-					<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
-					<button
-						class="button background-none color-button icon-button"
-						on:click={() => {
-							SettingsInstance.show();
-						}}
-						title="Asetukset"
-					>
-						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
-					</button>
-					<button
-						class="button background-none color-button icon-button"
-						on:click={() => {
-							InfoInstance.show();
-						}}
-						title="Info"
-					>
-						<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
-					</button>
-					<button
-						class="button background-none color-button icon-button"
-						class:attention-grabber={has_unread_notifications}
-						on:click={() => {
-							PSAInstance.show();
-						}}
-						title="Tiedotukset"
-					>
-						<Icon
-							stroke="var(--color)"
-							viewBox="0 0 48 48"
-							d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
-							upper_text={has_unread_notifications ? unread_notification_count + "" || null : null}
-						/>
-					</button>
+		<PSA bind:this={PSAInstance} bind:has_unread_notifications bind:unread_notification_count />
+		<div class="new-above-game">
+			<div class="above-game-left">
+				<a href="https://hallabois.github.io/invite/" target="_blank" rel="noreferrer">
+					<h1 class="title">{app_name}</h1>
+				</a>
+				{@html marked.parse(app_description, { mangle: false, headerIds: false })}
+			</div>
+			<div class="above-game-right">
+				<div class="score-container" style="--c:'{app_name_score}'">0</div>
+				<div
+					class="best-container"
+					style="--c:'{app_name_hiscore}'"
+					title={Object.keys($storage?.bestScores || {})
+						.map((x) => `${x}: ${$storage.bestScores[x]}`)
+						.join("\n")}
+				>
+					{#if GameManagerInstance != null && $storage?.bestScores}
+						{$storage?.bestScores[GameManagerInstance.size]}
+					{:else}
+						0
+					{/if}
+				</div>
+				<div
+					class="restart-button button action-btn"
+					bind:this={restartbtn}
+					on:click={() => {
+						if (!restartbtn.classList.contains("open")) {
+							restartbtn.classList.add("open");
+						} else {
+							restartbtn.classList.remove("open");
+						}
+					}}
+					on:keypress={() => {
+						if (!restartbtn.classList.contains("open")) {
+							restartbtn.classList.add("open");
+						} else {
+							restartbtn.classList.remove("open");
+						}
+					}}
+				>
+					<div class="uusi-jakso">{app_name_newgame}</div>
+					<div class="size-selector">
+						<button>&lt;</button>
+						<button
+							on:click={() => {
+								restartGame(3);
+							}}
+							class="restart-3x3">3x3</button
+						>
+						<button
+							on:click={() => {
+								restartGame(4);
+							}}
+							class="restart-4x4">4x4</button
+						>
+					</div>
 				</div>
 			</div>
-			<div class="kurin-palautus-container" style="flex: 1;">
-				<button class="button kurin-palautus kurin-palautus-color" on:click={paritaKuli}>
-					<span
-						class="parin-kulautus"
-						title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
-						>kurinpalautus {GameManagerInstance?.palautukset ?? "?"}/3</span
-					>
-				</button>
-			</div>
-			<div class="button-container-size">
-				<div class="button-container">
-					{#if enable_multiplayer}
+		</div>
+		<div class="disclaimer">
+			{#if app_notice && app_notice.length > 0}
+				<p>
+					{@html marked.parse(app_notice, { mangle: false, headerIds: false })}
+				</p>
+			{/if}
+		</div>
+		<div class="board-container">
+			<Board
+				{enableKIM}
+				enableLSM={true}
+				enableRng={true}
+				documentRoot={inputRoot}
+				initComponentsOnMount={false}
+				bind:this={BoardInstance}
+			/>
+			<div class="underbar-container">
+				<div class="button-container-size">
+					<div class="button-container">
+						<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
 						<button
-							class="button background-none color-button"
-							class:attention-grabber={multiplayer_game_ready}
+							class="button background-none color-button icon-button"
 							on:click={() => {
-								TtInstance.show();
+								SettingsInstance.show();
 							}}
-							title="Moninpeli"
+							title="Asetukset"
+						>
+							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
+						</button>
+						<button
+							class="button background-none color-button icon-button"
+							on:click={() => {
+								InfoInstance.show();
+							}}
+							title="Info"
+						>
+							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
+						</button>
+						<button
+							class="button background-none color-button icon-button"
+							class:attention-grabber={has_unread_notifications}
+							on:click={() => {
+								PSAInstance.show();
+							}}
+							title="Tiedotukset"
 						>
 							<Icon
 								stroke="var(--color)"
 								viewBox="0 0 48 48"
-								d={multiplayerIconData}
-								upper_text={multiplayer_game_ready ? "1" : ""}
+								d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
+								upper_text={has_unread_notifications
+									? unread_notification_count + "" || null
+									: null}
 							/>
 						</button>
-					{/if}
-					{#if enable_leaderboards}
-						<button
-							on:click={() => {
-								lbInstance.show();
-							}}
-							id="lb-button"
-							class="color-button button background-none icon-button"
-							title="Leaderboards"
-							style="display: flex;"
+					</div>
+				</div>
+				<div class="kurin-palautus-container" style="flex: 1;">
+					<button class="button kurin-palautus kurin-palautus-color" on:click={paritaKuli}>
+						<span
+							class="parin-kulautus"
+							title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
+							>kurinpalautus {GameManagerInstance?.palautukset ?? "?"}/3</span
 						>
-							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
-							<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
-						</button>
-					{/if}
+					</button>
+				</div>
+				<div class="button-container-size">
+					<div class="button-container">
+						{#if enable_multiplayer}
+							<button
+								class="button background-none color-button"
+								class:attention-grabber={multiplayer_game_ready}
+								on:click={() => {
+									TtInstance.show();
+								}}
+								title="Moninpeli"
+							>
+								<Icon
+									stroke="var(--color)"
+									viewBox="0 0 48 48"
+									d={multiplayerIconData}
+									upper_text={multiplayer_game_ready ? "1" : ""}
+								/>
+							</button>
+						{/if}
+						{#if enable_leaderboards}
+							<button
+								on:click={() => {
+									lbInstance.show();
+								}}
+								id="lb-button"
+								class="color-button button background-none icon-button"
+								title="Leaderboards"
+								style="display: flex;"
+							>
+								<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
+								<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
+							</button>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</div>

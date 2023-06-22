@@ -44,7 +44,7 @@ $grid-max-size: 10;
 
 	50% {
 		filter: hue-rotate(180deg);
-		scale: .95;
+		scale: 0.95;
 	}
 
 	100% {
@@ -214,7 +214,7 @@ $grid-max-size: 10;
 	}
 	.loading .grid-cell {
 		filter: hue-rotate(180deg);
-		scale: .95;
+		scale: 0.95;
 		animation: loading 0.9s ease var(--animation-offset, 0ms) infinite;
 	}
 

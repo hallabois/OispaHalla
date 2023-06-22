@@ -68,7 +68,7 @@
 							<h2>{psa.date}</h2>
 						{/if}
 						<div class="bread">
-							{@html marked.parseInline(psa.bread, { breaks: true })}
+							{@html marked.parseInline(psa.bread, { breaks: true, mangle: false })}
 						</div>
 					{:else}
 						<p>Virheellinen tiedotus</p>

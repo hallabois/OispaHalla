@@ -165,7 +165,7 @@ export default class KeyboardInputManager {
 
 		if (!modifiers) {
 			if (mapped !== undefined) {
-				let result = this.emit("move", mapped);
+				const result = this.emit("move", mapped);
 				if (result !== false) {
 					event.preventDefault();
 				}

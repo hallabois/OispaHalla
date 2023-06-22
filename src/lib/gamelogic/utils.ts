@@ -82,12 +82,12 @@ export function ohmp_gamestate_to_grid(gamestate: ohmp_gamestate) {
 export function do_gamestates_differ(a: ohmp_gamestate, b: ohmp_gamestate) {
 	if (a.width !== b.width) return ["w", a.width, b.width];
 	if (a.height !== b.height) return ["h", a.height, b.height];
-	let w = a.width;
-	let h = b.height;
+	const w = a.width;
+	const h = b.height;
 	for (let y = 0; y < h; y++) {
 		for (let x = 0; x < w; x++) {
-			let ta = a.tiles[y][x];
-			let tb = a.tiles[y][x];
+			const ta = a.tiles[y][x];
+			const tb = a.tiles[y][x];
 			if (ta.value !== tb.value) {
 				return [ta, tb];
 			}
@@ -97,10 +97,10 @@ export function do_gamestates_differ(a: ohmp_gamestate, b: ohmp_gamestate) {
 }
 
 function gather_ids(gamestate: ohmp_gamestate) {
-	let ids = [];
+	const ids = [];
 	for (let y = 0; y < gamestate.height; y++) {
 		for (let x = 0; x < gamestate.width; x++) {
-			let t = gamestate.tiles[y][x];
+			const t = gamestate.tiles[y][x];
 			ids.push(t.id);
 		}
 	}
@@ -109,13 +109,13 @@ function gather_ids(gamestate: ohmp_gamestate) {
 
 export function fix_new_ids(remote: ohmp_gamestate, predicted: ohmp_gamestate | null) {
 	if (!predicted) return predicted;
-	let w = remote.width;
-	let h = remote.height;
+	const w = remote.width;
+	const h = remote.height;
 
 	for (let y = 0; y < h; y++) {
 		for (let x = 0; x < w; x++) {
-			let t_remote = remote.tiles[y][x];
-			let t_predicted = predicted.tiles[y][x];
+			const t_remote = remote.tiles[y][x];
+			const t_predicted = predicted.tiles[y][x];
 			if (t_remote.id !== t_predicted.id && t_remote.value === t_predicted.value) {
 				t_predicted.id = t_remote.id;
 				predicted.tiles[y][x] = t_predicted;
