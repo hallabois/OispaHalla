@@ -8,7 +8,6 @@
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
 
 	import Settings from "$lib/components/settings.svelte";
-	import Info from "$lib/components/info.svelte";
 	import PSA from "$lib/components/psa.svelte";
 	import Tournaments from "$lib/components/multiplayer.svelte";
 	import Leaderboards from "$lib/components/leaderboard.svelte";
@@ -20,7 +19,6 @@
 	import {
 		multiplayerIconData,
 		leaderboardIconData,
-		infoIconData,
 		settingsIconData,
 		notificationIconData,
 		activeNotificationIconData
@@ -101,7 +99,6 @@
 	let inputRoot: HTMLElement;
 	let TtInstance: Tournaments;
 	let lbInstance: Leaderboards;
-	let InfoInstance: Info;
 	let has_unread_notifications: boolean | null;
 	let unread_notification_count: number | null;
 	let multiplayer_game_ready: boolean;
@@ -126,7 +123,6 @@
 	<div class="container">
 		<Announcer bind:this={AnnouncerInstance} />
 		<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
-		<Info bind:this={InfoInstance} />
 		<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
 		<Tournaments
 			bind:this={TtInstance}
@@ -221,15 +217,6 @@
 							title="Asetukset"
 						>
 							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
-						</button>
-						<button
-							class="button background-none color-button icon-button"
-							on:click={() => {
-								InfoInstance.show();
-							}}
-							title="Info"
-						>
-							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={infoIconData} />
 						</button>
 						<button
 							class="button background-none color-button icon-button"
