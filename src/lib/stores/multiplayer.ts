@@ -3,7 +3,7 @@ import { auth, rewrite_token, token } from "$lib/Auth/authstore";
 import { mp_default_endpoint } from "$lib/config";
 import { type Writable, writable, get, derived, type Readable } from "svelte/store";
 import type { ohmp_gamestate } from "$lib/gamelogic/utils";
-import type { SvelteComponentTyped } from "svelte";
+import type { SvelteComponent } from "svelte";
 
 export const tournament_endpoint = writable(mp_default_endpoint);
 
@@ -154,7 +154,7 @@ joined_game_id.subscribe(($joined_game_id) => {
 		}
 	}
 });
-export const tournament_announcer: Writable<SvelteComponentTyped | null> = writable(null);
+export const tournament_announcer: Writable<SvelteComponent | null> = writable(null);
 
 export const tournament_ping: Writable<number | null> = writable(null);
 export const tournament_ping_average: Writable<number | null> = writable(null);

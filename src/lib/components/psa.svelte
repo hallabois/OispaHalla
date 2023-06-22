@@ -61,7 +61,7 @@
 			{/if}
 			{#each unread_psas_reverse as psa_key (psa_key)}
 				{@const psa = psas[psa_key]}
-				<div class="section" transition:slide|local>
+				<div class="section" transition:slide>
 					{#if psa.title && psa.bread}
 						<h1>{psa.title}</h1>
 						{#if psa.date}
