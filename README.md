@@ -4,15 +4,15 @@
 
 ### Installing dependencies
 
-Run `yarn install` to install the needed dependencies.
+Run `pnpm install` to install the needed dependencies.
 
 ### Code formatting
 
-Please run `yarn format` before committing any changes.
+Please run `pnpm format` before committing any changes.
 
 ### Development server
 
-You can run a development server with `yarn dev`.
+You can run a development server with `pnpm dev`.
 
 ### Env variables
 

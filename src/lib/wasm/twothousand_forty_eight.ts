@@ -4,7 +4,21 @@ export const ready = writable(false);
 export const success: Writable<boolean | null> = writable(null);
 export const wasm: Writable<typeof import("twothousand-forty-eight") | null> = writable(null);
 
-export const validation_cache = {};
+export type ValidationData = {
+	Ok?: {
+		valid: boolean;
+		score: number;
+		score_end: number;
+		score_margin: number;
+		breaks: number;
+		break_positions: number[];
+	};
+};
+export const validation_cache: Writable<{
+	[key: string]: {
+		[key: number]: ValidationData | null;
+	};
+}> = writable({});
 
 export async function init() {
 	ready.set(false);

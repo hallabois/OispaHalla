@@ -17,7 +17,10 @@
 		type ohmp_gamestate
 	} from "$lib/gamelogic/utils";
 
-	const directions = {
+	type Direction = "0" | "1" | "2" | "3" | "f";
+	const directions: {
+		[key in Direction]: string;
+	} = {
 		"0": "ylös",
 		"1": "oikealle",
 		"2": "alas",
@@ -69,7 +72,7 @@
 
 	let err2: string | null;
 	let frame: ohmp_gamestate;
-	let move_direction: string | null = null;
+	let move_direction: Direction | null = null;
 	$: if (parsed != null && selected_frame != null && $wasm != null) {
 		console.info("Trying to render selected frame...");
 		try {
@@ -110,22 +113,22 @@
 			}
 			console.info("Rendered!");
 
-			if (validation_cache[usable_input] == null) {
-				validation_cache[usable_input] = {};
+			if ($validation_cache[usable_input] == null) {
+				$validation_cache[usable_input] = {};
 			}
 			if (selected_frame > 0) {
 				let until_now = usable_input.split(":").slice(0, selected_frame).join(":");
 
-				if (validation_cache[usable_input][selected_frame] == null && $wasm != null) {
+				if ($validation_cache[usable_input][selected_frame] == null && $wasm != null) {
 					console.info("Analyzing frame", selected_frame);
-					validation_cache[usable_input][selected_frame] = JSON.parse($wasm.validate(until_now));
+					$validation_cache[usable_input][selected_frame] = JSON.parse($wasm.validate(until_now));
 				}
 			} else {
-				validation_cache[usable_input][selected_frame] = null;
+				$validation_cache[usable_input][selected_frame] = null;
 			}
 
 			try {
-				move_direction = usable_input.split(":")[selected_frame].split(";")[1];
+				move_direction = usable_input.split(":")[selected_frame].split(";")[1] as Direction;
 			} catch (e) {
 				move_direction = null;
 			}
@@ -139,7 +142,7 @@
 		if ($wasm != null) {
 			let result = JSON.parse($wasm.validate_all_frames(usable_input));
 			console.info("Validation result", result);
-			validation_cache[usable_input] = result;
+			$validation_cache[usable_input] = result;
 		}
 	}
 
@@ -200,7 +203,7 @@
 					<div>
 						<p>Peli sisältää {parsed.length} {parsed.length == 1 ? "siirron" : "siirtoa"}.</p>
 						<p>
-							{Object.keys(validation_cache[usable_input] || {}).length} / {parsed.length} siirtoa tarkistettu.
+							{Object.keys($validation_cache[usable_input] || {}).length} / {parsed.length} siirtoa tarkistettu.
 						</p>
 					</div>
 					<input type="range" min="0" max={parsed.length - 1} bind:value={selected_frame} />
@@ -220,10 +223,10 @@
 				{#if move_direction != null}
 					<p>Siirto {directions[move_direction]}</p>
 				{/if}
-				{#if validation_cache[usable_input] != null}
-					{#if validation_cache[usable_input][selected_frame] != null}
+				{#if $validation_cache[usable_input] != null}
+					{#if $validation_cache[usable_input][selected_frame] != null}
 						<p style="word-break: break-all;">
-							{JSON.stringify(validation_cache[usable_input][selected_frame])}
+							{JSON.stringify($validation_cache[usable_input][selected_frame])}
 						</p>
 					{/if}
 				{/if}
