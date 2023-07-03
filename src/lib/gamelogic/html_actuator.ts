@@ -22,8 +22,7 @@ export default class HTMLActuator {
 		this.messageContainer = documentRoot.querySelector(".game-message");
 
 		this.kurinPalautusViesti = documentRoot.querySelector(".kurin-palautus-viesti");
-		this.kurinPalautusNappi = documentRoot.querySelector(".parin-kulautus");
-		this.kurinPalautusColor = documentRoot.querySelector(".kurin-palautus-color");
+		this.kurinPalautusNappi = documentRoot.querySelector(".kurin-palautus");
 
 		this.score = 0;
 	}
@@ -160,10 +159,8 @@ export default class HTMLActuator {
 			}
 
 			if (this.score >= 1000 && palautukset < 3 && !terminated) {
-				this.kurinPalautusColor.classList.add("allowed");
 				this.kurinPalautusNappi.classList.add("allowed");
 			} else {
-				this.kurinPalautusColor.classList.remove("allowed");
 				this.kurinPalautusNappi.classList.remove("allowed");
 			}
 		} else {

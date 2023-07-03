@@ -183,7 +183,7 @@
 </script>
 
 <Popup bind:open>
-	<span slot="title">Leaderboards {size}x{size}</span>
+	<span slot="title">Leaderboards</span>
 	<div slot="content" class="content">
 		{#if is_server_alive != null}
 			{#await is_server_alive}
@@ -213,12 +213,14 @@
 							<div class="size-selection">
 								{#each enabled_sizes as s}
 									<button
-										class="button action-btn"
+										class="tab"
+										class:active={s == size}
 										on:click={() => {
 											size = s;
 										}}
-										disabled={size == s}>{s}</button
 									>
+										{s}×{s}
+									</button>
 								{/each}
 							</div>
 							<div>

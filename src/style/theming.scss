@@ -39,10 +39,10 @@ $colors: (
 	"1-title-color": #776e65,
 	"1-button-color": #f9f6f2,
 	"1-button-background": #8f7a66,
-	"1-break-button-background-false": #cc0000,
-	"1-break-button-color-false": #ddd,
-	"1-break-button-background-true": #00cc00,
-	"1-break-button-color-true": #dfdfdf,
+	"1-break-button-background-false": #a00,
+	"1-break-button-color-false": #eee,
+	"1-break-button-background-true": #080,
+	"1-break-button-color-true": #fff,
 
 	"2-color-scheme": "dark",
 	"2-text-color": #eee,
@@ -236,10 +236,6 @@ $i: 2;
 
 				a {
 					color: map-get($colors, "#{$color-number}-title-color");
-				}
-
-				.lb-popup-container {
-					background-color: map-get($colors, "#{$color-number}-game-container-background");
 				}
 
 				.grid-cell {

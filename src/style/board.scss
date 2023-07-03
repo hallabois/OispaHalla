@@ -200,8 +200,7 @@ $grid-max-size: 10;
 
 		border-radius: var(--tile-border-radius);
 
-		background: var(--tile-color);
-		opacity: 0.35;
+		background: color-mix(in srgb, var(--tile-color) 35%, transparent 65%);
 
 		&:last-child {
 			margin-right: 0;

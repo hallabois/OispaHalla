@@ -207,7 +207,7 @@
 			/>
 			<div class="underbar-container">
 				<div class="button-container-size">
-					<div class="button-container">
+					<div class="button-container panel-frosted">
 						<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
 						<button
 							class="button background-none color-button icon-button"
@@ -238,16 +238,17 @@
 					</div>
 				</div>
 				<div class="kurin-palautus-container" style="flex: 1;">
-					<button class="button kurin-palautus kurin-palautus-color" on:click={paritaKuli}>
+					<button class="button kurin-palautus" on:click={paritaKuli}>
 						<span
 							class="parin-kulautus"
 							title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
-							>kurinpalautus {GameManagerInstance?.palautukset ?? "?"}/3</span
 						>
+							Kurinpalautus {GameManagerInstance?.palautukset ?? "?"}/3
+						</span>
 					</button>
 				</div>
 				<div class="button-container-size">
-					<div class="button-container">
+					<div class="button-container panel-frosted">
 						{#if enable_multiplayer}
 							<button
 								class="button background-none color-button"
@@ -297,14 +298,6 @@
 		margin-top: 0 !important;
 	}
 	.underbar-container .button-container {
-		--bg-mix: color-mix(
-			in srgb,
-			var(--dialog-background) 50%,
-			var(--game-container-background) 50%
-		);
-		background: color-mix(in srgb, var(--bg-mix) 40%, transparent 60%);
-		backdrop-filter: blur(10px);
-		border-radius: var(--tile-border-radius);
 		padding: 0.5em;
 	}
 	.underbar-container .button-container > * {

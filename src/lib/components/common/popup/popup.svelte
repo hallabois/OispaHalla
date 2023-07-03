@@ -35,6 +35,7 @@
 		on:click={() => {
 			open = false;
 		}}
+		aria-hidden="true"
 		out:fade|local
 	>
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -43,6 +44,7 @@
 			on:click={(e) => {
 				e.stopPropagation();
 			}}
+			aria-hidden="true"
 		>
 			<div class="popup">
 				<div class="lb-header">

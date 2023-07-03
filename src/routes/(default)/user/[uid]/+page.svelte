@@ -121,6 +121,7 @@
 <main class="blurry-bg">
 	<div class="nav">
 		<a href="/">Takaisin OispaHallaan</a>
+		<a href="/leaderboards">Leaderboards</a>
 	</div>
 	<div class="content">
 		{#if user_data.data}
@@ -129,13 +130,13 @@
 			<div class="size-selector">
 				{#each Object.keys(udata.scores) as k}
 					<button
-						class="action-btn button"
-						disabled={selected_score_size == +k}
+						class="tab"
+						class:active={selected_score_size == +k}
 						on:click={() => {
 							selected_score_size = +k;
 						}}
 					>
-						{k}
+						{k}×{k}
 					</button>
 				{/each}
 			</div>
@@ -240,6 +241,8 @@
 		min-width: 100vw;
 		box-sizing: border-box;
 		padding: 0.1em 0.5em;
+		display: flex;
+		gap: 0.5em;
 	}
 	h1,
 	h2,

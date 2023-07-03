@@ -61,6 +61,48 @@ a.action-btn {
 	padding-inline: 1em;
 }
 
+.tab {
+	min-height: 3em;
+	background: inherit;
+	color: var(--color);
+	font-weight: bold;
+	font-size: 1.2em;
+	padding: 0.25em 0.5em;
+	cursor: pointer;
+
+	text-decoration: none;
+
+	--border-amount-max: 0.5em;
+	--border-amount: 1px;
+	--border-color: color-mix(in srgb, var(--button-background) 50%, transparent 50%);
+	--border-color-active: color-mix(in srgb, var(--button-background) 80%, transparent 20%);
+	border: 0 solid transparent;
+	border-bottom: var(--border-amount) solid var(--border-color);
+	transition: border 200ms;
+}
+.tab:hover {
+	--border-amount: calc(var(--border-amount-max) / 3);
+	--border-color: var(--border-color-active);
+}
+.tab.active {
+	--border-amount: calc(var(--border-amount-max) / 1.5);
+	--border-color: var(--border-color-active);
+}
+.tab.active:hover {
+	--border-amount: calc(var(--border-amount-max));
+	--border-color: var(--border-color-active);
+}
+
+.panel-frosted {
+	--bg-mix: color-mix(in srgb, var(--dialog-background) 50%, var(--game-container-background) 50%);
+	--bg-transparent: color-mix(in srgb, var(--bg-mix) 40%, transparent 60%);
+	--border-highlight: color-mix(in srgb, var(--bg-transparent) 95%, var(--color) 5%);
+	background: var(--bg-transparent);
+	border: 1px solid var(--border-highlight);
+	backdrop-filter: blur(10px);
+	border-radius: var(--tile-border-radius, 0.25rem);
+}
+
 .blurry-bg {
 	background-image: url("/img/ABC/blur_night.webp") !important;
 	background-size: cover !important;

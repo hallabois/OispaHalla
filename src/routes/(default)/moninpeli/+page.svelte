@@ -27,6 +27,7 @@
 	import { browser, dev } from "$app/environment";
 	import Tournaments from "$lib/components/multiplayer.svelte";
 	import { onMount } from "svelte";
+	type MoveDirection = 0 | 1 | 2 | 3;
 
 	$: inputManager_should_exist =
 		$joined_game_id &&
@@ -35,7 +36,7 @@
 		$user_details != null;
 	let localGameState: ohmp_gamestate | null = null;
 	$: if (!inputManager_should_exist) localGameState = null;
-	function move(direction: 0 | 1 | 2 | 3) {
+	function move(direction: MoveDirection) {
 		if (inputManager_should_exist) {
 			console.log("server-side move called with the value", direction);
 			request_move(direction);
@@ -53,7 +54,7 @@
 					}
 					console.log("rng seed", random_seed);
 					let predicted = JSON.parse(
-						$wasm.apply_move_with_seed(JSON.stringify(localGameState), direction, true, random_seed)
+						$wasm.apply_move(JSON.stringify(localGameState), direction, true)
 					);
 					console.info("client-side prediction", predicted);
 					if (predicted.possible) {
@@ -70,7 +71,9 @@
 		}
 	}
 	function swipeHandler(event: CustomEvent) {
-		const direction_map = {
+		const direction_map: {
+			[key: string]: MoveDirection;
+		} = {
 			top: 0,
 			right: 1,
 			bottom: 2,
@@ -99,7 +102,6 @@
 	let inputManager: KeyboardInputManager | null = null;
 	let inputRoot: HTMLElement;
 	let AnnouncerInstance: Announcer;
-	let BoardInstance: Board;
 	let TtInstance: Tournaments;
 	$: if (
 		$joined_game_id &&
@@ -155,7 +157,7 @@
 	<title>Oispa Halla Moninpeli</title>
 </svelte:head>
 
-<main>
+<main class="game-background">
 	<Announcer bind:this={AnnouncerInstance} />
 	{#if $connection_error}
 		<p class="err">
@@ -213,8 +215,8 @@
 						enableKIM={false}
 						enableLSM={false}
 						{grid}
+						enable_theme_chooser={false}
 						documentRoot={inputRoot}
-						bind:this={BoardInstance}
 					/>
 				{/key}
 				<div class="mini-container">
@@ -310,16 +312,25 @@
 		display: grid;
 		place-items: center;
 	}
+	.board-container {
+		--field-width: calc(500px / 1) !important;
+		--grid-gap: calc(15px / 1);
+	}
 	.mini-container {
-		--field-width: calc(500px / 4) !important;
-		--grid-gap: calc(15px / 4);
+		--mini-factor: max(var(--player-count, 1), 4);
+		--field-width: calc(500px / var(--mini-factor)) !important;
+		--grid-gap: calc(15px / var(--mini-factor));
+	}
+	.mini-container,
+	.board-container {
 		--tile-size: calc(
 			calc(
 					var(--field-width, --default-field-width) -
 						calc(var(--grid-gap) * calc(var(--grid-size) + 1))
 				) / var(--grid-size)
 		);
-
+	}
+	.mini-container {
 		display: flex;
 		gap: 0.5em;
 		margin-top: 0.2em;

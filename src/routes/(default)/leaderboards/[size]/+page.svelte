@@ -7,7 +7,7 @@
 	$: scores = leaderboard_data.scores.sort((a, b) => b.score - a.score);
 </script>
 
-<Header>
+<Header size={+size}>
 	<h3 slot="size">{size}x{size}</h3>
 </Header>
 {#if leaderboard_data.error_msg}

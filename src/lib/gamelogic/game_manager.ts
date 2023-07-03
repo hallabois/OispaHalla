@@ -17,7 +17,6 @@ export default class GameManager {
 	actuator: HTMLActuator;
 	startTiles: number;
 	numOfScores: number;
-	popup: Element | null;
 	palautukset = 0;
 	grid!: Grid;
 	over = false;
@@ -67,7 +66,6 @@ export default class GameManager {
 		this.inputManager.on("move", this.move.bind(this));
 		this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
-		this.popup = this.documentRoot.querySelector(".lb-popup");
 		this.subscribers = [];
 
 		if (typeof grid !== "undefined" && grid) {
