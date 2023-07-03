@@ -30,11 +30,15 @@
 {/if}
 
 <style>
+	:root {
+		--border-color: color-mix(in srgb, var(--game-container-background) 95%, var(--color) 5%);
+	}
 	table {
 		width: 100%;
 		background-color: var(--dialog-background);
 
-		box-shadow: 0.25em 0.25em 0.1em var(--color);
+		box-shadow: 0.5em 0.5em 1em
+			color-mix(in srgb, var(--game-container-background) 80%, transparent 20%);
 		border-radius: 0.25rem;
 		overflow: hidden;
 	}
@@ -45,7 +49,7 @@
 	}
 	td,
 	th {
-		border: 1px solid;
+		border: 1px solid var(--border-color);
 		padding: 0.25em 0.5em;
 	}
 	tr.me {
