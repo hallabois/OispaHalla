@@ -9,7 +9,7 @@
 	<BarLoader size="60" color="var(--button-background)" unit="px" duration="2s" />
 	{#if onCancel != null}
 		<button
-			class="button action-btn discouradge"
+			class="button action-btn discourage"
 			on:click={() => {
 				if (onCancel) onCancel();
 			}}>peruuta</button

@@ -17,8 +17,8 @@ export const gamemode_0_names: { [key: number]: string } = {
 	1024: "EHy",
 	2048: "LHa"
 };
-export const enabled_sizes = [2, 3, 4, 5];
-const GAME_ANY = -1;
+export const ENABLED_SIZES = [2, 3, 4, 5] as const;
+const GAME_ANY = -1 as const;
 
 export enum createTournamentGamemode {
 	FirstPastThePost = 0

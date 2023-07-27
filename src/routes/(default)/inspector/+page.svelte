@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Board from "$lib/components/board/board.svelte";
 	import type Grid from "$lib/gamelogic/grid";
+	import type { HistoryReconstruction, CompleteValidationResult } from "twothousand-forty-eight";
 	import Tile from "$lib/gamelogic/tile";
 	import { onMount } from "svelte";
-	import { long4x4 } from "./example_games";
+	import { v2_4x4 } from "./example_games";
 	import {
 		ready,
 		wasm,
@@ -29,14 +30,12 @@
 	};
 
 	let selected_frame = 0;
-	let input = "";
+	let input: string = "";
 	let show_additions = false;
-	$: usable_input = input.replaceAll("\n", "");
-	let parsed: any;
+	let reconstruction: HistoryReconstruction | null;
 	let grid: Grid;
 	let lastGrid;
 	let err: string | null;
-	let validation_result;
 	let hash: string | null;
 
 	let last_input: string | null = null;
@@ -45,63 +44,61 @@
 			console.info("Trying to parse input...");
 			try {
 				err = null;
-				validation_result = null;
 				hash = null;
 
 				console.info("wasm atm", $wasm);
 
 				console.info("hashing...");
-				hash = JSON.parse($wasm.hash(usable_input));
+				hash = $wasm.hash(input);
 
-				parsed = JSON.parse($wasm.get_frames(usable_input));
+				reconstruction = $wasm.reconstruct(input);
 				console.info("input parsed!");
 
-				console.info("Validating history...");
-				validation_result = JSON.parse($wasm.validate(usable_input));
+				console.info("History validated!");
+				setTimeout(() => {
+					validate_all();
+				}, 0);
 			} catch (e) {
 				console.warn("Error while parsing:", e);
 				err = `${e}`;
 			}
 			last_input = input;
 		}
+	} else {
+		reconstruction = null;
+		hash = null;
+		selected_frame = 0;
+		err = null;
+		err2 = null;
+		last_input = null;
 	}
 
-	$: if (parsed != null) {
-		selected_frame = Math.max(0, Math.min(selected_frame, parsed.length - 1));
+	$: if (reconstruction != null) {
+		selected_frame = Math.max(0, Math.min(selected_frame, reconstruction.history.length - 1));
 	}
 
 	let err2: string | null;
 	let frame: ohmp_gamestate;
+	let input_validation_result: CompleteValidationResult | null = null;
 	let move_direction: Direction | null = null;
-	$: if (parsed != null && selected_frame != null && $wasm != null) {
+	$: if (reconstruction != null && selected_frame != null && $wasm != null) {
 		console.info("Trying to render selected frame...");
 		try {
 			err2 = null;
-			frame = parsed[selected_frame];
+			frame = reconstruction.history[selected_frame];
 			let parsed_frame = ohmp_gamestate_to_grid(frame);
 			if (selected_frame > 0) {
-				let last_frame = parsed[selected_frame - 1];
+				let last_frame = reconstruction.history[selected_frame - 1];
 				parsed_frame = generate_previous_positions(
 					parsed_frame,
 					ohmp_gamestate_to_grid(last_frame)
 				);
 			}
 			console.log("frame", parsed_frame);
-			lastGrid = { ...grid };
+			lastGrid = structuredClone(grid);
 			grid = parsed_frame;
 
 			let new_cells = parsed_frame.cells;
-			if (show_additions) {
-				let now = usable_input.split(":")[selected_frame];
-				let addition = now.split("+")[1].split(";")[0];
-				let coordinates = addition.split(".")[0].split(",");
-				let x = +coordinates[0];
-				let y = +coordinates[1];
-				let value = addition.split(".")[1];
-				let tile = new Tile({ x, y }, 1, -1);
-				console.info("Addition: ", tile);
-				new_cells[y][x] = tile;
-			}
 			grid.cells = new_cells;
 			grid = grid;
 			if (boardInstance) {
@@ -112,41 +109,23 @@
 				}
 			}
 			console.info("Rendered!");
-
-			if ($validation_cache[usable_input] == null) {
-				$validation_cache[usable_input] = {};
-			}
-			if (selected_frame > 0) {
-				let until_now = usable_input.split(":").slice(0, selected_frame).join(":");
-
-				if ($validation_cache[usable_input][selected_frame] == null && $wasm != null) {
-					console.info("Analyzing frame", selected_frame);
-					$validation_cache[usable_input][selected_frame] = JSON.parse($wasm.validate(until_now));
-				}
-			} else {
-				$validation_cache[usable_input][selected_frame] = null;
-			}
-
-			try {
-				move_direction = usable_input.split(":")[selected_frame].split(";")[1] as Direction;
-			} catch (e) {
-				move_direction = null;
-			}
 		} catch (e) {
 			console.warn("Error while rendering:", e);
 			err2 = `${e}`;
 		}
 	}
+	$: if (input != null && $validation_cache[input] != null) {
+		input_validation_result = $validation_cache[input];
+	}
 
 	async function validate_all() {
-		if ($wasm != null) {
-			let result = JSON.parse($wasm.validate_all_frames(usable_input));
+		if ($wasm != null && input != null) {
+			let result = JSON.parse($wasm.validate_all(input)) as CompleteValidationResult;
 			console.info("Validation result", result);
-			$validation_cache[usable_input] = result;
+			$validation_cache[input] = result;
 		}
 	}
 
-	let mounted = false;
 	let boardInstance: Board;
 	let inputRoot: HTMLElement;
 	onMount(() => {
@@ -154,7 +133,6 @@
 			initWasm();
 		}
 		inputRoot = document.querySelector("html") as HTMLElement;
-		mounted = true;
 	});
 </script>
 
@@ -178,57 +156,58 @@
 			>
 			<button
 				on:click={() => {
-					input = long4x4;
+					input = v2_4x4;
 				}}>Lataa esimerkki</button
 			>
-			<button
-				on:click={() => {
-					input = input.replaceAll(":\n", ":");
-					input = input.replaceAll("S\n", "S");
-
-					input = input.split(":").join(":\n");
-					input = input.split("S").join("S\n");
-				}}
-			>
-				Pilko
-			</button>
 			<br />
 			{#if err || err2}
 				<p>Virhe: {err || err2}</p>
-			{:else}
-				{#if hash != null}
-					<p style="word-break: break-all;">{hash}</p>
-				{/if}
-				{#if parsed != null}
-					<div>
-						<p>Peli sisältää {parsed.length} {parsed.length == 1 ? "siirron" : "siirtoa"}.</p>
-						<p>
-							{Object.keys($validation_cache[usable_input] || {}).length} / {parsed.length} siirtoa tarkistettu.
-						</p>
-					</div>
-					<input type="range" min="0" max={parsed.length - 1} bind:value={selected_frame} />
-					<input type="number" bind:value={selected_frame} />
-					<br />
+			{:else if reconstruction != null}
+				<div>
+					<p>
+						Peli sisältää {reconstruction.history.length}
+						{reconstruction.history.length == 1 ? "siirron" : "siirtoa"}.
+					</p>
+				</div>
+				<input
+					type="range"
+					min="0"
+					max={reconstruction.history.length - 1}
+					bind:value={selected_frame}
+				/>
+				<input type="number" bind:value={selected_frame} />
+				<br />
+				<!--
 					<label for="show_additions">Näytä lisäykset</label>
 					<input id="show_additions" type="checkbox" bind:checked={show_additions} />
-					<button on:click={validate_all}>Tarkista kaikki siirrot välimuistiin</button>
-				{/if}
+					-->
 				<Board
 					bind:this={boardInstance}
 					enableLSM={false}
 					enableKIM={false}
 					documentRoot={inputRoot}
 					enable_theme_chooser={true}
+					{grid}
 				/>
 				{#if move_direction != null}
 					<p>Siirto {directions[move_direction]}</p>
 				{/if}
-				{#if $validation_cache[usable_input] != null}
-					{#if $validation_cache[usable_input][selected_frame] != null}
+				{#if input_validation_result != null}
+					{#if "Err" in input_validation_result}
+						<p>
+							{input_validation_result.Err}
+						</p>
+					{:else}
+						{@const frame_result = input_validation_result.Ok[selected_frame]}
 						<p style="word-break: break-all;">
-							{JSON.stringify($validation_cache[usable_input][selected_frame])}
+							{JSON.stringify(frame_result)}
 						</p>
 					{/if}
+				{:else}
+					<p>Tarkistetaan peliä...</p>
+				{/if}
+				{#if hash != null}
+					<p style="word-break: break-all;">{hash}</p>
 				{/if}
 				<details>
 					<summary>Dataa dataa jesjes</summary>
@@ -256,7 +235,7 @@
 	textarea {
 		width: 100%;
 		resize: vertical;
-		min-height: 150px;
+		min-height: 75px;
 	}
 	@media screen and (max-width: 520px) {
 		:root {

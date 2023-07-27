@@ -394,25 +394,25 @@
 }
 
 .theme-0 .color-button img {
-	//filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
+	filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
 }
 
 .theme-1 .color-button img {
 	//very fucking scufferoni but i couldn't find a better way to do this in sass
-	//filter: invert(43%) sepia(4%) saturate(922%) hue-rotate(349deg) brightness(99%) contrast(93%);
+	filter: invert(43%) sepia(4%) saturate(922%) hue-rotate(349deg) brightness(99%) contrast(93%);
 }
 
 .theme-3 .color-button img {
-	//filter: invert(79%) sepia(81%) saturate(3152%) hue-rotate(347deg) brightness(101%) contrast(91%);
+	filter: invert(79%) sepia(81%) saturate(3152%) hue-rotate(347deg) brightness(101%) contrast(91%);
 }
 
 .theme-5 .color-button {
 	//should this be done in the sass loops? yes. do i care? no.
-	//--color: #3f3b37;
+	--color: #3f3b37;
 }
 
 .theme-14 .color-button img {
-	//filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
+	filter: invert(86%) sepia(34%) saturate(170%) hue-rotate(341deg) brightness(97%) contrast(86%);
 }
 
 // Ensure that pixelart looks nice and crisp
@@ -436,7 +436,6 @@
 #darkmode-icon.dark {
 	filter: saturate(0);
 }
-
 
 .kurin-palautus {
 	background: var(--break-button-background-false);

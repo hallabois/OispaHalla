@@ -11,6 +11,7 @@
 	import { dev } from "$app/environment";
 	import Busy from "./common/loading-indicator/Busy.svelte";
 	import { leaderboard_endpoint, mp_default_endpoint } from "$lib/config";
+	import { score } from "$lib/gamelogic/new";
 
 	let open = false;
 	export function show() {
@@ -110,9 +111,9 @@
 						{#if syncing}
 							<p class="cloud-notice">Siirto meneillään...</p>
 							<progress />
-						{:else if userdata.gamestate != null}
+						{:else if userdata?.gamestate != null}
 							{@const oldData = JSON.parse(userdata.gamestate)}
-							{@const canDownload = GameManagerInstance.score < 100}
+							{@const canDownload = $score || 0 < 100}
 							<div class="run-details">
 								<p>{oldData.score} pistettä</p>
 								<p>{oldData.palautukset} kurinpalautusta</p>
@@ -139,7 +140,7 @@
 									/></button
 								>
 								<button
-									class="button action-btn discouradge"
+									class="button action-btn discourage"
 									on:click={() => {
 										del();
 									}}><Icon d={deleteIconData} viewBox="0 0 48 48" /></button

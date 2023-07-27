@@ -15,6 +15,7 @@ import { open_popups } from "$lib/stores/popupstore";
 import { auth } from "./Auth/authstore";
 import type GameManager from "./gamelogic/game_manager";
 import * as mp from "./stores/multiplayer";
+import { gamestate, gamestates, set_active_size } from "./gamelogic/new";
 
 function isStorageLoaded() {
 	return get(storage_loaded);
@@ -67,9 +68,8 @@ function getHACHistory() {
 	return `${size}x${size}S${history.join(":")}`;
 }
 
-function getGameManagerInstance() {
-	// @ts-ignore
-	return window.GameManagerDebugInstance;
+function getGameState() {
+	return get(gamestate);
 }
 
 async function initWasm() {
@@ -174,7 +174,8 @@ if (browser) {
 		setAppliedFestives,
 
 		getHACHistory,
-		getGameManagerInstance,
+		getGameState,
+		set_active_size,
 
 		initWasm,
 		getWasm,

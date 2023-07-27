@@ -6,7 +6,7 @@
 	<div class="container">
 		<div style="display: flex;align-items: center;flex-wrap: wrap;justify-content: space-between;">
 			<h1>Virhe</h1>
-			<h2>{$page.status}: {$page.error.message}</h2>
+			<h2>{$page.status}: {$page.error?.message}</h2>
 		</div>
 		<a href="/">Takaisin OispaHallaan</a>
 		<br />

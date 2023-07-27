@@ -1,23 +1,12 @@
 import { writable, type Writable } from "svelte/store";
+import type { CompleteValidationResult } from "twothousand-forty-eight";
 
 export const ready = writable(false);
 export const success: Writable<boolean | null> = writable(null);
 export const wasm: Writable<typeof import("twothousand-forty-eight") | null> = writable(null);
 
-export type ValidationData = {
-	Ok?: {
-		valid: boolean;
-		score: number;
-		score_end: number;
-		score_margin: number;
-		breaks: number;
-		break_positions: number[];
-	};
-};
 export const validation_cache: Writable<{
-	[key: string]: {
-		[key: number]: ValidationData | null;
-	};
+	[key: string]: CompleteValidationResult | null;
 }> = writable({});
 
 export async function init() {

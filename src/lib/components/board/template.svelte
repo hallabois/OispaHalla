@@ -11,8 +11,7 @@
 		<p class="kurinpalautukset" />
 		<div class="lower">
 			<button class="button action-btn keep-playing-button">Jatka pelaamista</button>
-			<button class="button action-btn discouradge retry-button"
-				><span>Yritä uudelleen</span></button
+			<button class="button action-btn discourage retry-button"><span>Yritä uudelleen</span></button
 			>
 		</div>
 	</div>

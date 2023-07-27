@@ -290,10 +290,11 @@ $grid-max-size: 10;
 	}
 
 	// Movement transition
+	/*
 	@include transition(var(--transition-speed) ease-in-out);
 	-webkit-transition-property: -webkit-transform;
 	-moz-transition-property: -moz-transform;
-	transition-property: transform;
+	transition-property: transform;*/
 
 	$base: 2;
 	$exponent: 1;
@@ -334,6 +335,17 @@ $grid-max-size: 10;
 		@include transform(scale(1));
 	}
 }
+@include keyframes(disappear) {
+	0% {
+		opacity: 1;
+		@include transform(scale(1));
+	}
+
+	100% {
+		opacity: 0;
+		@include transform(scale(0));
+	}
+}
 
 .tile-new .tile-inner {
 	@include animation(appear 200ms ease var(--transition-speed));
@@ -354,8 +366,10 @@ $grid-max-size: 10;
 	}
 }
 
-.tile-merged .tile-inner {
+.tile-merged {
 	z-index: 20;
+}
+.tile-merged .tile-inner {
 	@include animation(pop 200ms ease var(--transition-speed));
 	@include animation-fill-mode(backwards);
 }

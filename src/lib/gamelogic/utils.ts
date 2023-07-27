@@ -1,3 +1,4 @@
+import type Board from "twothousand-forty-eight";
 import Grid from "./grid";
 import Tile from "./tile";
 
@@ -57,12 +58,14 @@ export function generate_previous_positions(grid: Grid, previous: Grid) {
 	return grid;
 }
 
+/*
 export type ohmp_grid_row = Tile[];
 export type ohmp_gamestate = {
 	width: number;
 	height: number;
 	tiles: ohmp_grid_row[];
-};
+}; */
+export type ohmp_gamestate = Board;
 
 export function ohmp_gamestate_to_grid(gamestate: ohmp_gamestate) {
 	const grid = new Grid(gamestate.width);

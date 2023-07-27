@@ -4,7 +4,7 @@
 		gamemode_0_goals,
 		gamemode_0_names,
 		create,
-		enabled_sizes
+		ENABLED_SIZES
 	} from "$lib/stores/multiplayer";
 
 	import Busy from "$lib/components/common/loading-indicator/Busy.svelte";
@@ -70,7 +70,7 @@
 			<div class="input-section">
 				<label for="size">Pelin koko</label>
 				<select id="size" bind:value={size}>
-					{#each enabled_sizes as size}
+					{#each ENABLED_SIZES as size}
 						<option>{size}</option>
 					{/each}
 				</select>
