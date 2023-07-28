@@ -133,7 +133,9 @@
 					{$score != null ? `${$score}` : "..."}
 				</div>
 				<div class="best-container" style="--c:'{app_name_hiscore}'">
-					{$highscore != null ? `${$highscore}` : "..."}
+					{#key $active_size}
+						{$highscore != null ? `${$highscore}` : "..."}
+					{/key}
 				</div>
 				<div class="restart-menu">
 					<button
@@ -156,6 +158,7 @@
 							on:click={() => {
 								set_active_size(3);
 							}}
+							class:discourage={$active_size != 3}
 							class="restart-3x3 button action-btn">3x3</button
 						>
 						<button
@@ -163,6 +166,7 @@
 							on:click={() => {
 								set_active_size(4);
 							}}
+							class:discourage={$active_size != 4}
 							class="restart-4x4 button action-btn">4x4</button
 						>
 					{:else}
@@ -230,7 +234,10 @@
 							class="parin-kulautus"
 							title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
 						>
-							Kurinpalautus {$gamestate?.state?.breaks ?? "?"}/3
+							Kurinpalautus
+							{#if $gamestate?.state?.breaks != null}
+								{$gamestate?.state?.breaks}/3
+							{/if}
 						</span>
 					</button>
 				</div>

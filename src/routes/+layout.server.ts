@@ -21,6 +21,7 @@ export const load = (async ({ request }) => {
 
 	console.log(`Serving theme ${theme} for size ${size}`);
 	active_size_server.set(size as GameSize | null);
+	defaultTheme.set(theme);
 
 	return {
 		theme,

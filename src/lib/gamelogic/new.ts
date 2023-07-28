@@ -3,11 +3,29 @@ import type { Direction, GameState, ParseResult, Tile, Tiles } from "twothousand
 import { wasm } from "$lib/wasm/twothousand_forty_eight";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 import { browser } from "$app/environment";
-export const ENABLED_SIZES = [2, 3, 4, 5] as const;
+export const ENABLED_SIZES = [2, 3, 4, 5, 6] as const;
 export type GameSize = (typeof ENABLED_SIZES)[number];
 type Recordings = { [key in GameSize]: string } | null;
 type Histories = { [key in GameSize]: ParseResult } | null;
 type GameStates = { [key in GameSize]: GameState } | null;
+
+export const active_size_server: Writable<GameSize | null> = writable(null);
+export const active_size: Readable<GameSize | null> = derived(
+	[storage, active_size_server],
+	([$storage, $active_size_server]) => {
+		if (!browser) {
+			return $active_size_server;
+		}
+		if (!$storage) {
+			return null;
+		}
+		const size = getItem("active-size");
+		if (!size) {
+			return 4;
+		}
+		return parseInt(size) as GameSize;
+	}
+);
 
 function gamestateKey(size: number) {
 	return `gamestate_${size}_${size}`;
@@ -50,6 +68,23 @@ export const histories: Readable<Histories> = derived(
 		return map;
 	}
 );
+export const last_move: Readable<Direction | null> = derived(
+	[histories, active_size],
+	([$histories, $size]) => {
+		if (!$histories) {
+			return null;
+		}
+		if (!$size) {
+			return null;
+		}
+		const history = $histories[$size];
+		if ("V2" in history) {
+			return history.V2.moves.at(-1) ?? null;
+		}
+		return null;
+	}
+);
+
 export const gamestates: Readable<GameStates> = derived(
 	[recordings, wasm],
 	([$recordings, $wasm]) => {
@@ -108,6 +143,9 @@ class Game {
 		this.wasm = wasm;
 	}
 	move(dir: Direction) {
+		if (this.state.over) {
+			return;
+		}
 		if (!this.state.allowed_moves.includes(dir)) {
 			console.log("Invalid move");
 			console.log(this.state.allowed_moves);
@@ -166,8 +204,8 @@ class Game {
 			throw new Error("Unsupported history version for now");
 		}
 	}
-	restart() {
-		if (this.state.score < 16 || confirm("Oletko varma?")) {
+	restart(force: boolean = false) {
+		if (force || this.state.score_max < 16 || confirm("Oletko varma?")) {
 			if ("V2" in this.history) {
 				let size = this.history.V2.width;
 				const recording = this.wasm.new_game(size);
@@ -194,23 +232,6 @@ class Game {
 		}
 	}
 }
-export const active_size_server: Writable<GameSize | null> = writable(null);
-export const active_size: Readable<GameSize | null> = derived(
-	[storage, active_size_server],
-	([$storage, $active_size_server]) => {
-		if (!browser) {
-			return $active_size_server;
-		}
-		if (!$storage) {
-			return null;
-		}
-		const size = getItem("active-size");
-		if (!size) {
-			return 4;
-		}
-		return parseInt(size) as GameSize;
-	}
-);
 active_size.subscribe((size) => {
 	if (size && browser) {
 		// try to save the size as a cookie
@@ -248,21 +269,30 @@ export const score: Readable<number | null> = derived([gamestate], ([$gamestate]
 	if (!$gamestate) {
 		return null;
 	}
-	return $gamestate.state.score;
+	return $gamestate.state.score_current;
 });
 
+function highscoreKey(size: GameSize) {
+	return `highscore_${size}_${size}`;
+}
 export const highscore: Readable<number | null> = derived(
 	[active_size, storage, score],
 	([$size, $storage, $score]) => {
 		if (!$size || !$storage) {
 			return null;
 		}
-		const highscore = getItem(`highscore_${$size}_${$size}`);
+		const highscore = getItem(highscoreKey($size));
 		if (!highscore) {
+			if ($score) {
+				setItem(highscoreKey($size), $score.toString());
+			}
 			return $score;
 		}
 		if (!$score) {
 			return parseInt(highscore);
+		}
+		if ($score > parseInt(highscore)) {
+			setItem(highscoreKey($size), $score.toString());
 		}
 		return Math.max($score, parseInt(highscore));
 	}

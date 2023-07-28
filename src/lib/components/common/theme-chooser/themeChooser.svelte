@@ -9,6 +9,7 @@
 		args.condition ? slide(node, args) : scale(node, args);
 	import { browser } from "$app/environment";
 	import { enable_custom_themes } from "$lib/config";
+	import { defaultTheme } from "$lib/brand";
 
 	let menu_open = false;
 
@@ -109,7 +110,10 @@
 			{/if}
 		{/if}
 	{:else}
-		<button> ... </button>
+		{@const theme = $available_themes[$defaultTheme]}
+		<button>
+			<img src={theme?.icon_url} width="50px" height="50px" alt="" style={theme?.style} />
+		</button>
 	{/if}
 </div>
 

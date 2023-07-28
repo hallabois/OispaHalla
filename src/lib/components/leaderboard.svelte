@@ -374,7 +374,6 @@
 <NameChanger bind:this={NameChangerInstance} {announcer} />
 <Actions
 	bind:this={ActionsInstance}
-	{announcer}
 	current_size={size}
 	markAsSubmitted={(s) => {
 		markAsSubmitted(s);

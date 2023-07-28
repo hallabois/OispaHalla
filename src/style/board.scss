@@ -168,8 +168,8 @@ $grid-max-size: 10;
 		z-index: 1;
 		overflow: hidden;
 		display: grid;
-		grid-template-rows: repeat(var(--grid-size-max), var(--tile-size));
-		grid-template-columns: repeat(var(--grid-size-max), var(--tile-size));
+		grid-template-rows: repeat(var(--grid-size), var(--tile-size));
+		grid-template-columns: repeat(var(--grid-size), var(--tile-size));
 		gap: var(--grid-gap);
 		height: calc(100% - calc(var(--grid-gap) * 2));
 		width: calc(100% - calc(var(--grid-gap) * 2));
@@ -196,7 +196,6 @@ $grid-max-size: 10;
 	.grid-cell {
 		width: var(--tile-size);
 		height: var(--tile-size);
-		margin-right: var(--grid-gap);
 
 		border-radius: var(--tile-border-radius);
 
@@ -371,5 +370,9 @@ $grid-max-size: 10;
 }
 .tile-merged .tile-inner {
 	@include animation(pop 200ms ease var(--transition-speed));
+	@include animation-fill-mode(backwards);
+}
+.tile-merged-from .tile-inner {
+	@include animation(disappear 200ms ease var(--transition-speed));
 	@include animation-fill-mode(backwards);
 }

@@ -44,6 +44,9 @@ devDependencies:
   firebase-admin:
     specifier: ^11.10.1
     version: 11.10.1
+  hilbert-curve:
+    specifier: ^2.0.5
+    version: 2.0.5
   localforage:
     specifier: ^1.10.0
     version: 1.10.0
@@ -2176,6 +2179,12 @@ packages:
     dev: true
     optional: true
 
+  /@mhyfritz/bin-data@0.0.3:
+    resolution: {integrity: sha512-HV1cSxACr+F9fu8hx/B6AArDWywV84gqJCGl3zwdjujxzATg40QZ/OSbHih9h+kM168+adD7SQAoaGRZHh7cQQ==}
+    dependencies:
+      d3-array: 2.12.1
+    dev: true
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -3399,6 +3408,12 @@ packages:
     hasBin: true
     dev: true
 
+  /d3-array@2.12.1:
+    resolution: {integrity: sha512-B0ErZK/66mHtEsR1TkPEEkwdy+WDesimkM5gpZr5Dsg54BiTA5RXtYW5qTLIAcekaS9xfZrzBLF/OAkB3Qn1YQ==}
+    dependencies:
+      internmap: 1.0.1
+    dev: true
+
   /debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -4279,6 +4294,12 @@ packages:
       function-bind: 1.1.1
     dev: true
 
+  /hilbert-curve@2.0.5:
+    resolution: {integrity: sha512-A3y2Wxxozptu83VlylD0HF+PPgjlZwNbAZL6+iJLltiFbDpeVs9JQPQU6/Tk6Dz3/2PxzgLfvcCppqseRsqt+w==}
+    dependencies:
+      '@mhyfritz/bin-data': 0.0.3
+    dev: true
+
   /http-parser-js@0.5.8:
     resolution: {integrity: sha512-SGeBX54F94Wgu5RH3X5jsDtf4eHyRogWX1XGT3b4HuW3tQPM4AaBzoUji/4AAJNXCEOWZ5O0DgZmJw1947gD5Q==}
     dev: true
@@ -4360,6 +4381,10 @@ packages:
       get-intrinsic: 1.2.1
       has: 1.0.3
       side-channel: 1.0.4
+    dev: true
+
+  /internmap@1.0.1:
+    resolution: {integrity: sha512-lDB5YccMydFBtasVtxnZ3MRBHuaoE8GKsppq+EchKL2U4nK/DmEpPHNH8MZe5HkMtpSiTSOZwfN0tzYjO/lJEw==}
     dev: true
 
   /is-array-buffer@3.0.2:

@@ -27,6 +27,7 @@
 		"eslint-plugin-svelte": "^2.32.4",
 		"firebase": "^9.23.0",
 		"firebase-admin": "^11.10.1",
+		"hilbert-curve": "^2.0.5",
 		"localforage": "^1.10.0",
 		"marked": "^5.1.2",
 		"prettier": "^2.8.8",
