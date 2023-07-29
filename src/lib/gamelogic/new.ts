@@ -1,5 +1,5 @@
 import { setItem, getItem, storage } from "$lib/stores/storage";
-import type { Direction, GameState, ParseResult, Tile } from "twothousand-forty-eight";
+import type { Board, Direction, GameState, ParseResult, Tile } from "twothousand-forty-eight";
 import { wasm } from "$lib/wasm/twothousand_forty_eight";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 import { browser } from "$app/environment";
@@ -27,6 +27,12 @@ export const active_size: Readable<GameSize | null> = derived(
 		return parseInt(size) as GameSize;
 	}
 );
+export const active_size_safe: Readable<GameSize> = derived(active_size, ($active_size) => {
+	if (!$active_size) {
+		return 4;
+	}
+	return $active_size;
+});
 
 function gamestateKey(size: number) {
 	return `gamestate_${size}_${size}`;
@@ -351,16 +357,18 @@ export const highscore: Readable<number | null> = derived(
 	}
 );
 
-export const tiles: Readable<Tile[] | null> = derived([gamestate], ([$gamestate]) => {
-	if (!$gamestate) {
-		return null;
-	}
-	const existing = $gamestate.state.board.tiles
+export function board_to_tile_array(board: Board) {
+	return board.tiles
 		.flat()
 		.flat()
 		.flatMap((tile) => (tile ? [tile] : []))
 		.filter((tile) => tile.value !== 0);
-	return existing;
+}
+export const tiles: Readable<Tile[] | null> = derived([gamestate], ([$gamestate]) => {
+	if (!$gamestate) {
+		return null;
+	}
+	return board_to_tile_array($gamestate.state.board);
 });
 
 export const tiles_last_turn: Readable<Tile[] | null> = derived(
@@ -391,77 +399,64 @@ type TilePossiblyFromLastTurn = Tile & {
 	merged?: boolean;
 	removed?: boolean;
 };
-export const tiles_merged_from: Readable<TilePossiblyFromLastTurn[] | null> = derived(
-	[gamestate, tiles_last_turn],
-	([$gamestate, $tiles_last_turn]) => {
-		if (!$gamestate || !$tiles_last_turn) {
-			return null;
-		}
-		const ids = $gamestate.state.board.tiles
-			.flat()
-			.flat()
-			.flatMap((tile) => (tile ? [tile] : []))
-			.filter((tile) => tile.merged_from != null)
-			.flatMap((tile) =>
-				tile.merged_from
-					? tile.merged_from.map((id) => {
-							return {
-								id,
-								to: {
-									x: tile.x,
-									y: tile.y
-								}
-							};
-					  })
-					: []
-			);
-		const tiles = $tiles_last_turn
-			.map((tile) => {
-				const match_future = $gamestate.state.board.tiles
-					.flat()
-					.flat()
-					.flatMap((tile) => (tile ? [tile] : []))
-					.find((id) => id.id === tile.id);
-				let to = { x: tile.x, y: tile.y };
-				const match_future_merge = ids.find((id) => id.id === tile.id);
-				let merged = false;
-				if (match_future) {
-					to = { x: match_future.x, y: match_future.y };
-				}
-				if (match_future_merge) {
-					to = match_future_merge.to;
-					merged = true;
-				}
-				return { tile, to, merged, removed: !match_future };
-			})
-			.map(({ tile, to, merged, removed }) => {
-				return {
-					...tile,
-					x: to.x,
-					y: to.y,
-					merged_from: null,
-					merged,
-					removed,
-					new: false
-				};
-			});
+
+export function get_tiles_merged_from(tiles: Tile[], last_tiles: Tile[]) {
+	const ids = tiles
+		.filter((tile) => tile.merged_from != null)
+		.flatMap((tile) =>
+			tile.merged_from
+				? tile.merged_from.map((id) => {
+						return {
+							id,
+							to: {
+								x: tile.x,
+								y: tile.y
+							}
+						};
+				  })
+				: []
+		);
+	const tiles_with_meta: TilePossiblyFromLastTurn[] = last_tiles
+		.map((tile) => {
+			const match_future = tiles.find((id) => id.id === tile.id);
+			let to = { x: tile.x, y: tile.y };
+			const match_future_merge = ids.find((id) => id.id === tile.id);
+			let merged = false;
+			if (match_future) {
+				to = { x: match_future.x, y: match_future.y };
+			}
+			if (match_future_merge) {
+				to = match_future_merge.to;
+				merged = true;
+			}
+			return { tile, to, merged, removed: !match_future };
+		})
+		.map(({ tile, to, merged, removed }) => {
+			return {
+				...tile,
+				x: to.x,
+				y: to.y,
+				merged_from: null,
+				merged,
+				removed,
+				new: false
+			};
+		});
+	return tiles_with_meta;
+}
+
+export function complete_tiles(
+	tiles: Tile[],
+	last_tiles: Tile[] | null,
+	last_move: Direction | null
+) {
+	if (!last_tiles || !last_move || last_move === "BREAK") {
 		return tiles;
 	}
-);
-
-export const tiles_with_merged_from: Readable<TilePossiblyFromLastTurn[] | null> = derived(
-	[tiles, tiles_merged_from],
-	([$tiles, $tiles_merged_from]) => {
-		if (!$tiles) {
-			return null;
-		}
-		if (!$tiles_merged_from) {
-			return $tiles;
-		}
-		const tiles = [
-			...$tiles_merged_from,
-			...$tiles.filter((tile) => !$tiles_merged_from.find((t) => t.id === tile.id))
-		];
-		return tiles.sort((a, b) => a.id - b.id);
-	}
-);
+	const tiles_with_meta = get_tiles_merged_from(tiles, last_tiles);
+	const compound = [
+		...tiles_with_meta,
+		...tiles.filter((tile) => !tiles_with_meta.find((t) => t.id === tile.id))
+	];
+	return compound.sort((a, b) => a.id - b.id);
+}

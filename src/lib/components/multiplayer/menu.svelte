@@ -12,7 +12,7 @@
 		tournament_announcer,
 		tournament_ping_average,
 		tournament_ping_average_history,
-		tournament_endpoint,
+		multiplayer_endpoint,
 		known_error
 	} from "$lib/stores/multiplayer";
 	import GameCreator from "./gameCreator.svelte";
@@ -33,6 +33,7 @@
 		settingsIconData,
 		shareIconData
 	} from "../common/icon/iconData";
+	import { page } from "$app/stores";
 
 	export let announcer: Announcer | null = null;
 	$: $tournament_announcer = announcer;
@@ -68,7 +69,11 @@
 	}
 </script>
 
-<a href="/" style="width: min(500px, 90vw);">Takaisin yksinpeliin</a>
+<div style="width: min(500px, 90vw);">
+	{#if $page.url.pathname == "/moninpeli"}
+		<a href="/">Takaisin yksinpeliin</a>
+	{/if}
+</div>
 {#if mounted}
 	{#if $auth}
 		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
@@ -110,7 +115,7 @@
 					fill="var(--button-background)"
 				/><br />
 				<p bind:clientWidth={chartWidth} style="opacity: .5;">
-					connected to {$tournament_endpoint}
+					connected to {$multiplayer_endpoint}
 				</p>
 			{/if}
 			{#if $connection_error}

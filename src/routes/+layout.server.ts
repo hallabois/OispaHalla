@@ -2,6 +2,7 @@ import { defaultTheme } from "$lib/brand";
 import { get } from "svelte/store";
 import type { LayoutServerLoad } from "./$types";
 import { active_size_server, type GameSize } from "$lib/gamelogic/new";
+import { theme_index_server } from "$lib/stores/themestore";
 
 export const load = (async ({ request }) => {
 	// Check for theme cookie
@@ -21,7 +22,7 @@ export const load = (async ({ request }) => {
 
 	console.log(`Serving theme ${theme} for size ${size}`);
 	active_size_server.set(size as GameSize | null);
-	defaultTheme.set(theme);
+	theme_index_server.set(theme);
 
 	return {
 		theme,

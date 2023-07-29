@@ -2,10 +2,10 @@ import { browser } from "$app/environment";
 import { auth, rewrite_token, token } from "$lib/Auth/authstore";
 import { mp_default_endpoint } from "$lib/config";
 import { type Writable, writable, get, derived, type Readable } from "svelte/store";
-import type { ohmp_gamestate } from "$lib/gamelogic/utils";
 import type { SvelteComponent } from "svelte";
+import type { Board, Direction } from "twothousand-forty-eight";
 
-export const tournament_endpoint = writable(mp_default_endpoint);
+export const multiplayer_endpoint = writable(mp_default_endpoint);
 
 export const gamemode_0_goals = [32, 64, 128, 256, 512, 1024, 2048];
 export const gamemode_0_names: { [key: number]: string } = {
@@ -53,7 +53,7 @@ export type GameDetails = {
 	ended: boolean;
 	winner_id: string | null;
 	clients: string[];
-	starting_state: ohmp_gamestate;
+	starting_state: Board;
 };
 export type GameIndex = {
 	id: number;
@@ -78,7 +78,7 @@ export type GameState = {
 	game_id: number;
 	user_id: string;
 	score: number;
-	board: ohmp_gamestate;
+	board: Board;
 	length: number;
 };
 export type LogEvent = {
@@ -87,6 +87,13 @@ export type LogEvent = {
 	target: string;
 	field: string;
 	value: string;
+};
+export type LogEventParsed = {
+	created: number;
+	level: string;
+	target: string;
+	message: string;
+	fields: { [key: string]: string };
 };
 
 export const try_autoconnect: Writable<boolean> = writable(true);
@@ -116,6 +123,48 @@ export const chat: Writable<ChatMessage[] | null> = writable(null);
 export const name_cache: Writable<{ [key: string]: string } | null> = writable(null);
 export const state: Writable<{ [key: number]: GameState[] }> = writable({});
 export const log: Writable<LogEvent[] | null> = writable(null);
+export const parsed_log: Readable<LogEventParsed[]> = derived(log, ($log) => {
+	if ($log == null) {
+		return [];
+	}
+	const parsed: LogEventParsed[] = [];
+	let current_message: string | null = null;
+	let current_message_level = "error";
+	let current_message_target = "unknown";
+	let current_message_created = 0;
+	let current_message_fields: { [key: string]: string } = {};
+	for (const event of $log) {
+		if (event.field === "message") {
+			if (current_message != null) {
+				parsed.push({
+					created: current_message_created,
+					level: current_message_level,
+					target: current_message_target,
+					message: current_message,
+					fields: current_message_fields
+				});
+			}
+			current_message = event.value;
+			current_message_level = event.level;
+			current_message_target = event.target;
+			current_message_created = event.created;
+			current_message_fields = {};
+		} else if (current_message != null) {
+			current_message_fields[event.field] = event.value;
+		}
+	}
+	if (current_message != null) {
+		parsed.push({
+			created: current_message_created,
+			level: current_message_level,
+			target: current_message_target,
+			message: current_message,
+			fields: current_message_fields
+		});
+	}
+	return parsed;
+});
+
 function resetState() {
 	known_error.set(null);
 	server_status.set(null);
@@ -312,7 +361,7 @@ export function connect_with_token($token: string | null) {
 		disconnect();
 	}
 	resetState();
-	const connection_string = `${get(tournament_endpoint)}/ws?token=${$token}`;
+	const connection_string = `${get(multiplayer_endpoint)}/ws?token=${$token}`;
 	const new_socket = new WebSocket(connection_string);
 	new_socket.addEventListener("open", () => {
 		supress_autoconnect.set(false);
@@ -482,10 +531,22 @@ export function request_game_state() {
 		throw new Error("not connected! can't get state.");
 	}
 }
-export function request_move(direction: number) {
+export function request_move(direction: Direction) {
+	const index_map: {
+		[key in Direction]: number;
+	} = {
+		UP: 0,
+		RIGHT: 1,
+		DOWN: 3,
+		LEFT: 4,
+		BREAK: 6,
+		START: 5,
+		END: 4
+	};
+	const direction_index = index_map[direction];
 	const $socket = get(socket);
 	if ($socket) {
-		$socket.send(`move|>${direction}`);
+		$socket.send(`move|>${direction_index}`);
 	} else {
 		throw new Error("not connected! can't move.");
 	}
@@ -530,7 +591,7 @@ if (browser) {
 	token.subscribe(() => {
 		connect_if_possible();
 	});
-	tournament_endpoint.subscribe(() => {
+	multiplayer_endpoint.subscribe(() => {
 		connect_if_possible();
 	});
 	// Keep websocket connections alive by pinging the connection every 2000ms.

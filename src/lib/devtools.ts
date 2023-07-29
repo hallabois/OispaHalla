@@ -150,7 +150,7 @@ function testProbabilities() {
 function setMpEndpoint(endpoint_url: string) {
 	mp.disconnect();
 	setTimeout(() => {
-		mp.tournament_endpoint.set(endpoint_url);
+		mp.multiplayer_endpoint.set(endpoint_url);
 	}, 2000);
 }
 

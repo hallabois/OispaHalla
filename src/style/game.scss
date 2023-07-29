@@ -322,7 +322,7 @@
 	margin-top: 50px;
 }
 
-@include smaller(520px) {
+@include smaller($mobile-threshold) {
 	// Redefine variables for smaller screens
 	:root {
 		--field-width: 320px !important;

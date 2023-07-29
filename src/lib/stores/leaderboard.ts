@@ -1,17 +1,21 @@
-import { type Writable, writable, get } from "svelte/store";
-import { setItem, getItem, storage_loaded } from "$lib/stores/storage";
+import { type Readable, get, derived } from "svelte/store";
+import { setItem, getItem, storage_loaded, storage } from "$lib/stores/storage";
 import { json_headers } from "$lib/utils";
 import { leaderboard_endpoint } from "$lib/config";
+import type { GameSize } from "$lib/gamelogic/new";
 
-export const lb_screenName: Writable<string | null> = writable(getItem("lb_screenName") || null);
-lb_screenName.subscribe((val) => {
-	if (val == "null") {
-		lb_screenName.set(null);
+export const lb_screenName: Readable<string | undefined> = derived(
+	[storage_loaded, storage],
+	([$storage_loaded, $storage]) => {
+		if (!$storage_loaded) {
+			return undefined;
+		}
+		return $storage["lb_screenName"] as string | undefined;
 	}
-});
-lb_screenName.subscribe((value) => {
-	setItem("lb_screenName", value);
-});
+);
+export const set_lb_screenName = (name: string) => {
+	setItem("lb_screenName", name);
+};
 
 export async function check_server_alive() {
 	try {
@@ -153,7 +157,7 @@ export async function fetchboard(
 			try {
 				const json_result = await resp.json();
 				if (get(lb_screenName) == null && json_result?.score?.user?.screenName) {
-					lb_screenName.set(json_result?.score?.user?.screenName);
+					set_lb_screenName(json_result?.score?.user?.screenName);
 				}
 				if (json_result.score && json_result.score.size && json_result.score.score) {
 					const existing = getItem("bestScores") || {};
@@ -206,7 +210,7 @@ export class submit_response {
 	json!: any | null;
 }
 export async function submit_score(
-	size: number,
+	size: GameSize,
 	token: string | null,
 	user_screenName: string,
 	run_score: number,
@@ -273,10 +277,7 @@ export class change_name_response {
 	success!: boolean;
 	message!: string;
 }
-export async function change_name(
-	name: string | null,
-	token: string
-): Promise<change_name_response> {
+export async function change_name(name: string, token: string): Promise<change_name_response> {
 	try {
 		const connected_accounts = storage_loaded ? getItem("connected_accounts") || [] : [];
 		const resp = await fetch(`${leaderboard_endpoint}/meta/changename`, {
@@ -289,6 +290,7 @@ export async function change_name(
 			})
 		});
 		if (resp.ok) {
+			set_lb_screenName(name);
 			return {
 				success: true,
 				message: "Nimi vaihdettu."

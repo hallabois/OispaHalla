@@ -8,8 +8,8 @@
 </div>
 <div class="header-actions">
 	<a class="rootlink" href="/">Takaisin OispaHallaan</a>
-	<a class="tab" class:active={size === 3} href="/leaderboards/3">3x3</a>
-	<a class="tab" class:active={size === 4} href="/leaderboards/4">4x4</a>
+	<a class="tab" class:active={size === 3} href="/leaderboards/3">3×3</a>
+	<a class="tab" class:active={size === 4} href="/leaderboards/4">4×4</a>
 </div>
 
 <style>

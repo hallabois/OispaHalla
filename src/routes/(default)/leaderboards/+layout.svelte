@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>OispaHalla Leaderboards</title>
+</svelte:head>
+
 <div class="blurry-bg">
 	<div class="positioner">
 		<slot />

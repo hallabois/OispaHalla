@@ -1,10 +1,12 @@
 <script lang="ts">
-	import Board from "$lib/components/board/board.svelte";
-	import type Grid from "$lib/gamelogic/grid";
-	import type { HistoryReconstruction, CompleteValidationResult } from "twothousand-forty-eight";
-	import Tile from "$lib/gamelogic/tile";
+	import type {
+		HistoryReconstruction,
+		CompleteValidationResult,
+		Board,
+		Direction
+	} from "twothousand-forty-eight";
 	import { onMount } from "svelte";
-	import { v2_4x4 } from "./example_games";
+	import { v1_4x4, v2_4x4 } from "./example_games";
 	import {
 		ready,
 		wasm,
@@ -12,29 +14,27 @@
 		init as initWasm
 	} from "$lib/wasm/twothousand_forty_eight";
 	import { browser } from "$app/environment";
-	import {
-		generate_previous_positions,
-		ohmp_gamestate_to_grid,
-		type ohmp_gamestate
-	} from "$lib/gamelogic/utils";
+	import { board_to_tile_array } from "$lib/gamelogic/new";
+	import GameBoard from "$lib/components/board/gameBoard.svelte";
 
-	type Direction = "0" | "1" | "2" | "3" | "f";
 	const directions: {
 		[key in Direction]: string;
 	} = {
-		"0": "ylös",
-		"1": "oikealle",
-		"2": "alas",
-		"3": "vasemmalle",
-		f: "loppuun"
+		UP: "ylös",
+		RIGHT: "oikealle",
+		DOWN: "alas",
+		LEFT: "vasemmalle",
+		END: "loppu",
+		BREAK: "kurinpalautus",
+		START: "alku"
 	};
 
 	let selected_frame = 0;
 	let input: string = "";
 	let show_additions = false;
 	let reconstruction: HistoryReconstruction | null;
-	let grid: Grid;
-	let lastGrid;
+	let board: Board;
+	let last_board: Board | null = null;
 	let err: string | null;
 	let hash: string | null;
 
@@ -78,36 +78,21 @@
 	}
 
 	let err2: string | null;
-	let frame: ohmp_gamestate;
 	let input_validation_result: CompleteValidationResult | null = null;
 	let move_direction: Direction | null = null;
 	$: if (reconstruction != null && selected_frame != null && $wasm != null) {
 		console.info("Trying to render selected frame...");
 		try {
 			err2 = null;
-			frame = reconstruction.history[selected_frame];
-			let parsed_frame = ohmp_gamestate_to_grid(frame);
-			if (selected_frame > 0) {
-				let last_frame = reconstruction.history[selected_frame - 1];
-				parsed_frame = generate_previous_positions(
-					parsed_frame,
-					ohmp_gamestate_to_grid(last_frame)
-				);
-			}
-			console.log("frame", parsed_frame);
-			lastGrid = structuredClone(grid);
-			grid = parsed_frame;
+			board = reconstruction.history[selected_frame];
+			console.log("frame", board);
 
-			let new_cells = parsed_frame.cells;
-			grid.cells = new_cells;
-			grid = grid;
-			if (boardInstance) {
-				let gameManager = boardInstance.getGameManagerInstance();
-				if (gameManager) {
-					gameManager.grid = grid;
-					gameManager.actuate();
-				}
+			if (selected_frame > 0) {
+				last_board = reconstruction.history[selected_frame - 1];
+			} else {
+				last_board = null;
 			}
+
 			console.info("Rendered!");
 		} catch (e) {
 			console.warn("Error while rendering:", e);
@@ -126,13 +111,10 @@
 		}
 	}
 
-	let boardInstance: Board;
-	let inputRoot: HTMLElement;
 	onMount(() => {
 		if (browser) {
 			initWasm();
 		}
-		inputRoot = document.querySelector("html") as HTMLElement;
 	});
 </script>
 
@@ -154,10 +136,20 @@
 					input = "";
 				}}>Tyhjennä</button
 			>
+			Lataa esimerkkipeli:
 			<button
 				on:click={() => {
 					input = v2_4x4;
-				}}>Lataa esimerkki</button
+				}}
+			>
+				V2</button
+			>
+			<button
+				on:click={() => {
+					input = v1_4x4;
+				}}
+			>
+				V1</button
 			>
 			<br />
 			{#if err || err2}
@@ -181,14 +173,13 @@
 					<label for="show_additions">Näytä lisäykset</label>
 					<input id="show_additions" type="checkbox" bind:checked={show_additions} />
 					-->
-				<Board
-					bind:this={boardInstance}
-					enableLSM={false}
-					enableKIM={false}
-					documentRoot={inputRoot}
-					enable_theme_chooser={true}
-					{grid}
+				<GameBoard
+					tiles={board_to_tile_array(board)}
+					size={board.width}
+					last_move_direction={"DOWN"}
+					last_move_tiles={last_board ? board_to_tile_array(last_board) : null}
 				/>
+
 				{#if move_direction != null}
 					<p>Siirto {directions[move_direction]}</p>
 				{/if}
@@ -211,8 +202,7 @@
 				{/if}
 				<details>
 					<summary>Dataa dataa jesjes</summary>
-					<p>{JSON.stringify(frame)}</p>
-					<p>{JSON.stringify(grid)}</p>
+					<p>{JSON.stringify(board)}</p>
 				</details>
 			{/if}
 		{/if}

@@ -3,7 +3,7 @@
 	import { onMount } from "svelte";
 
 	import { enable_multiplayer, enable_leaderboards } from "$lib/config";
-	import { storage_loaded, storage } from "$lib/stores/storage";
+	import { storage } from "$lib/stores/storage";
 
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
 
@@ -12,7 +12,6 @@
 	import Tournaments from "$lib/components/multiplayer.svelte";
 	import Leaderboards from "$lib/components/leaderboard.svelte";
 
-	import Board from "$lib/components/board/board.svelte";
 	import Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import type GameManager from "$lib/gamelogic/game_manager";
 	import Icon from "$lib/components/common/icon/icon.svelte";
@@ -32,6 +31,16 @@
 		app_name_score_default,
 		app_notice_default
 	} from "$lib/brand";
+	import Game from "$lib/components/board/game.svelte";
+	import {
+		gamestate,
+		score,
+		type GameSize,
+		highscore,
+		active_size,
+		set_active_size
+	} from "$lib/gamelogic/new";
+	import { blur, fade, scale, slide } from "svelte/transition";
 
 	let app_name = "";
 	let app_description = "";
@@ -73,30 +82,9 @@
 	let mounted = false;
 	let GameManagerInstance: GameManager;
 	onMount(() => {
-		inputRoot = document.querySelector("html") as HTMLElement;
 		mounted = true;
 	});
 
-	let load_started = false;
-	$: if (mounted && $storage_loaded && !load_started) {
-		load_started = true;
-		console.log("Starting to load game logic...");
-		BoardInstance.setDocumentRoot(inputRoot);
-		BoardInstance.initcomponents();
-		GameManagerInstance = BoardInstance.getGameManagerInstance();
-		GameManagerInstance.subscribe(() => {
-			GameManagerInstance = BoardInstance.getGameManagerInstance();
-		});
-
-		// @ts-ignore - Debugging
-		window.GameManagerDebugInstance = GameManagerInstance;
-
-		console.info("Game logic loaded.");
-	}
-
-	let enableKIM = true;
-
-	let inputRoot: HTMLElement;
 	let TtInstance: Tournaments;
 	let lbInstance: Leaderboards;
 	let has_unread_notifications: boolean | null;
@@ -105,31 +93,25 @@
 	let PSAInstance: PSA;
 	let SettingsInstance: Settings;
 	let AnnouncerInstance: Announcer;
-	let BoardInstance: Board;
 
-	let restartbtn: HTMLElement;
-	function restartGame(size: number) {
-		let GameManagerInstance = BoardInstance.getGameManagerInstance();
-		GameManagerInstance?.restartplus(size);
+	let restart_menu_open = false;
+	function restartGame() {
+		if ($gamestate) {
+			$gamestate.restart();
+		}
 	}
 	function paritaKuli() {
-		if (GameManagerInstance != null && confirm("Haluatko käyttää kurinpalautuksen?")) {
-			GameManagerInstance.paritaKuli();
+		if ($gamestate) {
+			$gamestate.move("BREAK");
 		}
+		//if (GameManagerInstance != null && confirm("Haluatko käyttää kurinpalautuksen?")) {
+		//	GameManagerInstance.paritaKuli();
+		//}
 	}
 </script>
 
 <div class="game-background">
 	<div class="container">
-		<Announcer bind:this={AnnouncerInstance} />
-		<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
-		<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
-		<Tournaments
-			bind:this={TtInstance}
-			announcer={AnnouncerInstance}
-			bind:indicator_game_ready={multiplayer_game_ready}
-		/>
-		<PSA bind:this={PSAInstance} bind:has_unread_notifications bind:unread_notification_count />
 		<div class="new-above-game">
 			<div class="above-game-left">
 				<a href="https://hallabois.github.io/invite/" target="_blank" rel="noreferrer">
@@ -138,54 +120,57 @@
 				{@html marked.parse(app_description, { mangle: false, headerIds: false })}
 			</div>
 			<div class="above-game-right">
-				<div class="score-container" style="--c:'{app_name_score}'">0</div>
-				<div
-					class="best-container"
-					style="--c:'{app_name_hiscore}'"
-					title={Object.keys($storage?.bestScores || {})
-						.map((x) => `${x}: ${$storage.bestScores[x]}`)
-						.join("\n")}
-				>
-					{#if GameManagerInstance != null && $storage?.bestScores}
-						{$storage?.bestScores[GameManagerInstance.size]}
-					{:else}
-						0
-					{/if}
+				<div class="score-container" style="--c:'{app_name_score}'">
+					{$score != null ? `${$score}` : "..."}
 				</div>
-				<div
-					class="restart-button button action-btn"
-					bind:this={restartbtn}
-					on:click={() => {
-						if (!restartbtn.classList.contains("open")) {
-							restartbtn.classList.add("open");
-						} else {
-							restartbtn.classList.remove("open");
-						}
-					}}
-					on:keypress={() => {
-						if (!restartbtn.classList.contains("open")) {
-							restartbtn.classList.add("open");
-						} else {
-							restartbtn.classList.remove("open");
-						}
-					}}
-				>
-					<div class="uusi-jakso">{app_name_newgame}</div>
-					<div class="size-selector">
-						<button>&lt;</button>
+				<div class="best-container" style="--c:'{app_name_hiscore}'">
+					{#key $active_size}
+						{$highscore != null ? `${$highscore}` : "..."}
+					{/key}
+				</div>
+				<div class="restart-menu" class:open={restart_menu_open}>
+					<button
+						class="button action-btn"
+						style="flex-grow: 0;"
+						class:discourage={restart_menu_open}
+						on:click={() => {
+							restart_menu_open = !restart_menu_open;
+						}}
+					>
+						{#if restart_menu_open}
+							&lt;
+						{:else}
+							{$active_size}x{$active_size}
+						{/if}
+					</button>
+					{#if restart_menu_open}
 						<button
+							in:scale={{ delay: 0, duration: 250 }}
 							on:click={() => {
-								restartGame(3);
+								set_active_size(3);
 							}}
-							class="restart-3x3">3x3</button
+							class:discourage={$active_size != 3}
+							class="restart-3x3 button action-btn">3x3</button
 						>
 						<button
+							in:scale={{ delay: 125, duration: 250 }}
 							on:click={() => {
-								restartGame(4);
+								set_active_size(4);
 							}}
-							class="restart-4x4">4x4</button
+							class:discourage={$active_size != 4}
+							class="restart-4x4 button action-btn">4x4</button
 						>
-					</div>
+					{:else}
+						<button
+							class="button action-btn"
+							class:discourage={restart_menu_open}
+							on:click={() => {
+								restartGame();
+							}}
+						>
+							{app_name_newgame}
+						</button>
+					{/if}
 				</div>
 			</div>
 		</div>
@@ -197,14 +182,7 @@
 			{/if}
 		</div>
 		<div class="board-container">
-			<Board
-				{enableKIM}
-				enableLSM={true}
-				enableRng={true}
-				documentRoot={inputRoot}
-				initComponentsOnMount={false}
-				bind:this={BoardInstance}
-			/>
+			<Game />
 			<div class="underbar-container">
 				<div class="button-container-size">
 					<div class="button-container panel-frosted">
@@ -238,12 +216,19 @@
 					</div>
 				</div>
 				<div class="kurin-palautus-container" style="flex: 1;">
-					<button class="button kurin-palautus" on:click={paritaKuli}>
+					<button
+						class="button kurin-palautus"
+						class:allowed={$gamestate?.state.allowed_moves.includes("BREAK")}
+						on:click={paritaKuli}
+					>
 						<span
 							class="parin-kulautus"
 							title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
 						>
-							Kurinpalautus {GameManagerInstance?.palautukset ?? "?"}/3
+							Kurinpalautus
+							{#if $gamestate?.state?.breaks != null}
+								{$gamestate?.state?.breaks}/3
+							{/if}
 						</span>
 					</button>
 				</div>
@@ -286,10 +271,30 @@
 		</div>
 	</div>
 </div>
+<Announcer bind:this={AnnouncerInstance} />
+<Settings bind:this={SettingsInstance} announcer={AnnouncerInstance} {GameManagerInstance} />
+<Leaderboards bind:this={lbInstance} announcer={AnnouncerInstance} />
+<Tournaments
+	bind:this={TtInstance}
+	announcer={AnnouncerInstance}
+	bind:indicator_game_ready={multiplayer_game_ready}
+/>
+<PSA bind:this={PSAInstance} bind:has_unread_notifications bind:unread_notification_count />
 
 <Preloader />
 
-<style>
+<style lang="scss">
+	@import "../../style/helpers.scss";
+	.restart-menu {
+		flex-grow: 1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.restart-menu > * {
+		flex: 1;
+	}
 	.board-container {
 		display: grid;
 		place-items: center;
@@ -307,5 +312,17 @@
 		animation: none !important;
 		-moz-animation: none !important;
 		-webkit-animation: none !important;
+	}
+
+	@include smaller($mobile-threshold) {
+		.restart-menu {
+			flex-direction: column;
+		}
+		.restart-menu.open {
+			flex-direction: row;
+		}
+		.restart-menu > * {
+			width: 100%;
+		}
 	}
 </style>

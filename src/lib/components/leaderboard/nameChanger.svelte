@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { auth, token } from "$lib/Auth/authstore";
-	import { lb_screenName, check_name, change_name } from "$lib/stores/leaderboard";
+	import {
+		lb_screenName,
+		check_name,
+		change_name,
+		set_lb_screenName
+	} from "$lib/stores/leaderboard";
 
 	import Popup from "$lib/components/common/popup/popup.svelte";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 
 	export let open = false;
-	let name_in_progress: string | null;
+	let name_in_progress: string | undefined;
 
 	let checking_name = false;
 	let name_valid = false;
@@ -17,7 +22,7 @@
 		open = true;
 	}
 	export async function save() {
-		if (!name_valid || !$token) {
+		if (!name_in_progress || !name_valid || !$token) {
 			return;
 		}
 		if (name_in_progress === $lb_screenName) {
@@ -32,7 +37,7 @@
 			if (announcer != null) {
 				announcer.announce(resp.message);
 			}
-			lb_screenName.set(name_in_progress);
+			set_lb_screenName(name_in_progress);
 			open = false;
 			callback();
 		} catch (e) {
@@ -41,21 +46,18 @@
 			}
 		}
 	}
-	let names_checked = {};
-	$: if (
-		name_in_progress != null &&
-		name_in_progress != "null" &&
-		$auth &&
-		$auth.uid &&
-		$token != null
-	) {
+	let names_checked: {
+		[name: string]: boolean;
+	} = {};
+	$: if (name_in_progress != null && $auth && $auth.uid && $token != null) {
+		const name = name_in_progress;
 		if (!checking_name) {
-			if (names_checked[name_in_progress] != null) {
-				name_valid = names_checked[name_in_progress];
+			if (names_checked[name] != null) {
+				name_valid = names_checked[name];
 			} else {
 				checking_name = true;
-				check_name(name_in_progress, $auth.uid).then((valid) => {
-					names_checked[name_in_progress] = valid;
+				check_name(name, $auth.uid).then((valid) => {
+					names_checked[name] = valid;
 					checking_name = false;
 					name_valid = valid;
 				});
@@ -73,7 +75,7 @@
 
 <Popup bind:open>
 	<span slot="title">Muuta nimimerkkiä</span>
-	<div slot="content" class="content">
+	<form slot="content" class="content" on:submit|preventDefault={save}>
 		{#if $auth && $auth.uid}
 			<p>Tahalteen muita loukkaavien nimimerkkien käyttö johtaa porttikieltoon.</p>
 
@@ -82,19 +84,22 @@
 			<p>{status || ""}</p>
 			<div class="buttons">
 				<button
-					class="button action-btn"
+					class="button action-btn discourage"
 					on:click={() => {
 						open = false;
 					}}>Peruuta</button
 				>
-				<button disabled={checking_name || !name_valid} class="button action-btn" on:click={save}
-					>Tallenna</button
-				>
+				<input
+					type="submit"
+					value="Tallenna"
+					disabled={checking_name || !name_valid}
+					class="button action-btn"
+				/>
 			</div>
 		{:else}
 			<p>Ladataan tietoja....</p>
 		{/if}
-	</div>
+	</form>
 </Popup>
 
 <style>

@@ -28,9 +28,19 @@
 	});
 </script>
 
+<svelte:window
+	on:keydown={(e) => {
+		if (e.key === "Escape" && $open_popups.at(-1) === my_key) {
+			open = false;
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	}}
+/>
+
 {#if open}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div
+	<popup
 		class="lb-popup"
 		on:click={() => {
 			open = false;
@@ -71,7 +81,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</popup>
 {/if}
 
 <style lang="scss">

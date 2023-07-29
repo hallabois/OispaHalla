@@ -139,9 +139,9 @@ export function setItem(key: string, value: unknown) {
 	storage.set(data);
 }
 
-export function getItem(key: string): unknown {
+export function getItem<T>(key: string): T | undefined {
 	const items = get(storage);
-	return items[key];
+	return items[key] as T;
 }
 
 export function clearStorage() {

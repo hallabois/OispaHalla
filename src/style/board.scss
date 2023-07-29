@@ -382,3 +382,12 @@ $grid-max-size: 10;
 	@include animation(disappear 200ms ease var(--transition-speed));
 	@include animation-fill-mode(backwards);
 }
+
+@include smaller($mobile-threshold) {
+	// Redefine variables for smaller screens
+	:root {
+		--field-width: 320px !important;
+		--grid-gap: 10px !important;
+		--tile-border-radius: 3px !important;
+	}
+}

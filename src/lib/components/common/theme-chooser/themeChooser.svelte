@@ -1,7 +1,12 @@
 <!-- / -->
 <script lang="ts">
 	import { slide, scale } from "svelte/transition";
-	import { theme_index, base_path, available_themes } from "$lib/stores/themestore";
+	import {
+		theme_index,
+		base_path,
+		available_themes,
+		theme_index_server
+	} from "$lib/stores/themestore";
 
 	import { storage_loaded } from "$lib/stores/storage";
 
@@ -9,7 +14,6 @@
 		args.condition ? slide(node, args) : scale(node, args);
 	import { browser } from "$app/environment";
 	import { enable_custom_themes } from "$lib/config";
-	import { defaultTheme } from "$lib/brand";
 
 	let menu_open = false;
 
@@ -110,7 +114,7 @@
 			{/if}
 		{/if}
 	{:else}
-		{@const theme = $available_themes[$defaultTheme]}
+		{@const theme = $available_themes.find((theme) => theme.index == $theme_index_server)}
 		<button>
 			<img src={theme?.icon_url} width="50px" height="50px" alt="" style={theme?.style} />
 		</button>

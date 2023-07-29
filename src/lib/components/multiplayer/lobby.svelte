@@ -13,12 +13,14 @@
 		request_start,
 		request_kick
 	} from "$lib/stores/multiplayer";
-	import Board from "../board/board.svelte";
 	import { ohmp_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import type Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import { browser } from "$app/environment";
 	import Popup from "../common/popup/popup.svelte";
 	import { Confetti } from "svelte-confetti";
+	import Game from "../board/game.svelte";
+	import GameBoard from "../board/gameBoard.svelte";
+	import { board_to_tile_array } from "$lib/gamelogic/new";
 
 	export let announcer: Announcer | null = null;
 	let inputRoot: HTMLElement;
@@ -129,11 +131,11 @@
 					<div>
 						<h3>Aloitustilanne</h3>
 						<div class="game-preview">
-							<Board
-								enableLSM={false}
-								grid={ohmp_gamestate_to_grid(game_data.starting_state)}
-								documentRoot={inputRoot}
-								enable_theme_chooser={false}
+							<GameBoard
+								size={game_data.starting_state.width}
+								tiles={board_to_tile_array(game_data.starting_state)}
+								last_move_direction={null}
+								last_move_tiles={null}
 							/>
 						</div>
 					</div>
@@ -261,12 +263,6 @@
 	}
 	.game-preview {
 		--field-width: 300px !important;
-		--tile-size: calc(
-			calc(
-					var(--field-width, var(--default-field-width)) -
-						calc(var(--grid-gap) * calc(var(--grid-size) + 1))
-				) / var(--grid-size)
-		);
 		overflow: hidden;
 		display: block;
 		width: 300px;

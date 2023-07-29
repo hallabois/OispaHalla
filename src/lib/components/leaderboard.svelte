@@ -18,86 +18,41 @@
 	import { getItem, setItem, storage, storage_loaded } from "$lib/stores/storage";
 	import Icon from "./common/icon/icon.svelte";
 	import { shareIconData } from "./common/icon/iconData";
+	import {
+		set_active_size,
+		type GameSize,
+		active_size,
+		active_size_safe,
+		ENABLED_SIZES,
+		gamestate
+	} from "$lib/gamelogic/new";
 
 	$: can_submit_now = $token != null && $lb_screenName != null;
 
-	export let GameManagerInstance: GameManager | null = null;
-	function submitUnsubmittedTopScoresForSize(s: number) {
-		let top_saved = ($storage.bestScores || {})[s] || -1;
-		let top_submitted = ($storage.lb_submitted || {})[s] || -1;
-		if (
-			(GameManagerInstance?.size == s &&
-				(GameManagerInstance?.run_best_score || GameManagerInstance?.score) >= top_saved &&
-				!GameManagerInstance.over) ||
-			getItem("zen_mode")
-		) {
-			// Do nothing, as the top scoring game is not over yet.
-		} else if (top_saved > top_submitted) {
-			console.info(`Please submit score for size ${s}...`);
-			size = s;
-			if (can_submit_now) {
-				submit();
-			} else {
-				submitting = true;
-				show();
-			}
-			return true;
-		}
-		return false;
+	type bestScores = { [key in GameSize]: number };
+	type submittedScores = { [key in GameSize]: number };
+	function submitUnsubmittedTopScoresForSize(s: GameSize) {
+		// TODO: Rewrite
 	}
-	let enabled_sizes = [3, 4];
+	let enabled_sizes: GameSize[] = [3, 4];
 	function submitUnsubmittedTopScores() {
-		if (GameManagerInstance != null) {
-			for (let s of enabled_sizes) {
-				if (submitUnsubmittedTopScoresForSize(s)) {
-					return;
-				}
-			}
-		} else {
-			console.warn("GameManagerInstance is null!");
-		}
+		// TODO: Rewrite
 	}
-	function startSubmitting(s: number) {
-		console.info(`Starting to submit score ${s}...`);
-		size = s;
+	function startSubmitting(s: GameSize) {
+		// TODO: Rewrite
 		submitting = true;
 	}
 	function markAsSubmitted(s: number) {
-		setItem("lb_submitted", {
-			...(getItem("lb_submitted") || {}),
-			[s]: (getItem("bestScores") || {})[s]
-		});
+		// TODO: Rewrite
 		submitting = false;
-	}
-	function getHACString(run: any[]) {
-		return size + "x" + size + "S" + run.join(":");
 	}
 	let submit_in_progress = false;
 	async function submit() {
+		if (!$active_size) {
+			return;
+		}
 		submit_in_progress = true;
-		let starting_size = size;
-		if (announcer) {
-			announcer.announce(`Lähetetään tulosta koolle ${size}x${size}...`);
-		}
-		let result = await submit_score(
-			starting_size,
-			$token,
-			$lb_screenName as string,
-			(getItem(`HAC_best_score${starting_size}`) ||
-				(getItem(`bestScores`) || {})[starting_size]) as number,
-			0,
-			getHACString(getItem(`HAC_best_history${starting_size}`))
-		);
-		submit_in_progress = false;
-		console.info("submit result", result);
-		if (result.message) {
-			if (announcer) {
-				announcer.announce(result.message);
-			}
-		}
-		if (result.success) {
-			markAsSubmitted(starting_size);
-		}
+		// TODO: Rewrite
 		refresh(true);
 	}
 	let is_server_alive: Promise<boolean> | null = null;
@@ -117,7 +72,7 @@
 	$: if ($storage_loaded && $storage.bestScores) {
 		submitUnsubmittedTopScoresIfAlive();
 	}
-	let fetchboard_results: { [key: number]: Promise<Fetchboard_response> } = {};
+	let fetchboard_results: { [key in GameSize]: Promise<Fetchboard_response> } = {};
 	$: if (refreshKey != null && was_server_alive) {
 		for (let s of enabled_sizes) {
 			fetchboard_results[s] = fetchboard(s, $token, 10, 1, 1);
@@ -128,7 +83,6 @@
 	}
 
 	export let open = false;
-	export let size = 4;
 	export let submitting = false;
 	export function show() {
 		open = true;
@@ -148,10 +102,13 @@
 
 	$: share_enabled = browser && (navigator.share || navigator.clipboard);
 	async function shareScore() {
-		if (!share_enabled) {
+		if (!share_enabled || !$auth || !$auth.uid || !$active_size) {
+			if (announcer) {
+				announcer.announce("Linkkiä ei voitu luoda :(");
+			}
 			return;
 		}
-		let link = `${window.location.origin}/user/${$auth.uid}?size=${size}`;
+		let link = `${window.location.origin}/user/${$auth.uid}?size=${$active_size}`;
 		let share_data: ShareData = {
 			url: link
 		};
@@ -172,9 +129,9 @@
 
 	if (browser) {
 		window.addEventListener("game_ended_with_best_score", () => {
-			if (GameManagerInstance != null) {
-				let s = GameManagerInstance.size;
-				submitUnsubmittedTopScoresForSize(s);
+			if ($gamestate) {
+				const s = $gamestate.state.board.width;
+				submitUnsubmittedTopScoresForSize(s as GameSize);
 			} else {
 				submitUnsubmittedTopScoresIfAlive(true);
 			}
@@ -214,9 +171,9 @@
 								{#each enabled_sizes as s}
 									<button
 										class="tab"
-										class:active={s == size}
+										class:active={s == $active_size}
 										on:click={() => {
-											size = s;
+											set_active_size(s);
 										}}
 									>
 										{s}×{s}
@@ -233,8 +190,8 @@
 										</tr>
 									</thead>
 									<tbody>
-										{#if fetchboard_results[size] != null}
-											{#await fetchboard_results[size]}
+										{#if fetchboard_results[$active_size_safe] != null}
+											{#await fetchboard_results[$active_size_safe]}
 												{#each new Array(10) as index}
 													<tr>
 														<td>...</td>
@@ -249,7 +206,10 @@
 															<td>{index + 1}.</td>
 															<td>{score.score}</td>
 															<td>
-																<a class="player" href={`/user/${score.user.uid}?size=${size}`}>
+																<a
+																	class="player"
+																	href={`/user/${score.user.uid}?size=${$active_size_safe}`}
+																>
 																	{score.user ? score.user.screenName : "[Virheellinen nimi]"}
 																</a>
 															</td>
@@ -273,17 +233,17 @@
 								>
 									Päivitä
 								</a>
-								<a href="/leaderboards/{size}">Näytä kaikki</a>
+								<a href="/leaderboards/{$active_size_safe}">Näytä kaikki</a>
 							</div>
 							{#if $token != null}
-								{#if fetchboard_results[size] != null}
-									{#await fetchboard_results[size]}
+								{#if fetchboard_results[$active_size_safe] != null}
+									{#await fetchboard_results[$active_size_safe]}
 										<p style="font-size: 0.5em;" />
 										<p style="text-align:center;">Ladataan tuloksiasi...</p>
 										<p style="font-size: 0.5em;" />
 									{:then result}
 										{#if !result.success || !("score" in result)}
-											<p>Et ole tallentanut yhtäkään tulosta sarjaan "{size}"</p>
+											<p>Et ole tallentanut yhtäkään tulosta sarjaan "{$active_size_safe}"</p>
 										{:else}
 											<div class="my-results">
 												<table>
@@ -296,7 +256,7 @@
 															<td
 																><a
 																	class="player"
-																	href={`/user/${subjectiveResult.uid}?size=${size}`}
+																	href={`/user/${subjectiveResult.uid}?size=${$active_size_safe}`}
 																	>{subjectiveResult.name}</a
 																></td
 															>
@@ -374,7 +334,6 @@
 <NameChanger bind:this={NameChangerInstance} {announcer} />
 <Actions
 	bind:this={ActionsInstance}
-	current_size={size}
 	markAsSubmitted={(s) => {
 		markAsSubmitted(s);
 	}}

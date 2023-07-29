@@ -9,6 +9,7 @@ export function setDefaultTheme(theme: number) {
 }
 export const currentImageThemeVersion = 6;
 
+export const theme_index_server: Writable<number> = writable(get(defaultTheme));
 export const theme_index: Writable<number> = writable(get(defaultTheme));
 export const theme_loaded: Writable<boolean> = writable(false);
 export const festives_applied: Writable<string[]> = writable([]);
@@ -74,7 +75,7 @@ storage_loaded.subscribe(($storage_loaded) => {
 		}
 		console.info(`Loaded theme ${get(theme_index)}.`);
 
-		const festives = getItem("festives_applied");
+		const festives = getItem<string[]>("festives_applied");
 		if (festives != null) {
 			festives_applied.set(festives);
 		} else {

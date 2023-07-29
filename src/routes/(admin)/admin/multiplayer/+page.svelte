@@ -16,14 +16,16 @@
 		send_custom,
 		admin_deleteall,
 		log,
-		server_status
+		server_status,
+		parsed_log
 	} from "$lib/stores/multiplayer";
 	import { token } from "$lib/Auth/authstore";
 	import { browser } from "$app/environment";
 	import Popup from "$lib/components/common/popup/popup.svelte";
-	import Board from "$lib/components/board/board.svelte";
+	import GameBoard from "$lib/components/board/gameBoard.svelte";
 	import { ohmp_gamestate_to_grid } from "$lib/gamelogic/utils";
 	import { onDestroy } from "svelte";
+	import { board_to_tile_array } from "$lib/gamelogic/new";
 	try_autoconnect.set(false);
 	let refreshKey = {};
 	let admin_token: string;
@@ -242,10 +244,11 @@
 														<Popup bind:open={board_popups_open[val]}>
 															<span slot="title">Board</span>
 															<div slot="content">
-																<Board
-																	enableLSM={false}
-																	grid={ohmp_gamestate_to_grid(val)}
-																	enable_theme_chooser={false}
+																<GameBoard
+																	size={val.width}
+																	tiles={board_to_tile_array(val)}
+																	last_move_direction={null}
+																	last_move_tiles={null}
 																/>
 															</div>
 														</Popup>
@@ -349,17 +352,22 @@
 						<th>Level</th>
 						<th>Time</th>
 						<th>Target</th>
-						<th>Field</th>
-						<th>Value</th>
+						<th>Message</th>
 					</tr>
-					{#each $log as log_event}
+					{#each $parsed_log as log_event}
 						{@const time_str = new Date(log_event.created * 1000).toLocaleString()}
 						<tr>
 							<td class={`loglevel ${log_event.level}`}>{log_event.level}</td>
 							<td title={log_event.created + ""}>{time_str}</td>
 							<td>{log_event.target}</td>
-							<td>{log_event.field}</td>
-							<td>{log_event.value}</td>
+							<td>
+								<p>{log_event.message}</p>
+								{#each Object.keys(log_event.fields) as field}
+									<p>
+										{field}: {log_event.fields[field]}
+									</p>
+								{/each}
+							</td>
 						</tr>
 					{/each}
 				</table>

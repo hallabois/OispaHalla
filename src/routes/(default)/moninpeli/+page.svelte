@@ -2,13 +2,14 @@
 	import { swipe } from "svelte-gestures";
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
 	import MultiplayerMenu from "$lib/components/multiplayer/menu.svelte";
-	import Board from "$lib/components/board/board.svelte";
+	import GameBoard from "$lib/components/board/gameBoard.svelte";
 	import Announcer from "$lib/components/common/announcer/announcer.svelte";
 	import {
 		connect,
 		connection_error,
 		game_details,
 		joined_game_id,
+		multiplayer_endpoint,
 		name_cache,
 		request_move,
 		state,
@@ -23,20 +24,17 @@
 		fix_new_ids
 	} from "$lib/gamelogic/utils";
 	import KeyboardInputManager from "$lib/gamelogic/keyboard_input_manager";
-	import type Grid from "$lib/gamelogic/grid";
 	import { browser, dev } from "$app/environment";
 	import Tournaments from "$lib/components/multiplayer.svelte";
 	import { onMount } from "svelte";
-	type MoveDirection = 0 | 1 | 2 | 3;
 
 	$: inputManager_should_exist =
 		$joined_game_id &&
 		$game_details[$joined_game_id]?.started &&
 		$state[$joined_game_id] &&
 		$user_details != null;
-	let localGameState: ohmp_gamestate | null = null;
-	$: if (!inputManager_should_exist) localGameState = null;
-	function move(direction: MoveDirection) {
+	let localGameState: Board | null = null;
+	function move(direction: Direction) {
 		if (inputManager_should_exist) {
 			console.log("server-side move called with the value", direction);
 			request_move(direction);
@@ -53,13 +51,12 @@
 						}
 					}
 					console.log("rng seed", random_seed);
-					let predicted = JSON.parse(
-						$wasm.apply_move(JSON.stringify(localGameState), direction, true)
-					);
-					console.info("client-side prediction", predicted);
-					if (predicted.possible) {
-						localGameState.tiles = predicted.tiles;
-					}
+					try {
+						let predicted = $wasm.apply_move(localGameState, direction, true);
+
+						console.info("client-side prediction", predicted);
+						localGameState.tiles = predicted.board.tiles;
+					} catch (e) {}
 				} catch (e) {
 					console.warn("client-side prediction failed", e);
 				}
@@ -72,12 +69,12 @@
 	}
 	function swipeHandler(event: CustomEvent) {
 		const direction_map: {
-			[key: string]: MoveDirection;
+			[key: string]: Direction;
 		} = {
-			top: 0,
-			right: 1,
-			bottom: 2,
-			left: 3
+			top: "UP",
+			right: "RIGHT",
+			bottom: "DOWN",
+			left: "LEFT"
 		};
 		const direction = event.detail.direction;
 		const direction_mapped = direction_map[direction];
@@ -122,23 +119,6 @@
 		clearInterval(monkeyInterval);
 	}
 
-	let last_grid: Grid | null = null;
-
-	function processGrid(inp: ohmp_gamestate, remote: boolean) {
-		// Update localGameState
-		let difference = localGameState ? do_gamestates_differ(localGameState, inp) : true;
-		if (remote && difference) {
-			localGameState = fix_new_ids(inp, localGameState);
-		}
-
-		let translated = ohmp_gamestate_to_grid(inp);
-		if (last_grid) {
-			translated = generate_previous_positions(translated, last_grid);
-		}
-		last_grid = translated;
-		return translated;
-	}
-
 	import {
 		ready,
 		success as wasm_init_result,
@@ -146,6 +126,8 @@
 		validation_cache,
 		init as initWasm
 	} from "$lib/wasm/twothousand_forty_eight";
+	import type { Board, Direction } from "twothousand-forty-eight";
+	import { board_to_tile_array, complete_tiles } from "$lib/gamelogic/new";
 	let mounted = false;
 	onMount(async () => {
 		await initWasm();
@@ -169,13 +151,10 @@
 		</p>
 	{/if}
 	<div class="wasm-indicator">
-		{#if $wasm_init_result == null}
-			<p class="loading">loading wasm...</p>
-		{:else if $wasm_init_result}
-			<p class="loaded">wasm ready</p>
-		{:else}
-			<p class="error">wasm could not be initialized</p>
-		{/if}
+		<p>{$multiplayer_endpoint}</p>
+		<p>{$user_details?.id ?? "-"}</p>
+		<p>{$joined_game_id ?? "-"}</p>
+		<p>{$user_details?.admin ?? ""}</p>
 	</div>
 	{#if $joined_game_id && $game_details[$joined_game_id]?.started && $state[$joined_game_id] && $user_details != null}
 		{@const gamestates = $state[$joined_game_id]}
@@ -183,15 +162,15 @@
 
 		{#if gamestate}
 			{@const grid_o = gamestate.board}
-			{@const grid_remote = processGrid(grid_o, true)}
+			{@const grid_remote = board_to_tile_array(grid_o)}
 			{@const grid_or_predicted =
-				localGameState != null ? processGrid(localGameState, false) : grid_remote}
+				localGameState != null ? board_to_tile_array(localGameState) : grid_remote}
 			{@const grid = grid_or_predicted}
 			<p>{gamestate.score}</p>
 			<p>
 				ping: {$tournament_ping ?? "measuring..."}
 			</p>
-			<div class="board-container" bind:this={inputRoot} use:swipe on:swipe={swipeHandler}>
+			<div class="board-container">
 				<div
 					style="display: flex;justify-content:space-between;width:var(--field-width, --default-field-width);margin-bottom: 8px;"
 				>
@@ -211,27 +190,26 @@
 					</div>
 				</div>
 				{#key grid}
-					<Board
-						enableKIM={false}
-						enableLSM={false}
-						{grid}
-						enable_theme_chooser={false}
-						documentRoot={inputRoot}
+					<GameBoard
+						size={gamestate.board.width}
+						tiles={grid}
+						last_move_direction={null}
+						last_move_tiles={null}
+						{swipeHandler}
 					/>
 				{/key}
 				<div class="mini-container">
 					{#each gamestates as gstate, index}
-						{@const board = ohmp_gamestate_to_grid(gstate.board)}
+						{@const board = board_to_tile_array(gstate.board)}
 						{@const cached_name = ($name_cache || {})[gstate.user_id]}
 						<div class="mini">
 							<div class="mini-grid">
 								{#key board}
-									<Board
-										enableKIM={false}
-										enableLSM={false}
-										grid={board}
-										enable_theme_chooser={false}
-										documentRoot={null}
+									<GameBoard
+										size={gstate.board.width}
+										tiles={board}
+										last_move_direction={null}
+										last_move_tiles={null}
 									/>
 								{/key}
 							</div>
@@ -265,13 +243,6 @@
 
 		display: grid;
 		place-items: center;
-
-		--tile-size: calc(
-			calc(
-					var(--field-width, --default-field-width) -
-						calc(var(--grid-gap) * calc(var(--grid-size) + 1))
-				) / var(--grid-size)
-		);
 	}
 	.wasm-indicator {
 		position: fixed;
@@ -356,13 +327,5 @@
 		animation: none !important;
 		-moz-animation: none !important;
 		-webkit-animation: none !important;
-	}
-
-	@media screen and (max-width: 520px) {
-		:root {
-			--field-width: 320px !important;
-			--grid-gap: 10px !important;
-			--tile-border-radius: 3px !important;
-		}
 	}
 </style>

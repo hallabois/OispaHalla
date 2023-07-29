@@ -53,103 +53,101 @@
 	{#if browser}
 		{#if $auth === undefined}
 			<p>Tarkistetaan tietoja...</p>
-		{:else}
-			{#if $auth === null}
-				<Popup bind:open={email_popup_open}>
-					<span slot="title">Kirjaudu sisään sähköpostilla</span>
-					<div slot="content">
-						<small>Toistaiseksi vain ksyk.fi -sähköpostit ovat sallittuja</small>
-						<div style="display: flex;gap: .5em;flex-wrap: wrap;">
-							<input bind:value={email} placeholder="sähköposti" style="flex:1;font-size: 1em;" />
-							<button
-								disabled={!email_valid || email_submitting}
-								on:click={log_in_with_email}
-								class="button action-btn"
-								style="width: 100%;"
-							>
-								{email_submitting ? "Lähetetään" : "Kirjaudu sisään"}
-							</button>
-						</div>
-					</div>
-				</Popup>
-				<h1>Kirjaudu sisään</h1>
-				<div class="actions">
-					<button class="button action-btn" on:click={() => auth.signInWith("google")}
-						>Googlella</button
-					>
-					<button class="button action-btn" on:click={() => (email_popup_open = true)}
-						>Sähköpostilla</button
-					>
-				</div>
-				<a
-					href="#help"
-					on:click={() => {
-						help_open = true;
-					}}>Ongelmia kirjautumisessa?</a
-				>
-				<Popup bind:open={help_open}>
-					<span slot="title">Kirjautumisesta</span>
-					<div slot="content" class="popup-content">
-						<b
-							>Jos käytät firefoxia, tai muuta selainta jossa evästeet eristetään
-							sivustokohtaisesti, laita evästeiden eristys pois päältä</b
+		{:else if $auth === null}
+			<Popup bind:open={email_popup_open}>
+				<span slot="title">Kirjaudu sisään sähköpostilla</span>
+				<div slot="content">
+					<small>Toistaiseksi vain ksyk.fi -sähköpostit ovat sallittuja</small>
+					<div style="display: flex;gap: .5em;flex-wrap: wrap;">
+						<input bind:value={email} placeholder="sähköposti" style="flex:1;font-size: 1em;" />
+						<button
+							disabled={!email_valid || email_submitting}
+							on:click={log_in_with_email}
+							class="button action-btn"
+							style="width: 100%;"
 						>
-						<p>Firefoxissa:</p>
-						<ol>
-							<li>Paina sivuston osoitteen vasemmalla puolella olevasta kilvestä</li>
-							<li>Laita tehostettu seurannan suojaus pois päältä</li>
-						</ol>
-						<p>
-							Muita ongelmia? <a href="mailto:oispahalla@eliaseskelinen.fi"
-								>Ota yhteyttä kehittäjiin</a
-							>
-						</p>
+							{email_submitting ? "Lähetetään" : "Kirjaudu sisään"}
+						</button>
 					</div>
-				</Popup>
-			{:else}
-				<h1>Hei, {$auth.displayName || $auth.email}</h1>
-				{#if $auth.displayName}
-					<h3>({$auth.email})</h3>
-				{/if}
-				<div class="actions">
-					<button
-						class="button action-btn"
-						on:click={() => {
-							if (confirm("Oletko varma?")) {
-								auth.signOut();
-							}
-						}}
-					>
-						Kirjaudu Ulos
-					</button>
-					{#if dev}
-						{#if token}
-							<button class="button action-btn" on:click={validate}>Validoi</button>
-						{:else}
-							<button class="button action-btn" disabled>Ladataan...</button>
-						{/if}
-					{/if}
 				</div>
-				{#if validation_result}
-					{#if validation_result.ok}
+			</Popup>
+			<h1>Kirjaudu sisään</h1>
+			<div class="actions">
+				<button class="button action-btn" on:click={() => auth.signInWith("google")}
+					>Googlella</button
+				>
+				<button class="button action-btn" on:click={() => (email_popup_open = true)}
+					>Sähköpostilla</button
+				>
+			</div>
+			<a
+				href="#help"
+				on:click={() => {
+					help_open = true;
+				}}>Ongelmia kirjautumisessa?</a
+			>
+			<Popup bind:open={help_open}>
+				<span slot="title">Kirjautumisesta</span>
+				<div slot="content" class="popup-content">
+					<b
+						>Jos käytät firefoxia, tai muuta selainta jossa evästeet eristetään sivustokohtaisesti,
+						laita evästeiden eristys pois päältä</b
+					>
+					<p>Firefoxissa:</p>
+					<ol>
+						<li>Paina sivuston osoitteen vasemmalla puolella olevasta kilvestä</li>
+						<li>Laita tehostettu seurannan suojaus pois päältä</li>
+					</ol>
+					<p>
+						Muita ongelmia? <a href="mailto:oispahalla@eliaseskelinen.fi"
+							>Ota yhteyttä kehittäjiin</a
+						>
+					</p>
+				</div>
+			</Popup>
+		{:else}
+			<h1>Hei, {$auth.displayName || $auth.email}</h1>
+			{#if $auth.displayName}
+				<h3>({$auth.email})</h3>
+			{/if}
+			<div class="actions">
+				<button
+					class="button action-btn discourage"
+					on:click={() => {
+						if (confirm("Oletko varma?")) {
+							auth.signOut();
+						}
+					}}
+				>
+					Kirjaudu Ulos
+				</button>
+				<a class="button action-btn" href="/">Takaisin OispaHallaan</a>
+			</div>
+			{#if dev}
+				{#if token}
+					<button class="button action-btn" on:click={validate}>Validoi</button>
+				{:else}
+					<button class="button action-btn" disabled>Ladataan...</button>
+				{/if}
+			{/if}
+			{#if validation_result}
+				{#if validation_result.ok}
+					{#await validation_result.json()}
+						<p>{validation_result.status}: ladataan dataa...</p>
+					{:then data}
+						<p>Kaikki OK</p>
+					{/await}
+				{:else}
+					<div style="text-align: center;">
+						<p>Virhe.</p>
 						{#await validation_result.json()}
 							<p>{validation_result.status}: ladataan dataa...</p>
 						{:then data}
-							<p>Kaikki OK</p>
+							<p class="error">{data.message}</p>
 						{/await}
-					{:else}
-						<div style="text-align: center;">
-							<p>Virhe.</p>
-							{#await validation_result.json()}
-								<p>{validation_result.status}: ladataan dataa...</p>
-							{:then data}
-								<p class="error">{data.message}</p>
-							{/await}
-						</div>
-					{/if}
+					</div>
 				{/if}
 			{/if}
-			<a href="/">Takaisin OispaHallaan</a>
 		{/if}
 	{:else}
 		<p>Ladataan...</p>

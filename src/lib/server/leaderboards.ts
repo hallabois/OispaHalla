@@ -1,4 +1,5 @@
 import { leaderboard_endpoint } from "$lib/config";
+import type { GameSize } from "$lib/gamelogic/new";
 import { json_headers } from "$lib/utils";
 
 export type Score = {
@@ -16,7 +17,7 @@ export type Score = {
 export type leaderBoardDataOk = {
 	_id: string;
 	screenName: string;
-	scores: { [key: number]: Score };
+	scores: { [key in GameSize]: Score };
 	uid: string;
 	createdAt: string;
 	updatedAt: string;

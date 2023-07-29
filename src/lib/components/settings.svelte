@@ -193,25 +193,6 @@
 					>
 				{/if}
 			</div>
-			{#if dev}
-				<h3>Kehittäjäasetukset</h3>
-				<div class="section dev">
-					<b>Endpoints</b>
-					<div>
-						<p>lb: {leaderboard_endpoint}</p>
-						<p>mp: {mp_default_endpoint}</p>
-					</div>
-					<b>Actions</b>
-					<div class="actions">
-						<button
-							class="button action-btn"
-							on:click={() => {
-								throw new Error("error for testing purposes ;)");
-							}}>luo virhe</button
-						>
-					</div>
-				</div>
-			{/if}
 		</div>
 		<div class="info">
 			<details>
@@ -261,6 +242,31 @@
 				</div>
 			</details>
 		</div>
+		{#if dev}
+			<div class="debug">
+				<details>
+					<summary>
+						<h3 style="display: inline-block;">Kehittäjäasetukset</h3>
+					</summary>
+					<div class="section dev">
+						<b>Endpoints</b>
+						<div>
+							<p>lb: {leaderboard_endpoint}</p>
+							<p>mp: {mp_default_endpoint}</p>
+						</div>
+						<b>Actions</b>
+						<div class="actions">
+							<button
+								class="button action-btn"
+								on:click={() => {
+									throw new Error("error for testing purposes ;)");
+								}}>luo virhe</button
+							>
+						</div>
+					</div>
+				</details>
+			</div>
+		{/if}
 	</div>
 </Popup>
 
@@ -323,5 +329,9 @@
 	}
 	.badge {
 		font-size: 0.75em;
+	}
+
+	summary {
+		cursor: pointer;
 	}
 </style>

@@ -1,4 +1,4 @@
-import { writable, type Writable } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store";
 import type { CompleteValidationResult } from "twothousand-forty-eight";
 
 export const ready = writable(false);
@@ -10,6 +10,9 @@ export const validation_cache: Writable<{
 }> = writable({});
 
 export async function init() {
+	if (get(success)) {
+		return;
+	}
 	ready.set(false);
 	success.set(null);
 	console.info("trying to import wasm...");
