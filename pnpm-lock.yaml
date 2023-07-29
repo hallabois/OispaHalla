@@ -90,8 +90,8 @@ devDependencies:
     specifier: ^2.6.1
     version: 2.6.1
   twothousand-forty-eight:
-    specifier: ^0.20.0
-    version: 0.20.0
+    specifier: ^0.21.1
+    version: 0.21.1
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
@@ -6130,8 +6130,8 @@ packages:
       typescript: 5.1.6
     dev: true
 
-  /twothousand-forty-eight@0.20.0:
-    resolution: {integrity: sha512-ECHRZtt7cpEpaTCUWHVLmG6sMohBuRdiTIhIYuADbmLIxadJbCOvn/QsiHp8sl7cpWpJPE4OouxgPCbMvn5mAA==}
+  /twothousand-forty-eight@0.21.1:
+    resolution: {integrity: sha512-NyPx5U+NMcEozgGrNjsUyzr2xO6FEFfG9v7jhdXrEQkC+sDshI7bOtdtPLm4/2vTAFZ0UBCk1svJKmH7/sIoJQ==}
     dev: true
 
   /type-check@0.3.2:

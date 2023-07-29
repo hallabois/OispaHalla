@@ -17,7 +17,7 @@ export async function getWholeLocalForage() {
 	return composite;
 }
 
-type KeyValueMap = { [key: string]: any };
+type KeyValueMap = { [key: string]: unknown };
 
 export const storage: Writable<KeyValueMap> = writable({});
 const _superset = storage.set;
@@ -95,7 +95,7 @@ storage.subscribe(async (data) => {
 					console.error("Refusing to write data as multiple tabs are open!");
 					return;
 				}
-				const local_ts: number = data.__updated_ms || 0;
+				const local_ts = (data.__updated_ms as number | null) || 0;
 				const external_ts: number = (await localforage.getItem("__updated_ms")) || 0;
 				if (external_ts > local_ts) {
 					console.error("refusing to write expired changes to storage.", local_ts, external_ts);
@@ -133,13 +133,13 @@ storage.subscribe(async (data) => {
 	}
 });
 
-export function setItem(key: string, value: any) {
+export function setItem(key: string, value: unknown) {
 	const data = get(storage);
 	data[key] = value;
 	storage.set(data);
 }
 
-export function getItem(key: string): any {
+export function getItem(key: string): unknown {
 	const items = get(storage);
 	return items[key];
 }

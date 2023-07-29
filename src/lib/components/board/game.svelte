@@ -6,10 +6,10 @@
 	import { onMount } from "svelte";
 	import { theme_index } from "$lib/stores/themestore";
 	import "../../../style/board.scss";
-	import { active_size, gamestate, tiles_with_merged_from } from "$lib/gamelogic/new";
+	import { active_size, gamestate, last_move, tiles_with_merged_from } from "$lib/gamelogic/new";
 	import type { Direction } from "twothousand-forty-eight";
 	import { blur, fade, scale, slide } from "svelte/transition";
-	import { linear } from "svelte/easing";
+	import { cubicInOut, linear } from "svelte/easing";
 	import * as hilbertCurve from "hilbert-curve";
 	import { open_popups } from "$lib/stores/popupstore";
 	import { swipe } from "svelte-gestures";
@@ -85,13 +85,20 @@
 	}}
 />
 
-<div class="game-container" style:--grid-size={size} use:swipe on:swipe={swipeHandler}>
+<div
+	class="game-container"
+	class:first-move={$last_move == null}
+	style:--grid-size={size}
+	use:swipe
+	on:swipe={swipeHandler}
+>
 	<div class="kurin-palautus-viesti" />
-	{#if $gamestate?.state.won || $gamestate?.state.over}
+	{#if ($gamestate?.state.won && !$gamestate?.win_screen_shown) || $gamestate?.state.over}
 		<div
 			class="game-message"
 			class:game-won={$gamestate?.state.won}
 			class:game-over={$gamestate?.state.over}
+			out:fade={{ duration: 200 }}
 		>
 			<p class="tilanne">
 				{#if $gamestate?.state.won}
@@ -104,13 +111,21 @@
 				{$gamestate?.state?.breaks || 0} kurinpalautusta käytetty
 			</p>
 			<div class="lower">
-				<button class="button action-btn keep-playing-button">Jatka pelaamista</button>
-				<button
-					class="button action-btn discourage retry-button"
-					on:click={() => {
-						restart(true);
-					}}><span>Yritä uudelleen</span></button
-				>
+				{#if $gamestate?.state.over}
+					<button
+						class="button action-btn retry-button"
+						on:click={() => {
+							restart(true);
+						}}><span>Yritä uudelleen</span></button
+					>
+				{:else}
+					<button
+						class="button action-btn keep-playing-button"
+						on:click={() => {
+							$gamestate?.aknowledgeWinScreen();
+						}}><span>Jatka pelaamista</span></button
+					>
+				{/if}
 			</div>
 		</div>
 	{/if}
@@ -147,13 +162,11 @@
 							style:--y={tile.y}
 							out:scale={{ duration: 100 }}
 						>
-							{#key tile.value}
-								<div
-									class="tile-inner"
-									transition:fade={{ duration: 100, easing: linear }}
-									style:--img={`url(/img/theme-${$theme_index}/${tile.value}.webp)`}
-								/>
-							{/key}
+							<div
+								class="tile-inner"
+								out:scale={{ duration: 100 }}
+								style:--img={`url(/img/theme-${$theme_index}/${tile.value}.webp)`}
+							/>
 						</div>
 					{/key}
 				{/each}
@@ -176,10 +189,16 @@
 		);
 	}
 	.tile {
-		transition: var(--transition-speed) transform ease-in-out;
+		transition: var(--transition-speed) top ease-in-out 0ms,
+			var(--transition-speed) left ease-in-out 0ms;
 		--xpos: calc(calc(var(--tile-size) + var(--grid-gap)) * calc(var(--x)));
 		--ypos: calc(calc(var(--tile-size) + var(--grid-gap)) * calc(var(--y)));
-		transform: translate(var(--xpos), var(--ypos));
+		top: var(--ypos);
+		left: var(--xpos);
+	}
+	.first-move .tile {
+		--speed: calc(var(--transition-speed) * 2);
+		transition: var(--speed) left ease-in-out 0ms, var(--speed) top ease-in-out var(--speed);
 	}
 	.tile .tile-inner {
 		position: absolute;

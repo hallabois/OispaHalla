@@ -8,7 +8,7 @@ $grid-max-size: 10;
 	--field-width: 500px;
 	--grid-gap: 15px;
 	--game-container-margin-top: 40px;
-	--transition-speed: 100ms;
+	--transition-speed: 120ms;
 
 	--grid-size: 4;
 	--grid-size-max: 5;
@@ -117,7 +117,7 @@ $grid-max-size: 10;
 			p {
 				line-height: 60px;
 				font-weight: bold;
-				text-shadow: 0 0 0.75em var(--dialog-background);
+				text-shadow: 0 0 0.5em var(--dialog-background);
 			}
 
 			.tilanne {
@@ -146,7 +146,12 @@ $grid-max-size: 10;
 			@include animation-fill-mode(both);
 
 			&.game-won {
-				background: #edc22e80;
+				background: #edc22e;
+				background: color-mix(
+					in srgb,
+					color-mix(in srgb, #edc22e 75%, var(--dialog-background) 25%) 50%,
+					transparent 50%
+				);
 				color: var(--color);
 
 				.keep-playing-button {
@@ -158,7 +163,7 @@ $grid-max-size: 10;
 			&.game-over {
 				display: block;
 				border-radius: calc(var(--tile-border-radius) * 2);
-				backdrop-filter: blur(3px) saturate(0.5);
+				backdrop-filter: blur(0.5rem) saturate(0.5);
 			}
 		}
 	}
@@ -346,7 +351,8 @@ $grid-max-size: 10;
 	}
 }
 
-.tile-new .tile-inner {
+.tile-new .tile-inner,
+.first-move .tile-inner {
 	@include animation(appear 200ms ease var(--transition-speed));
 	@include animation-fill-mode(backwards);
 }
