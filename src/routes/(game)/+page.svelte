@@ -3,7 +3,6 @@
 	import { onMount } from "svelte";
 
 	import { enable_multiplayer, enable_leaderboards } from "$lib/config";
-	import { storage } from "$lib/stores/storage";
 
 	import Preloader from "$lib/components/common/asset-preloader/Preloader.svelte";
 
@@ -38,9 +37,16 @@
 		type GameSize,
 		highscore,
 		active_size,
-		set_active_size
+		set_active_size,
+		ENABLED_SIZES,
+		gamestates,
+		board_to_tile_array,
+		highscores
 	} from "$lib/gamelogic/new";
 	import { blur, fade, scale, slide } from "svelte/transition";
+	import GameBoard from "$lib/components/board/gameBoard.svelte";
+	import { browser } from "$app/environment";
+	import { goto } from "$app/navigation";
 
 	let app_name = "";
 	let app_description = "";
@@ -95,6 +101,16 @@
 	let AnnouncerInstance: Announcer;
 
 	let restart_menu_open = false;
+	function updateHash(menu_open: boolean) {
+		if (menu_open) {
+			goto(`#${$active_size}x${$active_size}`);
+		} else {
+			goto(".");
+		}
+	}
+	$: if (browser && restart_menu_open != null) {
+		updateHash(restart_menu_open);
+	}
 	function restartGame() {
 		if ($gamestate) {
 			$gamestate.restart();
@@ -125,13 +141,14 @@
 				</div>
 				<div class="best-container" style="--c:'{app_name_hiscore}'">
 					{#key $active_size}
-						{$highscore != null ? `${$highscore}` : "..."}
+						{$highscore != null ? `${$highscore.score}` : "..."}
 					{/key}
 				</div>
 				<div class="restart-menu" class:open={restart_menu_open}>
 					<button
 						class="button action-btn"
 						style="flex-grow: 0;"
+						class:fullflex={restart_menu_open}
 						class:discourage={restart_menu_open}
 						on:click={() => {
 							restart_menu_open = !restart_menu_open;
@@ -143,24 +160,7 @@
 							{$active_size}x{$active_size}
 						{/if}
 					</button>
-					{#if restart_menu_open}
-						<button
-							in:scale={{ delay: 0, duration: 250 }}
-							on:click={() => {
-								set_active_size(3);
-							}}
-							class:discourage={$active_size != 3}
-							class="restart-3x3 button action-btn">3x3</button
-						>
-						<button
-							in:scale={{ delay: 125, duration: 250 }}
-							on:click={() => {
-								set_active_size(4);
-							}}
-							class:discourage={$active_size != 4}
-							class="restart-4x4 button action-btn">4x4</button
-						>
-					{:else}
+					{#if !restart_menu_open}
 						<button
 							class="button action-btn"
 							class:discourage={restart_menu_open}
@@ -181,94 +181,132 @@
 				</p>
 			{/if}
 		</div>
-		<div class="board-container">
-			<Game />
-			<div class="underbar-container">
-				<div class="button-container-size">
-					<div class="button-container panel-frosted">
-						<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
-						<button
-							class="button background-none color-button icon-button"
-							on:click={() => {
-								SettingsInstance.show();
-							}}
-							title="Asetukset"
-						>
-							<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
-						</button>
-						<button
-							class="button background-none color-button icon-button"
-							class:attention-grabber={has_unread_notifications}
-							on:click={() => {
-								PSAInstance.show();
-							}}
-							title="Tiedotukset"
-						>
-							<Icon
-								stroke="var(--color)"
-								viewBox="0 0 48 48"
-								d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
-								upper_text={has_unread_notifications
-									? unread_notification_count + "" || null
-									: null}
-							/>
-						</button>
-					</div>
-				</div>
-				<div class="kurin-palautus-container" style="flex: 1;">
+		{#if restart_menu_open && $gamestates != null && $highscores != null}
+			<div class="size-selector-grid">
+				{#each ENABLED_SIZES as size, i}
+					{@const score = $gamestates[size].score_max}
+					{@const hiscore = $highscores[size]}
+					{@const tiles = board_to_tile_array($gamestates[size].board)}
 					<button
-						class="button kurin-palautus"
-						class:allowed={$gamestate?.state.allowed_moves.includes("BREAK")}
-						on:click={paritaKuli}
+						id={`${size}x${size}`}
+						class="size-selector-size"
+						on:click={() => {
+							set_active_size(size);
+							restart_menu_open = false;
+						}}
+						in:scale|global={{ duration: 200, delay: i * 50 }}
 					>
-						<span
-							class="parin-kulautus"
-							title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
+						<GameBoard
+							enable_theme_chooser={false}
+							last_move_tiles={null}
+							last_move_direction={null}
+							{size}
+							{tiles}
+						/>
+						<div
+							style="display: flex; flex-direction: column; justify-content:center; align-items: center;"
 						>
-							Kurinpalautus
-							{#if $gamestate?.state?.breaks != null}
-								{$gamestate?.state?.breaks}/3
-							{/if}
-						</span>
+							<h2>{size}×{size}</h2>
+							<div style="display:flex; gap:1em; justify-content: center;">
+								<p>{app_name_score}: {score}</p>
+								{#if hiscore}
+									<p>{app_name_hiscore}: {hiscore.score}</p>
+								{/if}
+							</div>
+						</div>
 					</button>
-				</div>
-				<div class="button-container-size">
-					<div class="button-container panel-frosted">
-						{#if enable_multiplayer}
+				{/each}
+			</div>
+		{:else}
+			<div class="board-container">
+				<Game />
+				<div class="underbar-container">
+					<div class="button-container-size">
+						<div class="button-container panel-frosted">
+							<!-- <ThemeChooser relative={false} expandY={false} expandX={true} /> -->
 							<button
-								class="button background-none color-button"
-								class:attention-grabber={multiplayer_game_ready}
+								class="button background-none color-button icon-button"
 								on:click={() => {
-									TtInstance.show();
+									SettingsInstance.show();
 								}}
-								title="Moninpeli"
+								title="Asetukset"
+							>
+								<Icon stroke="var(--color)" viewBox="0 0 48 48" d={settingsIconData} />
+							</button>
+							<button
+								class="button background-none color-button icon-button"
+								class:attention-grabber={has_unread_notifications}
+								on:click={() => {
+									PSAInstance.show();
+								}}
+								title="Tiedotukset"
 							>
 								<Icon
 									stroke="var(--color)"
 									viewBox="0 0 48 48"
-									d={multiplayerIconData}
-									upper_text={multiplayer_game_ready ? "1" : ""}
+									d={has_unread_notifications ? activeNotificationIconData : notificationIconData}
+									upper_text={has_unread_notifications
+										? unread_notification_count + "" || null
+										: null}
 								/>
 							</button>
-						{/if}
-						{#if enable_leaderboards}
-							<button
-								on:click={() => {
-									lbInstance.show();
-								}}
-								id="lb-button"
-								class="color-button button background-none icon-button"
-								title="Leaderboards"
-								style="display: flex;"
+						</div>
+					</div>
+					<div class="kurin-palautus-container" style="flex: 1;">
+						<button
+							class="button kurin-palautus"
+							class:allowed={$gamestate?.state.allowed_moves.includes("BREAK")}
+							on:click={paritaKuli}
+						>
+							<span
+								class="parin-kulautus"
+								title="Vai parin kulautus? Lahjot opettajia pois ruudulta, mutta menetät arvosanojasi! Voit lahjoa opettajia vain kolme kertaa ennen kun Halla saa kuulla tilanteesta."
 							>
-								<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
-								<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
-							</button>
-						{/if}
+								Kurinpalautus
+								{#if $gamestate?.state?.breaks != null}
+									{$gamestate?.state?.breaks}/3
+								{/if}
+							</span>
+						</button>
+					</div>
+					<div class="button-container-size">
+						<div class="button-container panel-frosted">
+							{#if enable_multiplayer}
+								<button
+									class="button background-none color-button"
+									class:attention-grabber={multiplayer_game_ready}
+									on:click={() => {
+										TtInstance.show();
+									}}
+									title="Moninpeli"
+								>
+									<Icon
+										stroke="var(--color)"
+										viewBox="0 0 48 48"
+										d={multiplayerIconData}
+										upper_text={multiplayer_game_ready ? "1" : ""}
+									/>
+								</button>
+							{/if}
+							{#if enable_leaderboards}
+								<button
+									on:click={() => {
+										lbInstance.show();
+									}}
+									id="lb-button"
+									class="color-button button background-none icon-button"
+									title="Leaderboards"
+									style="display: flex;"
+								>
+									<Icon stroke="var(--color)" viewBox="0 0 48 48" d={leaderboardIconData} />
+									<!-- <img src="img/svg/leaderboard.svg" alt="Leaderboard icon"> -->
+								</button>
+							{/if}
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		{/if}
 	</div>
 </div>
 <Announcer bind:this={AnnouncerInstance} />
@@ -285,7 +323,36 @@
 
 <style lang="scss">
 	@import "../../style/helpers.scss";
+	.size-selector-grid {
+		--original-field-width: var(--field-width);
+		--original-tile-border-radius: var(--tile-border-radius);
+		--original-grid-gap: var(--grid-gap);
+		--scale-factor: 0.75;
+		display: flex;
+		justify-content: start;
+		align-items: center;
+		width: var(--original-field-width);
+		height: var(--original-field-width);
+		overflow-x: scroll;
+		gap: 1em;
+		padding-inline: calc(calc(var(--field-width) * calc(1 - var(--scale-factor))) / 2);
+		scroll-snap-type: x proximity;
+	}
+	.size-selector-size {
+		scroll-snap-align: center;
+		--field-width: calc(var(--original-field-width) * var(--scale-factor));
+		--tile-border-radius: calc(var(--original-tile-border-radius) * var(--scale-factor));
+		--grid-gap: calc(var(--original-grid-gap) * var(--scale-factor));
+	}
+	.size-selector-size * {
+		margin: 0;
+		text-align: center;
+	}
+	.fullflex {
+		flex-grow: 1 !important;
+	}
 	.restart-menu {
+		width: 100%;
 		flex-grow: 1;
 		display: flex;
 		justify-content: center;

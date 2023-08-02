@@ -1,14 +1,33 @@
-import { setItem, getItem, storage } from "$lib/stores/storage";
+import { setItem, getItem, storage, storage_loaded } from "$lib/stores/storage";
 import type { Board, Direction, GameState, ParseResult, Tile } from "twothousand-forty-eight";
-import { wasm } from "$lib/wasm/twothousand_forty_eight";
+import {
+	wasm,
+	deserialize_cached,
+	get_gamestate_from_recording_cached,
+	serialize_cached
+} from "$lib/wasm/twothousand_forty_eight";
 import { derived, get, writable, type Readable, type Writable } from "svelte/store";
 import { browser } from "$app/environment";
-export const ENABLED_SIZES = [2, 3, 4, 5, 6] as const;
+export const ENABLED_SIZES = [3, 4, 5] as const;
 export type GameSize = (typeof ENABLED_SIZES)[number];
 type Recordings = { [key in GameSize]: string } | null;
 type Histories = { [key in GameSize]: ParseResult } | null;
 type GameStates = { [key in GameSize]: GameState } | null;
 type MetaDatas = { [key in GameSize]: GameMetaData | null } | null;
+export type SubmittedHighScore = {
+	submitted: true;
+	score: number;
+	data?: string;
+};
+export type HighScore =
+	| SubmittedHighScore
+	| {
+			submitted: false;
+			score: number;
+			data: string;
+			game_over: boolean;
+	  };
+export type HighScores = { [key in GameSize]: HighScore | null } | null;
 
 export const active_size_server: Writable<GameSize | null> = writable(null);
 export const active_size: Readable<GameSize | null> = derived(
@@ -38,27 +57,30 @@ function gamestateKey(size: number) {
 	return `gamestate_${size}_${size}`;
 }
 
-export const recordings: Readable<Recordings> = derived([storage, wasm], ([$storage, $wasm]) => {
-	if (!$storage) {
-		return null;
-	}
-	if (!$wasm) {
-		return null;
-	}
-	const map = ENABLED_SIZES.map((size) => {
-		const state = getItem(gamestateKey(size)) as string | null;
-		if (state) {
-			return { size, state };
+export const recordings: Readable<Recordings> = derived(
+	[storage_loaded, storage, wasm],
+	([$storage_loaded, $storage, $wasm]) => {
+		if (!$storage_loaded || !$storage) {
+			return null;
 		}
-		const new_state = $wasm.new_game(size);
-		setItem(gamestateKey(size), $wasm.serialize($wasm.deserialize(new_state)));
-		return { size, state: new_state };
-	}).reduce((acc, { size, state }) => {
-		acc[size] = state;
-		return acc;
-	}, {} as { [key in GameSize]: string });
-	return map;
-});
+		if (!$wasm) {
+			return null;
+		}
+		const map = ENABLED_SIZES.map((size) => {
+			const state = getItem<string>(gamestateKey(size));
+			if (state) {
+				return { size, state };
+			}
+			const new_state = $wasm.new_game(size);
+			setItem(gamestateKey(size), serialize_cached($wasm, deserialize_cached($wasm, new_state)));
+			return { size, state: new_state };
+		}).reduce((acc, { size, state }) => {
+			acc[size] = state;
+			return acc;
+		}, {} as { [key in GameSize]: string });
+		return map;
+	}
+);
 export const histories: Readable<Histories> = derived(
 	[recordings, wasm],
 	([$recordings, $wasm]) => {
@@ -69,7 +91,7 @@ export const histories: Readable<Histories> = derived(
 			return null;
 		}
 		const map = ENABLED_SIZES.map((size) => {
-			return { size, state: $wasm.deserialize($recordings[size]) };
+			return { size, state: deserialize_cached($wasm, $recordings[size]) };
 		}).reduce((acc, { size, state }) => {
 			acc[size] = state;
 			return acc;
@@ -119,21 +141,70 @@ export const last_move: Readable<Direction | null> = derived(
 );
 
 export const gamestates: Readable<GameStates> = derived(
-	[recordings, wasm],
-	([$recordings, $wasm]) => {
-		if (!$recordings) {
-			return null;
-		}
+	[histories, wasm],
+	([$histories, $wasm]) => {
 		if (!$wasm) {
 			return null;
 		}
+		if (!$histories) {
+			return null;
+		}
 		const map = ENABLED_SIZES.map((size) => {
-			return { size, state: $wasm.get_gamestate($recordings[size]) };
+			return { size, state: get_gamestate_from_recording_cached($wasm, $histories[size]) };
 		}).reduce((acc, { size, state }) => {
 			acc[size] = state;
 			return acc;
 		}, {} as { [key in GameSize]: GameState });
 		return map;
+	}
+);
+
+function highscoreKey(size: GameSize) {
+	return `highscore_${size}_${size}`;
+}
+export const highscores: Readable<HighScores> = derived([storage], ([$storage]) => {
+	if (!$storage) {
+		return null;
+	}
+	const scores = ENABLED_SIZES.map((size) => {
+		const entry = getItem<HighScore>(highscoreKey(size));
+		if (entry) {
+			return { size, entry };
+		}
+		return { size, entry: null };
+	}).reduce((acc, { size, entry }) => {
+		acc[size] = entry;
+		return acc;
+	}, {} as { [key in GameSize]: HighScore | null });
+	return scores;
+});
+export function setHighScore(size: GameSize, data: HighScore) {
+	setItem(highscoreKey(size), data);
+}
+export function syncHighScore(size: GameSize, external: SubmittedHighScore) {
+	const $highscores = get(highscores);
+	if ($highscores == null) {
+		return;
+	}
+	const existing = $highscores[size];
+	if (!existing) {
+		setHighScore(size, external);
+		return;
+	}
+	if (existing.score <= external.score) {
+		setHighScore(size, external);
+	}
+}
+export const highscore: Readable<HighScore | null> = derived(
+	[highscores, active_size],
+	([$highscores, $size]) => {
+		if (!$highscores) {
+			return null;
+		}
+		if (!$size) {
+			return null;
+		}
+		return $highscores[$size];
 	}
 );
 function get_recording(size: GameSize): string | null {
@@ -194,10 +265,9 @@ class Game {
 		if ("V2" in this.history) {
 			const modified_history = structuredClone(this.history);
 			modified_history.V2.moves.push(dir);
-			const new_recording = this.wasm.serialize(modified_history);
 			try {
-				const new_state = this.wasm.get_gamestate(new_recording);
-				const new_history = this.wasm.deserialize(new_recording);
+				const new_state = get_gamestate_from_recording_cached(this.wasm, modified_history);
+				const new_history = modified_history;
 				this.state = new_state;
 				this.history = new_history;
 				this.save();
@@ -232,18 +302,39 @@ class Game {
 			throw new Error("Unsupported history version for now");
 		}
 	}
-	save() {
+	serialize() {
 		if ("V2" in this.history) {
 			const size = this.history.V2.width;
 			if (!ENABLED_SIZES.includes(size as GameSize)) {
 				throw new Error("Unsupported size");
 			}
-			const recording = this.wasm.serialize(this.history);
+			const recording = serialize_cached(this.wasm, this.history);
 			const meta: GameMetaData = {
 				version: __APP_VERSION__,
 				win_screen_shown: this.win_screen_shown
 			};
-			setItem(gamestateKey(size), `${recording}\n${JSON.stringify(meta)}`);
+			return `${recording}\n${JSON.stringify(meta)}`;
+		} else {
+			throw new Error("Unsupported history version for now");
+		}
+	}
+	save() {
+		if ("V2" in this.history) {
+			const size = this.history.V2.width as GameSize;
+			const serialized = this.serialize();
+			setItem(gamestateKey(size), serialized);
+			const $highscores = get(highscores);
+			if ($highscores) {
+				const highscore = $highscores[size];
+				if (!highscore || this.state.score_max > highscore.score) {
+					setHighScore(size, {
+						submitted: false,
+						data: serialized,
+						score: this.state.score_max,
+						game_over: this.state.over
+					});
+				}
+			}
 		} else {
 			throw new Error("Unsupported history version for now");
 		}
@@ -254,7 +345,7 @@ class Game {
 				const size = this.history.V2.width;
 				const recording = this.wasm.new_game(size);
 				const history = this.wasm.deserialize(recording);
-				const state = this.wasm.get_gamestate(recording);
+				const state = get_gamestate_from_recording_cached(this.wasm, history);
 				this.state = state;
 				this.history = history;
 				this.save();
@@ -267,7 +358,7 @@ class Game {
 		if ("V2" in this.history) {
 			const cut_history = structuredClone(this.history);
 			cut_history.V2.moves.pop();
-			const gamestate = this.wasm.get_gamestate(this.wasm.serialize(cut_history));
+			const gamestate = get_gamestate_from_recording_cached(this.wasm, cut_history);
 			this.state = gamestate;
 			this.history = cut_history;
 			this.save();
@@ -296,12 +387,15 @@ export function set_active_size(size: GameSize) {
 }
 
 export const gamestate: Readable<Game | null> = derived(
-	[active_size, histories, metadatas, wasm],
-	([$size, $histories, $metadatas, $wasm]) => {
+	[active_size, histories, gamestates, metadatas, wasm],
+	([$size, $histories, $gamestates, $metadatas, $wasm]) => {
 		if (!$size) {
 			return null;
 		}
 		if (!$histories) {
+			return null;
+		}
+		if (!$gamestates) {
 			return null;
 		}
 		if (!$metadatas) {
@@ -312,7 +406,7 @@ export const gamestate: Readable<Game | null> = derived(
 		}
 		const history = $histories[$size];
 		const meta = $metadatas[$size];
-		const state = $wasm.get_gamestate($wasm.serialize(history));
+		const state = $gamestates[$size];
 		return new Game(state, history, meta, $wasm);
 	}
 );
@@ -323,39 +417,6 @@ export const score: Readable<number | null> = derived([gamestate], ([$gamestate]
 	}
 	return $gamestate.state.score_current;
 });
-
-function highscoreKey(size: GameSize) {
-	return `highscore_${size}_${size}`;
-}
-export const highscore: Readable<number | null> = derived(
-	[active_size, storage, gamestate],
-	([$size, $storage, $gamestate]) => {
-		if (!$size || !$storage || !$gamestate) {
-			return null;
-		}
-		if ("V2" in $gamestate.history) {
-			if ($gamestate.history.V2.width !== $size || $gamestate.history.V2.height !== $size) {
-				console.warn("Game size mismatch", $gamestate.history.V2.width, $size);
-				return null;
-			}
-		}
-		const $score = $gamestate.state.score_max;
-		const highscore = getItem(highscoreKey($size)) as string | null;
-		if (!highscore) {
-			if ($score) {
-				setItem(highscoreKey($size), $score);
-			}
-			return $score;
-		}
-		if (!$score) {
-			return parseInt(highscore);
-		}
-		if ($score > parseInt(highscore)) {
-			setItem(highscoreKey($size), $score);
-		}
-		return Math.max($score, parseInt(highscore));
-	}
-);
 
 export function board_to_tile_array(board: Board) {
 	return board.tiles
@@ -384,12 +445,8 @@ export const tiles_last_turn: Readable<Tile[] | null> = derived(
 		if ("V2" in history) {
 			const cut_history = structuredClone(history);
 			cut_history.V2.moves.pop();
-			const gamestate = $wasm.get_gamestate($wasm.serialize(cut_history));
-			return gamestate.board.tiles
-				.flat()
-				.flat()
-				.flatMap((tile) => (tile ? [tile] : []))
-				.filter((tile) => tile.value !== 0);
+			const gamestate = get_gamestate_from_recording_cached($wasm, cut_history);
+			return board_to_tile_array(gamestate.board);
 		}
 		return null;
 	}

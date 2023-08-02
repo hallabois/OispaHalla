@@ -3,6 +3,7 @@ import { get } from "svelte/store";
 import type { LayoutServerLoad } from "./$types";
 import { active_size_server, type GameSize } from "$lib/gamelogic/new";
 import { theme_index_server } from "$lib/stores/themestore";
+import { countdown } from "$lib/config";
 
 export const load = (async ({ request }) => {
 	// Check for theme cookie
@@ -26,6 +27,7 @@ export const load = (async ({ request }) => {
 
 	return {
 		theme,
-		size
+		size,
+		lauched_serverside: countdown ? new Date().getTime() > countdown.getTime() : null
 	};
 }) satisfies LayoutServerLoad;

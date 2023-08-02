@@ -13,7 +13,8 @@
 		tournament_ping_average,
 		tournament_ping_average_history,
 		multiplayer_endpoint,
-		known_error
+		known_error,
+		user_details
 	} from "$lib/stores/multiplayer";
 	import GameCreator from "./gameCreator.svelte";
 	import GameBrowser from "./gameBrowser.svelte";
@@ -26,14 +27,17 @@
 	import { lb_screenName } from "$lib/stores/leaderboard";
 	import Icon from "../common/icon/icon.svelte";
 	import {
+		backIconData,
 		browseIconData,
 		createIconData,
 		passwordIconData,
 		pinIconData,
 		settingsIconData,
-		shareIconData
+		shareIconData,
+		userIconData
 	} from "../common/icon/iconData";
 	import { page } from "$app/stores";
+	import Busy from "../common/loading-indicator/Busy.svelte";
 
 	export let announcer: Announcer | null = null;
 	$: $tournament_announcer = announcer;
@@ -69,14 +73,13 @@
 	}
 </script>
 
-<div style="width: min(500px, 90vw);">
-	{#if $page.url.pathname == "/moninpeli"}
-		<a href="/">Takaisin yksinpeliin</a>
-	{/if}
-</div>
+<div style="width: min(500px, 90vw);" />
+
 {#if mounted}
+	{#if $user_details}
+		<p>Kirjautuneena sisään: {$user_details.name || $user_details.id}</p>
+	{/if}
 	{#if $auth}
-		<p>Kirjautuneena sisään: {$auth.displayName || $auth.email}</p>
 		{#if $known_error}
 			{#if $known_error == "error.mp.info.lb"}
 				<div class="action-chooser">
@@ -130,7 +133,7 @@
 						on:click={() => {
 							activeTab = 3;
 						}}
-						class="button action-btn"
+						class="button action-btn icon-btn"
 					>
 						<Icon
 							d={browseIconData}
@@ -146,7 +149,7 @@
 						on:click={() => {
 							activeTab = 2;
 						}}
-						class="button action-btn"
+						class="button action-btn icon-btn"
 					>
 						<Icon
 							d={pinIconData}
@@ -162,7 +165,7 @@
 						on:click={() => {
 							activeTab = 1;
 						}}
-						class="button action-btn"
+						class="button action-btn icon-btn"
 					>
 						<Icon
 							d={createIconData}
@@ -173,17 +176,24 @@
 						/>
 						<p>Luo Peli</p>
 					</button>
+					<hr />
 				</div>
-				<a href="/auth" style="text-align: center;display: block;padding: 0.75em;"
-					>Hallinnoi kirjautumista</a
-				>
 			{:else}
 				<button
-					class="button action-btn back"
+					class="button action-btn icon-btn back"
 					on:click={() => {
 						activeTab = 0;
-					}}>&lt; Takaisin</button
+					}}
 				>
+					<Icon
+						d={backIconData}
+						fill="var(--color)"
+						viewBox="0 -960 960 960"
+						height="1.5em"
+						width="1.5em"
+					/>
+					Takaisin
+				</button>
 				{#if activeTab == 1}
 					<GameCreator />
 				{/if}
@@ -195,23 +205,59 @@
 				{/if}
 			{/if}
 		{:else if $connected == null}
-			<h3>Otetaan yhteyttä palvelimeen...</h3>
+			<Busy>
+				<p>Otetaan yhteyttä palvelimeen</p>
+			</Busy>
 		{:else}
-			<h3>Palvelimeen ei saatu yhteyttä.</h3>
+			<p style="text-align: center;display: block;padding: 0.75em;">
+				Palvelimeen ei saatu yhteyttä
+			</p>
 		{/if}
 	{:else if $auth === undefined}
-		<p style="text-align: center;display: block;padding: 0.75em;">Tarkistetaan tietoja</p>
+		<Busy>
+			<p>Tarkistetaan tietoja</p>
+		</Busy>
 	{:else}
 		<button
 			on:click={() => {
 				window.location.href = "/auth";
 			}}
-			class="button action-btn"
+			class="button action-btn icon-btn"
 			style="width: 100%;">Kirjaudu sisään</button
 		>
 	{/if}
 {:else}
-	<p style="text-align: center;display: block;padding: 0.75em;">Ladataan tietoja</p>
+	<Busy>
+		<p>Ladataan tietoja</p>
+	</Busy>
+{/if}
+{#if activeTab == 0}
+	<div class="links">
+		{#if $page.url.pathname == "/moninpeli"}
+			<a href="/" class="link-with-icon button action-btn icon-btn discourage">
+				<Icon
+					d={backIconData}
+					fill="var(--color)"
+					viewBox="0 -960 960 960"
+					height="1.5em"
+					width="1.5em"
+				/>
+				<p>Takaisin yksinpeliin</p>
+			</a>
+		{/if}
+		{#if $auth}
+			<a href="/auth" class="link-with-icon button action-btn icon-btn action-btn">
+				<Icon
+					d={userIconData}
+					fill="var(--color)"
+					viewBox="0 -960 960 960"
+					height="1.5em"
+					width="1.5em"
+				/>
+				<p>Hallinnoi kirjautumista</p>
+			</a>
+		{/if}
+	</div>
 {/if}
 
 <style>
@@ -221,17 +267,35 @@
 		gap: 0.5em;
 		margin-top: 0.5em;
 	}
-	.action-chooser .button {
+	.icon-btn {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 	}
-	.action-chooser .button p {
+	.icon-btn p {
 		flex: 1;
 		margin: 0;
 	}
 	.back {
 		font-size: 0.75em;
+	}
+	.links {
+		text-align: center;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 0.5em;
+	}
+	.links > * {
+		flex-grow: 1;
+	}
+	.link-with-icon {
+		display: flex;
+		gap: 0.25rem;
+	}
+	.link-with-icon > p {
+		flex-grow: 1;
 	}
 	hr {
 		margin-block: 0;

@@ -1,8 +1,17 @@
-import { type Readable, get, derived } from "svelte/store";
+import { type Readable, get, derived, writable, type Writable } from "svelte/store";
 import { setItem, getItem, storage_loaded, storage } from "$lib/stores/storage";
 import { json_headers } from "$lib/utils";
 import { leaderboard_endpoint } from "$lib/config";
-import type { GameSize } from "$lib/gamelogic/new";
+import {
+	highscores,
+	type GameSize,
+	type HighScores,
+	syncHighScore,
+	active_size,
+	ENABLED_SIZES
+} from "$lib/gamelogic/new";
+import { token } from "$lib/Auth/authstore";
+import { browser } from "$app/environment";
 
 export const lb_screenName: Readable<string | undefined> = derived(
 	[storage_loaded, storage],
@@ -28,17 +37,26 @@ export async function check_server_alive() {
 		return false;
 	}
 }
-
 export type scores_ok = {
-	scores: any[];
+	scores: {
+		score: number;
+		user: {
+			screenName: string;
+			uid: string;
+		};
+	}[];
 };
 export type scores_error = {
 	error_msg: string;
 };
 export type scores_response = scores_ok | scores_error;
-export async function get_all_scores(size: number): Promise<scores_response> {
+export async function get_all_scores(
+	size: number,
+	override_fetch: typeof fetch | null = null
+): Promise<scores_response> {
+	const fetcher = override_fetch || fetch;
 	try {
-		const resp = await fetch(`${leaderboard_endpoint}/scores/size/${size}/`, {
+		const resp = await fetcher(`${leaderboard_endpoint}/scores/size/${size}/`, {
 			headers: json_headers
 		});
 		if (resp.ok) {
@@ -110,27 +128,27 @@ export class Score_ok {
 	createdAt!: string;
 	updatedAt!: string;
 }
-export class Fetchboard_ok {
-	success!: boolean;
-	rank!: number;
-	topBoard!: Score_ok[];
-	rivals!:
+export type Fetchboard_ok = {
+	success: boolean;
+	rank: number;
+	topBoard: Score_ok[];
+	rivals:
 		| {
 				score: number;
 				user: User;
 		  }[]
 		| null;
-	score!: Score_ok;
-}
-export class Score_error {
-	success!: boolean;
-	error_msg!: string;
-}
+	score: Score_ok;
+};
+export type Score_error = {
+	success: boolean;
+	error_msg: string;
+};
 export type Score_response = Score_ok | Score_error;
 export type Fetchboard_response = Fetchboard_ok | Score_error;
 
 export async function fetchboard(
-	size: number,
+	size: GameSize,
 	token: string | null,
 	threshold: number,
 	rankMinus: number | null,
@@ -160,21 +178,9 @@ export async function fetchboard(
 					set_lb_screenName(json_result?.score?.user?.screenName);
 				}
 				if (json_result.score && json_result.score.size && json_result.score.score) {
-					const existing = getItem("bestScores") || {};
-					setItem("bestScores", {
-						...existing,
-						[json_result.score.size]: Math.max(
-							json_result.score.score,
-							existing[json_result.score.size] || 0
-						)
-					});
-					const existing_submitted = getItem("lb_submitted") || {};
-					setItem("lb_submitted", {
-						...existing_submitted,
-						[json_result.score.size]: Math.max(
-							json_result.score.score,
-							existing_submitted[json_result.score.size] || 0
-						)
+					syncHighScore(json_result.score.size, {
+						submitted: true,
+						score: json_result.score.score
 					});
 				}
 				return {
@@ -203,12 +209,44 @@ export async function fetchboard(
 		};
 	}
 }
+export const refresh_key = writable({});
+export const fetchboard_cache: Writable<{
+	[size in GameSize]: Fetchboard_response | null;
+}> = writable(ENABLED_SIZES.reduce((acc, size) => ({ ...acc, [size]: null }), {} as any));
+export const fetchboard_cache_key = writable(get(refresh_key));
+export const personal_leaderboards = derived(
+	[active_size, token, refresh_key],
+	([$active_size, $token, $refresh_key]) => {
+		if ($active_size == null) {
+			return null;
+		}
+		if ($token == null) {
+			return null;
+		}
+		if ($refresh_key != get(fetchboard_cache_key)) {
+			fetchboard_cache.set(
+				ENABLED_SIZES.reduce((acc, size) => ({ ...acc, [size]: null }), {} as any)
+			);
+			fetchboard_cache_key.set($refresh_key);
+		}
+		const cached = get(fetchboard_cache)[$active_size];
+		if (cached) {
+			return cached;
+		}
+		const result = fetchboard($active_size, $token, 10, 1, 1);
+		fetchboard_cache.update((cache) => ({ ...cache, [$active_size]: result }));
+		return result;
+	}
+);
+export const server_alive = derived([token], async ([$token]) => {
+	return await check_server_alive();
+});
 
-export class submit_response {
-	success!: boolean;
-	message!: string;
-	json!: any | null;
-}
+export type submit_response = {
+	success: boolean;
+	message: string;
+	json: any | null;
+};
 export async function submit_score(
 	size: GameSize,
 	token: string | null,

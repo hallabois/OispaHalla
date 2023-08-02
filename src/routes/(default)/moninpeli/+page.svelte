@@ -135,10 +135,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Oispa Halla Moninpeli</title>
-</svelte:head>
-
 <main class="game-background">
 	<Announcer bind:this={AnnouncerInstance} />
 	{#if $connection_error}

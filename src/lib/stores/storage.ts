@@ -134,6 +134,7 @@ storage.subscribe(async (data) => {
 });
 
 export function setItem(key: string, value: unknown) {
+	console.log(key, "=", value);
 	const data = get(storage);
 	data[key] = value;
 	storage.set(data);
